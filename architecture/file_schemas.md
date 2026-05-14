@@ -13,10 +13,13 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 | Path | Field | Why load-bearing |
 |---|---|---|
 | `decisions/discovery/ledger.json` | `restatement` | Discovery's interpretation of what to build; if wrong, the wrong thing gets built |
+| `decisions/discovery/ledger.json` | `telos` (v1.9) | Single-sentence canonical user want; the anchor for demotion analysis and telos-coherence checks |
 | `decisions/discovery/ledger.json` | `assumption_ledger[].assumption` | Each assumption is a claim about what the user wants; load-bearing for the artifact |
 | `decisions/discovery/ledger.json` | `inflection_points[].topic` | What is being decided; defines the choice space |
 | `decisions/discovery/ledger.json` | `inflection_points[].default_branch` | The locked decision; load-bearing for the artifact |
 | `decisions/discovery/ledger.json` | `out_of_scope[]` (each item) | Each is a negative claim about the artifact; load-bearing for what's absent |
+| `decisions/discovery/ledger.json` | `proper_nouns[].surface` (v1.9) | Each proper noun the user named; load-bearing because the build's target depends on it (Principle E) |
+| `decisions/discovery/ledger.json` | `first_contact_requirements[].description` (v1.9) | Each first-contact requirement for the artifact type; load-bearing for Tier 2 verification (Principle G) |
 | `decisions/technical-discovery/sections-v{N}.json` | `inflection_resolutions[].chosen_branch` | The locked technical decision; load-bearing |
 | `decisions/technical-discovery/sections-v{N}.json` | `prompt_verb_analysis.chosen_verb` | The verb that PNV verifies; if wrong, PNV verifies the wrong thing |
 | `decisions/technical-discovery/sections-v{N}.json` | `sections[].charter` | What the section must do; load-bearing |
@@ -40,10 +43,13 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 ├── decisions/
 │   ├── discovery/
 │   │   ├── ledger-v1.json
-│   │   └── ledger-diff-v{N}.json...
-│   └── technical-discovery/
-│       ├── sections-v1.json
-│       └── impact-analysis-v{N}.json
+│   │   ├── ledger-diff-v{N}.json...
+│   │   └── demotion-v{N}.json...           (v1.9)
+│   ├── technical-discovery/
+│   │   ├── sections-v1.json
+│   │   └── impact-analysis-v{N}.json
+│   └── editor/                              (v1.9)
+│       └── review-v{N}.json
 ├── contracts/
 │   ├── original/
 │   │   └── {section-A}--{section-B}.json
@@ -93,9 +99,11 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 
 | Path pattern | Writer role | Notes |
 |---|---|---|
-| `decisions/discovery/*` | Discovery | Append-only — never overwrite a prior version |
+| `decisions/discovery/*` | Discovery (Initial / Amendment / Demotion modes) | Append-only — never overwrite a prior version |
+| `decisions/discovery/demotion-v{N}.json` (v1.9) | Discovery (Demotion mode) | Append-only; one per demotion decision |
 | `decisions/technical-discovery/sections-*` | TD (initial mode) | Append-only |
 | `decisions/technical-discovery/impact-analysis-*` | TD (impact mode) | One per re-evaluation |
+| `decisions/editor/review-v{N}.json` (v1.9) | Editor | Append-only; one per Editor pass; non-skippable gate before Coordinator dispatch |
 | `contracts/original/*` | TD (initial mode) | Written once at TD time |
 | `contracts/amendments/*` | TD (impact mode) OR Coordinator (after Overseer concurrence on 2a amendments) | Versioned suffix `-v{N}` |
 | `state/coordinator/*` | Coordinator | Live state; `build-complete.json` written exactly once |
@@ -131,7 +139,32 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
   "version": 1,
   "created_at": "ISO-8601",
   "project_name": "blackjack web app",
+  "telos": "A single-sentence canonical statement of user want, expressible without supportive proper nouns (v1.9, Principle G)",
   "restatement": "...",
+  "execution_context_observed": {
+    "platform_hints": ["windows", "macos", "linux", "unknown"],
+    "path_evidence": ["C:\\...", "/Users/...", "/home/..."]
+  },
+  "proper_nouns": [
+    {
+      "id": "PN.1",
+      "surface": "MiraboxSpace StreamDock VSD N4 Pro",
+      "lexical_context": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that ...",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    },
+    {
+      "id": "PN.2",
+      "surface": "map.kml",
+      "lexical_context": "use sampledata from http://notasite.com/notreal/map.kml",
+      "lexical_marker_weakening": "sample",
+      "role": "supportive",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    }
+  ],
   "assumption_ledger": [
     {
       "id": "A1",
@@ -148,7 +181,16 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
       "choices": ["...", "..."],
       "default_branch": "...",
       "importance": "high|medium|low",
+      "importance_action": "researcher_dispatched|sev4_surfaced|evidence_backed|n/a",
+      "importance_action_evidence": "...",
       "why_inflection": "..."
+    }
+  ],
+  "first_contact_requirements": [
+    {
+      "id": "FC.1",
+      "description": "The plugin appears in the host application's UI / plugin list after install",
+      "artifact_type_basis": "plugin"
     }
   ],
   "out_of_scope": ["...", "..."]
@@ -156,6 +198,13 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 ```
 
 `confidence` ∈ `{"high", "medium", "low"}`. `importance` drives whether TD dispatches a Researcher.
+
+**v1.9 new fields:**
+- `telos` — load-bearing single sentence; the anchor for demotion analysis (Discovery Demotion Mode) and Editor's telos-coherence check.
+- `execution_context_observed` — what platform/path evidence Discovery actually inspected. Required when the briefing's `execution_context` was non-empty. Used by Critic to verify Discovery used the evidence (Principle: Decision Grounding).
+- `proper_nouns[]` — every trademarked or named external referent in the prompt, per Principle E. `role: target_defining` = the noun IS the target; `role: supportive` = illustrative/sample material. `lexical_marker_weakening` is the matched marker token (`sample`/`example`/`e.g.`/etc.) if any. `verification_status` is updated by TD/Researcher pipeline: `pending` → `verified` (canonical evidence found) | `unreachable` (escalates to Demotion Mode) | `demoted` (demotion ruled by Discovery).
+- `importance_action` — what concrete differential action Discovery took for high-importance IPs. `n/a` only for low/medium importance. For high-importance IPs, must be non-`n/a`; silent default is a Principle F violation flagged by Editor.
+- `first_contact_requirements[]` — Tier 2 verification inputs per Principle G. TD derives an `acceptance_assertion` for each; CV exercises them as the first behavioral check (non-skippable; halts pipeline on failure).
 
 ### `decisions/discovery/ledger-diff-v{N}.json` — Discovery Amendment
 
@@ -186,6 +235,106 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
   }
 }
 ```
+
+### `decisions/discovery/demotion-v{N}.json` — Discovery Demotion Record (v1.9)
+
+**Writer:** Discovery (demotion mode). Records the ruling on a proper noun whose canonical source was unreachable, per Principle E and the Law A × Law B interaction.
+
+```json
+{
+  "version": 1,
+  "created_at": "ISO-8601",
+  "trigger": {
+    "proper_noun_id": "PN.2",
+    "proper_noun_surface": "map.kml at notasite.com/notreal/map.kml",
+    "unreachability_evidence_pointer": "research/probes/probe-{id}/findings.json"
+  },
+  "guardrails": {
+    "G1_unreachable": {
+      "verdict": true,
+      "evidence": "Researcher probed for domain, archived copies, and equivalent filenames; all returned no results."
+    },
+    "G2_supportive_role": {
+      "verdict": true,
+      "evidence": "ledger-v1.proper_nouns[id=PN.2].role == 'supportive'; lexical_marker_weakening == 'sample'."
+    },
+    "G3_telos_preserved": {
+      "verdict": true,
+      "evidence": "Telos 'map walking activity' is expressible without naming map.kml."
+    },
+    "G4_substitution_satisfies": {
+      "verdict": true,
+      "evidence": "A class of substitute (any sample KML/GPX walking trail file) satisfies the same role; TD can source."
+    }
+  },
+  "verdict": "demote | substitute_and_confirm | block | rebrief_research | insufficient_evidence",
+  "rationale": "All four guardrails hold. Demoting the URL atomicity; TD will source a substitute KML/GPX walking trail file matching the supportive role.",
+  "follow_up_action": {
+    "role": "technical-discovery",
+    "mode": "impact-analysis",
+    "instruction": "Find a substitute dataset matching the supportive role of map.kml (a sample KML/GPX walking trail file)."
+  }
+}
+```
+
+**Verdict semantics:**
+- `demote` — all four guardrails hold. TD sources substitute silently. Historian logs the demotion.
+- `substitute_and_confirm` — G1, G2, G4 hold but G3 fails (telos relies on the noun). TD sources substitute AND Orchestrator surfaces Sev 4 to user with the proposed substitute. Build proceeds unless user objects within timeout.
+- `block` — G2 fails (target-defining) OR G4 fails (no class of substitute). Build halts; Orchestrator surfaces Sev 4 fatal; user must provide alternative or confirm.
+- `rebrief_research` — G1 fails (source may be reachable; just didn't try hard enough). TD dispatches a more thorough Researcher probe.
+- `insufficient_evidence` — Researcher findings not credible per Principle F. TD re-probes.
+
+**Critic audit:** every demotion record is checked for four-guardrail completeness. A `verdict: demote` with fewer than four `verdict: true` guardrails is a hard fail.
+
+### `decisions/editor/review-v{N}.json` — Editor Review (v1.9)
+
+**Writer:** Editor. Records the structural audit of TD's plan against the user's prompt and Discovery's atomic intent.
+
+```json
+{
+  "version": 1,
+  "created_at": "ISO-8601",
+  "based_on": {
+    "prompt": "<literal user prompt>",
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections": "decisions/technical-discovery/sections-v1.json"
+  },
+  "verdict": "pass | pass_with_recommendations | route_to_discovery | route_to_td | route_to_user",
+  "findings": [
+    {
+      "id": "F.1",
+      "check_id": "proper_noun_citation",
+      "severity": "high|medium|low",
+      "description": "Proper noun PN.1 ('MiraboxSpace StreamDock VSD N4 Pro') has verification_status: pending. TD did not dispatch a Researcher probe for a target-defining noun.",
+      "evidence": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1].verification_status",
+      "recommended_route": "td_impact_analysis",
+      "recommended_action": "dispatch_researcher"
+    },
+    {
+      "id": "F.2",
+      "check_id": "td_ip_source",
+      "severity": "high",
+      "description": "TD-IP-A resolution has source: td_plan but the subject is an external system property (SDK version). Principle H violation.",
+      "evidence": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[id=TD-IP-A].source",
+      "recommended_route": "td_impact_analysis",
+      "recommended_action": "source_externally"
+    }
+  ],
+  "routed_to": [
+    { "role": "technical-discovery", "mode": "impact-analysis", "trigger_findings": ["F.1", "F.2"] }
+  ],
+  "recommendations": []
+}
+```
+
+**Check IDs (Editor's structural checks):**
+- `proper_noun_citation` (Principle E + F): every `target_defining` proper noun has a `verification_status: verified` entry with non-empty citations; every `unreachable` has a corresponding demotion record.
+- `discovery_high_importance_action` (Principle F): every `importance: high` IP has a non-`n/a` `importance_action`.
+- `td_ip_source` (Principle H): every TD-IP resolution and machine-checkable assertion has a `source` field; `td_plan`-sourced assertions on external-system properties are flagged.
+- `first_contact_coverage` (Principle G Tier 2): every `first_contact_requirements[]` entry has a corresponding acceptance assertion in the sections file.
+- `telos_coherence` (Principle G): the section breakdown and assertions collectively serve the telos.
+
+**Loop semantics:** Editor re-runs after any Discovery/TD amendment. `review-v2.json`, `review-v3.json`, etc., are written on successive passes. If the loop produces no further changes and verdict is still not `pass`, Orchestrator escalates Sev 4 to user.
 
 ### `decisions/technical-discovery/sections-v{N}.json` — TD Section Plan
 
@@ -311,6 +460,13 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 - `prompt_named_verb_assertion` (introduced v1.5, formalized v1.6) is non-skippable. Verifier is implicitly `cv_artifact_exercise` under production fidelity. No `pass_with_concerns` permitted.
 - `discovery_coverage_assertions[]` (added v1.7) covers Discovery's load-bearing prose fields (restatement, assumption_ledger items, out_of_scope items, inflection_point topics) that aren't covered by other assertion types. TD writes these as part of producing sections-v{N}.json. Same shape as machine_checkable_assertions but with `covers` field pointing into `decisions/discovery/ledger-v{N}.json`.
 - All assertion entries (machine_checkable_assertions, acceptance_assertions, prompt_named_verb_assertion, discovery_coverage_assertions) **must include a `covers` field** (added v1.7). The `covers` value is a path + JSON pointer to the load-bearing prose field the assertion derives from. Critic's `prose_coverage` final-sweep check walks the coverage-required field list and verifies each has at least one assertion pointing back to it. Assertions without `covers` are flagged as schema violations.
+- **All assertions must also include a `source` field (added v1.9, Principle H).** This field declares where the assertion's `expected_value` / `expected_result` derives from. Values:
+  - `"prompt"` — derives from the user's literal prompt text. Strongest external source; use for telos-level checks (PNV, restatement-coverage).
+  - `"canonical_evidence"` — derives from a Researcher finding citing external documentation. Strongest source for sub-goal checks involving external systems. Requires the assertion to include a `citations_pointer` field linking to the Researcher findings entry that supplied the expected value (with its `verbatim_excerpt` per Principle F).
+  - `"td_plan"` — derives from TD's own plan. Allowed only for internal-consistency checks (e.g., "section A's interface returns what section B's contract says it returns"). NOT allowed for checks whose subject is an external system property; Editor flags these as Principle H violations.
+  - `"external_source_unreachable"` — flag for assertions where the canonical source could not be reached and `td_plan` is the only available source. Allowed only with a corresponding Sev 4 surfacing event recording the gap. CV will skip these assertions and Editor will flag them for user awareness.
+
+  The `source` field is what makes Principle H structurally enforceable: Editor walks every assertion's `source` and surfaces `td_plan`-against-external-system as a violation; CV reads the field and refuses to verify self-referential claims about external systems.
 
 ### `decisions/technical-discovery/impact-analysis-v{N}.json` — TD Impact Analysis
 
@@ -590,6 +746,16 @@ Categories that explicitly do NOT require logging: variable naming, internal cod
 {
   "probe_id": "probe-001",
   "completed_at": "ISO-8601",
+  "citations": [
+    {
+      "id": "C.1",
+      "url_or_path": "https://docs.example.com/sdk/v3/manifest",
+      "fetched_at": "ISO-8601",
+      "verbatim_excerpt": "The plugin manifest must declare 'SDKVersion: 3' in the root object. Older SDKVersion 2 manifests are not loaded by VSDinside.",
+      "citation_class": "static_canonical|archived_snapshot|interactive_doc",
+      "external_source_unreachable": false
+    }
+  ],
   "options": [
     {
       "id": "opt-A",
@@ -597,7 +763,8 @@ Categories that explicitly do NOT require logging: variable naming, internal cod
       "pros": ["..."],
       "cons": ["..."],
       "impact": { "section-4": "no change" },
-      "confidence": "high"
+      "confidence": "high",
+      "supporting_citations": ["C.1"]
     }
   ],
   "recommended": "opt-A",
@@ -607,6 +774,19 @@ Categories that explicitly do NOT require logging: variable naming, internal cod
 ```
 
 For escalation-mode probes, `impact` is required per option. `framing_concern` is non-null only when `questioning_authority` was true and the Researcher believes the question is malformed.
+
+**v1.9 — citations and Principle F:**
+
+Every load-bearing finding MUST include `citations[]` entries with non-empty `verbatim_excerpt`. The verbatim_excerpt is the exact text from the cited source that supports the finding — if a Critic-class auditor followed the citation, the same text would appear there. Citations without `verbatim_excerpt` are decorative and the finding is invalid (this is the StreamDock failure mode: the v3 Researcher listed repo URLs as `context_pointers` and returned findings as if those had been read, but the findings were summarized from training-data familiarity, not from the citations).
+
+- `citation_class`:
+  - `static_canonical` — official documentation, specification, or canonical source page; re-fetchable verbatim.
+  - `archived_snapshot` — Wayback Machine, archive.today, or similar; use when the live source may change or disappear.
+  - `interactive_doc` — sources that require authentication or interactive navigation; the `verbatim_excerpt` is the Researcher's transcription, with the limitation noted.
+
+- `external_source_unreachable: true` — flag for findings where no canonical source could be located. When this is true, the finding is **not** sufficient to satisfy a `canonical_source_required` proper noun or a `source: canonical_evidence` assertion. It must escalate to Discovery (Demotion Mode) or Sev 4 surfacing.
+
+Critic and Editor spot-check citations by re-fetching the URL and matching the `verbatim_excerpt`. If the excerpt does not appear at the cited URL/path (or the source is unreachable when claimed reachable), the citation is invalid and the finding is treated as if it had no support.
 
 ### `output/builders/{section}/{builder}/output.{ext}` — Builder Output
 
@@ -830,17 +1010,61 @@ Free-form markdown. Should include: original prompt, final assumption set (live 
   "completed_at": "ISO-8601",
   "verdict": "pass|pass_with_concerns|fail",
   "checked_against_ledger": "decisions/discovery/ledger-v1.json",
+  "production_fidelity_environment": {
+    "engine": "Playwright headless Chromium",
+    "components": [
+      { "name": "browser_runtime", "status": "real" },
+      { "name": "usgs_geojson_endpoint", "status": "real", "endpoint": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson" },
+      { "name": "osm_tiles", "status": "real" },
+      { "name": "leaflet", "status": "real", "source": "output/final/vendor/leaflet/leaflet.js (vendored at design time per v1.6)" }
+    ]
+  },
+  "first_contact_results": [
+    {
+      "requirement_id": "FC.1",
+      "description": "...",
+      "scenario": "...",
+      "result": "pass",
+      "details": "..."
+    }
+  ],
+  "prompt_named_verb_result": {
+    "assertion_id": "PNV.1",
+    "verb_from_prompt": "...",
+    "scenario": "...",
+    "expected_result": "...",
+    "actual_result": "...",
+    "result": "pass",
+    "source": "prompt",
+    "production_fidelity_passed": true
+  },
   "assumption_checks": [{ "id": "A1", "verified": true, "evidence": "..." }],
   "out_of_scope_checks": [{ "item": "...", "verified_absent": true }],
   "inflection_point_checks": [{ "id": "IP1", "default_branch_honored": true }],
   "artifact_exercise_results": [
-    { "assertion_id": "S4.A3", "scenario": "...", "result": "pass", "details": "..." }
+    { "assertion_id": "S4.A3", "scenario": "...", "result": "pass", "source": "canonical_evidence", "citations_pointer": "research/probes/probe-001/findings.json#citations[id=C.1]", "details": "..." }
+  ],
+  "principle_h_skips": [
+    {
+      "assertion_id": "S2.A1",
+      "reason": "source: td_plan but subject is external system property (host SDK version). Skipped per Principle H; escalated to Editor."
+    }
   ],
   "summary": "..."
 }
 ```
 
 `artifact_exercise_results[]` (added v1.3) lists every user_flow assertion CV simulated and the result.
+
+**v1.9 new required fields:**
+
+- `production_fidelity_environment` (with `components[]` per-component real/modeled tagging) — required, per Principle H. Each component is `real` (the user's actual environment) or `modeled` (a stand-in). For `modeled` components, a `source` field citing external documentation is required; modeled components without external source are hard fails. See CV charter § "Verification source independence".
+
+- `first_contact_results[]` (Tier 2 per Principle G) — required when `ledger-v1.first_contact_requirements[]` is non-empty. CV runs Tier 2 first among behavioral checks; any failure halts verification with verdict `fail` and `first_contact_failure: true` (no further tiers run).
+
+- `prompt_named_verb_result.source` and `artifact_exercise_results[].source` — every behavioral verification result records the source of its expected value (per Principle H). Auditors can spot-check `source: canonical_evidence` results by following the `citations_pointer` and re-validating the `verbatim_excerpt`.
+
+- `principle_h_skips[]` — assertions that CV refused to verify because they had `source: td_plan` against an external system property (self-referential, structurally insufficient). These are not "pass" — they're explicit non-verifications, surfaced for Editor/Critic re-review.
 
 ---
 
