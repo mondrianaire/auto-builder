@@ -193,7 +193,24 @@ Law A says proper nouns are atomic; Law B says go to canonical source. The inter
 
 > **What happens when the canonical source for a proper noun is unreachable or non-existent?**
 
-Currently the architecture silently falls back to training-data familiarity (the v3 Researcher behavior). The correct behavior is probably escalate-to-user (Sev 4 surfacing) or block — not silently substitute. The maintenance design needs to specify this interaction explicitly; otherwise Law A and Law B can both be honored on paper while the actual failure mode (silent substitution) persists.
+Currently the architecture silently falls back to training-data familiarity (the v3 Researcher behavior). That is wrong.
+
+**Correction (post-diagnostic clarification from user):** the architecture's North Star contract is to always deliver an artifact, never to surface a clarifying question to the user. Sev 4 exists as a severity level but routes within Discovery + Researcher — never to the user. So the correct resolution for an unreachable canonical source is **not** "escalate to user." It is:
+
+1. Researcher reports `external_source_unreachable: true` with whatever partial evidence was found.
+2. Discovery enters Demotion Mode and rules a best-effort outcome based on the four guardrails:
+   - `demote` (substitute material; all guardrails hold)
+   - `substitute` (TD finds a substitute preserving the telos; G3 fails)
+   - `best_effort_target_commitment` (Discovery commits to most plausible interpretation; G2 or G4 fails)
+   - `rebrief_research` (try harder; G1 fails)
+3. The build proceeds with the best-effort outcome. The user gets a delivered artifact.
+4. The run-report's Uncertainty Manifest documents *every* guess: what was guessed, why, and what's at risk if the guess was wrong.
+
+There is no `block` verdict. The architecture never halts to ask the user. The contract is absolute: at 99% uncertainty, deliver something. Document the uncertainty honestly. Let the user evaluate the artifact against their actual need.
+
+This is the operationalization of the North Star ("understand exactly what the user means and build them exactly what they want") with the constraint that the user shouldn't have to clarify mid-build — the architecture's job is to commit.
+
+*Note: an earlier draft of this addendum suggested "escalate-to-user (Sev 4 surfacing)" as the correct behavior. That was incorrect; the project's actual contract is no user surfacing. The v1.9 amendments initially encoded user-surfacing in multiple places and were corrected; the corrected design is captured here for future maintenance conversations.*
 
 ---
 

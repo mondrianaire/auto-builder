@@ -181,7 +181,7 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
       "choices": ["...", "..."],
       "default_branch": "...",
       "importance": "high|medium|low",
-      "importance_action": "researcher_dispatched|sev4_surfaced|evidence_backed|n/a",
+      "importance_action": "researcher_dispatched|best_effort_default|evidence_backed|n/a",
       "importance_action_evidence": "...",
       "why_inflection": "..."
     }
@@ -203,7 +203,7 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 - `telos` — load-bearing single sentence; the anchor for demotion analysis (Discovery Demotion Mode) and Editor's telos-coherence check.
 - `execution_context_observed` — what platform/path evidence Discovery actually inspected. Required when the briefing's `execution_context` was non-empty. Used by Critic to verify Discovery used the evidence (Principle: Decision Grounding).
 - `proper_nouns[]` — every trademarked or named external referent in the prompt, per Principle E. `role: target_defining` = the noun IS the target; `role: supportive` = illustrative/sample material. `lexical_marker_weakening` is the matched marker token (`sample`/`example`/`e.g.`/etc.) if any. `verification_status` is updated by TD/Researcher pipeline: `pending` → `verified` (canonical evidence found) | `unreachable` (escalates to Demotion Mode) | `demoted` (demotion ruled by Discovery).
-- `importance_action` — what concrete differential action Discovery took for high-importance IPs. `n/a` only for low/medium importance. For high-importance IPs, must be non-`n/a`; silent default is a Principle F violation flagged by Editor.
+- `importance_action` — what concrete differential action Discovery took for high-importance IPs. `n/a` only for low/medium importance. For high-importance IPs, must be one of `researcher_dispatched` / `best_effort_default` / `evidence_backed`; silent default without rationale is a Principle F violation flagged by Editor. `best_effort_default` is permitted (and expected) when canonical evidence cannot be obtained — the architecture commits to its best interpretation rather than asking the user. The `importance_action_evidence` field documents what was guessed and why.
 - `first_contact_requirements[]` — Tier 2 verification inputs per Principle G. TD derives an `acceptance_assertion` for each; CV exercises them as the first behavioral check (non-skippable; halts pipeline on failure).
 
 ### `decisions/discovery/ledger-diff-v{N}.json` — Discovery Amendment
@@ -267,8 +267,9 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
       "evidence": "A class of substitute (any sample KML/GPX walking trail file) satisfies the same role; TD can source."
     }
   },
-  "verdict": "demote | substitute_and_confirm | block | rebrief_research | insufficient_evidence",
+  "verdict": "demote | substitute | best_effort_target_commitment | rebrief_research | insufficient_evidence",
   "rationale": "All four guardrails hold. Demoting the URL atomicity; TD will source a substitute KML/GPX walking trail file matching the supportive role.",
+  "uncertainty_manifest_entry": "If applicable: a single-sentence statement of what was guessed and what's at risk if the guess is wrong. Carried forward into the run-report's Uncertainty Manifest so the user has transparent visibility into Discovery's commitments.",
   "follow_up_action": {
     "role": "technical-discovery",
     "mode": "impact-analysis",
@@ -277,14 +278,16 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 }
 ```
 
-**Verdict semantics:**
+**Verdict semantics (the architecture always delivers — no `block` verdict exists; every demotion path produces an artifact):**
 - `demote` — all four guardrails hold. TD sources substitute silently. Historian logs the demotion.
-- `substitute_and_confirm` — G1, G2, G4 hold but G3 fails (telos relies on the noun). TD sources substitute AND Orchestrator surfaces Sev 4 to user with the proposed substitute. Build proceeds unless user objects within timeout.
-- `block` — G2 fails (target-defining) OR G4 fails (no class of substitute). Build halts; Orchestrator surfaces Sev 4 fatal; user must provide alternative or confirm.
-- `rebrief_research` — G1 fails (source may be reachable; just didn't try hard enough). TD dispatches a more thorough Researcher probe.
+- `substitute` — G1, G2, G4 hold but G3 fails (telos relies on the noun). TD sources a substitute that best preserves the telos. No user confirmation; no timeout. The substitution is recorded in the demotion record and surfaced in the run-report's Uncertainty Manifest.
+- `best_effort_target_commitment` — G2 fails (target-defining) OR G4 fails (no class of substitute). Discovery commits to the most plausible interpretation of what the user meant, based on lexical context and partial evidence. TD builds against that interpretation. The `rationale` and `uncertainty_manifest_entry` fields document the guess and its risk. The build ships; the user never gets a clarifying question, only an artifact with honest documentation.
+- `rebrief_research` — G1 fails (source may be reachable; just didn't try hard enough). TD dispatches a more thorough Researcher probe. Demotion Mode re-runs after research returns.
 - `insufficient_evidence` — Researcher findings not credible per Principle F. TD re-probes.
 
-**Critic audit:** every demotion record is checked for four-guardrail completeness. A `verdict: demote` with fewer than four `verdict: true` guardrails is a hard fail.
+**Critic audit:** every demotion record is checked for four-guardrail completeness. A `verdict: demote` with fewer than four `verdict: true` guardrails is a hard fail (must use a different verdict). `best_effort_target_commitment` and `substitute` records must have a non-empty `uncertainty_manifest_entry` so the run-report can carry the guess forward transparently.
+
+**Why no `block` verdict:** the project's North Star commits to always delivering an artifact, even at 1% confidence. Halting the build to ask the user for input is incompatible with that contract. When canonical evidence is unavailable and substitution is not viable, Discovery commits to its best-effort interpretation and ships. The user gets honesty in the run-report, not a mid-build question.
 
 ### `decisions/editor/review-v{N}.json` — Editor Review (v1.9)
 
@@ -299,7 +302,7 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
     "ledger": "decisions/discovery/ledger-v1.json",
     "sections": "decisions/technical-discovery/sections-v1.json"
   },
-  "verdict": "pass | pass_with_recommendations | route_to_discovery | route_to_td | route_to_user",
+  "verdict": "pass | pass_with_recommendations | route_to_discovery | route_to_td",
   "findings": [
     {
       "id": "F.1",
@@ -334,7 +337,7 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 - `first_contact_coverage` (Principle G Tier 2): every `first_contact_requirements[]` entry has a corresponding acceptance assertion in the sections file.
 - `telos_coherence` (Principle G): the section breakdown and assertions collectively serve the telos.
 
-**Loop semantics:** Editor re-runs after any Discovery/TD amendment. `review-v2.json`, `review-v3.json`, etc., are written on successive passes. If the loop produces no further changes and verdict is still not `pass`, Orchestrator escalates Sev 4 to user.
+**Loop semantics:** Editor re-runs after any Discovery/TD amendment. `review-v2.json`, `review-v3.json`, etc., are written on successive passes. **Iteration cap: 3 passes.** If the loop has not converged to `pass` or `pass_with_recommendations` after 3 passes, the architecture commits to the current best-effort plan and the build proceeds to Coordinator. Unresolved findings are carried forward into the run-report's Uncertainty Manifest. The architecture's North Star contract overrides the gate: builds always deliver, never halt to ask the user.
 
 ### `decisions/technical-discovery/sections-v{N}.json` — TD Section Plan
 
@@ -464,7 +467,7 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
   - `"prompt"` — derives from the user's literal prompt text. Strongest external source; use for telos-level checks (PNV, restatement-coverage).
   - `"canonical_evidence"` — derives from a Researcher finding citing external documentation. Strongest source for sub-goal checks involving external systems. Requires the assertion to include a `citations_pointer` field linking to the Researcher findings entry that supplied the expected value (with its `verbatim_excerpt` per Principle F).
   - `"td_plan"` — derives from TD's own plan. Allowed only for internal-consistency checks (e.g., "section A's interface returns what section B's contract says it returns"). NOT allowed for checks whose subject is an external system property; Editor flags these as Principle H violations.
-  - `"external_source_unreachable"` — flag for assertions where the canonical source could not be reached and `td_plan` is the only available source. Allowed only with a corresponding Sev 4 surfacing event recording the gap. CV will skip these assertions and Editor will flag them for user awareness.
+  - `"external_source_unreachable"` — flag for assertions where the canonical source could not be reached and `td_plan` is the only available source. CV records these in `principle_h_skips[]` (not verified, structurally impossible to verify). The run-report's Uncertainty Manifest documents that this property was relied on without independent verification. The build still ships per the North Star contract; the user gets a transparent record of which claims were independently verified vs. taken on TD's word.
 
   The `source` field is what makes Principle H structurally enforceable: Editor walks every assertion's `source` and surfaces `td_plan`-against-external-system as a violation; CV reads the field and refuses to verify self-referential claims about external systems.
 
@@ -784,7 +787,7 @@ Every load-bearing finding MUST include `citations[]` entries with non-empty `ve
   - `archived_snapshot` — Wayback Machine, archive.today, or similar; use when the live source may change or disappear.
   - `interactive_doc` — sources that require authentication or interactive navigation; the `verbatim_excerpt` is the Researcher's transcription, with the limitation noted.
 
-- `external_source_unreachable: true` — flag for findings where no canonical source could be located. When this is true, the finding is **not** sufficient to satisfy a `canonical_source_required` proper noun or a `source: canonical_evidence` assertion. It must escalate to Discovery (Demotion Mode) or Sev 4 surfacing.
+- `external_source_unreachable: true` — flag for findings where no canonical source could be located. When this is true, the finding is **not** sufficient to satisfy a `canonical_source_required` proper noun or a `source: canonical_evidence` assertion. It must escalate to Discovery (Demotion Mode). Discovery rules a best-effort outcome (`demote` / `substitute` / `best_effort_target_commitment`) and the build proceeds — the architecture's contract is to always deliver.
 
 Critic and Editor spot-check citations by re-fetching the URL and matching the `verbatim_excerpt`. If the excerpt does not appear at the cited URL/path (or the source is unreachable when claimed reachable), the citation is invalid and the finding is treated as if it had no support.
 

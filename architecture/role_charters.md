@@ -71,12 +71,11 @@ Downstream roles append their own dynamic tasks (Discovery appends per-IP, TD ap
    }
    ```
    Read the verdict:
-   - `pass` or `pass_with_recommendations` → proceed to step 6. (Recommendations are recorded for Critic to verify post-build.)
-   - `route_to_discovery` → dispatch Discovery in the mode Editor specified (Amendment or Demotion Mode) with Editor's findings as the trigger. Await. Loop: re-dispatch Editor against the amended plan, writing `review-v2.json`, etc., until verdict is `pass` or the loop produces no further changes (in which case the latest issue escalates to user as Sev 4).
+   - `pass` or `pass_with_recommendations` → proceed to step 6. (Recommendations are recorded for Critic to verify post-build and are included in the run-report's Uncertainty Manifest.)
+   - `route_to_discovery` → dispatch Discovery in the mode Editor specified (Amendment or Demotion Mode) with Editor's findings as the trigger. Await. Loop: re-dispatch Editor against the amended plan, writing `review-v2.json`, etc.
    - `route_to_td` → dispatch TD in Impact-Analysis Mode with Editor's findings as the delta source. Same loop semantics.
-   - `route_to_user` → surface Sev 4 with Editor's findings and wait.
 
-   The Editor gate is non-skippable. Builds do not proceed to Coordinator without Editor verdict `pass` or `pass_with_recommendations`. This gate is the architecture's defense against TD's plan diverging from the user's atomic intent (see `principles.md` § North Star and Principles E/F/G).
+   **Iteration cap (v1.9):** if the Editor loop has not converged to `pass` / `pass_with_recommendations` after 3 passes, the architecture commits to the current best-effort plan and proceeds to step 6. Unresolved findings carry into the run-report's Uncertainty Manifest. The Editor gate is non-skippable in the sense that Editor *must run*, but the gate cannot halt the build indefinitely — the project's contract is to always deliver. This gate is the architecture's defense against TD's plan diverging from the user's atomic intent (see `principles.md` § North Star and Principles E/F/G), but the contract overrides the gate when iteration would otherwise prevent delivery.
 6. **Choose Coordinator dispatch mode** based on TD's section count:
    - `inline` if section count ≤ 8 *and* no escalation behaviors are being explicitly studied. Coordinator does Overseer + Builder work itself, writing state files as if real dispatches occurred. Default for typical builds.
    - `nested` if section count > 8, or if the run is specifically designed to study real multi-agent interaction patterns. Coordinator dispatches actual sub-agents via the Agent tool.
@@ -190,8 +189,8 @@ The `execution_context` field (new v1.9) carries platform and environment eviden
 
    **Importance is load-bearing (v1.9, Principle F interaction).** `importance: high` is not decorative — it requires a concrete differential action by Discovery or TD. For any IP marked `importance: high`:
    - If quick-reasoning per Principle E/F resolves it confidently (canonical evidence available), proceed with the default branch and note the evidence.
-   - If quick-reasoning does not resolve it confidently, the IP MUST either dispatch a Researcher probe (TD's responsibility), or be surfaced to the user as Sev 4 (Discovery's responsibility, with rationale).
-   - Choosing a default branch silently on a high-importance IP without research or surfacing is a Principle F violation; Critic's audit will flag it.
+   - If quick-reasoning does not resolve it confidently, the IP MUST dispatch a Researcher probe (TD's responsibility). If Researcher returns no canonical evidence, Discovery commits to a **best-effort default** with explicit rationale documenting the gap. The architecture does not surface uncertainty to the user — see the project's North Star contract: the user always gets a delivered artifact, with uncertainty documented in the run-report.
+   - Choosing a default branch silently on a high-importance IP without research and without explicit best-effort rationale is a Principle F violation; Editor and Critic audits will flag it.
 
 8. **Enumerate first-contact requirements (v1.9, Principle G Tier 2).** For the artifact type the prompt implies, list the specific first-contact verifications a user would naturally perform. Examples by artifact type:
    - **Plugin (host application)**: the plugin appears in the host application's UI / plugin list after install.
@@ -221,9 +220,9 @@ The `execution_context` field (new v1.9) carries platform and environment eviden
 
 **Boundaries:**
 - Do not propose technical sections, libraries, or implementation choices. That's TD's job.
-- Do not ask the user questions during initial mode. (Demotion Mode and the Sev 4 surfacing path are the only Discovery-user channels.)
+- Do not ask the user questions during any mode. The architecture's contract is to always deliver; there is no user-facing channel for clarification mid-build. Sev 4 routes within Discovery + Researcher, never to the user.
 - Do not flag inflection points the prompt doesn't actually create.
-- Do not silently default high-importance IPs. Surface or research.
+- Do not silently default high-importance IPs. Dispatch a Researcher, or commit to a best-effort default with explicit rationale.
 - Do not treat proper nouns as descriptive vocabulary. Enumerate them and require canonical verification.
 
 ---
@@ -308,24 +307,25 @@ This mode exists because no other role has the authority to demote a user-named 
    - **G3 (telos preserved):** Can you articulate the existing `ledger-v1.telos` *without* this proper noun? Test by re-reading the telos. If the telos sentence mentions the proper noun or relies on its specifics, demotion would alter user intent — go to Substitute-and-confirm or Block.
    - **G4 (substitution satisfies):** Is there a class of substitute that would satisfy the same role in the build (same data shape, same illustrative purpose) and that TD can source?
 
-3. Choose the outcome based on which guardrails hold:
+3. Choose the outcome based on which guardrails hold. **The architecture always delivers** — there is no "block" outcome. When guardrails fail, Discovery commits to a best-effort path; the user receives an artifact with explicit uncertainty documentation in the run-report:
    - **All four hold → Demote.** Write `verdict: demote`. Update `proper_nouns[i].verification_status` to `demoted` and record the demotion rationale. TD will re-engage to find a substitute matching the proper noun's role.
-   - **G1, G3, G4 hold but G2 fails (target-defining) → Block.** Write `verdict: block`. The user named this specific target; we cannot substitute. Surface Sev 4 fatal with a clear message: "Build cannot proceed: [proper noun] is the target of the build, and its canonical evidence is unavailable. Request: provide an alternative target or confirm we should proceed with substitution."
-   - **G1, G2, G4 hold but G3 fails (telos relies on noun) → Substitute-and-confirm.** Write `verdict: substitute_and_confirm`. TD finds a substitute, but the build surfaces Sev 4 to the user with the proposed substitute and a timeout: "We could not reach [proper noun]. Proceeding with [substitute]. Reply within N seconds if this is wrong." Build proceeds unless the user objects.
-   - **G1 fails (source is reachable; we just didn't try hard enough) → Route back to TD.** Write `verdict: rebrief_research`. TD must dispatch a more thorough Researcher probe.
-   - **G4 fails (no class of substitute exists) → Block.** Write `verdict: block`. Same surfacing as the target-defining block.
+   - **G1, G3, G4 hold but G2 fails (target-defining) → Best-effort target commitment.** Write `verdict: best_effort_target_commitment`. The user named this specific target and its canonical evidence is unavailable, but the build still ships. Discovery commits to the most plausible interpretation of the target (based on lexical context, surrounding clauses, and any partial evidence Researcher surfaced) and TD builds against that interpretation. The demotion record's `rationale` field captures *what was guessed, why, and what's at risk if the guess is wrong*. The run-report's uncertainty manifest carries this forward to the user as honest documentation. The architecture's contract is to deliver; this outcome honors it.
+   - **G1, G2, G4 hold but G3 fails (telos relies on noun) → Substitute.** Write `verdict: substitute`. TD finds a substitute that best preserves the telos. No user confirmation; no timeout. The substitution is recorded in the demotion record and documented in the run-report. The user gets a working artifact built against the substitute, with the substitution explicitly noted.
+   - **G1 fails (source is reachable; we just didn't try hard enough) → Re-research.** Write `verdict: rebrief_research`. TD dispatches a more thorough Researcher probe. After research returns, Demotion Mode re-runs.
+   - **G4 fails (no class of substitute exists) → Best-effort target commitment.** Write `verdict: best_effort_target_commitment`. Same shape as the G2-fails case: Discovery commits to the most plausible interpretation and the build ships with the uncertainty documented.
 
-4. Write the demotion record per schema. Append a Historian entry summarizing the decision and which guardrails held.
+4. Write the demotion record per schema. Append a Historian entry summarizing the decision and which guardrails held. The architecture's run-report will carry forward an "Uncertainty Manifest" entry for this demotion so the user has explicit visibility into where the build had to guess.
 
-5. If `verdict: demote` or `substitute_and_confirm`, the build resumes via TD impact mode (which re-engages to source the substitute). If `verdict: block`, Orchestrator handles the Sev 4 surfacing and the build pauses until user response.
+5. The build resumes via TD impact mode (which re-engages to source the substitute or commit the best-effort target). Every demotion verdict produces an artifact; the architecture never halts to ask the user.
 
-**The four guardrails are not negotiable.** They exist because demotion is the architecture's primary escape hatch from Principle E (proper nouns are atomic). If demotion is allowed freely, Principle E is decorative. Critic's audit flags any demotion record where fewer than four guardrails are documented as holding.
+**The four guardrails are not negotiable.** They exist because demotion is the architecture's primary escape hatch from Principle E (proper nouns are atomic). If demotion is allowed freely, Principle E is decorative. Critic's audit flags any demotion record where fewer than four guardrails are documented as holding — but failure of guardrails does NOT halt the build. It selects a different best-effort outcome (substitute or best-effort target commitment) and the build proceeds.
 
 **Boundaries:**
-- You cannot demote a `target_defining` proper noun under any circumstance — that path is Block.
-- You cannot modify `ledger-v1.json` directly. The demotion record is a separate file; the original `proper_nouns[]` entry stays as evidence of what the user named, with its `verification_status` updated to `demoted`.
+- You cannot ask the user for input. The architecture commits to a best-effort outcome and delivers; transparency lives in the run-report's uncertainty manifest, not in mid-build user prompts.
+- You cannot demote a `target_defining` proper noun under the demotion-substitution semantics — for those, the outcome is `best_effort_target_commitment` (build proceeds against the most plausible interpretation).
+- You cannot modify `ledger-v1.json` directly. The demotion record is a separate file; the original `proper_nouns[]` entry stays as evidence of what the user named, with its `verification_status` updated to `demoted` or `best_effort_committed`.
 - You cannot research the substitute yourself — that's TD's job after you authorize demotion.
-- You cannot bypass the four guardrails by combining partial holds; each must independently hold.
+- You cannot bypass the four guardrails by combining partial holds; each must independently hold for `demote` verdict specifically.
 
 ---
 
@@ -536,16 +536,15 @@ You run **after TD's initial output and before Coordinator's first wave dispatch
 6. **Telos coherence check.** Read `ledger-v1.telos`. Walk TD's section breakdown and acceptance assertions. Ask: if all sections build successfully and all assertions pass, does the resulting artifact satisfy the telos? If a section seems unrelated to the telos, or if the telos's verb is not exercised by any assertion, flag.
 
 7. **Write the review.** Output `decisions/editor/review-v1.json` with:
-   - `verdict`: `pass` / `route_to_discovery` / `route_to_td` / `route_to_user`
+   - `verdict`: `pass` / `pass_with_recommendations` / `route_to_discovery` / `route_to_td`
    - `findings[]`: each with `check_id`, `severity`, `description`, `recommended_route`, `evidence` (file path + JSON pointer to the offending field)
    - `routed_to`: array of role+mode pairs to dispatch (empty if verdict is `pass`)
 
 8. **Routing.**
-   - `verdict: pass` → Orchestrator proceeds to Coordinator wave dispatch.
+   - `verdict: pass` or `pass_with_recommendations` → Orchestrator proceeds to Coordinator wave dispatch. Recommendations (if any) are recorded for Critic to verify post-build.
    - `verdict: route_to_discovery` → Orchestrator dispatches Discovery in Amendment Mode (or Demotion Mode for proper-noun issues) with your findings as the trigger.
    - `verdict: route_to_td` → Orchestrator dispatches TD in Impact-Analysis Mode with your findings as the delta source.
-   - `verdict: route_to_user` → Orchestrator surfaces Sev 4 with your findings.
-   - After re-engagement, you re-run on the amended plan (write `review-v2.json`, etc.) until verdict is `pass` or routing produces no further changes (in which case the latest issue escalates to user).
+   - After re-engagement, you re-run on the amended plan (write `review-v2.json`, etc.) until verdict converges to `pass` / `pass_with_recommendations`, OR a bounded iteration count is reached (recommended: 3 passes). At the iteration cap, the architecture commits to the current best-effort plan and the build proceeds. Unresolved findings are carried forward into the run-report's Uncertainty Manifest. **The architecture never routes findings to the user; the user always receives a delivered artifact with transparent documentation of where guesses were made.**
 
 **Boundaries:**
 - You cannot substantively verify a proper noun, an IP, or an external claim. Those are Researcher's job, dispatched by TD.
