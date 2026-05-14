@@ -105,6 +105,117 @@ The principle would require: each of these has at least one assertion, or the ar
 
 ---
 
+## Principle E — Atomic Lexical Anchors
+
+> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**
+
+**Why it matters.** The StreamDock run failed because three proper nouns (MiraboxSpace StreamDock VSD N4 Pro, Touchbar Mode, Apple Music Desktop Application) were treated as descriptive — Discovery restated them as a generic "wide-display strip" and a generic "Apple Music desktop client." Each of those proper nouns names a specific product whose actual properties are not the generic stand-in. TD then locked the entire technical plan to the wrong SDK (Elgato Stream Deck) because TD's training data recognized the SDK shape but not the StreamDock product name. The build passed all internal gates and failed first-contact because every load-bearing decision was made about products other than the ones the user named.
+
+The asymmetry that makes this important: prompt specificity must not scale with the architecture's failure modes. If the architecture needs the user to over-specify, that is an architecture bug, not a user bug (see North Star).
+
+**What enforcement requires.**
+- Discovery enumerates every proper noun in the prompt as an atomic identifier in `ledger-v1.proper_nouns[]`, with a citation requirement: Researcher must verify each one against canonical evidence (Principle F).
+- TD's technical decisions that depend on a proper noun must cite the noun's resolved evidence (the canonical source documenting the proper noun's actual properties), not training-data familiarity.
+- Critic's `prose_coverage` extends to proper nouns: every proper noun in the prompt either has a corresponding entry in `ledger-v1.proper_nouns[]` with a citation, or Discovery has explicitly demoted it.
+- Proper nouns are overridable only by Discovery's **demotion** operation, which requires all four guardrails:
+  - The proper noun is genuinely unreachable (canonical source unavailable, not merely inconvenient).
+  - The proper noun is in a *supportive/illustrative* role in the prompt, not a *target-defining* role.
+  - Discovery can articulate the telos *without* the demoted noun.
+  - The build with substitution still demonstrably satisfies user intent.
+- Lexical markers `sample`/`example`/`e.g.`/`such as`/`like`/`for instance` weaken atomicity automatically: proper nouns inside these constructions are pre-flagged as supportive rather than target-defining.
+
+**v1.x mapping.**
+- None prior to v1.9. The principle is added in response to the StreamDock retrospective (`failure-catalog-streamdock.md` §2 Law A).
+
+**Where this falls short / what's still unspecified.** The boundary between "supportive" and "target-defining" roles for a proper noun is a judgment call Discovery must make. The four guardrails constrain the demotion but the Discovery charter needs operational rules for the judgment itself. The interaction with Principle F (what happens when a proper noun's canonical source is unreachable) is partially specified by the demotion criteria but needs explicit Sev 4 surfacing rules for the cases where demotion is not allowed.
+
+---
+
+## Principle F — External Authority Discipline
+
+> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**
+
+**Why it matters.** The StreamDock run had Researchers that listed GitHub repo URLs as `context_pointers` and returned findings as if those repos had been read — but they had not been read; they had been summarized from training-data familiarity. The architecture has no mechanism to distinguish "I read this in the canonical source" from "I recall this is true." A Critic-type audit cannot follow a citation if the citation is decorative.
+
+This is the failure mode where the architecture's structural defense against TD's blind spot (Researcher exists to expand option space when TD can't quick-reason) was itself blind: Researcher returned recommendations consistent with TD's pre-existing assumptions, adding the appearance of due diligence without the substance.
+
+**What enforcement requires.**
+- Every Researcher finding has a `citations[]` array; each citation is a URL or file path, plus a `verbatim_excerpt` field showing the exact text from the source that supports the finding.
+- Critic-type audit can spot-check by following the citation: if the verbatim excerpt does not appear at the cited URL/path, the citation is decorative and the finding is invalid.
+- TD's load-bearing decisions that depend on external system properties must cite Researcher findings (which transitively cite canonical sources), not TD's own training data.
+- For domains where training-data certainty is genuinely high (e.g., basic ECMAScript syntax), TD may quick-reason without citation per the existing four-condition rubric. The rubric's first condition (`well-known canonical answers in your training data`) requires honest self-assessment: well-known means demonstrable, not familiar.
+- **Unreachable canonical source interaction with Principle E:** when a proper noun is named but its canonical source cannot be verified, the architecture must not silently fall back to training-data familiarity. It must escalate to Discovery for demotion analysis (Principle E) or to the user (Sev 4 surfacing).
+
+**v1.x mapping.**
+- v1.2's machine_checkable_assertions partially address this for IP locks by requiring structured assertions, but the assertions can still reference internal expectations rather than external sources.
+- v1.6's `prompt_verb_analysis` partially addresses this for the prompt verb by requiring rationale, but the rationale can still be training-data-sourced.
+- Neither requires citations to canonical sources. The principle is added in v1.9 in response to the StreamDock retrospective (`failure-catalog-streamdock.md` §2 Law B).
+
+**Where this falls short / what's still unspecified.** The mechanics of `verbatim_excerpt` verification require Researcher findings to be re-readable by Critic. For findings derived from interactive or rate-limited sources (web pages that change, docs behind auth), the verbatim excerpt may not be re-fetchable. The schema needs a fallback for non-static citations — snapshot/archive URLs, content hashes, or a `citation_class` field distinguishing static from dynamic sources. TBD.
+
+---
+
+## Principle G — Deliverability Tier Discipline
+
+> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**
+
+**Why it matters.** Two builds (poker 1.0, StreamDock) passed every internal gate and failed first-contact — the simplest possible user-facing test ("does it appear / open / install?"). The architecture has a Tier 1 verifier (CV's PNV checks the prompt-named verb — telos) but no Tier 2 verifier (can the user reach the artifact at all?) and no Tier 3 verifier (does each TD-identified sub-goal user-accessibly work?). Critic checks substrate consistency (does the manifest declare what TD said it should declare?) — but substrate-consistency is not a tier; it asks whether the build matches the plan, not whether the plan works for the user.
+
+**What enforcement requires.**
+
+Three tiers, each with its own gate:
+
+| Tier | Verification target | Failure mode it prevents |
+|------|---------------------|--------------------------|
+| 1 — Telos | The prompt-named verb is exercised against the deliverable | Build does the wrong thing |
+| 2 — First-contact | The user reaches the deliverable in one obvious action (inline link, native install, no procedural setup) | Build is unreachable even if correct |
+| 3 — Sub-goal | Each TD-identified technical sub-goal works at the user-access level | Build appears to work but TD's sub-claims fail when actually used |
+
+Cross-tier design constraint: the verification mechanism for each tier should be replicable by the user in one step. If verifying a sub-goal requires the user to install dev tools, that is a deliverability failure even if the sub-goal technically works.
+
+Each tier gate has scope discipline:
+- Tier 1 does not check sub-goals (Tier 3's job).
+- Tier 2 does not check deep functionality (Tier 1/3's job).
+- Tier 3 does not check the prompt-verb (Tier 1's job) or compliance with TD's plan as a document (Critic's job).
+
+**v1.x mapping.**
+- v1.5 introduced PNV — Tier 1 instantiation.
+- No v1.x amendment addresses Tier 2 or Tier 3. The principle is added in v1.9 in response to `failure-catalog-streamdock.md` §8.
+
+**Where this falls short / what's still unspecified.** Which role owns Tier 2 and Tier 3 verification is TBD. CV is the obvious candidate but may need to expand or split. The mechanics of "user-accessible sub-goal verification" for hardware/SaaS targets the verifier cannot reach is also TBD — possibly resolved by reading the target environment's canonical documentation and asserting conformance, per Principle F (the substantive equivalent of Principle H's independent-source criterion).
+
+---
+
+## Principle H — Verification Independence
+
+> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**
+
+**Why it matters.** Law C from the StreamDock retrospective generalizes. Two failure modes share the same shape:
+
+- **CV's fake-SDK case:** CV's `production_fidelity_environment` was "real plugin process + real ws library + fake SDK host on 127.0.0.1" — and the fake SDK host was modeled on the Stream Deck protocol, the same protocol the artifact was built for. The PNV couldn't fail because the test environment was wrong in the same way as the artifact.
+- **Critic's self-consistency case:** Critic checked `manifest.json#SDKVersion == 2` and reported PASS because the integrated artifact did have SDKVersion 2. The assertion was the wrong assertion — `SDKVersion: 2` is an Elgato Stream Deck construct, not a VSDinside StreamDock construct. Critic had no role-defined way to question whether an assertion's `expected_value` was itself correct, because both the assertion AND the expected value derived from TD.
+
+In both cases, the verifier derived its expectations from the same source as the artifact's construction. The verification was a closed loop and could not catch errors in the shared assumptions.
+
+This is the **logical** counterpart to Principle A's **environmental** independence requirement. Principle A says the verification *environment* must reproduce the user's environment. Principle H says the verification *criteria* must derive from an external source.
+
+**What enforcement requires.**
+- Every load-bearing verification check has a `source` field: where did the expected value come from?
+  - `prompt` (the user's literal text) — strongest external source for telos-level checks.
+  - `canonical_evidence` (Researcher finding citing external docs, with `verbatim_excerpt` per Principle F) — strongest source for sub-goal checks involving external systems.
+  - `td_plan` — flagged as **self-referential**; not sufficient on its own for any check whose subject is an external system. Allowed only for internal-consistency checks (e.g., "this internal contract is honored").
+- Critic's audit walks every assertion and flags any whose `source: td_plan` is being used to check an external-system property.
+- CV's `production_fidelity_environment` must declare, for each component, whether the component is "real" (the user's actual environment / canonical) or "modeled" (the architecture's representation). Any "modeled" component receives an explicit exception rationale per Principle A; additionally per Principle H, the modeled component must be *independently sourced* (e.g., reading the target's documentation), not derived from TD's construction plan.
+
+**v1.x mapping.**
+- v1.3's `cv_artifact_exercise` is partially aligned: it verifies against the integrated artifact rather than TD's plan, so it has source independence for behavioral checks. But it can still verify in an environment derived from TD's assumptions (CV/fake-SDK case).
+- v1.5's production-fidelity-environment closed the runtime-dependency-substitution case (Principle A instantiation) but did not address verification-criteria independence.
+- None of these address Critic's verifier-derived-from-TD-plan issue. The principle is added in v1.9 in response to `failure-catalog-streamdock.md` §2 Law C and Addendum A.
+
+**Where this falls short / what's still unspecified.** "Independent source" for a verification criterion is sometimes unavailable — for novel artifacts where no canonical documentation exists, TD's plan may be the only available source. The principle should permit `source: td_plan` with an explicit `external_source_unreachable: true` flag and a corresponding Sev 4 surfacing event ("we cannot independently verify X; relying on TD's claim"). How this interacts with build success/failure is TBD.
+
+---
+
 ## How to Use These Principles
 
 When proposing a v1.7+ amendment, the question is not "what symptom should this close" but "which principle does this enforce, and does it enforce it structurally or by enumeration?"
