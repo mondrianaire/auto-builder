@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:00:00Z",
+  "project_name": "earthquake activity map",
+  "restatement": "A self-contained tool that displays earthquake events as markers on a geographic map, letting a single user see where earthquakes have occurred and get a sense of their distribution and intensity at a glance.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The deliverable is a single interactive visualization, not a report, dataset export, or analysis pipeline.",
+      "confidence": "high",
+      "rationale": "Prompt says 'tool to visualize ... on a map' — the visualization is the product.",
+      "what_breaks_if_wrong": "If the user actually wants raw data or analytics, the chosen format wastes effort on map rendering."
+    },
+    {
+      "id": "A2",
+      "assumption": "The map is the primary UI surface; earthquakes are rendered as point markers on it.",
+      "confidence": "high",
+      "rationale": "'On a map' is explicit in the prompt; earthquakes are point events with lat/lon.",
+      "what_breaks_if_wrong": "If user wanted heatmap-only, choropleth, or non-map view (e.g., timeline), the marker-on-map default is misaligned."
+    },
+    {
+      "id": "A3",
+      "assumption": "Marker visual encodes at least magnitude (e.g., size or color) so 'activity' is legible, not just location.",
+      "confidence": "medium",
+      "rationale": "'Visualize earthquake activity' implies showing more than dots; magnitude is the universally available, most-recognized intensity dimension.",
+      "what_breaks_if_wrong": "Without magnitude encoding, the map shows location but not 'activity' character; user may consider it incomplete."
+    },
+    {
+      "id": "A4",
+      "assumption": "Single user, no authentication, no per-user state, no accounts.",
+      "confidence": "high",
+      "rationale": "Prompt says 'me' (one user) and is silent on sharing, login, or collaboration. Default-not-present per heuristics.",
+      "what_breaks_if_wrong": "Re-architecting later for multi-user is non-trivial; unlikely given prompt scope."
+    },
+    {
+      "id": "A5",
+      "assumption": "No persistent storage of user state, annotations, or history between sessions.",
+      "confidence": "high",
+      "rationale": "Prompt is silent on saving/loading. Persistence default-not-present.",
+      "what_breaks_if_wrong": "If user wanted bookmarks/saved views, they'd be re-built each time."
+    },
+    {
+      "id": "A6",
+      "assumption": "Earthquake data comes from a publicly available feed (e.g., a recognized seismology source) rather than user upload.",
+      "confidence": "high",
+      "rationale": "Prompt does not mention user-supplied data; an earthquake visualization implies pulling known external data.",
+      "what_breaks_if_wrong": "If user has their own dataset (research, regional agency), the ingestion path is wrong."
+    },
+    {
+      "id": "A7",
+      "assumption": "Global geographic coverage by default (worldwide, not a single country/region).",
+      "confidence": "medium",
+      "rationale": "Prompt names no region. Global is the simplest non-arbitrary default and matches how earthquake feeds are typically published.",
+      "what_breaks_if_wrong": "If user cared about a specific region, they'll waste time panning/zooming and may want a region filter."
+    },
+    {
+      "id": "A8",
+      "assumption": "Recent earthquakes (a rolling recent window, e.g., past day or past week) rather than full historical archive.",
+      "confidence": "medium",
+      "rationale": "'Activity' more often connotes current/recent events than deep history; recent windows are also smaller and render faster.",
+      "what_breaks_if_wrong": "If user wanted historical exploration (years/decades), the window is too narrow and time controls are missing."
+    },
+    {
+      "id": "A9",
+      "assumption": "Basic map interactivity: pan, zoom, and hover/click on a marker to see event details (time, magnitude, location).",
+      "confidence": "high",
+      "rationale": "These are table-stakes for any modern web map; absent them the tool would feel broken.",
+      "what_breaks_if_wrong": "Tool feels static and unhelpful; low risk of being wrong."
+    },
+    {
+      "id": "A10",
+      "assumption": "Desktop-first viewing context (browser on a laptop/desktop), not mobile-first.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on device; desktop is the default per heuristics.",
+      "what_breaks_if_wrong": "Layout may be cramped on phones; mitigation is usually minor responsive tweaks later."
+    },
+    {
+      "id": "A11",
+      "assumption": "Local/standalone deployment (runs in user's browser from a local file or local server) with no hosted backend.",
+      "confidence": "medium",
+      "rationale": "No mention of hosting, sharing, or 'site'. Default-not-present for backend.",
+      "what_breaks_if_wrong": "If user wanted to share a URL with others, deployment work is missing."
+    },
+    {
+      "id": "A12",
+      "assumption": "Audience is a curious general user, not a domain expert seismologist needing specialized analytical tooling.",
+      "confidence": "medium",
+      "rationale": "Casual phrasing of the prompt ('Build me a tool to visualize...') reads as exploratory, not professional.",
+      "what_breaks_if_wrong": "Expert features (focal mechanisms, depth slicing, fault overlays) absent; user may find it shallow."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Live/refreshing data vs static snapshot at load time",
+      "choices": [
+        "Static snapshot: fetch data once on page load, no auto-refresh.",
+        "Live/refreshing: poll the data source on an interval so the map stays current."
+      ],
+      "default_branch": "Static snapshot",
+      "importance": "high",
+      "why_inflection": "Cascade depth: live refresh adds polling logic, change-diffing, marker update animations, and stale-state handling. UX surface differs (static is a 'snapshot tool', live is a 'monitoring tool'). Option asymmetry: static-to-live is a meaningful upgrade, live-to-static is trivial. Reversibility is moderate."
+    },
+    {
+      "id": "IP2",
+      "topic": "Time-window control: fixed default window vs user-adjustable",
+      "choices": [
+        "Fixed recent window (e.g., 'past 24 hours' or 'past 7 days') with no controls.",
+        "User-adjustable window (slider, dropdown, or date range picker)."
+      ],
+      "default_branch": "Fixed recent window",
+      "importance": "medium",
+      "why_inflection": "UX surface: adjustable controls require time-axis UI, re-fetching or client-side filtering, and a legend/state for the active window. Reversibility is high (can be added later), so default is the smaller scope."
+    },
+    {
+      "id": "IP3",
+      "topic": "Filtering controls (magnitude threshold, depth, region)",
+      "choices": [
+        "No filters: show everything in the chosen window.",
+        "Basic filters: at minimum a magnitude threshold control."
+      ],
+      "default_branch": "No filters",
+      "importance": "medium",
+      "why_inflection": "Adds UI surface, control state, and re-render logic. Reversible later. Default to smaller scope; magnitude encoding on markers (A3) already gives the user visual access to that dimension without a control."
+    }
+  ],
+  "out_of_scope": [
+    "User accounts, login, or authentication",
+    "Saving views, bookmarks, or annotations across sessions",
+    "Multi-user collaboration or sharing features",
+    "Mobile-first or native mobile app",
+    "Hosted backend, server-side processing, or database",
+    "User-uploaded earthquake datasets",
+    "Predictive modeling, forecasting, or risk analysis",
+    "Tsunami, aftershock-cluster, or fault-line specialized overlays",
+    "Alerts, notifications, or subscriptions",
+    "Data export (CSV, GeoJSON, image download)",
+    "Accessibility certification beyond reasonable defaults",
+    "Internationalization / multi-language UI"
+  ]
+}

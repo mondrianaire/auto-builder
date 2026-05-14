@@ -1,0 +1,28 @@
+{
+  "builder_id": "builder-ui-render-b2",
+  "section_id": "ui-render",
+  "status": "completed",
+  "completed_at": "2026-05-09T00:10:38Z",
+  "outputs": [
+    {
+      "path": "output/builders/ui-render/builder-ui-render-b2/output.css",
+      "filename_for_integration": "ui-render.css",
+      "type": "css"
+    }
+  ],
+  "exposed_symbols": {
+    "css_classes": [
+      ".ttt-root", ".ttt-root--disabled",
+      ".ttt-board", ".ttt-board--disabled",
+      ".ttt-cell", ".ttt-cell--empty", ".ttt-cell--filled", ".ttt-cell--x", ".ttt-cell--o", ".ttt-cell--win",
+      ".ttt-status", ".ttt-restart"
+    ],
+    "css_variables": ["--ttt-bg", "--ttt-fg", "--ttt-cell-bg", "--ttt-cell-bg-hover", "--ttt-cell-border", "--ttt-x", "--ttt-o", "--ttt-win-bg", "--ttt-win-border", "--ttt-button-bg", "--ttt-button-fg", "--ttt-button-bg-hover"]
+  },
+  "notes": [
+    "Hover state restricted to .ttt-cell--empty (no hover on filled or disabled).",
+    "Winning line uses background highlight + inset box-shadow border, both come from .ttt-cell--win.",
+    "System font stack used per I2 (no custom typography).",
+    "Centered layout via flex on body; renders as a single tidy game card."
+  ]
+}

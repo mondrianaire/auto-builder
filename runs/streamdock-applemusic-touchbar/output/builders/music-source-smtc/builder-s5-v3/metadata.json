@@ -1,0 +1,52 @@
+{
+  "section_id": "S5",
+  "section_name_new": "music-source-smtc",
+  "section_name_old": "music-source-applescript",
+  "builder_id": "builder-s5-v3",
+  "cycle": "v3-windows-rebuild",
+  "supersedes": "builder-s5-1",
+  "produced_at": "2026-05-13T00:55:00Z",
+  "files_produced": ["music_source.js"],
+  "exports": ["getNowPlaying", "PS_SCRIPT"],
+  "contract_conformance": {
+    "C-S4-S5": {
+      "signature": "getNowPlaying(): Promise<{title:string, artist:string} | null>",
+      "promise_discipline": "never rejects; on any error resolves to null",
+      "parsing": "split first tab; resolve null if both fields empty",
+      "fixture_shim": "MUSIC_SOURCE_FIXTURE env-var bypasses powershell.exe (dev-002 preserved)",
+      "preserved_verbatim": true
+    }
+  },
+  "mechanism": {
+    "spawn_command": "powershell.exe",
+    "spawn_args": ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", "<PS_SCRIPT>"],
+    "spawn_options": {"timeout": 4000, "windowsHide": true},
+    "ps_script_uses": [
+      "Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager",
+      "RequestAsync via AsTask shim",
+      "GetCurrentSession()",
+      "GetPlaybackInfo() -> PlaybackStatus check",
+      "TryGetMediaPropertiesAsync()",
+      "Write-Output of tab-delimited title + artist"
+    ]
+  },
+  "assertions_satisfied": [
+    "AA.S5.1 (fixture 'Bohemian Rhapsody\\tQueen' -> {title:'Bohemian Rhapsody', artist:'Queen'}) — verified locally",
+    "AA.S5.2 (empty/no-tab/spawn-throw -> null) — verified locally for empty + no-tab paths",
+    "AA.S5.3 (uses child_process with 'powershell.exe'; never throws synchronously) — uses execFile, wrapped in try/catch + Promise",
+    "AA.S5.4 (all 4 SMTC literals present in source) — verified by grep",
+    "MCA.TDIPD.1 (spawns child_process powershell.exe; parses tab-delimited two-field stdout; null on empty)",
+    "MCA.TDIPD.2 (script text contains all 4 SMTC literals)"
+  ],
+  "literals_grep_check": {
+    "GlobalSystemMediaTransportControlsSessionManager": "present",
+    "Windows.Media.Control": "present",
+    "TryGetMediaPropertiesAsync": "present",
+    "PlaybackStatus": "present"
+  },
+  "inline_deviation_notes": [
+    "PS escape choice: used array-of-single-quoted-JS-strings joined with '\\n' (rather than a template literal) so PowerShell backtick escapes (e.g., `t for tab in format string) pass through verbatim without JS template-literal interpretation. See dev-004.",
+    "PS timeout chosen as 4000ms (per dispatch instruction): well above probe-estimated ~400ms cold-start, below the 2000ms default poll cadence's tolerance for the off-by-one slow tick.",
+    "Q1 (researcher open subquestion): trust GetCurrentSession() (the OS-elected foreground media session) per probe default; AppUserModelId filter deferred."
+  ]
+}

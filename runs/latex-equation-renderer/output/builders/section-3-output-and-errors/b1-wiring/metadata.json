@@ -1,0 +1,20 @@
+{
+  "builder_id": "b1-wiring",
+  "section": "section-3-output-and-errors",
+  "output_file": "output.js",
+  "delivered_filename": "app.js",
+  "behavior": {
+    "on_blank": "Clears output, hides error, removes data-stale.",
+    "on_render_ok": "Renderer writes into output container; error region hidden; data-stale removed.",
+    "on_render_fail": "Output cleared and marked data-stale='true'; error region shown with non-empty message.",
+    "no_button": "Updates are driven only by inputUi.onLatexChange — there is no render/submit button."
+  },
+  "satisfies_assertions": ["S3.A3 (cleared/marked-stale on error)", "S3.A4 (no submit button)"],
+  "depends_on_runtime": [
+    "window.renderer.render from section-1",
+    "window.inputUi.onLatexChange from section-2",
+    "[data-role='latex-output'] and [data-role='latex-error'] elements from section-4"
+  ],
+  "verified": true,
+  "verification_notes": "Wiring contains no submit button. Stale marker applied. Error message routed to error region only on failure."
+}

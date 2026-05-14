@@ -1,0 +1,20 @@
+{
+  "section_id": "section-5-edge-case-testing",
+  "status": "verified",
+  "wave": 5,
+  "started_at": "2026-05-10T00:08:45Z",
+  "verified_at": "2026-05-10T00:09:30Z",
+  "overseer_decomposition": {
+    "builders": [
+      {
+        "id": "b1-edge",
+        "subgoal": "Run every acceptance assertion with verifier 'edge_case_testing' (plus IP machine-checkable assertions for completeness) against the integrated artifact in output/integration/, using Node + jsdom + KaTeX. Emit a JSON report with per-assertion pass/fail.",
+        "outputs": ["harness.js", "report.json"],
+        "satisfies": ["S5.A1", "S5.A2", "S5.A3", "S5.A4", "S5.A5", "S5.A6", "S1.A2", "S1.A3", "S1.A5", "S2.A2", "S3.A3", "S4.A4"],
+        "verified": true
+      }
+    ]
+  },
+  "verification_summary": "All 22 assertions passed. Report at output/builders/section-5-edge-case-testing/b1-edge/report.json. Edge cases exercised: empty, whitespace-only, valid simple, valid complex (sum w/ frac), malformed (unclosed brace).",
+  "inline_deviations": []
+}

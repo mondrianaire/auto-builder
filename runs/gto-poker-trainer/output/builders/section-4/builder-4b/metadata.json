@@ -1,0 +1,8 @@
+{
+  "section_id": "section-4",
+  "builder_id": "builder-4b",
+  "outputs": ["output.js"],
+  "exports": { "global": "AgentEngine", "members": ["decide", "preflopHandRank", "postflopHandStrength"] },
+  "purity_guarantee": "decide(state, profile, seed) is a pure function. Never mutates profile. Identical inputs -> identical outputs.",
+  "assertions_satisfied": ["S4.A3","S4.A4","IP4.A2","DCA.9","DCA.24"]
+}

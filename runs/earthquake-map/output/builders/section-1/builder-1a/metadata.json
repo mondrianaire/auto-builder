@@ -1,0 +1,23 @@
+{
+  "builder_id": "builder-1a",
+  "section_id": "section-1",
+  "task": "Implement fetchEarthquakes() with USGS feed URL constant, error handling, normalized record shape.",
+  "outputs": [
+    {
+      "path": "output/data-fetcher.js",
+      "kind": "source",
+      "language": "javascript",
+      "exports": ["window.EarthquakeData.fetchEarthquakes", "window.EarthquakeData.USGS_FEED_URL"]
+    }
+  ],
+  "verifies": ["S1.A1", "S1.A2", "S1.A3", "S1.A4", "S1.A5", "TDIP2.A1", "TDIP2.A2", "IP1.A1", "IP3.A1"],
+  "verification_notes": [
+    "S1.A1: USGS_FEED_URL constant equals the past-day endpoint.",
+    "S1.A2/S1.A3: normalizeFeature returns objects with id/magnitude/place/timeMs/lat/lon/depth in the documented types.",
+    "S1.A4: try/catch around fetch returns { ok:false, error:{code:'network', message} }; non-2xx returns code:'http'; bad JSON or missing features returns code:'parse'. No throws escape.",
+    "S1.A5: the URL appears exactly once as a named const; no other string literal duplicates it.",
+    "IP1.A1: no setInterval/setTimeout/polling — single fetch.",
+    "IP3.A1: no client-side filter; every feature is mapped to a record."
+  ],
+  "completed_at": "2026-05-10T01:01:30Z"
+}

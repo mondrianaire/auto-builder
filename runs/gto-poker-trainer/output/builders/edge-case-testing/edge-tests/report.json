@@ -1,0 +1,315 @@
+{
+  "generated_at": "2026-05-10T14:56:29.424Z",
+  "artifact": "output/integration/index.html",
+  "production_fidelity": {
+    "http_server_used": false,
+    "network_calls_observed": 0,
+    "vendored_only": true
+  },
+  "totals": {
+    "PASS": 34,
+    "FAIL": 0,
+    "SKIP": 3
+  },
+  "notes": {
+    "SKIP": "Browser-execution-only assertions. Code-inspection findings: index.html has only relative refs; localStorage.persistence is implemented; no network code exists in any module. Full PNV.1 requires opening index.html in a real browser, playing 10 hands, reloading, playing 5 more."
+  },
+  "results": [
+    {
+      "assertion_id": "IP1.A1",
+      "statement": "Artifact opens via file:// without HTTP server",
+      "scenario": "Open index.html offline; observe interactive home screen.",
+      "verifier": "edge_case_testing",
+      "status": "SKIP",
+      "error": null
+    },
+    {
+      "assertion_id": "IP1.A2",
+      "statement": "No external-origin references",
+      "scenario": "grep http(s):// in dist/",
+      "verifier": "static_analysis",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP1.A3",
+      "statement": "localStorage backed; versioned namespace",
+      "scenario": "storage round-trip",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP2.A1",
+      "statement": "Preflop ranges for all 9 positions",
+      "scenario": "enumerate keys",
+      "verifier": "static_analysis",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP2.A2",
+      "statement": "No live solver code paths",
+      "scenario": "code-only scan for solver/CFR/equilibrium calls",
+      "verifier": "static_analysis",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP2.A3",
+      "statement": "REFERENCE_STACK_BB === 100",
+      "scenario": "read constant",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP3.A1",
+      "statement": "Walkthrough commit gate (decision-then-reveal)",
+      "scenario": "inspect walkthrough",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP3.A2",
+      "statement": "DecisionResult shape",
+      "scenario": "inspect commitAction emit",
+      "verifier": "static_analysis",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP4.A1",
+      "statement": "6+ archetypes including required ids",
+      "scenario": "enumerate ARCHETYPES",
+      "verifier": "static_analysis",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP4.A2",
+      "statement": "decide() pure: deterministic + no profile mutation",
+      "scenario": "call decide twice; snapshot profile",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP5.A1",
+      "statement": "Dashboard exposes all 8 metrics",
+      "scenario": "inspect dashboard render",
+      "verifier": "static_analysis",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "IP5.A2",
+      "statement": "Stats persist with versioned key",
+      "scenario": "inspect storage keys",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.4",
+      "statement": "No remote write — zero outbound network",
+      "scenario": "code-only scan for network APIs",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.9",
+      "statement": "Archetype agents deterministic",
+      "scenario": "identical inputs -> identical outputs",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.13",
+      "statement": "REFERENCE_STACK_BB === 100",
+      "scenario": "read constant",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.14",
+      "statement": "No multiplayer / WebSocket / WebRTC",
+      "scenario": "code-only scan",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.15",
+      "statement": "No auth/login/account UI",
+      "scenario": "code-only scan for auth identifiers",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.16",
+      "statement": "No real-money / cashier",
+      "scenario": "code-only scan",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.17",
+      "statement": "Only NLHE — no variant selector",
+      "scenario": "code-only scan for variant selectors",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.18",
+      "statement": "No tournament features",
+      "scenario": "code-only scan",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.19",
+      "statement": "No live solver",
+      "scenario": "code-only scan for solver function calls",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.20",
+      "statement": "No hand-history import",
+      "scenario": "code-only scan",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.21",
+      "statement": "Browser-deliverable, no native build",
+      "scenario": "check no native artifacts",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.22",
+      "statement": "No coaching/community features",
+      "scenario": "code-only scan",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.23",
+      "statement": "No user-authored archetypes",
+      "scenario": "code-only scan",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.24",
+      "statement": "Adaptive AI absent — agent profiles do not mutate",
+      "scenario": "100 decide() calls; snapshot before/after",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.25",
+      "statement": "IP1 reflected in artifact",
+      "scenario": "open file://",
+      "verifier": "edge_case_testing",
+      "status": "SKIP",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.26",
+      "statement": "IP2 reflected: embedded data, no solver",
+      "scenario": "static scan",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.27",
+      "statement": "IP3 reflected: walkthrough commit gate",
+      "scenario": "inspect walkthrough",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.28",
+      "statement": "IP4 reflected: deterministic agents",
+      "scenario": "identical decide outputs",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "DCA.29",
+      "statement": "IP5 reflected: dashboard + persistence",
+      "scenario": "inspect stats module",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "S7.A3",
+      "statement": "Chip conservation across 100 hands",
+      "scenario": "play 100 hands; sum total chips",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "S7.A4_flush_over_straight",
+      "statement": "flush beats straight",
+      "scenario": "eval",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "S7.A4_quads_beat_boat",
+      "statement": "quads beat full house",
+      "scenario": "eval",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "S7.A4_split_pot",
+      "statement": "identical hands tie (both play board straight)",
+      "scenario": "eval",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "S7.A4_wheel",
+      "statement": "wheel straight (A-2-3-4-5) recognized as 5-high",
+      "scenario": "eval",
+      "verifier": "edge_case_testing",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "assertion_id": "PNV.1",
+      "statement": "10 hands -> reload -> 5 more hands; persistence + zero network",
+      "scenario": "browser exec",
+      "verifier": "prompt_named_verb",
+      "status": "SKIP",
+      "error": null
+    }
+  ]
+}

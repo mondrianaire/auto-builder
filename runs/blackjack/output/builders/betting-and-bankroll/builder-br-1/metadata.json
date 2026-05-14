@@ -1,0 +1,27 @@
+{
+  "builder_id": "builder-br-1",
+  "section": "betting-and-bankroll",
+  "started_at": "2026-05-09T00:11:30Z",
+  "completed_at": "2026-05-09T00:11:50Z",
+  "output": {
+    "path": "output/builders/betting-and-bankroll/builder-br-1/output.js",
+    "target_filename": "bankroll.js",
+    "global_attached": "window.Bankroll"
+  },
+  "contract_compliance": {
+    "init": "implemented",
+    "getBalance": "implemented",
+    "getTotalChips": "implemented",
+    "canBet": "implemented",
+    "placeBet": "implemented",
+    "canAffordDouble": "implemented",
+    "canAffordSplit": "implemented",
+    "addToBet": "implemented",
+    "resolve": "implemented",
+    "canPlay": "implemented",
+    "reset": "implemented"
+  },
+  "constants": { "STARTING_POOL": 1000, "MIN_BET": 5 },
+  "payouts": { "blackjack": "2.5x bet", "win": "2x bet", "push": "1x bet", "loss": 0 },
+  "notes": "Pure module, no DOM, no rules. Singleton state inside IIFE."
+}

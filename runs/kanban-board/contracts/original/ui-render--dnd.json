@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "from_section": "ui-render",
+  "to_section": "dnd",
+  "interface": {
+    "card_dom_contract": {
+      "selector": "[data-card-id]",
+      "attributes": {
+        "draggable": "true",
+        "data-card-id": "<card.id>",
+        "data-list-id": "<containing list.id>"
+      }
+    },
+    "list_dom_contract": {
+      "selector": "[data-list-id]",
+      "attributes": {
+        "data-list-id": "<list.id>"
+      },
+      "notes": "List element is the drop zone. Children matching [data-card-id] determine sibling order for index computation."
+    },
+    "render_root": {
+      "type": "HTMLElement",
+      "notes": "dnd attaches event listeners using delegation on the render root so listeners survive re-renders."
+    }
+  },
+  "notes": "ui-render guarantees these data attributes and the draggable flag exist on every card after every render. dnd reads them to identify the dragged item and target. dnd does NOT modify the DOM structure — only adds/removes a CSS class for drag-over feedback."
+}

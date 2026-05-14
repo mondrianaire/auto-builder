@@ -1,0 +1,28 @@
+{
+  "section_id": "S6",
+  "name": "edge-case-testing",
+  "status": "verified",
+  "dispatched_at": "2026-05-13T00:06:00Z",
+  "verified_at": "2026-05-13T00:07:00Z",
+  "redispatched_at": "2026-05-13T01:05:00Z",
+  "reverified_at": "2026-05-13T01:08:00Z",
+  "cycle": "v3-windows-rebuild",
+  "v3_action": "salvageable_amended",
+  "dispatch_mode": "inline",
+  "builders": [
+    {"builder_id": "builder-s6-1", "status": "superseded_by_v3"},
+    {"builder_id": "builder-s6-v3", "status": "verified"}
+  ],
+  "verification": {
+    "AA.S6.1": {"status": "passed", "note": "All edge_case_testing-verified assertions exercised (28 v1-equivalent + 5 v3-additions = 33 total)."},
+    "AA.S6.2": {"status": "passed", "note": "PNV.1 ran end-to-end against integrated v3 bundle (Node-direct spawn of plugin/main.js); captured {event:'setFeedback', context:'PNV-CTX', payload:{title:'Bohemian Rhapsody', artist:'Queen'}}."},
+    "AA.S6.3": {"status": "passed", "note": "Harness stub injection limited to MUSIC_SOURCE_FIXTURE env-var (powershell.exe boundary) + WebSocket peer. No file in plugin/ patched, imported (other than music_source.js for in-process AA.S5.* tests), or monkey-patched."},
+    "AA.S6.4": {"status": "passed", "note": "report.json exists with one record per assertion id; statuses in {passed, failed}."}
+  },
+  "harness_results": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0
+  }
+}

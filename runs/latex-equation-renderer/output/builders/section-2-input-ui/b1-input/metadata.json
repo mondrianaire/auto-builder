@@ -1,0 +1,19 @@
+{
+  "builder_id": "b1-input",
+  "section": "section-2-input-ui",
+  "output_file": "output.js",
+  "delivered_filename": "input.js",
+  "public_surface": {
+    "global": "window.inputUi",
+    "functions": {
+      "onLatexChange(cb)": "Registers cb(currentValue:string); returns an unsubscribe function; fires on every user 'input' event.",
+      "getInputElement()": "Returns the textarea element (or null if not yet attached).",
+      "getValue()": "Returns the current textarea value (string)."
+    }
+  },
+  "subscription_form_chosen": "exposed_callback_registration (DOM 'input' event also fires natively as a free secondary path)",
+  "satisfies_assertions": ["S2.A2 (callback fires per edit with cumulative value)", "S2.A4 (cv flow: per-keystroke notification)"],
+  "depends_on_runtime": ["A textarea[data-role='latex-input'] in the DOM, provided by section-4 page shell."],
+  "verified": true,
+  "verification_notes": "onLatexChange registers and notifies on input events; defensive try/catch around each subscriber; safe before/after DOMContentLoaded."
+}

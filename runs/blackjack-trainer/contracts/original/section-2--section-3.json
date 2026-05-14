@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-3",
+  "interface": {
+    "recommendation(playerHandSnapshot, dealerUpcard)": {
+      "params": {
+        "playerHandSnapshot": "{ cards: Array<Card>, total: int, isSoft: bool, isPair: bool, canDouble: bool, canSplit: bool }",
+        "dealerUpcard": "Card  // rank used for table lookup; A treated as ace column"
+      },
+      "returns": "'Hit' | 'Stand' | 'Double' | 'Split'  // exactly one action label"
+    }
+  },
+  "notes": "section-3 calls recommendation() to annotate each decision-log entry with the basic-strategy correct action at the moment of the player's decision. No DOM, no rendering. Call site: state machine snapshots the hand BEFORE applying the player's action, then asks strategy-table for the correct action, then records both into the decision log. Lookup must succeed for every legal player hand state — no undefined returns."
+}

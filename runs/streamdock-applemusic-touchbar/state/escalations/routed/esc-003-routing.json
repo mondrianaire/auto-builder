@@ -1,0 +1,10 @@
+{
+  "escalation_id": "esc-003",
+  "routed_at": "2026-05-13T00:15:00Z",
+  "classified_severity": "3",
+  "routing_decision": "Dispatch Researcher in escalation mode to confirm that the uncovered Discovery artifacts (A1, A3, A4, A9 in ledger, ledger-OOS indices 1-4/7-9, 19 section-OOS items, and chosen_verb) are entailed by existing covered assertions and therefore require only covers-graph wiring rather than Discovery prose amendment. Then route Researcher findings to Discovery for amendment-evaluation; Discovery routes (likely) to TD writer in impact-analysis mode for assertion-metadata updates.",
+  "dispatched_to": "discovery_amendment",
+  "rationale": "Escalation directly references Discovery assumptions (ledger-v1.json#/assumption_ledger/* for A1, A3, A4, A9) and ledger-level OOS items. Per Arbiter charter Sev 3 trigger: 'escalation references Discovery assumption.' Even though the practical fix is the same covers-graph wiring as esc-001/002, the charter rule 'If unsure, classify higher' applies because the affected fields live in ledger-v1.json (Discovery's artifact) rather than only in TD's sections-v1.json. Discovery must evaluate whether amendment is needed or whether TD-only assertion updates suffice.",
+  "research_dispatched": true,
+  "expected_resolution_path": "Researcher confirms entailment claims in escalation context, produces a findings packet. Discovery reviews findings and either (a) confirms no prose amendment needed and forwards to TD impact-mode to extend covers fields on existing assertions toward ledger fields and chosen_verb, or (b) issues a narrow ledger amendment if any uncovered claim turns out not to be behaviorally entailed. TD impact-mode then updates sections-v1.json assertion metadata. Critic re-runs prose_coverage on the affected Discovery fields."
+}

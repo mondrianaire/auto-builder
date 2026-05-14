@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_section": "section-5",
+  "to_section": "section-6",
+  "interface": {
+    "wireHintAndReview(deps)": {
+      "params": {
+        "deps": "{ stateMachine: <section-3 instance>, strategyTable: <section-2 module>, dom: { btnHint: HTMLElement, hintDisplay: HTMLElement, reviewPanel: HTMLElement } }"
+      },
+      "returns": "{ unwire: () -> void }  // optional cleanup",
+      "notes": "App-shell calls wireHintAndReview once after mountUI has populated the DOM, passing the state-machine instance, the strategy-table module, and references to the DOM nodes ui-render created. hint-and-review attaches the Hint button click handler and subscribes to state-machine state changes to populate the review panel on hand resolution."
+    }
+  },
+  "notes": "App-shell is the wiring site. hint-and-review does not look up DOM nodes by id itself — it receives them via the deps object so the wiring is testable and the DOM contract is explicit. App-shell does not implement hint or review behavior."
+}

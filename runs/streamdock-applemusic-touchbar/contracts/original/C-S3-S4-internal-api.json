@@ -1,0 +1,38 @@
+{
+  "contract_id": "C-S3-S4",
+  "between": ["S3", "S4"],
+  "topic": "Plugin-internal API surface that S3 exposes for S4 to consume",
+  "direction": "S3 owns the SDK transport; S4 imports a small named API to drive it",
+  "data_passed_not_logic": true,
+  "schema": {
+    "exported_module_path": "plugin/sdk.js",
+    "exports": {
+      "onWillAppear": {
+        "signature": "(handler: (event: {context: string, action: string, payload: {settings: object, coordinates?: object, controller: 'Encoder'|'Keypad'}}) => void) => void",
+        "description": "Registers a callback invoked once per willAppear SDK event after registerPlugin has succeeded."
+      },
+      "onWillDisappear": {
+        "signature": "(handler: (event: {context: string}) => void) => void",
+        "description": "Registers a callback invoked once per willDisappear SDK event."
+      },
+      "onDidReceiveSettings": {
+        "signature": "(handler: (event: {context: string, payload: {settings: object}}) => void) => void",
+        "description": "Registers a callback invoked when the SDK delivers updated settings (e.g., user changed a PI field)."
+      },
+      "sendFeedback": {
+        "signature": "(context: string, payload: {title: string, artist: string}) => void",
+        "description": "Sends a setFeedback frame to the SDK WebSocket with the given context and payload. Payload shape is constrained by C-S2-S4. If the WebSocket is not open, the call is a no-op (logged at debug)."
+      },
+      "log": {
+        "signature": "(message: string) => void",
+        "description": "Sends a logMessage frame to the SDK WebSocket. Used by S4 for diagnostic output."
+      }
+    },
+    "lifecycle": {
+      "startup": "Calling code (main.js entry) imports sdk.js, registers handlers, then calls sdk.start() which parses argv, opens the WebSocket, sends registerPlugin, and begins dispatching events.",
+      "start_signature": "() => Promise<void>",
+      "no_action_effects_for_input_events": "touchTap, dialRotate, dialDown, dialUp events are received by sdk.js and either silently dropped or routed through internal logging only. S4 never registers a handler for them. This enforces IP3 (display-only) at the API boundary."
+    }
+  },
+  "verification": "Static check: S4's module imports only the names listed under 'exports' from sdk.js. Behavior check: when sdk receives a touchTap, no S4-owned code path runs that would call sendFeedback or any other action-effect send."
+}

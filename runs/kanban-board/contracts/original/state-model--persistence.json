@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "from_section": "state-model",
+  "to_section": "persistence",
+  "interface": {
+    "BoardState": {
+      "shape": {
+        "lists": "Array<{ id: string, name: string, cards: Array<{ id: string, title: string }> }>"
+      },
+      "notes": "Plain JSON-serializable object. No functions, no Dates. Cards are title-only per IP1."
+    },
+    "getState": {
+      "params": {},
+      "returns": "BoardState — the current full board, used by persistence.save."
+    },
+    "setState": {
+      "params": { "state": "BoardState" },
+      "returns": "void — replaces the entire current board, used by app-shell on boot after persistence.load returns a value."
+    },
+    "subscribe": {
+      "params": { "listener": "(state: BoardState) => void" },
+      "returns": "() => void — unsubscribe function. persistence wires save(state) here so every mutation autosaves."
+    }
+  },
+  "notes": "state-model is the producer; persistence is the consumer. Persistence does not call any mutation directly — it only reads via getState/subscribe and writes back via setState during boot."
+}

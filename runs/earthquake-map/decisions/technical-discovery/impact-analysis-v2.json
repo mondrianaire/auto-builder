@@ -1,0 +1,85 @@
+{
+  "version": 2,
+  "created_at": "2026-05-10T01:12:00Z",
+  "trigger": {
+    "type": "escalation",
+    "escalation_id": "esc-001",
+    "research_findings": null
+  },
+  "chosen_option": "add_section_and_contract_coverage_assertions",
+  "summary": "Critic's final-sweep flagged a Sev 2b prose-coverage gap (esc-001): the v1.7 Coverage-Required-Fields rule requires every coverage-required prose field to have at least one assertion whose `covers` field names it back. sections-v1.json#sections[].charter (x4), sections-v1.json#sections[].out_of_scope[] items (x4 sections), and every contract interface method/field plus `.notes` across the 4 contracts had zero direct `covers` pointers, even though the corresponding behaviors are honored by the integrated artifact. Resolution is purely additive: author new structured assertions whose `covers` field names each previously-uncovered prose field. No product code changes, no contract changes, no Builder re-dispatch. The new assertion set is delivered as `decisions/technical-discovery/sections-v2.json` (a full new version per append-only file_schemas.md rule), preserving all original v1 content and adding two parallel collections: `section_coverage_assertions[]` (covering each section charter and each per-section out_of_scope item) and `contract_coverage_assertions[]` (covering each contract interface method/field/shape and `.notes` block).",
+  "delta_plan": {
+    "section-1": {
+      "action": "unaffected",
+      "rationale": "No section-1 product code changes. data-fetcher.js already implements fetchEarthquakes with the contracted shape and is verified by S1.A1-A5. The remediation is documentation-shape: new assertions added in sections-v2.json reference section-1 charter / out_of_scope / contract surface but make no code demand the build does not already meet. No re-dispatch needed."
+    },
+    "section-2": {
+      "action": "unaffected",
+      "rationale": "No section-2 product code changes. map.js already exposes mount(), magnitudeColor(), magnitudeRadius() with the contracted signatures and is verified by S2.A1-A6. New coverage assertions for section-2 charter, per-section out_of_scope items, and contract.section-2--section-3 surface are documentation-only. No re-dispatch needed."
+    },
+    "section-3": {
+      "action": "unaffected",
+      "rationale": "No section-3 product code changes. index.html / main.js / styles.css already implement page shell, legend, error banner, and DOMContentLoaded bootstrap and are verified by S3.A1-A5. New coverage assertions for section-3 charter and per-section out_of_scope items are documentation-only. No re-dispatch needed."
+    },
+    "section-4": {
+      "action": "unaffected",
+      "rationale": "No section-4 product code changes. Edge-case testing harness configuration is unchanged and remains verified by S4.A1-A3. New coverage assertions for section-4 charter, per-section out_of_scope items, and contract.integrator--section-4 surface are documentation-only. No re-dispatch needed."
+    }
+  },
+  "contract_amendments": [],
+  "remediation_detail": {
+    "spec_amendment_only": true,
+    "no_builder_redispatch": true,
+    "new_assertion_count": 38,
+    "new_assertion_breakdown": {
+      "section_charter_coverage": 4,
+      "section_out_of_scope_coverage": 16,
+      "contract_interface_coverage": 14,
+      "contract_notes_coverage": 4
+    },
+    "covered_uncovered_fields": {
+      "sections[].charter": [
+        "section-1.charter -> SC.S1.charter",
+        "section-2.charter -> SC.S2.charter",
+        "section-3.charter -> SC.S3.charter",
+        "section-4.charter -> SC.S4.charter"
+      ],
+      "sections[].out_of_scope[]": [
+        "section-1.out_of_scope[0..3] -> SC.S1.OOS0..3",
+        "section-2.out_of_scope[0..3] -> SC.S2.OOS0..3",
+        "section-3.out_of_scope[0..3] -> SC.S3.OOS0..3",
+        "section-4.out_of_scope[0..3] -> SC.S4.OOS0..3"
+      ],
+      "contracts/original/section-1--section-2.json": [
+        "interface.fetchEarthquakes -> CC.s1-s2.fetchEarthquakes",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent -> CC.s1-s2.EarthquakeEvent",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent.id -> CC.s1-s2.EarthquakeEvent.id",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent.magnitude -> CC.s1-s2.EarthquakeEvent.magnitude",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent.place -> CC.s1-s2.EarthquakeEvent.place",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent.timeMs -> CC.s1-s2.EarthquakeEvent.timeMs",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent.lat -> CC.s1-s2.EarthquakeEvent.lat",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent.lon -> CC.s1-s2.EarthquakeEvent.lon",
+        "interface.fetchEarthquakes.shape.EarthquakeEvent.depth -> CC.s1-s2.EarthquakeEvent.depth",
+        "notes -> CC.s1-s2.notes"
+      ],
+      "contracts/original/section-1--section-3.json": [
+        "interface.fetchEarthquakes -> CC.s1-s3.fetchEarthquakes",
+        "notes -> CC.s1-s3.notes"
+      ],
+      "contracts/original/section-2--section-3.json": [
+        "interface.mount -> CC.s2-s3.mount",
+        "interface.magnitudeColor -> CC.s2-s3.magnitudeColor",
+        "interface.magnitudeRadius -> CC.s2-s3.magnitudeRadius",
+        "notes -> CC.s2-s3.notes"
+      ],
+      "contracts/original/integrator--section-4.json": [
+        "interface.integratedArtifact -> CC.int-s4.integratedArtifact",
+        "notes -> CC.int-s4.notes"
+      ]
+    }
+  },
+  "write_targets_produced": [
+    "decisions/technical-discovery/sections-v2.json"
+  ],
+  "next_step": "Return to Coordinator for Critic re-sweep against the augmented coverage set in sections-v2.json. No rebuild needed."
+}

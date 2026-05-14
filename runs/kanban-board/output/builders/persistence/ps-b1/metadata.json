@@ -1,0 +1,8 @@
+{
+  "builder_id": "ps-b1",
+  "section": "persistence",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": ["STORAGE_KEY", "load", "save", "clear"],
+  "contracts_honored": ["state-model--persistence", "persistence--integration"]
+}

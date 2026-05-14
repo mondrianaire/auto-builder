@@ -1,0 +1,13 @@
+{
+  "section_id": "section-2",
+  "name": "Map Renderer with Earthquake Markers",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[1]",
+  "started_at": "2026-05-10T01:02:00Z",
+  "verified_at": "2026-05-10T01:03:00Z",
+  "builders": [
+    { "id": "builder-2a", "task": "Implement map.js exposing mount(), magnitudeColor(), magnitudeRadius() against vendored Leaflet." },
+    { "id": "builder-2-vendor", "task": "Vendor Leaflet 1.9.4 (leaflet.js, leaflet.css, image assets) into vendor/leaflet/." }
+  ]
+}

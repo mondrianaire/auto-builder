@@ -1,0 +1,35 @@
+{
+  "builder_id": "builder-1abc",
+  "task_id": "1abc",
+  "section_id": "section-1",
+  "started_at": "2026-05-09T00:45:01Z",
+  "completed_at": "2026-05-09T00:48:00Z",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": [
+    { "symbol": "buildShoe", "type": "function", "matches_contract": "contracts/original/section-1--section-3.json#buildShoe" },
+    { "symbol": "drawCard", "type": "function", "matches_contract": "contracts/original/section-1--section-3.json#drawCard" },
+    { "symbol": "scoreHand", "type": "function", "matches_contract": "contracts/original/section-1--section-3.json#scoreHand" },
+    { "symbol": "legalActions", "type": "function", "matches_contract": "contracts/original/section-1--section-3.json#legalActions" },
+    { "symbol": "playDealer", "type": "function", "matches_contract": "contracts/original/section-1--section-3.json#playDealer" },
+    { "symbol": "resolveHand", "type": "function", "matches_contract": "contracts/original/section-1--section-3.json#resolveHand" },
+    { "symbol": "cardValue", "type": "function" },
+    { "symbol": "isPair", "type": "function" },
+    { "symbol": "buildPlayerSnapshot", "type": "function", "note": "convenience helper for game-state-machine to build the strategy-table query payload" }
+  ],
+  "notes": "ES module. Pure functions only. 6-deck shoe by default. Aces handled via downgrade-from-11-to-1. S17: dealer stands on any 17 including soft. Blackjack 3:2: returns netDelta = round(bet*1.5) on player_blackjack. legalActions never returns 'surrender' (IP1 lock). DAS allowed: split sub-hands with 2 cards and no hits get 'double' in the legal action set.",
+  "self_test_results": {
+    "scoreHand_A_7": "soft 18, expected soft 18 — pass",
+    "scoreHand_A_7_K": "hard 18 (ace downgraded to 1, total 1+7+10=18), expected hard 18 — pass",
+    "scoreHand_10_6_5": "21 hard, expected 21 — pass",
+    "scoreHand_10_6_7": "23 bust, expected bust — pass",
+    "scoreHand_A_K": "21 isBlackjack=true, expected blackjack — pass",
+    "scoreHand_A_K_5": "16 isBlackjack=false (3 cards), expected non-blackjack — pass",
+    "legalActions_pair_8s_initial": "hit/stand/double/split, expected match — pass",
+    "legalActions_after_hit": "hit/stand only, expected match — pass",
+    "legalActions_split_subhand_2cards": "hit/stand/double included (DAS), expected match — pass",
+    "playDealer_soft_17": "stands at 17 (S17), expected stand — pass",
+    "playDealer_hard_16": "draws at least once, expected draw — pass",
+    "resolveHand_blackjack_vs_19": "outcome player_blackjack, netDelta 15 on bet=10 (3:2), expected match — pass"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "section_id": "section-1",
+  "status": "verified",
+  "builders": ["builder-1a"],
+  "verification": {
+    "S1.A1": "PASS - DOMContentLoaded mounts home; no fetch/script refs; no console errors expected.",
+    "S1.A2": "PASS - nav exposes home/walkthrough/table/dashboard/glossary with click handlers calling navigateTo.",
+    "S1.A3": "PASS - storage.get/set/remove/clear; all keys prefixed with 'gto-trainer/v1/'.",
+    "S1.A4": "PASS - localStorage backs gets/sets; survives reload.",
+    "S1.A5": "PASS - output.html and output.js contain zero http/https references; only 'output.css' and 'output.js' relative refs."
+  },
+  "verified_at": "2026-05-10T00:10:00Z"
+}

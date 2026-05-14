@@ -1,0 +1,13 @@
+{
+  "section_id": "section-3",
+  "status": "verified",
+  "builders": ["builder-3a"],
+  "verification": {
+    "S3.A1": "PASS - registerRoute('walkthrough'); on mount renders index of all hands from listHands().",
+    "S3.A2": "PASS - renderDetail does not include reveal panel until commitAction; reveal-panel element created only in renderReveal.",
+    "S3.A3": "PASS - renderReveal builds GTO mix bars + score label + theory paragraphs.",
+    "S3.A4": "PASS - glossary chips with click handler -> showGlossary(termId) opens modal with definition.",
+    "S3.A5": "PASS - commitAction emits 'decision_result' on AppShell.bus with full DecisionResult shape."
+  },
+  "verified_at": "2026-05-10T00:35:00Z"
+}

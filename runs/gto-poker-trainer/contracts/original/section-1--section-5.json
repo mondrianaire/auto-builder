@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-5",
+  "summary": "App shell exposes the route container, the storage adapter, the navigation callback, and the archetype roster registry to Table mode.",
+  "interface": {
+    "route_registration": {
+      "name": "registerRoute",
+      "shape": "(routeId: string, mountFn: (container: HTMLElement) => void, unmountFn?: () => void) => void",
+      "purpose": "Table mode registers itself under routeId='table' at boot."
+    },
+    "storage_adapter": {
+      "name": "storage",
+      "shape": "{ get(key: string): any|null, set(key: string, value: any): void, clear(prefix?: string): void }",
+      "namespace_rule": "Table mode persists state under prefix 'gto-trainer/v1/table/' (e.g., session id, hero stack, seat arrangement).",
+      "purpose": "Table mode persists session/run state."
+    },
+    "navigation": {
+      "name": "navigateHome",
+      "shape": "() => void",
+      "purpose": "Back-to-home from Table mode."
+    },
+    "archetype_registry": {
+      "name": "getArchetypes",
+      "shape": "() => ArchetypeRoster",
+      "purpose": "Table mode reads the roster loaded by section-4 at boot to populate the 8 non-hero seats."
+    }
+  },
+  "data_passed_not_logic": "Shell passes a DOM container, function references, and a registry getter. Shell does not implement any gameplay; table does not implement shell-level concerns.",
+  "ownership": {
+    "section-1_owns": ["registerRoute, storage adapter, navigateHome, archetype registry getter"],
+    "section-5_owns": ["mountFn/unmountFn for routeId='table'", "all gameplay state and persistence under its prefix"]
+  },
+  "test_seam": "An integration test mounts Table mode into a stub container and asserts that getArchetypes() returns a non-empty roster."
+}

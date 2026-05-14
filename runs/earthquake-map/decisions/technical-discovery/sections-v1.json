@@ -1,0 +1,716 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:30:00Z",
+  "based_on_ledger": "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\earthquake-map\\decisions\\discovery\\ledger-v1.json",
+
+  "prompt_verb_analysis": {
+    "literal_prompt": "Build me a tool to visualize earthquake activity on a map.",
+    "candidate_verbs": [
+      {
+        "verb": "build",
+        "role": "meta-verb addressed to the builder; describes the act of producing the artifact, not what the artifact does for the user."
+      },
+      {
+        "verb": "visualize",
+        "role": "the deliverable's central job: render earthquake activity in a way a viewer can see and interpret."
+      },
+      {
+        "verb": "map",
+        "role": "noun-as-verb implying the spatial frame; subordinate to 'visualize' (the map is the medium of visualization)."
+      }
+    ],
+    "chosen_verb": "visualize",
+    "rationale": "'Build' is meta — every prompt 'build me' something. 'Map' is the surface form. The load-bearing user-facing action is 'visualize': the artifact must make earthquake activity visible. Whether the build succeeded is judged by whether a user opening the artifact actually sees earthquakes rendered on a map."
+  },
+
+  "prompt_named_verb_assertion": {
+    "id": "PV1",
+    "verb": "visualize",
+    "statement": "Opening output/final/index.html in a real browser the way a user opens it produces a visible map with earthquake events rendered as markers on it within a reasonable load time.",
+    "check_type": "user_flow",
+    "scenario": "Open output/final/index.html via file:// in a real browser with network connectivity (so the USGS feed and the OSM tile layer can load). Wait for the page to settle.",
+    "expected_result": "A geographic map fills a substantial portion of the viewport. Multiple earthquake markers are visible on it (assuming the past-24h USGS feed has any events, which it virtually always does). Markers visually encode magnitude (size and/or color). The map is interactive: pan and zoom work; clicking or hovering a marker reveals event details (time, magnitude, location).",
+    "verifier": "prompt_named_verb",
+    "covers": "prompt_verb_analysis.chosen_verb"
+  },
+
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "source": "discovery",
+      "topic": "Live/refreshing data vs static snapshot at load time",
+      "decision_path": "quick_reasoning",
+      "chosen_option": "Static snapshot: fetch data once on page load, no auto-refresh.",
+      "rationale": "All four quick-reasoning rubric conditions hold: canonical answer (static is the standard MVP default), symmetric complexity (live adds polling+diff loop the static branch doesn't need), no new external dependencies introduced, and the choice is trivially reversible (adding a setInterval refresh later is small). Static snapshot also keeps the artifact closer to a single render pass which is easier to verify under production-fidelity checks.",
+      "assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "The data fetcher is invoked once during initial page load, not on a recurring timer.",
+          "check_type": "absence",
+          "target": "section-1 data fetcher",
+          "expected_value": "No setInterval / setTimeout-loop / polling construct around the USGS fetch call.",
+          "covers": "IP1.chosen_option"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "After initial load completes, the marker layer's content does not change without an explicit user-initiated reload.",
+          "check_type": "behavior",
+          "target": "integrated artifact",
+          "expected_value": "Marker count and positions remain stable across a 30-second observation window post-load.",
+          "covers": "IP1.chosen_option"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "source": "discovery",
+      "topic": "Time-window control: fixed default window vs user-adjustable",
+      "decision_path": "quick_reasoning",
+      "chosen_option": "Fixed recent window (past 24 hours).",
+      "rationale": "All four rubric conditions hold. USGS publishes ready-to-use endpoints per window ('all_day.geojson', 'all_week.geojson') so 'past 24 hours' is a canonical, no-cost default. No new dependencies. Adding a window control later is a contained UI change. Past 24h is small enough to render fast yet rich enough that the map is non-empty almost any time of day.",
+      "assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "The feed URL the artifact requests targets the USGS past-day window endpoint.",
+          "check_type": "constant_value",
+          "target": "section-1 feed URL constant",
+          "expected_value": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+          "covers": "IP2.chosen_option"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "No time-window picker, slider, dropdown, or date range UI is present in the rendered page.",
+          "check_type": "absence",
+          "target": "integrated artifact DOM",
+          "expected_value": "No element matching common window-control patterns (input[type=range] for time, select for window, date inputs).",
+          "covers": "IP2.chosen_option"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "source": "discovery",
+      "topic": "Filtering controls (magnitude threshold, depth, region)",
+      "decision_path": "quick_reasoning",
+      "chosen_option": "No filters: show every event in the chosen window.",
+      "rationale": "All four rubric conditions hold. A3 already gives the user visual access to magnitude via marker encoding (size+color), so a separate threshold control is redundant for the v1 'see activity at a glance' job. No new deps, easily reversible.",
+      "assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "Every event returned by the feed is rendered as a marker; none are dropped client-side based on a filter.",
+          "check_type": "behavior",
+          "target": "integrated artifact",
+          "expected_value": "Number of rendered markers equals the count of features in the fetched GeoJSON FeatureCollection.",
+          "covers": "IP3.chosen_option"
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "No filter UI controls (magnitude threshold input, region picker, depth slider) are present.",
+          "check_type": "absence",
+          "target": "integrated artifact DOM",
+          "expected_value": "No filter-control elements rendered in the UI shell.",
+          "covers": "IP3.chosen_option"
+        }
+      ]
+    },
+    {
+      "ip_id": "TD-IP1",
+      "source": "td",
+      "topic": "Map rendering library choice",
+      "td_introduction_rationale": "Discovery decided 'on a map' but did not pick a library. The choice affects bundle size, vendoring feasibility, and whether an API key is required (which would break A11 local/standalone deployment).",
+      "decision_path": "quick_reasoning",
+      "chosen_option": "Leaflet (vendored locally).",
+      "rationale": "Quick-reasoning rubric: canonical answer (Leaflet is the long-standing default for lightweight web maps), similar complexity to MapLibre for our use case, no new external service deps (Mapbox GL would require an API token), easily reversible (the rendering code lives behind one section's interface). Leaflet's JS+CSS together are ~140KB which vendors trivially into vendor/leaflet/ and works fully offline-of-CDN under file://. OSM raster tiles still require network at view time, but the library code itself is local.",
+      "assertions": [
+        {
+          "id": "TDIP1.A1",
+          "statement": "Leaflet's JS and CSS are loaded from a local vendor/ path, not from a CDN.",
+          "check_type": "structural",
+          "target": "output/final/index.html script and link tags",
+          "expected_value": "src and href attributes resolve to vendor/leaflet/leaflet.js and vendor/leaflet/leaflet.css under the artifact root; no unpkg.com / cdnjs / jsdelivr URLs for Leaflet.",
+          "covers": "TDIP1.chosen_option"
+        },
+        {
+          "id": "TDIP1.A2",
+          "statement": "Map rendering uses Leaflet's L.map / L.tileLayer / L.circleMarker API surface.",
+          "check_type": "presence",
+          "target": "section-2 map module",
+          "expected_value": "Calls to L.map(), L.tileLayer(), and a circle-marker construction (L.circleMarker or L.circle) are present.",
+          "covers": "TDIP1.chosen_option"
+        },
+        {
+          "id": "TDIP1.A3",
+          "statement": "No Mapbox or MapLibre token/style URL is referenced.",
+          "check_type": "absence",
+          "target": "all source files",
+          "expected_value": "No api.mapbox.com style URLs, no MAPBOX_ACCESS_TOKEN string, no maplibre-gl import.",
+          "covers": "TDIP1.chosen_option"
+        }
+      ]
+    },
+    {
+      "ip_id": "TD-IP2",
+      "source": "td",
+      "topic": "Earthquake data source",
+      "td_introduction_rationale": "A6 says 'publicly available feed' but did not name one. The choice affects schema (GeoJSON vs custom JSON vs CSV), authentication, and licensing.",
+      "decision_path": "quick_reasoning",
+      "chosen_option": "USGS Earthquake Hazards Program 'past day' GeoJSON summary feed (https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson).",
+      "rationale": "All four rubric conditions hold. USGS is the canonical public worldwide earthquake feed, no API key, public-domain data, GeoJSON FeatureCollection schema is standard and easy to consume. Trivially reversible — swap the URL constant if a different feed is needed later. The endpoint requires network access at load time, which is acknowledged as an explicit production-fidelity caveat (see section-1 charter).",
+      "assertions": [
+        {
+          "id": "TDIP2.A1",
+          "statement": "The feed URL exactly matches the USGS past-day GeoJSON endpoint.",
+          "check_type": "constant_value",
+          "target": "section-1 FEED_URL constant",
+          "expected_value": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+          "covers": "TDIP2.chosen_option"
+        },
+        {
+          "id": "TDIP2.A2",
+          "statement": "The fetcher parses the response as a GeoJSON FeatureCollection and returns an array of normalized event records.",
+          "check_type": "structural",
+          "target": "section-1 fetch function",
+          "expected_value": "Function reads response.features[] and yields objects with at least { id, magnitude, place, timeMs, lat, lon, depth }.",
+          "covers": "TDIP2.chosen_option"
+        }
+      ]
+    },
+    {
+      "ip_id": "TD-IP3",
+      "source": "td",
+      "topic": "Marker visual encoding for magnitude",
+      "td_introduction_rationale": "A3 said magnitude must be encoded but did not specify whether by size, color, both, or some other channel. Encoding choice affects legibility and the legend's design.",
+      "decision_path": "quick_reasoning",
+      "chosen_option": "Circle markers whose radius scales with magnitude AND whose fill color steps through a sequential palette (e.g., yellow -> orange -> red) by magnitude bucket.",
+      "rationale": "Quick-reasoning rubric: canonical (size+color is the long-established convention in seismic activity maps), similar complexity to either-alone (the radius formula and color-bucket function are both ~5 lines), no new deps (pure CSS/SVG via Leaflet's circleMarker), easily reversible. Dual encoding is more legible than either alone for both small (low-magnitude clusters) and large (rare big events) cases.",
+      "assertions": [
+        {
+          "id": "TDIP3.A1",
+          "statement": "Marker radius is a monotonic function of magnitude.",
+          "check_type": "behavior",
+          "target": "section-2 marker styling function",
+          "expected_value": "Given two events with mag_a < mag_b, the styled radius for mag_a is strictly less than for mag_b (ties allowed only at clamps).",
+          "covers": "TDIP3.chosen_option"
+        },
+        {
+          "id": "TDIP3.A2",
+          "statement": "Marker fill color varies across at least three perceptually distinct buckets covering the magnitude range.",
+          "check_type": "structural",
+          "target": "section-2 color function",
+          "expected_value": "Color function returns at least 3 distinct hex/rgb values across the input range [-1, 9].",
+          "covers": "TDIP3.chosen_option"
+        },
+        {
+          "id": "TDIP3.A3",
+          "statement": "A legend visible on the page explains the size/color encoding.",
+          "check_type": "presence",
+          "target": "integrated artifact DOM",
+          "expected_value": "A legend element labels the magnitude buckets and shows the corresponding marker style.",
+          "covers": "TDIP3.chosen_option"
+        }
+      ]
+    }
+  ],
+
+  "discovery_coverage_assertions": [
+    {
+      "id": "DC.R1",
+      "from": "restatement",
+      "phrase": "displays earthquake events as markers on a geographic map",
+      "check_type": "user_flow",
+      "expected_result": "Opening the artifact shows a geographic map populated with earthquake-event markers.",
+      "verifier": "cv_artifact_exercise",
+      "covers": "ledger.restatement"
+    },
+    {
+      "id": "DC.R2",
+      "from": "restatement",
+      "phrase": "see where earthquakes have occurred and get a sense of their distribution and intensity at a glance",
+      "check_type": "user_flow",
+      "expected_result": "Marker positions reveal geographic distribution; size/color encoding makes intensity (magnitude) legible without interaction.",
+      "verifier": "cv_artifact_exercise",
+      "covers": "ledger.restatement"
+    },
+    {
+      "id": "DC.A1",
+      "from": "assumption",
+      "phrase": "The deliverable is a single interactive visualization, not a report, dataset export, or analysis pipeline.",
+      "check_type": "structural",
+      "expected_result": "The deliverable is a single web page (index.html) with interactive map; no CSV/PDF/dashboard report and no batch pipeline scripts as the primary surface.",
+      "verifier": "critic_final_sweep",
+      "covers": "A1"
+    },
+    {
+      "id": "DC.A2",
+      "from": "assumption",
+      "phrase": "The map is the primary UI surface; earthquakes are rendered as point markers on it.",
+      "check_type": "structural",
+      "expected_result": "Map element occupies the dominant region of the viewport; earthquakes appear as point markers (not heatmap, not polygons).",
+      "verifier": "cv_artifact_exercise",
+      "covers": "A2"
+    },
+    {
+      "id": "DC.A3",
+      "from": "assumption",
+      "phrase": "Marker visual encodes at least magnitude.",
+      "check_type": "behavior",
+      "expected_result": "Marker size and/or color varies as a function of event magnitude.",
+      "verifier": "edge_case_testing",
+      "covers": "A3"
+    },
+    {
+      "id": "DC.A4",
+      "from": "assumption",
+      "phrase": "Single user, no authentication, no per-user state, no accounts.",
+      "check_type": "absence",
+      "expected_result": "No login form, no user identifier, no session/auth code paths.",
+      "verifier": "critic_final_sweep",
+      "covers": "A4"
+    },
+    {
+      "id": "DC.A5",
+      "from": "assumption",
+      "phrase": "No persistent storage of user state, annotations, or history between sessions.",
+      "check_type": "absence",
+      "expected_result": "No localStorage/sessionStorage/IndexedDB/cookie writes for user state or annotations.",
+      "verifier": "critic_final_sweep",
+      "covers": "A5"
+    },
+    {
+      "id": "DC.A6",
+      "from": "assumption",
+      "phrase": "Earthquake data comes from a publicly available feed rather than user upload.",
+      "check_type": "absence",
+      "expected_result": "No file-upload UI; data is fetched from the USGS public feed URL.",
+      "verifier": "critic_final_sweep",
+      "covers": "A6"
+    },
+    {
+      "id": "DC.A7",
+      "from": "assumption",
+      "phrase": "Global geographic coverage by default.",
+      "check_type": "behavior",
+      "expected_result": "Initial map view shows the whole world (or close to it); markers from multiple continents render when present in the feed.",
+      "verifier": "cv_artifact_exercise",
+      "covers": "A7"
+    },
+    {
+      "id": "DC.A8",
+      "from": "assumption",
+      "phrase": "Recent earthquakes (past day) rather than full historical archive.",
+      "check_type": "constant_value",
+      "expected_result": "Feed URL targets the USGS past-day endpoint.",
+      "verifier": "critic_final_sweep",
+      "covers": "A8"
+    },
+    {
+      "id": "DC.A9",
+      "from": "assumption",
+      "phrase": "Basic map interactivity: pan, zoom, hover/click on a marker to see event details.",
+      "check_type": "user_flow",
+      "expected_result": "Pan/zoom work; clicking a marker reveals time, magnitude, and place.",
+      "verifier": "edge_case_testing",
+      "covers": "A9"
+    },
+    {
+      "id": "DC.A10",
+      "from": "assumption",
+      "phrase": "Desktop-first viewing context.",
+      "check_type": "structural",
+      "expected_result": "Layout sized for a typical desktop viewport (~1280x800 baseline); no mobile-only navigation.",
+      "verifier": "cv_artifact_exercise",
+      "covers": "A10"
+    },
+    {
+      "id": "DC.A11",
+      "from": "assumption",
+      "phrase": "Local/standalone deployment (runs in user's browser from a local file or local server).",
+      "check_type": "structural",
+      "expected_result": "Artifact opens directly via file:// without a backend; library code is vendored locally.",
+      "verifier": "cv_artifact_exercise",
+      "covers": "A11"
+    },
+    {
+      "id": "DC.A12",
+      "from": "assumption",
+      "phrase": "Audience is a curious general user.",
+      "check_type": "absence",
+      "expected_result": "No specialized seismologist tools (focal mechanisms, depth slices, fault overlays).",
+      "verifier": "critic_final_sweep",
+      "covers": "A12"
+    },
+    {
+      "id": "DC.IP1",
+      "from": "inflection_point",
+      "phrase": "Live/refreshing data vs static snapshot",
+      "check_type": "absence",
+      "expected_result": "No polling loop; data fetched once.",
+      "verifier": "critic_final_sweep",
+      "covers": "IP1"
+    },
+    {
+      "id": "DC.IP2",
+      "from": "inflection_point",
+      "phrase": "Time-window control",
+      "check_type": "absence",
+      "expected_result": "No window control UI present; window is fixed at past 24h.",
+      "verifier": "critic_final_sweep",
+      "covers": "IP2"
+    },
+    {
+      "id": "DC.IP3",
+      "from": "inflection_point",
+      "phrase": "Filtering controls",
+      "check_type": "absence",
+      "expected_result": "No magnitude/depth/region filter controls in UI.",
+      "verifier": "critic_final_sweep",
+      "covers": "IP3"
+    },
+    {
+      "id": "DC.OOS1",
+      "from": "out_of_scope",
+      "phrase": "User accounts, login, or authentication",
+      "check_type": "absence",
+      "expected_result": "No auth UI or auth code paths.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[0]"
+    },
+    {
+      "id": "DC.OOS2",
+      "from": "out_of_scope",
+      "phrase": "Saving views, bookmarks, or annotations across sessions",
+      "check_type": "absence",
+      "expected_result": "No save/bookmark/annotate UI; no persistence calls.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[1]"
+    },
+    {
+      "id": "DC.OOS3",
+      "from": "out_of_scope",
+      "phrase": "Multi-user collaboration or sharing features",
+      "check_type": "absence",
+      "expected_result": "No share-link, collaborator, or multiplayer UI.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[2]"
+    },
+    {
+      "id": "DC.OOS4",
+      "from": "out_of_scope",
+      "phrase": "Mobile-first or native mobile app",
+      "check_type": "absence",
+      "expected_result": "No mobile shell; no app-store-style layout.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[3]"
+    },
+    {
+      "id": "DC.OOS5",
+      "from": "out_of_scope",
+      "phrase": "Hosted backend, server-side processing, or database",
+      "check_type": "absence",
+      "expected_result": "No server code, no database client, no API of our own.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[4]"
+    },
+    {
+      "id": "DC.OOS6",
+      "from": "out_of_scope",
+      "phrase": "User-uploaded earthquake datasets",
+      "check_type": "absence",
+      "expected_result": "No file picker or drag-drop for data.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[5]"
+    },
+    {
+      "id": "DC.OOS7",
+      "from": "out_of_scope",
+      "phrase": "Predictive modeling, forecasting, or risk analysis",
+      "check_type": "absence",
+      "expected_result": "No forecast/prediction UI or model code.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[6]"
+    },
+    {
+      "id": "DC.OOS8",
+      "from": "out_of_scope",
+      "phrase": "Tsunami, aftershock-cluster, or fault-line specialized overlays",
+      "check_type": "absence",
+      "expected_result": "No such overlays present.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[7]"
+    },
+    {
+      "id": "DC.OOS9",
+      "from": "out_of_scope",
+      "phrase": "Alerts, notifications, or subscriptions",
+      "check_type": "absence",
+      "expected_result": "No notification permission requests, no subscribe UI.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[8]"
+    },
+    {
+      "id": "DC.OOS10",
+      "from": "out_of_scope",
+      "phrase": "Data export (CSV, GeoJSON, image download)",
+      "check_type": "absence",
+      "expected_result": "No export/download buttons.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[9]"
+    },
+    {
+      "id": "DC.OOS11",
+      "from": "out_of_scope",
+      "phrase": "Accessibility certification beyond reasonable defaults",
+      "check_type": "absence",
+      "expected_result": "No claim of formal a11y compliance; reasonable defaults only.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[10]"
+    },
+    {
+      "id": "DC.OOS12",
+      "from": "out_of_scope",
+      "phrase": "Internationalization / multi-language UI",
+      "check_type": "absence",
+      "expected_result": "Single-language UI; no locale switcher.",
+      "verifier": "critic_final_sweep",
+      "covers": "out_of_scope[11]"
+    }
+  ],
+
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "Earthquake Data Fetcher",
+      "charter": "Provide a single async function that retrieves the past-24-hour earthquake feed from the USGS public GeoJSON endpoint and returns a normalized array of event records the rest of the artifact can consume. The function isolates network access and feed-schema specifics so the map layer never touches HTTP or raw GeoJSON. It must produce a stable, documented record shape and surface fetch/parse failures as a structured error result rather than throwing into the UI. Production-fidelity caveat: this section requires live network at page load — that is intrinsic to 'real earthquake data' and is acknowledged here, not worked around.",
+      "acceptance": "Calling the fetch function from a browser context loads the USGS past-day feed and returns an array of normalized event records, each with id, magnitude, place, time (epoch ms), lat, lon, and depth. On network or parse failure the function returns a structured error indicator (not an unhandled exception) so the UI can show an error state. The feed URL is a single named constant pointing at the USGS past-day endpoint.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "loads the USGS past-day feed",
+          "check_type": "constant_value",
+          "scenario": "Inspect the feed URL constant in the section's source.",
+          "expected_result": "URL equals https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+          "verifier": "edge_case_testing",
+          "covers": "S1.acceptance.feed_url"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "returns an array of normalized event records",
+          "check_type": "structural",
+          "scenario": "Call the fetch function with a stubbed/captured GeoJSON response containing N features.",
+          "expected_result": "Returns an array of length N. Each element has fields id, magnitude, place, timeMs, lat, lon, depth.",
+          "verifier": "edge_case_testing",
+          "covers": "S1.acceptance.normalized_records"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "id, magnitude, place, time (epoch ms), lat, lon, and depth",
+          "check_type": "structural",
+          "scenario": "Inspect a normalized record produced from a known feature.",
+          "expected_result": "id is string; magnitude is number-or-null; place is string-or-null; timeMs is integer; lat, lon, depth are numbers.",
+          "verifier": "edge_case_testing",
+          "covers": "S1.acceptance.record_shape"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "On network or parse failure the function returns a structured error indicator",
+          "check_type": "behavior",
+          "scenario": "Call the fetch function with a mocked fetch that rejects, and again with one that returns malformed JSON.",
+          "expected_result": "Both calls resolve to a structured { ok: false, error: ... } shape rather than throwing or returning undefined.",
+          "verifier": "edge_case_testing",
+          "covers": "S1.acceptance.error_handling"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "single named constant pointing at the USGS past-day endpoint",
+          "check_type": "presence",
+          "scenario": "Search the section source for the feed URL.",
+          "expected_result": "Exactly one named constant defines the feed URL; no other string literal in the section repeats the URL.",
+          "verifier": "edge_case_testing",
+          "covers": "S1.acceptance.single_constant"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Polling/auto-refresh",
+        "Caching layer",
+        "Filtering by magnitude/region/time",
+        "User-supplied data sources"
+      ]
+    },
+    {
+      "id": "section-2",
+      "name": "Map Renderer with Earthquake Markers",
+      "charter": "Initialize a Leaflet map filling its container, attach a tile layer (OSM raster tiles), and render an array of normalized earthquake records as circle markers whose radius and fill color encode magnitude. Provide a popup on each marker with time, magnitude, place, and depth. Expose a single mount(containerId, events) entry point so the integrator does not need to know Leaflet specifics. Leaflet is loaded from a local vendored copy under vendor/leaflet/.",
+      "acceptance": "Calling mount(containerId, events) on a non-empty events array produces a visible, interactive (pan, zoom) world map in the named container, with one circle marker per event. Marker radius is a monotonic function of magnitude. Marker fill color falls into at least three perceptually distinct buckets across the magnitude range. Clicking a marker opens a popup that shows the event's time (human-readable), magnitude, place, and depth. Leaflet JS and CSS are loaded from vendor/leaflet/, not from a CDN.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "produces a visible, interactive (pan, zoom) world map",
+          "check_type": "user_flow",
+          "scenario": "Open the integrated artifact, confirm the map renders, then drag to pan and use scroll/buttons to zoom.",
+          "expected_result": "Map canvas is visible; pan and zoom both succeed.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "S2.acceptance.map_visible_interactive"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "one circle marker per event",
+          "check_type": "behavior",
+          "scenario": "Mount with an events array of N elements and count rendered marker DOM nodes (Leaflet circle markers are SVG paths under .leaflet-overlay-pane).",
+          "expected_result": "Exactly N marker nodes are present.",
+          "verifier": "edge_case_testing",
+          "covers": "S2.acceptance.one_marker_per_event"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "Marker radius is a monotonic function of magnitude",
+          "check_type": "behavior",
+          "scenario": "Compute styled radius for events with magnitudes 1, 3, 5, 7.",
+          "expected_result": "Radii are non-decreasing across the increasing magnitude sequence; strictly increasing in the unsaturated middle of the range.",
+          "verifier": "edge_case_testing",
+          "covers": "S2.acceptance.radius_monotonic"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "fill color falls into at least three perceptually distinct buckets",
+          "check_type": "structural",
+          "scenario": "Call the color function with magnitudes -1, 2, 4, 6, 8.",
+          "expected_result": "At least 3 distinct color values returned across that input set.",
+          "verifier": "edge_case_testing",
+          "covers": "S2.acceptance.color_buckets"
+        },
+        {
+          "id": "S2.A5",
+          "from_acceptance_phrase": "Clicking a marker opens a popup that shows the event's time (human-readable), magnitude, place, and depth",
+          "check_type": "user_flow",
+          "scenario": "In the integrated artifact, click a visible marker and read the popup contents.",
+          "expected_result": "Popup contains a human-readable timestamp, the magnitude (numeric), the place string, and the depth.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "S2.acceptance.popup_content"
+        },
+        {
+          "id": "S2.A6",
+          "from_acceptance_phrase": "Leaflet JS and CSS are loaded from vendor/leaflet/, not from a CDN",
+          "check_type": "structural",
+          "scenario": "Inspect output/final/index.html script and link tags.",
+          "expected_result": "Leaflet asset references resolve to vendor/leaflet/leaflet.js and vendor/leaflet/leaflet.css; no CDN host appears for Leaflet.",
+          "verifier": "critic_final_sweep",
+          "covers": "S2.acceptance.vendored_leaflet"
+        }
+      ],
+      "depends_on": ["section-1"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Fetching data (section-1 supplies it)",
+        "Filtering, time-window controls",
+        "Heatmap or cluster overlays",
+        "Tile-source switching"
+      ]
+    },
+    {
+      "id": "section-3",
+      "name": "Page Shell, Legend, and Error State",
+      "charter": "Provide the index.html page structure: a header with the tool name, a main region holding the map container, a fixed legend explaining the size+color magnitude encoding, and a hidden-by-default error banner. Wire page bootstrap: on DOMContentLoaded, call section-1's fetcher, and on success call section-2's mount(); on error, reveal the error banner with a short human-readable message. Provide the page's CSS (layout sizing, legend styling) without overriding Leaflet's own CSS.",
+      "acceptance": "The page renders a header, a map region that occupies the dominant area of the viewport, and a visible legend that labels at least three magnitude buckets with their corresponding marker style. On data-fetch failure (simulated by pointing the fetcher at an unreachable URL), an error banner becomes visible with a human-readable message and the map area is not left blank-and-silent. Page is sized for a typical desktop viewport.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "renders a header",
+          "check_type": "presence",
+          "scenario": "Open the artifact and inspect the DOM for a header element with the tool name.",
+          "expected_result": "Exactly one header element containing a non-empty title is present.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "S3.acceptance.header"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "a map region that occupies the dominant area of the viewport",
+          "check_type": "structural",
+          "scenario": "Measure the map container's bounding rect against the viewport at a 1280x800 baseline.",
+          "expected_result": "Map region area is at least 50% of the viewport area.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "S3.acceptance.dominant_map"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "a visible legend that labels at least three magnitude buckets",
+          "check_type": "presence",
+          "scenario": "Inspect the rendered DOM for a legend element.",
+          "expected_result": "Legend element is visible and contains labels for at least 3 magnitude buckets.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "S3.acceptance.legend"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "On data-fetch failure ... an error banner becomes visible with a human-readable message",
+          "check_type": "behavior",
+          "scenario": "Substitute the feed URL with an unreachable URL (or simulate via mocked fetch in test harness), reload the page.",
+          "expected_result": "Error banner becomes visible; banner text is non-empty and not a raw stack trace.",
+          "verifier": "edge_case_testing",
+          "covers": "S3.acceptance.error_banner"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "Page is sized for a typical desktop viewport",
+          "check_type": "structural",
+          "scenario": "Render at 1280x800 and observe layout.",
+          "expected_result": "No mobile-only nav; layout uses desktop-typical proportions; no horizontal scroll at this baseline.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "S3.acceptance.desktop_layout"
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Time-window picker (IP2 locked to fixed)",
+        "Filter controls (IP3 locked to none)",
+        "Mobile-first restyling",
+        "Multi-language strings"
+      ]
+    },
+    {
+      "id": "section-4",
+      "name": "Edge-Case Testing (production-fidelity)",
+      "charter": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment per CV charter — no substitution of runtime dependencies the artifact loads in production. Open the integrated artifact at output/final/index.html in a real browser via file://, with the real vendored Leaflet bundle and real network access to the USGS feed and OSM tiles. Verify the prompt_named_verb_assertion (visualize), the discovery_coverage_assertions, and each section's edge_case_testing-tagged acceptance assertions. Drive interactions (pan, zoom, marker click) the way a real user would. Report pass/fail per assertion id.",
+      "acceptance": "The verification suite executes against the integrated artifact in a real browser, opens output/final/index.html via file://, and reports a pass/fail entry for: PV1, every DC.* assertion tagged edge_case_testing, every IP*.A* assertion, every TDIP*.A* assertion, and every section assertion (S1.A*, S2.A*, S3.A*) tagged verifier: edge_case_testing. No assertion is verified by stubbing out the runtime dependencies (Leaflet, USGS feed, tile layer) the artifact loads in production.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "executes against the integrated artifact in a real browser",
+          "check_type": "behavior",
+          "scenario": "Inspect the test harness configuration and run logs.",
+          "expected_result": "Tests run in a real browser engine (e.g., headless Chromium) loading file://.../output/final/index.html.",
+          "verifier": "edge_case_testing",
+          "covers": "S4.acceptance.real_browser"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "reports a pass/fail entry for: PV1, every DC.* ..., every IP*.A*, every TDIP*.A*, and every section assertion ... tagged verifier: edge_case_testing",
+          "check_type": "structural",
+          "scenario": "Diff the test report's assertion-id list against the union of: PV1, edge_case_testing-tagged DC.* ids, all IP*.A* ids, all TDIP*.A* ids, and every section-assertion id whose verifier is edge_case_testing.",
+          "expected_result": "Set difference is empty in both directions.",
+          "verifier": "edge_case_testing",
+          "covers": "S4.acceptance.coverage_complete"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "No assertion is verified by stubbing out the runtime dependencies the artifact loads in production",
+          "check_type": "absence",
+          "scenario": "Inspect the test harness for any monkey-patches of window.fetch, replacements of L (Leaflet global), or interception of tile requests during the under-test run.",
+          "expected_result": "No such substitutions for the production-fidelity portion of the run. Negative-path tests (e.g., S3.A4 error banner) MAY use a separate harness invocation with a deliberately bad URL — that's a configuration change, not a runtime stub.",
+          "verifier": "edge_case_testing",
+          "covers": "S4.acceptance.no_runtime_stubs"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Fixing bugs found (raise back to overseers)",
+        "Authoring new acceptance assertions",
+        "Performance benchmarking",
+        "Automated visual regression baselining"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "section_id": "integrator",
+  "status": "verified",
+  "wave": 4,
+  "pseudo_node": true,
+  "started_at": "2026-05-10T00:08:15Z",
+  "verified_at": "2026-05-10T00:08:45Z",
+  "actions": [
+    "Copied renderer.js, input.js, app.js, index.html, styles.css from builder outputs into output/integration/.",
+    "Wrote output/integration/manifest.json describing entry point, file provenance, and load order.",
+    "Smoke check: opened index.html in jsdom, evaluated all scripts, verified renderer is reachable as window.renderer.render and inputUi as window.inputUi.onLatexChange.",
+    "Confirmed no overlap, no missing files, no script-order issues."
+  ],
+  "verification_summary": "Integrated artifact assembled. Script order in index.html: katex.min.js -> renderer.js -> input.js -> app.js (all defer). Smoke check passed."
+}

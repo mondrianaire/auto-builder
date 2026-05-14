@@ -1,0 +1,12 @@
+{
+  "section_id": "section-3",
+  "name": "Page Shell, Legend, and Error State",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[2]",
+  "started_at": "2026-05-10T01:04:00Z",
+  "verified_at": "2026-05-10T01:04:30Z",
+  "builders": [
+    { "id": "builder-3a", "task": "Author index.html, main.js, and styles.css; bootstrap data fetch + map mount; render legend; show error banner on failure." }
+  ]
+}

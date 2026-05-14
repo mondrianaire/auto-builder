@@ -1,0 +1,20 @@
+{
+  "builder_id": "builder-cs-1",
+  "section": "controller-and-shell",
+  "started_at": "2026-05-09T00:12:50Z",
+  "completed_at": "2026-05-09T00:13:25Z",
+  "output": {
+    "path": "output/builders/controller-and-shell/builder-cs-1/output.js",
+    "target_filename": "controller.js",
+    "global_attached": "window.Controller"
+  },
+  "responsibilities_implemented": [
+    "init(rootEl) — Bankroll.init, initial repaint",
+    "deal flow — validate bet, placeBet, RulesEngine.dealInitial, blackjack short-circuit",
+    "action flow — legalActions guard, addToBet for double/split, applyAction, advance to finishRound",
+    "finishRound — playDealer, resolveOutcomes, Bankroll.resolve per hand, build message",
+    "reset — Bankroll.reset, clear state",
+    "buildViewState — translates RoundState to ViewState including dealer total hidden until reveal"
+  ],
+  "notes": "Each repaint clears DOM and rebinds; safe because UIRender produces fresh elements each call. Dealer total is hidden until all dealer cards are faceUp."
+}

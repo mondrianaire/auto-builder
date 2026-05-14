@@ -1,0 +1,10 @@
+{
+  "id": "dev-002",
+  "ts": "2026-05-13T00:02:30Z",
+  "category": "implementation_path_chosen",
+  "section": "S5",
+  "summary": "Added MUSIC_SOURCE_FIXTURE env-var path inside music_source.js so the test harness (S6) can inject deterministic now-playing data without monkey-patching child_process.",
+  "decision": "When process.env.MUSIC_SOURCE_FIXTURE is set, getNowPlaying() parses that value as tab-delimited (title\\tartist) and returns the result; if the fixture is empty string, returns null. Otherwise the normal osascript path runs. The osascript code and the four required literals remain present in the source string regardless.",
+  "nested_equivalent": "An Overseer would have surfaced this to the Coordinator since the briefing explicitly calls for it but the S5 charter does not. The Coordinator would approve it as a test-affordance — it does not change the contract C-S4-S5 surface (getNowPlaying still returns {title,artist}|null), and S6 cannot meet its production-fidelity acceptance otherwise.",
+  "contract_impact": "None. C-S4-S5 is untouched."
+}

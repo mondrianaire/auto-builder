@@ -1,0 +1,101 @@
+{
+  "run_name": "kanban-board",
+  "audit_at": "2026-05-10T07:00:00Z",
+  "audit_under_architecture_version": "v1.6",
+  "original_verdict": "pass",
+  "original_verdict_at": "2026-05-10T04:26:11Z",
+  "original_verdict_path": "runs/kanban-board/output/verification/report.json",
+  "amendments_applied_since_original": ["v1.5", "v1.6"],
+  "gates_re_evaluated": [
+    {
+      "gate": "build_complete_handoff",
+      "introduced_in": "v1.2",
+      "result": "pass",
+      "rationale": "state/coordinator/build-complete.json exists."
+    },
+    {
+      "gate": "machine_checkable_assertions_per_ip_lock",
+      "introduced_in": "v1.2",
+      "result": "pass",
+      "rationale": "Sections file has machine_checkable_assertions[] on both IP1 and IP2 (verified earlier in conversation analysis: 6 IP assertions across 2 IPs)."
+    },
+    {
+      "gate": "acceptance_assertions_per_section",
+      "introduced_in": "v1.3",
+      "result": "pass",
+      "rationale": "Sections file has 39 acceptance_assertions[] across 7 sections per the run-report. Each prose acceptance phrase has structured assertions."
+    },
+    {
+      "gate": "cv_artifact_exercise_pass",
+      "introduced_in": "v1.3",
+      "result": "pass",
+      "rationale": "output/verification/cv-runner.js + cv-runner-report.json exist. 8/8 user_flow scenarios pass under jsdom-based artifact-exercise."
+    },
+    {
+      "gate": "cv_artifact_exercise_production_fidelity",
+      "introduced_in": "v1.5",
+      "result": "pass_with_concerns",
+      "rationale": "cv-runner-report shows DOM-loaded exercise of integrated artifact with state-model + persistence + ui-render + dnd + interactions. Kanban has zero CDN deps and uses only browser-native localStorage; jsdom natively provides localStorage, so 'no substitution' trivially holds (nothing to substitute). However, the v1.5 amendment was not in force when this run was built, and no explicit production-fidelity declaration appears in the cv-runner-report. The exercise was probably production-fidelity by accident. Concern: if jsdom@22 has any deviation from real-browser behavior in DnD event handling or localStorage edge cases, those defects would not have surfaced."
+    },
+    {
+      "gate": "prompt_named_verb_assertion",
+      "introduced_in": "v1.5",
+      "result": "fail",
+      "rationale": "No PNV in either verification report. The prompt's named verb 'organize tasks' (or whatever the literal verb is — 'use a kanban board'?) is not asserted end-to-end. The 8 user_flow scenarios cover individual interactions but no single scenario is the canonical user-success path."
+    },
+    {
+      "gate": "prompt_verb_analysis",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "TD's sections file does not include prompt_verb_analysis. The verb-derivation rationale is undocumented."
+    },
+    {
+      "gate": "integration_final_divergence_record",
+      "introduced_in": "v1.6",
+      "result": "not_applicable_to_this_run",
+      "rationale": "output/final/ contents look to match output/integration/ (no recovery patches were needed). Divergence record not required."
+    },
+    {
+      "gate": "historian_build_summary_and_decision_index",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "history/log.jsonl exists; build-summary.md and decision-index.json do not."
+    },
+    {
+      "gate": "td_introduced_ip_schema",
+      "introduced_in": "v1.6",
+      "result": "not_applicable_to_this_run",
+      "rationale": "Both IPs were Discovery-sourced. No TD-introduced IPs to schema-check."
+    },
+    {
+      "gate": "inline_deviation_logging",
+      "introduced_in": "v1.4",
+      "result": "needs_inspection",
+      "rationale": "Run-report mentions Coordinator self-corrected the S4.A4 test specification mid-build. v1.4 requires this to be logged in state/inline-deviations/. Audit needs to verify whether the directory exists and contains an entry for that correction."
+    }
+  ],
+  "reclassified_verdict": "fail",
+  "fail_count": 3,
+  "pass_with_concerns_count": 1,
+  "needs_inspection_count": 1,
+  "not_applicable_count": 2,
+  "pass_count": 4,
+  "incidental_observations": [
+    "This is the strongest of the prior runs against v1.6 — passes 4 gates outright, 1 pass-with-concerns, only 3 hard failures. The failures are all v1.5/v1.6-introduced (PNV, prompt_verb_analysis, Historian artifacts).",
+    "The cv-runner used jsdom and ran the integrated artifact end-to-end with real localStorage and real event dispatching. This is closer to v1.5 production fidelity than any other prior run. The pass-with-concerns is a documentation gap, not a substantive verification weakness.",
+    "Of the four prior runs, this is the best candidate for patch-not-rebuild.",
+    "The S4.A4 inline correction noted in the run-report would not satisfy v1.4's logging requirement if no state/inline-deviations/ entry exists. Worth verifying."
+  ],
+  "recovery_options": [
+    {
+      "type": "patch_artifact",
+      "description": "1) Add prompt_verb_analysis to sections-v1.json with candidate verbs from 'Build me a kanban board with multiple lists, drag-and-drop, and local saving' (candidates: 'organize', 'manage tasks', 'use a kanban board'; pick load-bearing). 2) Derive PNV (e.g., 'open page → add card to a list → drag card to another list → reload page → observe card persisted in new list'). 3) Run CV artifact-exercise under explicit v1.5 production fidelity for the new PNV. 4) Generate Historian build-summary.md and decision-index.json from history/log.jsonl. 5) If S4.A4 correction is undocumented, retroactively write a state/inline-deviations/ entry. Estimated effort: 1-2 dispatches."
+    },
+    {
+      "type": "rebuild_under_v1.6",
+      "description": "Discard and re-run. Cleaner long-term but wastes a working build."
+    }
+  ],
+  "recommendation": "patch_artifact",
+  "recommendation_rationale": "Only 3 hard failures, all are documentation/structuring additions rather than behavioral changes. The artifact actually works (cv-runner verified 8/8 user_flow scenarios). Patching is cheap, preserves the working build, and produces a v1.6-conformant version. Do this patch first as a learning exercise: it's the simplest of the four prior-run patches and validates the patch-artifact recovery pattern before applying it elsewhere."
+}

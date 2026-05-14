@@ -1,0 +1,334 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1750" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a7a7a"/>
+    </marker>
+    <marker id="arrow-esc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c43c3c"/>
+    </marker>
+  </defs>
+
+  <!-- TITLE -->
+  <text x="900" y="38" text-anchor="middle" font-size="26" font-weight="bold">Auto Builder — Full Role Architecture</text>
+  <text x="900" y="62" text-anchor="middle" font-size="13" fill="#666">single prompt → shipped product, fully self-contained • 10 role types</text>
+
+  <!-- ============================== PHASE 1: KICKOFF ============================== -->
+  <text x="40" y="110" font-size="13" font-weight="bold" fill="#888">PHASE 1 — KICKOFF</text>
+  <line x1="40" y1="118" x2="1760" y2="118" stroke="#ddd" stroke-width="1"/>
+
+  <!-- User Prompt -->
+  <rect x="780" y="135" width="240" height="55" fill="#ffffff" stroke="#000" stroke-width="2"/>
+  <text x="900" y="160" text-anchor="middle" font-size="14" font-weight="bold">User Prompt</text>
+  <text x="900" y="178" text-anchor="middle" font-size="11" fill="#444">"build me an app to play blackjack"</text>
+
+  <line x1="900" y1="190" x2="900" y2="218" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Orchestrator -->
+  <rect x="660" y="222" width="480" height="56" fill="#e8f4e8" stroke="#000" stroke-width="2"/>
+  <text x="900" y="246" text-anchor="middle" font-size="15" font-weight="bold">Orchestrator</text>
+  <text x="900" y="265" text-anchor="middle" font-size="11" fill="#333">user-facing • mostly idle once build starts • only sees Severity 5 escalations</text>
+
+  <line x1="900" y1="278" x2="900" y2="312" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ============================== PHASE 2: PLANNING ============================== -->
+  <text x="40" y="305" font-size="13" font-weight="bold" fill="#888">PHASE 2 — PLANNING</text>
+  <line x1="40" y1="313" x2="1760" y2="313" stroke="#ddd" stroke-width="1"/>
+
+  <!-- Discovery -->
+  <rect x="780" y="320" width="240" height="56" fill="#e0eef8" stroke="#000" stroke-width="2"/>
+  <text x="900" y="343" text-anchor="middle" font-size="15" font-weight="bold">Discovery</text>
+  <text x="900" y="361" text-anchor="middle" font-size="11" fill="#333">one-shot • product spec + assumptions</text>
+
+  <line x1="900" y1="376" x2="900" y2="404" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Technical Discovery -->
+  <rect x="780" y="408" width="240" height="56" fill="#e0eef8" stroke="#000" stroke-width="2"/>
+  <text x="900" y="431" text-anchor="middle" font-size="15" font-weight="bold">Technical Discovery</text>
+  <text x="900" y="449" text-anchor="middle" font-size="11" fill="#333">one-shot • sections + interface contracts</text>
+
+  <!-- Researchers (parallel, dispatched by TD per inflection point) -->
+  <rect x="1180" y="380" width="180" height="46" fill="#fff5d6" stroke="#000" stroke-width="1.5"/>
+  <text x="1270" y="400" text-anchor="middle" font-size="13" font-weight="bold">Researcher</text>
+  <text x="1270" y="416" text-anchor="middle" font-size="10" fill="#555">per-decision (parallel)</text>
+
+  <rect x="1180" y="436" width="180" height="46" fill="#fff5d6" stroke="#000" stroke-width="1.5"/>
+  <text x="1270" y="456" text-anchor="middle" font-size="13" font-weight="bold">Researcher</text>
+  <text x="1270" y="472" text-anchor="middle" font-size="10" fill="#555">per-decision (parallel)</text>
+
+  <rect x="1180" y="492" width="180" height="46" fill="#fff5d6" stroke="#000" stroke-width="1.5"/>
+  <text x="1270" y="512" text-anchor="middle" font-size="13" font-weight="bold">Researcher</text>
+  <text x="1270" y="528" text-anchor="middle" font-size="10" fill="#555">per-decision (parallel)</text>
+
+  <text x="1380" y="370" font-size="10" fill="#666" font-style="italic">dispatched per</text>
+  <text x="1380" y="383" font-size="10" fill="#666" font-style="italic">inflection point</text>
+
+  <!-- TD ↔ Researchers -->
+  <line x1="1020" y1="420" x2="1180" y2="403" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <line x1="1020" y1="436" x2="1180" y2="459" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <line x1="1020" y1="450" x2="1180" y2="515" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+
+  <line x1="900" y1="464" x2="900" y2="572" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ============================== PHASE 3: BUILD ORCHESTRATION ============================== -->
+  <text x="40" y="565" font-size="13" font-weight="bold" fill="#888">PHASE 3 — BUILD (PARALLEL EXECUTION + LIVE COORDINATION)</text>
+  <line x1="40" y1="573" x2="1760" y2="573" stroke="#ddd" stroke-width="1"/>
+
+  <!-- Coordinator -->
+  <rect x="660" y="580" width="480" height="68" fill="#fbe4e4" stroke="#000" stroke-width="2.5"/>
+  <text x="900" y="606" text-anchor="middle" font-size="16" font-weight="bold">Coordinator</text>
+  <text x="900" y="625" text-anchor="middle" font-size="11" fill="#333">long-running • owns DAG • dispatches overseer waves</text>
+  <text x="900" y="640" text-anchor="middle" font-size="11" fill="#333" font-style="italic">flow control only — no decision authority</text>
+
+  <!-- ============================== LONG-RUNNING SIDE STACK ============================== -->
+  <!-- Group label / boundary -->
+  <rect x="1430" y="660" width="340" height="320" fill="none" stroke="#aaa" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="1600" y="678" text-anchor="middle" font-size="11" font-weight="bold" fill="#666">LONG-RUNNING (active throughout build)</text>
+
+  <!-- Critic -->
+  <rect x="1450" y="690" width="300" height="78" fill="#fbe4e4" stroke="#000" stroke-width="2"/>
+  <text x="1600" y="713" text-anchor="middle" font-size="14" font-weight="bold">Critic</text>
+  <text x="1600" y="730" text-anchor="middle" font-size="11" fill="#333">scheduled audit • drift detection</text>
+  <text x="1600" y="745" text-anchor="middle" font-size="11" fill="#333">walks state, files flags</text>
+  <text x="1600" y="760" text-anchor="middle" font-size="10" fill="#666" font-style="italic">producer of issues</text>
+
+  <!-- Arbiter -->
+  <rect x="1450" y="780" width="300" height="78" fill="#fbe4e4" stroke="#000" stroke-width="2"/>
+  <text x="1600" y="803" text-anchor="middle" font-size="14" font-weight="bold">Arbiter</text>
+  <text x="1600" y="820" text-anchor="middle" font-size="11" fill="#333">reactive • routes escalations</text>
+  <text x="1600" y="835" text-anchor="middle" font-size="11" fill="#333">classifies severity 1–5</text>
+  <text x="1600" y="850" text-anchor="middle" font-size="10" fill="#666" font-style="italic">consumer of issues</text>
+
+  <!-- Historian -->
+  <rect x="1450" y="870" width="300" height="78" fill="#fbe4e4" stroke="#000" stroke-width="2"/>
+  <text x="1600" y="893" text-anchor="middle" font-size="14" font-weight="bold">Historian</text>
+  <text x="1600" y="910" text-anchor="middle" font-size="11" fill="#333">captures decisions + rationale</text>
+  <text x="1600" y="925" text-anchor="middle" font-size="11" fill="#333">writes to memory at end</text>
+  <text x="1600" y="940" text-anchor="middle" font-size="10" fill="#666" font-style="italic">subscriber to state changes</text>
+
+  <!-- Coordinator → Long-running (boots them) -->
+  <line x1="1140" y1="614" x2="1448" y2="690" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="1265" y="646" font-size="10" fill="#444" font-style="italic">boots</text>
+
+  <!-- ============================== STATUS ARTIFACT ============================== -->
+  <rect x="40" y="580" width="240" height="68" fill="#e8f4e8" stroke="#000" stroke-width="2"/>
+  <text x="160" y="603" text-anchor="middle" font-size="14" font-weight="bold">Status Artifact</text>
+  <text x="160" y="620" text-anchor="middle" font-size="11" fill="#333">user-facing dashboard</text>
+  <text x="160" y="635" text-anchor="middle" font-size="10" fill="#666" font-style="italic">view layer over state files</text>
+
+  <!-- Coordinator updates artifact -->
+  <line x1="660" y1="614" x2="280" y2="614" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-data)"/>
+  <text x="380" y="608" font-size="10" fill="#666" font-style="italic">renders state</text>
+
+  <!-- Critic also publishes flags to artifact -->
+  <line x1="1450" y1="730" x2="290" y2="640" stroke="#7a7a7a" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrow-data)" opacity="0.6"/>
+
+  <!-- Coordinator → fan-out branch line -->
+  <line x1="900" y1="648" x2="900" y2="688" stroke="#000" stroke-width="2"/>
+  <line x1="220" y1="688" x2="1580" y2="688" stroke="#000" stroke-width="2"/>
+  <line x1="220" y1="688" x2="220" y2="720" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="680" y1="688" x2="680" y2="720" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1120" y1="688" x2="1120" y2="720" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1580" y1="688" x2="1580" y2="720" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- =============== Note: sections fit in the same y-band as long-running stack =============== -->
+  <!-- Sections row: x=60-1700 -->
+
+  <!-- ===== Section 1: Build Web Server ===== -->
+  <rect x="60" y="725" width="320" height="270" fill="#fafafa" stroke="#000" stroke-width="1.5"/>
+  <text x="220" y="748" text-anchor="middle" font-size="13" font-weight="bold" fill="#444">Section · Build Web Server</text>
+
+  <rect x="80" y="760" width="280" height="50" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+  <text x="220" y="780" text-anchor="middle" font-size="13" font-weight="bold">Overseer</text>
+  <text x="220" y="797" text-anchor="middle" font-size="10" fill="#555">decomposes • verifies • escalates</text>
+
+  <line x1="160" y1="810" x2="160" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="280" y1="810" x2="280" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="100" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="160" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="160" y="888" text-anchor="middle" font-size="10" fill="#555">framework</text>
+
+  <rect x="220" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="280" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="280" y="888" text-anchor="middle" font-size="10" fill="#555">routes</text>
+
+  <text x="220" y="935" text-anchor="middle" font-size="10" fill="#666" font-style="italic">overseer can re-dispatch</text>
+  <text x="220" y="950" text-anchor="middle" font-size="10" fill="#666" font-style="italic">builders within budget</text>
+
+  <!-- ===== Section 2: Find JS Libraries ===== -->
+  <rect x="430" y="725" width="320" height="270" fill="#fafafa" stroke="#000" stroke-width="1.5"/>
+  <text x="590" y="748" text-anchor="middle" font-size="13" font-weight="bold" fill="#444">Section · Find JS Libraries</text>
+
+  <rect x="450" y="760" width="280" height="50" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+  <text x="590" y="780" text-anchor="middle" font-size="13" font-weight="bold">Overseer</text>
+  <text x="590" y="797" text-anchor="middle" font-size="10" fill="#555">decomposes • verifies • escalates</text>
+
+  <line x1="530" y1="810" x2="530" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="650" y1="810" x2="650" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="470" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="530" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="530" y="888" text-anchor="middle" font-size="10" fill="#555">card render</text>
+
+  <rect x="590" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="650" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="650" y="888" text-anchor="middle" font-size="10" fill="#555">animation</text>
+
+  <!-- ===== Section 3: Implement CSS/UI ===== -->
+  <rect x="870" y="725" width="320" height="270" fill="#fafafa" stroke="#000" stroke-width="1.5"/>
+  <text x="1030" y="748" text-anchor="middle" font-size="13" font-weight="bold" fill="#444">Section · Implement CSS / UI</text>
+
+  <rect x="890" y="760" width="280" height="50" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+  <text x="1030" y="780" text-anchor="middle" font-size="13" font-weight="bold">Overseer</text>
+  <text x="1030" y="797" text-anchor="middle" font-size="10" fill="#555">decomposes • verifies • escalates</text>
+
+  <line x1="970" y1="810" x2="970" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="1090" y1="810" x2="1090" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="910" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="970" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="970" y="888" text-anchor="middle" font-size="10" fill="#555">layout</text>
+
+  <rect x="1030" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="1090" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="1090" y="888" text-anchor="middle" font-size="10" fill="#555">interactions</text>
+
+  <!-- ===== Section 4: Edge Case Testing ===== -->
+  <rect x="1330" y="725" width="320" height="270" fill="#fafafa" stroke="#000" stroke-width="1.5"/>
+  <text x="1490" y="748" text-anchor="middle" font-size="13" font-weight="bold" fill="#444">Section · Edge Case Testing</text>
+
+  <rect x="1350" y="760" width="280" height="50" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+  <text x="1490" y="780" text-anchor="middle" font-size="13" font-weight="bold">Overseer</text>
+  <text x="1490" y="797" text-anchor="middle" font-size="10" fill="#555">enumerates • runs against output</text>
+
+  <line x1="1430" y1="810" x2="1430" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="1550" y1="810" x2="1550" y2="840" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="1370" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="1430" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="1430" y="888" text-anchor="middle" font-size="10" fill="#555">enumerate cases</text>
+
+  <rect x="1490" y="845" width="120" height="60" fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+  <text x="1550" y="872" text-anchor="middle" font-size="12" font-weight="bold">Builder</text>
+  <text x="1550" y="888" text-anchor="middle" font-size="10" fill="#555">execute tests</text>
+
+  <text x="1490" y="970" text-anchor="middle" font-size="10" fill="#666" font-style="italic">activates in multiple waves</text>
+
+  <!-- =================== ESCALATION PATHS (red dotted) =================== -->
+  <!-- Each overseer can escalate to Arbiter -->
+  <path d="M 360 785 Q 1400 780 1450 800" fill="none" stroke="#c43c3c" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arrow-esc)" opacity="0.55"/>
+  <path d="M 730 785 Q 1400 780 1450 805" fill="none" stroke="#c43c3c" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arrow-esc)" opacity="0.55"/>
+  <path d="M 1170 785 Q 1400 790 1450 810" fill="none" stroke="#c43c3c" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arrow-esc)" opacity="0.55"/>
+  <path d="M 1630 760 Q 1700 775 1700 780" fill="none" stroke="#c43c3c" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arrow-esc)" opacity="0.55"/>
+
+  <text x="1380" y="773" font-size="10" fill="#c43c3c" font-style="italic">escalations</text>
+
+  <!-- Critic monitors sections (gray dashed) -->
+  <line x1="1450" y1="745" x2="1190" y2="775" stroke="#7a7a7a" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arrow-data)" opacity="0.55"/>
+  <text x="1290" y="755" font-size="10" fill="#666" font-style="italic">monitors</text>
+
+  <!-- Coordinator monitors sections (small back-arrow from overseers) -->
+  <path d="M 220 760 Q 580 660 660 612" fill="none" stroke="#7a7a7a" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrow-data)" opacity="0.45"/>
+  <path d="M 1490 760 Q 1300 660 1140 612" fill="none" stroke="#7a7a7a" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrow-data)" opacity="0.45"/>
+  <text x="600" y="690" font-size="10" fill="#666" font-style="italic">section status → coordinator</text>
+
+  <!-- ============================== PHASE 4: CONVERGENCE ============================== -->
+  <text x="40" y="1030" font-size="13" font-weight="bold" fill="#888">PHASE 4 — CONVERGENCE</text>
+  <line x1="40" y1="1038" x2="1760" y2="1038" stroke="#ddd" stroke-width="1"/>
+
+  <!-- Section outputs converge to Integrator -->
+  <line x1="220" y1="995" x2="220" y2="1075" stroke="#000" stroke-width="2"/>
+  <line x1="590" y1="995" x2="590" y2="1075" stroke="#000" stroke-width="2"/>
+  <line x1="1030" y1="995" x2="1030" y2="1075" stroke="#000" stroke-width="2"/>
+  <line x1="1490" y1="995" x2="1490" y2="1075" stroke="#000" stroke-width="2"/>
+  <line x1="220" y1="1075" x2="1490" y2="1075" stroke="#000" stroke-width="2"/>
+  <line x1="900" y1="1075" x2="900" y2="1095" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Integrator -->
+  <rect x="660" y="1100" width="480" height="62" fill="#ece0f5" stroke="#000" stroke-width="2"/>
+  <text x="900" y="1124" text-anchor="middle" font-size="15" font-weight="bold">Integrator</text>
+  <text x="900" y="1142" text-anchor="middle" font-size="11" fill="#333">stitches sections together • owns the seams • cross-section glue code</text>
+  <text x="900" y="1156" text-anchor="middle" font-size="10" fill="#666" font-style="italic">authority limited to connecting work, not creating new section work</text>
+
+  <line x1="900" y1="1162" x2="900" y2="1192" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Convergence Verifier -->
+  <rect x="660" y="1196" width="480" height="62" fill="#ece0f5" stroke="#000" stroke-width="2"/>
+  <text x="900" y="1220" text-anchor="middle" font-size="15" font-weight="bold">Convergence Verifier</text>
+  <text x="900" y="1238" text-anchor="middle" font-size="11" fill="#333">checks finished system against Discovery's product spec</text>
+  <text x="900" y="1252" text-anchor="middle" font-size="10" fill="#666" font-style="italic">acceptance gate · different from Critic (process) — this is outcome</text>
+
+  <!-- CV reads back to Discovery's spec (shown as dashed back-arrow) -->
+  <path d="M 660 1220 Q 460 1220 460 800 Q 460 360 780 348" fill="none" stroke="#7a7a7a" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrow-data)" opacity="0.5"/>
+  <text x="470" y="780" font-size="10" fill="#666" font-style="italic" transform="rotate(-90 470 780)">CV reads original spec</text>
+
+  <line x1="900" y1="1258" x2="900" y2="1288" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Done -->
+  <rect x="780" y="1292" width="240" height="56" fill="#ffffff" stroke="#000" stroke-width="2.5"/>
+  <text x="900" y="1316" text-anchor="middle" font-size="15" font-weight="bold">Done</text>
+  <text x="900" y="1334" text-anchor="middle" font-size="11" fill="#333">delivered to user via Orchestrator</text>
+
+  <!-- Done back to user -->
+  <path d="M 1020 1320 Q 1280 1320 1280 248 Q 1280 245 1140 245" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+  <text x="1290" y="800" font-size="11" fill="#333" font-style="italic" transform="rotate(-90 1290 800)">final delivery → orchestrator → user</text>
+
+  <!-- Historian writes to memory -->
+  <path d="M 1600 950 Q 1600 1100 1300 1320" fill="none" stroke="#7a7a7a" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arrow-data)" opacity="0.5"/>
+  <text x="1500" y="1145" font-size="10" fill="#666" font-style="italic">writes decision log to memory</text>
+
+  <!-- ============================== LEGEND ============================== -->
+  <text x="40" y="1430" font-size="14" font-weight="bold" fill="#444">LEGEND</text>
+  <line x1="40" y1="1438" x2="1760" y2="1438" stroke="#ddd" stroke-width="1"/>
+
+  <!-- Box style key -->
+  <text x="60" y="1465" font-size="12" font-weight="bold">Box fill = role category</text>
+
+  <rect x="60" y="1480" width="160" height="40" fill="#ffffff" stroke="#000" stroke-width="2"/>
+  <text x="140" y="1505" text-anchor="middle" font-size="12">user-facing</text>
+
+  <rect x="240" y="1480" width="160" height="40" fill="#e8f4e8" stroke="#000" stroke-width="2"/>
+  <text x="320" y="1505" text-anchor="middle" font-size="12">orchestration / I/O</text>
+
+  <rect x="420" y="1480" width="160" height="40" fill="#e0eef8" stroke="#000" stroke-width="2"/>
+  <text x="500" y="1505" text-anchor="middle" font-size="12">one-shot planning</text>
+
+  <rect x="600" y="1480" width="160" height="40" fill="#fff5d6" stroke="#000" stroke-width="2"/>
+  <text x="680" y="1505" text-anchor="middle" font-size="12">per-decision (parallel)</text>
+
+  <rect x="780" y="1480" width="160" height="40" fill="#fbe4e4" stroke="#000" stroke-width="2"/>
+  <text x="860" y="1505" text-anchor="middle" font-size="12">long-running</text>
+
+  <rect x="960" y="1480" width="160" height="40" fill="#fafafa" stroke="#000" stroke-width="2"/>
+  <text x="1040" y="1505" text-anchor="middle" font-size="12">section group</text>
+
+  <rect x="1140" y="1480" width="160" height="40" fill="#ece0f5" stroke="#000" stroke-width="2"/>
+  <text x="1220" y="1505" text-anchor="middle" font-size="12">end-of-build</text>
+
+  <!-- Arrow style key -->
+  <text x="60" y="1565" font-size="12" font-weight="bold">Arrow style = relationship type</text>
+
+  <line x1="60" y1="1585" x2="200" y2="1585" stroke="#000" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="220" y="1590" font-size="12">solid black: dispatch / control flow</text>
+
+  <line x1="60" y1="1615" x2="200" y2="1615" stroke="#7a7a7a" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-data)"/>
+  <text x="220" y="1620" font-size="12">gray dashed: data read / monitoring / status update</text>
+
+  <line x1="60" y1="1645" x2="200" y2="1645" stroke="#c43c3c" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow-esc)"/>
+  <text x="220" y="1650" font-size="12">red dotted: escalation (overseer → Arbiter, Arbiter → upstream)</text>
+
+  <line x1="60" y1="1675" x2="200" y2="1675" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="220" y="1680" font-size="12">double-headed: bidirectional (TD ↔ Researchers)</text>
+
+  <!-- Notes -->
+  <text x="700" y="1565" font-size="12" font-weight="bold">Notes on what's not drawn explicitly</text>
+  <text x="700" y="1588" font-size="11" fill="#333">• All agents read/write to a shared <tspan font-style="italic">state files</tspan> directory in the workspace (the data plane).</text>
+  <text x="700" y="1606" font-size="11" fill="#333">• The Status Artifact is a render layer over those files — it never holds canonical state.</text>
+  <text x="700" y="1624" font-size="11" fill="#333">• Critic runs on a schedule (e.g. every few minutes); other arrows from Critic abbreviated for clarity.</text>
+  <text x="700" y="1642" font-size="11" fill="#333">• Arbiter routes to: section overseer (sev 1), interface contract (sev 2), Technical Discovery (sev 3),</text>
+  <text x="700" y="1658" font-size="11" fill="#333">  Discovery (sev 4), or Orchestrator → User (sev 5, rare).</text>
+  <text x="700" y="1676" font-size="11" fill="#333">• "Section · Edge Case Testing" activates in multiple waves alongside other sections, not strictly parallel.</text>
+</svg>

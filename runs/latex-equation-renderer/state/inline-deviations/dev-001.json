@@ -1,0 +1,10 @@
+{
+  "id": "dev-001",
+  "category": "implementation_path_chosen",
+  "section": "section-1-renderer-core",
+  "decided_at": "2026-05-10T00:05:30Z",
+  "context": "Contract section-1-renderer-core--section-3-output-and-errors open_questions_for_builders asked: handle empty/whitespace input inside renderer (return ok:true, no DOM changes) vs short-circuit in consumer.",
+  "decision": "Renderer short-circuits empty/whitespace input itself: returns {ok:true} and clears target's children. Consumer code is also free to short-circuit and not call render at all; both paths satisfy S5.A2/A3.",
+  "rationale": "Defensive: lets the renderer be safe to call with any string without producing a KaTeX error for an empty input.",
+  "nested_equivalent": "In a nested-dispatch run, the section-1 builder would ask the section-1 Overseer for a ruling on the open contract question; Overseer would pick this branch because it is strictly additive and matches the 'empty in, empty out' principle stated as the consumer's expected behavior in S5.A2."
+}

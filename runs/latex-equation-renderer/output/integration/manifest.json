@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "integrated_at": "2026-05-10T00:08:30Z",
+  "entry_point": "index.html",
+  "files": [
+    { "path": "index.html", "from": "section-4-page-shell-and-styling/b1-shell-html/output.html", "role": "page shell, slots, CDN tags, script ordering" },
+    { "path": "styles.css", "from": "section-4-page-shell-and-styling/b2-shell-css/output.css", "role": "global styling, region distinction, desktop-first layout, stale marker" },
+    { "path": "renderer.js", "from": "section-1-renderer-core/b1-renderer/output.js", "role": "window.renderer.render(latex, target)" },
+    { "path": "input.js", "from": "section-2-input-ui/b1-input/output.js", "role": "window.inputUi.onLatexChange(cb)" },
+    { "path": "app.js", "from": "section-3-output-and-errors/b1-wiring/output.js", "role": "input -> renderer -> output/error wiring" }
+  ],
+  "external_runtime_deps": [
+    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
+    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+  ],
+  "load_order_in_index_html": [
+    "katex.min.js (defer)",
+    "renderer.js (defer)",
+    "input.js (defer)",
+    "app.js (defer)"
+  ],
+  "smoke_check": "Open index.html in any modern desktop browser. The page renders with input on the left and output on the right. Type 'x^2 + y^2 = z^2' in the textarea — typeset math appears live in the output region. Type '\\frac{1}{' — the error region appears in red with a non-empty parser message and the previous render is cleared/marked stale."
+}

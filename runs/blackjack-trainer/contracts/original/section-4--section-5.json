@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "from_section": "section-4",
+  "to_section": "section-5",
+  "interface": {
+    "DOM contract: required element ids/selectors": {
+      "btn-hint": "the Hint button element (hint-and-review attaches a click handler here)",
+      "hint-display": "the container element where the hint action label is written; cleared/refilled on each hint",
+      "review-panel": "the container element where post-hand review rows are rendered; populated on phase transition into 'resolved'/'review'",
+      "review-panel.row-template": "optional: a template element with structure { chosenAction, correctAction, matchIndicator } slots; if absent, hint-and-review constructs rows from scratch"
+    },
+    "renderHint(actionLabel)": {
+      "params": { "actionLabel": "'Hit' | 'Stand' | 'Double' | 'Split'" },
+      "returns": "void",
+      "notes": "Optional helper exposed by ui-render; if exposed, hint-and-review may call it instead of writing into hint-display directly. Either pathway is acceptable."
+    },
+    "renderReviewRows(rows)": {
+      "params": {
+        "rows": "Array<{ chosenAction: string, correctAction: string, matched: bool, handSnapshotSummary: string }>"
+      },
+      "returns": "void",
+      "notes": "Optional helper exposed by ui-render; analogous to renderHint."
+    }
+  },
+  "notes": "Data, not logic: ui-render owns the DOM containers; hint-and-review owns the action-label and review-row content. The contract gives hint-and-review either direct DOM ids OR helper functions to use — implementer may pick. No per-cell chart highlighting (IP4 lock); no chart embed (IP5 lock); rendered hint is a single label; review rows show chosen vs correct vs match indicator only."
+}

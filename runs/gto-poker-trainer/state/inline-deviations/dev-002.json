@@ -1,0 +1,9 @@
+{
+  "id": "dev-002",
+  "category": "test_or_assertion_fix",
+  "section": "section-2",
+  "severity": "Sev 0 (product code fix)",
+  "decision": "Quoted the object key 'raise_3.5' in HANDS[h012].gto_mix. Unquoted, '3.5' is parsed as a numeric property access making 'raise_3' a syntax error.",
+  "rationale": "Caught at integrator-time via node --check on the assembled bundle. JS object literal keys with a dot must be string-quoted. No semantics change — still maps to the same logical action.",
+  "nested_equivalent": "Under nested dispatch the Critic on the section-2 cycle would have caught this via its lint pass; the Builder would have re-emitted with the quote fix; the Overseer would have accepted on second cycle. Same end state."
+}

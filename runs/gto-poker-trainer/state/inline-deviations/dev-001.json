@@ -1,0 +1,8 @@
+{
+  "id": "dev-001",
+  "category": "subtask_decomposition",
+  "section": "section-3",
+  "decision": "Collapsed estimated_builders=2 into a single builder (builder-3a) covering both walkthrough UI and the glossary route.",
+  "rationale": "Walkthrough and glossary share the same route-registration plumbing, the same data dependency on GTOData.HANDS/GLOSSARY, and the same DOM patterns. Splitting would duplicate state and add an integration seam with no acceptance benefit. All five S3 assertions are satisfied by the single builder.",
+  "nested_equivalent": "Under nested dispatch, the Overseer for section-3 would have spawned builder-3a (walkthrough) and builder-3b (glossary). Each would have produced a separate output.js. The integrator would have loaded both. Same observable behavior; same assertion coverage."
+}

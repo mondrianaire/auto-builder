@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "from_section": "state-model",
+  "to_section": "ui-render",
+  "interface": {
+    "BoardState": {
+      "shape": {
+        "lists": "Array<{ id: string, name: string, cards: Array<{ id: string, title: string }> }>"
+      }
+    },
+    "getState": {
+      "params": {},
+      "returns": "BoardState — read by ui-render to produce DOM."
+    },
+    "subscribe": {
+      "params": { "listener": "(state: BoardState) => void" },
+      "returns": "() => void — ui-render registers a listener that triggers re-render on every state change."
+    }
+  },
+  "notes": "ui-render reads only; never mutates. Re-render must be idempotent against the same state. Card DOM elements MUST carry data-card-id and data-list-id and draggable=true so dnd can locate them."
+}

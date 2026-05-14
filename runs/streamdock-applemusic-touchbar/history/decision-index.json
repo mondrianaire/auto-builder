@@ -1,0 +1,368 @@
+{
+  "updated_at": "2026-05-14T01:45:00Z",
+  "project": "streamdock-applemusic-touchbar",
+  "cycles": ["v1-macos", "v3-windows-rebuild"],
+  "decisions": [
+    {
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "version": 1,
+      "produced_by": "discovery",
+      "trigger": {
+        "type": "initial",
+        "from_prompt": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that Utilizes the Touchbar Mode to display the currently playing song and artist from Apple Music Desktop Application. The plugin should take up the entire length of the VSD N4 Pro touch bar for display."
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "based_on_ledger": "decisions/discovery/ledger-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/C-S1-S2-manifest-references.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "based_on_ledger": "decisions/discovery/ledger-v1.json",
+        "co_authored_with": "decisions/technical-discovery/sections-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/C-S1-S3-codepath-entry.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "based_on_ledger": "decisions/discovery/ledger-v1.json",
+        "co_authored_with": "decisions/technical-discovery/sections-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/C-S2-S3-pi-settings.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "based_on_ledger": "decisions/discovery/ledger-v1.json",
+        "co_authored_with": "decisions/technical-discovery/sections-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/C-S2-S4-feedback-payload.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "based_on_ledger": "decisions/discovery/ledger-v1.json",
+        "co_authored_with": "decisions/technical-discovery/sections-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/C-S3-S4-internal-api.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "based_on_ledger": "decisions/discovery/ledger-v1.json",
+        "co_authored_with": "decisions/technical-discovery/sections-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/C-S4-S5-music-source.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "based_on_ledger": "decisions/discovery/ledger-v1.json",
+        "co_authored_with": "decisions/technical-discovery/sections-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-esc-003/findings.json",
+      "version": 1,
+      "produced_by": "researcher_escalation",
+      "trigger": {
+        "type": "escalation_research",
+        "escalation_ids": ["esc-003"],
+        "routed_by": "state/escalations/routed/esc-003-routing.json",
+        "briefing": "research/probes/probe-esc-003/briefing.json",
+        "budget_minutes": 5,
+        "optimization_criterion": "blast_radius_minimization",
+        "options_count": 4,
+        "recommended": "opt-A"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/impact-analysis-v2.json",
+      "version": 2,
+      "produced_by": "td_impact_analysis",
+      "trigger": {
+        "type": "escalation_batch",
+        "escalation_ids": ["esc-001", "esc-002", "esc-003"],
+        "escalation_routings": [
+          "state/escalations/routed/esc-001-routing.json",
+          "state/escalations/routed/esc-002-routing.json",
+          "state/escalations/routed/esc-003-routing.json"
+        ],
+        "research_findings": "research/probes/probe-esc-003/findings.json",
+        "chosen_option": "opt-A",
+        "discovery_amendment_inlined_as_noop": true,
+        "discovery_amendment_rationale": "No Discovery assumption is invalidated by the escalations; all uncovered Discovery-side fields are entailed by existing TD-side assertions that simply need their `covers` arrays widened. Orchestrator inlined the Discovery amendment step as a no-op and routed Researcher findings directly to TD impact-analysis."
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v2.json",
+      "version": 2,
+      "produced_by": "td_impact_analysis",
+      "trigger": {
+        "type": "consolidated_with_impact_analysis_v2",
+        "escalation_ids": ["esc-001", "esc-002", "esc-003"],
+        "amendment_scope": "metadata_only",
+        "covers_extensions_count": 50,
+        "new_assertion_entries_count": 0,
+        "contract_amendments_count": 0,
+        "ledger_amendments_count": 0,
+        "harness_rerun_required": false,
+        "sections_with_code_changes": [],
+        "permissive_field_clause_invoked": "file_schemas.md `covers` field interpreted as string-or-array"
+      },
+      "supersedes": 1
+    },
+    {
+      "artifact": "root-cause-analysis.md",
+      "version": 1,
+      "produced_by": "orchestrator_post_user_failure",
+      "cycle": "v3-windows-rebuild",
+      "trigger": {
+        "type": "user_side_failure_post_delivery",
+        "delivered_artifact": "output/final/com.autobuilder.applemusic-nowplaying.sdPlugin/ (v1 macOS)",
+        "user_install_attempt_path": "C:\\Program Files (x86)\\VSD Craft\\plugins",
+        "symptom": "Bundle did not appear in VSD Craft side panel after install on Windows host.",
+        "failure_classification": "environmental-evidence blindness at IP-resolution time; Discovery default accepted by TD without quick-reasoning-rubric exercise; no 'should we ask?' gate on high-importance IPs.",
+        "named_failure_modes": [
+          "environmental_evidence_blindness",
+          "discovery_default_accepted_as_rubric_bypass",
+          "no_should_we_ask_gate_for_high_importance_ips"
+        ],
+        "proposed_v1_9_amendments": [
+          "Principle E — Decision Grounding (new principle)",
+          "Discovery charter — environmental-evidence inspection step before locking any IP",
+          "TD charter — discovery_default_accepted is NOT a rubric bypass; rubric runs on every IP resolution",
+          "Importance-as-load-bearing — high-importance IPs require explicit rubric pass and Researcher dispatch by default",
+          "PNV scope expansion — new sibling assertion prompt_environment_assertion exercises installability in actual user environment",
+          "Reaudit reverse-pattern — user-side-failure.json triggers Re-Verification under current architecture asking 'what gate should have caught this?'"
+        ],
+        "second_consecutive_run_pattern": "This is the second consecutive run where the architecture's gates passed but the user's actual environment was the unmodeled variable. First was the latex-CDN run that v1.5 was created to close (verification fidelity). This one is decision-making fidelity. Same root-cause class, one level up the stack — the gap Principle E is designed to close."
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/discovery/ledger-diff-v2.json",
+      "version": 2,
+      "produced_by": "discovery_amendment",
+      "cycle": "v3-windows-rebuild",
+      "trigger": {
+        "type": "user_environment_evidence_plus_user_explicit_choice",
+        "diff_against": "decisions/discovery/ledger-v1.json",
+        "evidence_signals": [
+          "host_os_path_separators (C:\\Users\\mondr\\..., AppData\\Roaming, C:\\Program Files (x86)\\)",
+          "vsd_craft_install_attempt (C:\\Program Files (x86)\\VSD Craft\\plugins side panel empty)",
+          "user_explicit_resolution_choice (Windows-only rebuild — drop macOS branch entirely)"
+        ],
+        "meta_check_summary": {
+          "a_user_can_do": "no",
+          "b_context_needed": "yes",
+          "c_success_criteria": "no",
+          "d_maintenance_burden": "yes",
+          "verdict": "goal-affecting (2 yes among b and d). Route to TD impact analysis."
+        },
+        "user_surfacing_state": "pre-committed (user explicitly chose Windows-only rebuild before this dispatch was opened)",
+        "amendments_applied_to": ["A3", "A4", "A6", "A10", "IP1"],
+        "amendments_inherited_unchanged": ["A1", "A2", "A5", "A7", "A8", "A9", "A11", "A12", "A13", "IP2", "IP3"],
+        "oos_items_added": [
+          "macOS as a host OS",
+          "Cross-platform single-bundle (one .sdPlugin that runs on both macOS and Windows)"
+        ],
+        "downstream_route_to": "technical-discovery (impact-analysis mode)",
+        "principle_e_grounding_note": "This amendment ratifies the host-OS decision against the strongest available evidence (user's actual environment + explicit user choice), per the proposed Principle E (Decision Grounding) in root-cause-analysis.md."
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-windows-nowplaying/findings.json",
+      "version": 1,
+      "produced_by": "researcher_escalation",
+      "cycle": "v3-windows-rebuild",
+      "trigger": {
+        "type": "escalation_research",
+        "dispatched_by": "td_impact_analysis (v3)",
+        "topic": "Windows now-playing data-acquisition mechanism (replacement for AppleScript path dropped by ledger-diff-v2)",
+        "budget_minutes": 5,
+        "optimization_criterion": "blast_radius_minimization",
+        "options_count": 4,
+        "options": [
+          "opt-A inline PowerShell + WinRT SMTC via child_process.execFile",
+          "opt-B long-running PowerShell helper subscribing to SMTC events",
+          "opt-C bundled precompiled nowplaying.exe (Rust windows-rs or self-contained .NET)",
+          "opt-D N-API native Node module (e.g., @nodert-win10-rs4/windows.media.control)"
+        ],
+        "recommended": "opt-A",
+        "rationale_summary": "Smallest possible blast radius: only S5's music_source.js changes; S2/S3/S4/S6 byte-identical. C-S4-S5 contract surface preserved verbatim (mechanism-agnostic by design). Zero install footprint (PowerShell 5.1 + WinRT ship in every Windows 10/11). Zero new dependencies. ~400 ms PS cold start well below 2000 ms poll cadence. opt-B deferred to future enhancement (A6 amendment). opt-C/D add bundle weight, build-toolchain, or AV-surface risk.",
+        "framing_concern": null
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-windows-plugin-runtime/findings.json",
+      "version": 1,
+      "produced_by": "researcher_escalation",
+      "cycle": "v3-windows-rebuild",
+      "trigger": {
+        "type": "escalation_research",
+        "dispatched_by": "td_impact_analysis (v3)",
+        "topic": "How VSD Craft on Windows runs a .js plugin entry (wrapper vs direct, bundled Node vs system Node vs vendored binary)",
+        "budget_minutes": 5,
+        "optimization_criterion": "blast_radius_minimization",
+        "options_count": 4,
+        "options": [
+          "A declare Nodejs.Version in manifest; point CodePathWin directly at plugin/main.js (host runs it with bundled Node)",
+          "B .cmd wrapper invoking system node.exe",
+          "C bundle a portable node.exe inside the plugin + .cmd wrapper",
+          "D ncc/pkg single-exe bundle"
+        ],
+        "recommended": "A",
+        "rationale_summary": "MiraboxSpace/StreamDock-Plugin-SDK mirrors Elgato Stream Deck manifest schema. When manifest declares Nodejs.Version, host runs CodePathWin as a Node script using its bundled runtime. No wrappers, no bundled binary, no system-Node requirement, no new files. Honors S2/S3/S4/S6 preservation list. Manifest-only change.",
+        "framing_concern": null
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/impact-analysis-v3.json",
+      "version": 3,
+      "produced_by": "td_impact_analysis",
+      "cycle": "v3-windows-rebuild",
+      "trigger": {
+        "type": "discovery_amendment_impact_analysis",
+        "discovery_diff": "decisions/discovery/ledger-diff-v2.json",
+        "research_findings_consumed": [
+          "research/probes/probe-windows-nowplaying/findings.json",
+          "research/probes/probe-windows-plugin-runtime/findings.json"
+        ],
+        "chosen_options": {
+          "music_source_mechanism": "opt-A (PowerShell + WinRT SMTC via child_process.execFile)",
+          "plugin_runtime_mechanism": "opt-A (Nodejs.Version + CodePathWin -> plugin/main.js)"
+        },
+        "sections_classified": {
+          "S1": "salvageable",
+          "S2": "unaffected",
+          "S3": "unaffected",
+          "S4": "unaffected",
+          "S5": "stop_and_scrap_and_replace",
+          "S6": "salvageable"
+        },
+        "td_ips_added": ["TD-IP-G (Windows now-playing mechanism)"],
+        "td_ips_amended": ["TD-IP-A (manifest schema: mac->windows, +Nodejs, CodePathMac->CodePathWin)"],
+        "td_ips_superseded": ["TD-IP-D (AppleScript surface — superseded by TD-IP-G)"],
+        "assertions_amended_count": 8,
+        "assertions_added_count": 1,
+        "assertions_removed_count": 0,
+        "contract_amendments_count": 0,
+        "contracts_with_optional_implementation_note": 2,
+        "prompt_named_verb_unchanged": true,
+        "prompt_named_verb_scenario_amended": true,
+        "harness_rerun_required": true
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v3.json",
+      "version": 3,
+      "produced_by": "td_impact_analysis",
+      "cycle": "v3-windows-rebuild",
+      "trigger": {
+        "type": "consolidated_with_impact_analysis_v3",
+        "amendment_scope": "windows_pivot",
+        "section_changes_summary": {
+          "S1": "manifest OS array mac->windows; +Nodejs:{Version:'20'}; +CodePathWin:'plugin/main.js'; drop CodePathMac; remove plugin/run.sh; Description updated; AA.S1.5 flipped; new AA.S1.6 + MCA.TDIPA.4 added",
+          "S2": "byte-identical (mechanism-agnostic)",
+          "S3": "byte-identical (mechanism-agnostic)",
+          "S4": "byte-identical (C-S4-S5 contract preserved)",
+          "S5": "renamed music-source-applescript -> music-source-smtc (id 'S5' preserved); module body and AA.S5.1-4 + MCA.TDIPD.1/2 literals rewritten from AppleScript+osascript to PowerShell+WinRT SMTC; C-S4-S5 surface + dev-002 MUSIC_SOURCE_FIXTURE shim preserved verbatim",
+          "S6": "fixture key rename osascript->powershell.exe; AA.S6.3 prose updated"
+        },
+        "covers_arrays_carried_forward_from_v2": true,
+        "harness_rerun_required": true,
+        "sections_with_code_changes": ["S1 (manifest)", "S5 (full module rewrite)"]
+      },
+      "supersedes": 2
+    }
+  ],
+  "v3_cycle_artifacts": {
+    "build_complete": "state/coordinator/build-complete-v3.json",
+    "verification_report": "output/verification/report-v3.json",
+    "harness_report": "output/builders/edge-case-testing/builder-s6-v3/report.json",
+    "harness_results_v3": "33/33 passed",
+    "pnv_v3_verdict": "pass (production-fidelity ceiling with Linux-sandbox / no-powershell.exe caveat documented explicitly)",
+    "inline_deviations_v3": [
+      {
+        "id": "dev-003",
+        "section": "S1",
+        "category": "implementation_path_chosen",
+        "summary": "Manifest Nodejs object includes only Version; GenerateProfilerData omitted (matches MCA.TDIPA.4 expected_value)."
+      },
+      {
+        "id": "dev-004",
+        "section": "S5",
+        "category": "implementation_path_chosen",
+        "summary": "PowerShell script embedded in music_source.js as array of single-quoted JS strings joined with '\\n' to avoid template-literal interpretation of PS backtick/$ sigils."
+      },
+      {
+        "id": "dev-005",
+        "section": "integrator",
+        "category": "environment_constraint_accommodation",
+        "summary": "plugin/run.sh could not be physically deleted in cowork sandbox; reduced to inert comment-only content; not referenced by manifest; flagged for physical removal at final-delivery."
+      }
+    ],
+    "critic_v3_finding_pattern": "Same low-severity inline-deviation flag pattern as v1 Critic-v2 (deviations missing changes_artifact/changes_contract/changes_assumption boolean fields, documentation-completeness only). Not a blocker.",
+    "delivery_caveat": "Sandbox disallowed `rm -rf output/final/...`; Write tool overwrite + bash cp used to replace v1 files in place. Bit-equivalent to output/integration/ modulo run.sh comment-only content. Documented in output/final/divergence-from-integration.json filesystem_caveat."
+  },
+  "supersession_chain": {
+    "decisions/discovery/ledger-v1.json": "live for inherited assumptions/IPs; amended by ledger-diff-v2.json for A3/A4/A6/A10/IP1 + 2 new OOS items (v3 cycle)",
+    "decisions/discovery/ledger-diff-v2.json": "live (amendment record against ledger-v1; never superseded)",
+    "decisions/technical-discovery/sections-v1.json": "superseded by sections-v2.json (metadata-only, v1 cycle)",
+    "decisions/technical-discovery/sections-v2.json": "superseded by sections-v3.json (Windows pivot, v3 cycle)",
+    "decisions/technical-discovery/sections-v3.json": "live",
+    "decisions/technical-discovery/impact-analysis-v2.json": "live (one-shot impact-analysis record for v1 escalation batch)",
+    "decisions/technical-discovery/impact-analysis-v3.json": "live (one-shot impact-analysis record for v3 Windows pivot)",
+    "contracts/original/*.json": "live (none amended end-to-end across v1 + v3; C-S4-S5 mechanism-agnostic surface preserved verbatim through Windows pivot; C-S1-S3 has an optional non-load-bearing implementation note for the Nodejs.Version + CodePathWin shift that was not authored)",
+    "root-cause-analysis.md": "live (post-v1-delivery analysis; trigger for v3 cycle; proposes v1.9 amendments — Principle E + 5 charter changes)"
+  },
+  "live_specs_at_delivery": {
+    "cycle": "v3-windows-rebuild",
+    "ledger": "decisions/discovery/ledger-v1.json (as amended by decisions/discovery/ledger-diff-v2.json)",
+    "sections": "decisions/technical-discovery/sections-v3.json",
+    "contracts": [
+      "contracts/original/C-S1-S2-manifest-references.json",
+      "contracts/original/C-S1-S3-codepath-entry.json (load-bearing constraints unchanged; impl-note shift to Nodejs.Version + CodePathWin not authored as a contract amendment per dispatch authority)",
+      "contracts/original/C-S2-S3-pi-settings.json",
+      "contracts/original/C-S2-S4-feedback-payload.json",
+      "contracts/original/C-S3-S4-internal-api.json",
+      "contracts/original/C-S4-S5-music-source.json (mechanism-agnostic public surface preserved verbatim through Windows pivot)"
+    ]
+  },
+  "v1_cycle_delivery_status": "superseded by v3-windows-rebuild after user-side failure; v1 files at output/final/ were overwritten in place by v3 content via Write tool + bash cp (sandbox disallowed rm -rf). See root-cause-analysis.md and output/final/divergence-from-integration.json."
+}

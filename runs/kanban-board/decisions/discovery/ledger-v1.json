@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:00:00Z",
+  "project_name": "kanban-board",
+  "restatement": "A single-user, client-side kanban board web application with multiple named lists (columns), cards that can be created and moved between lists via drag-and-drop, and persistent state saved locally in the browser so the board survives page reloads. No backend, no authentication, no collaboration — just one person managing tasks across columns on their own machine.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The product is a web application that runs entirely in the browser, with no backend service.",
+      "confidence": "high",
+      "rationale": "The prompt specifies 'local saving', which implies browser-local persistence and removes the need for a server. Drag-and-drop and 'kanban board' are idioms strongly associated with web UIs.",
+      "what_breaks_if_wrong": "If the user actually expected a desktop or mobile native app, the entire delivery format is wrong and would need to be rebuilt."
+    },
+    {
+      "id": "A2",
+      "assumption": "The board supports multiple lists (columns), and lists are user-editable — they can be added, renamed, and removed.",
+      "confidence": "high",
+      "rationale": "The prompt explicitly says 'multiple lists'. A board with a fixed set of hardcoded lists is a degenerate case; treating lists as first-class editable entities is the simplest interpretation that honors the word 'multiple' and matches kanban conventions.",
+      "what_breaks_if_wrong": "If the user wanted only fixed columns (e.g., To Do / Doing / Done), the extra UI for managing lists is wasted but not harmful."
+    },
+    {
+      "id": "A3",
+      "assumption": "Cards are the unit of work on the board. Cards have at minimum a text title; users can create, edit, and delete them.",
+      "confidence": "high",
+      "rationale": "A kanban board without cards is not a kanban board. The simplest card model is a title-only text item. Edit and delete are required for the board to be usable across more than one session.",
+      "what_breaks_if_wrong": "If the user expected richer card metadata (description, due date, assignee, labels), the card model and card UI need extension. Schema is forward-compatible if cards are stored as objects."
+    },
+    {
+      "id": "A4",
+      "assumption": "Drag-and-drop covers two operations: moving cards between lists, and reordering cards within a list.",
+      "confidence": "high",
+      "rationale": "The prompt names drag-and-drop as a feature; the canonical kanban DnD operations are these two. Reordering within a list is the same gesture and would feel broken to skip.",
+      "what_breaks_if_wrong": "If the user also expected drag-and-drop reordering of entire lists, that is a small additional scope item but not a fork."
+    },
+    {
+      "id": "A5",
+      "assumption": "Persistence is to browser localStorage, scoped to the origin, with no sync across devices or browsers.",
+      "confidence": "high",
+      "rationale": "'Local saving' is most simply interpreted as browser-local. localStorage is the simplest mechanism that satisfies 'survives reload' without infrastructure.",
+      "what_breaks_if_wrong": "If the user wanted cloud sync, cross-device, or file-based export, the persistence layer needs to be replaced. localStorage is small and easy to swap."
+    },
+    {
+      "id": "A6",
+      "assumption": "The application is single-user and has no authentication, accounts, or sharing.",
+      "confidence": "high",
+      "rationale": "Nothing in the prompt mentions users, login, sharing, or collaboration. 'Local saving' actively pushes against multi-user use.",
+      "what_breaks_if_wrong": "If the user expected to share boards with others, the entire architecture needs a backend."
+    },
+    {
+      "id": "A7",
+      "assumption": "Saving is automatic — every state-mutating action is immediately persisted. There is no explicit Save button.",
+      "confidence": "medium",
+      "rationale": "This is the modern default for local-first apps and matches user expectations from tools like Trello. An explicit save step would be friction the prompt does not request.",
+      "what_breaks_if_wrong": "If the user wanted explicit save/load with named board files, autosave makes that flow harder to add but does not block it."
+    },
+    {
+      "id": "A8",
+      "assumption": "The board is designed for desktop browser use first; mobile is not a target.",
+      "confidence": "medium",
+      "rationale": "Drag-and-drop is a desktop-first interaction; touch DnD adds significant complexity. The prompt does not mention mobile.",
+      "what_breaks_if_wrong": "If the user opens it on a phone, the experience may be cramped and DnD may not work. Layout can be made responsive later without rewriting state logic."
+    },
+    {
+      "id": "A9",
+      "assumption": "No undo/redo, no history, no archive of deleted items. Deletes are immediate and permanent.",
+      "confidence": "medium",
+      "rationale": "The prompt does not mention any of these. They are scope additions; simplest-within-reason omits them.",
+      "what_breaks_if_wrong": "User loses a card by accident and is annoyed. A confirm-on-delete is a cheap mitigation if needed."
+    },
+    {
+      "id": "A10",
+      "assumption": "There is exactly one board. The app does not support multiple named boards.",
+      "confidence": "medium",
+      "rationale": "The prompt says 'a kanban board' (singular). Multiple boards would be a meaningful additional feature with its own UI for switching between them.",
+      "what_breaks_if_wrong": "User wants to keep separate boards for separate projects and has to use multiple browser profiles or tabs as a workaround."
+    },
+    {
+      "id": "A11",
+      "assumption": "On first load with no saved data, the app shows a sensible empty starting state — likely a small set of default lists (e.g., To Do / Doing / Done) and no cards — so the user is not staring at a blank canvas.",
+      "confidence": "medium",
+      "rationale": "An empty kanban board with no lists is a confusing first impression. Seeding the canonical three-column layout is the simplest nudge that honors 'multiple lists'.",
+      "what_breaks_if_wrong": "If the user wanted a strict blank slate, the seed columns are an annoyance but trivially deletable."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Card data model: title-only vs. title + description (and possibly more fields)",
+      "choices": [
+        "Title-only cards (simplest)",
+        "Title + optional description, edited in a detail view or inline expansion"
+      ],
+      "default_branch": "Title-only cards",
+      "importance": "medium",
+      "why_inflection": "This forks the card UI substantially: title-only needs only an inline text field, while title+description requires a detail view, modal, or expanding card affordance, plus richer edit ergonomics. It is also the most natural axis for future extension (due dates, labels, etc.), so it sets the ceiling for how 'real' the board feels. Reversible but with UI rework. Defaulting to the smaller scope."
+    },
+    {
+      "id": "IP2",
+      "topic": "Whether lists themselves are draggable for reordering",
+      "choices": [
+        "Lists are fixed in their creation order; only cards are draggable",
+        "Lists can also be drag-reordered horizontally"
+      ],
+      "default_branch": "Lists are fixed in their creation order; only cards are draggable",
+      "importance": "low",
+      "why_inflection": "The prompt names drag-and-drop in the context of cards moving across lists, not list reordering. List DnD adds another drop-zone layer and conflict cases (dragging a card vs dragging a list header). Smaller scope wins by default; easy to add later."
+    }
+  ],
+  "out_of_scope": [
+    "User accounts, authentication, login, or signup",
+    "Backend server, database, or API",
+    "Multi-user collaboration, sharing boards, or real-time sync",
+    "Cloud sync or cross-device persistence",
+    "Multiple boards / workspace switching",
+    "Card metadata beyond a title (description, due date, labels, attachments, assignees, comments, checklists)",
+    "Search, filter, or sort across cards",
+    "Undo/redo, archive, or trash",
+    "Import/export of board data (JSON, CSV)",
+    "Mobile-optimized layout or touch drag-and-drop",
+    "Theming, dark mode toggle, or user-customizable styling",
+    "Keyboard-only navigation beyond browser defaults",
+    "Notifications, reminders, or due-date alerts",
+    "Analytics or activity history"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "builder_id": "builder-3a",
+  "section_id": "section-3",
+  "task": "Author index.html, main.js, and styles.css; bootstrap data fetch + map mount; render legend; show error banner on failure.",
+  "outputs": [
+    { "path": "output/index.html", "kind": "source", "language": "html" },
+    { "path": "output/styles.css", "kind": "source", "language": "css" },
+    { "path": "output/main.js",    "kind": "source", "language": "javascript" }
+  ],
+  "verifies": ["S3.A1", "S3.A2", "S3.A3", "S3.A4", "S3.A5", "TDIP3.A3", "DC.A2", "DC.A10"],
+  "verification_notes": [
+    "S3.A1: <header class='app-header'> with <h1> 'Earthquake Activity - Past 24 Hours'.",
+    "S3.A2: #map has flex:1 + min-height:600px; on a 1280x800 viewport (header ~52px, banner hidden) the map covers > 50% of viewport area.",
+    "S3.A3: legend renders 5 buckets with color+size swatches generated from EarthquakeMap style functions.",
+    "S3.A4: showError() unhides #error-banner with a human-readable message; bootstrap reports section-1 errors here.",
+    "S3.A5: viewport meta width=1280, no mobile-only nav, desktop proportions.",
+    "TDIP3.A3: legend present and labels magnitude buckets.",
+    "DC.A2 / DC.A10: map is the dominant region; layout is desktop-typical."
+  ],
+  "completed_at": "2026-05-10T01:04:30Z"
+}

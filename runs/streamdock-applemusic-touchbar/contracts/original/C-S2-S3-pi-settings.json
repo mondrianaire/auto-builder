@@ -1,0 +1,39 @@
+{
+  "contract_id": "C-S2-S3",
+  "between": ["S2", "S3"],
+  "topic": "Settings JSON shape that the Property Inspector emits and that the SDK forwards to S3 as didReceiveSettings",
+  "direction": "S2 emits settings of this shape; S3 forwards them unchanged to S4 via onDidReceiveSettings",
+  "data_passed_not_logic": true,
+  "schema": {
+    "settings_object": {
+      "type": "object",
+      "properties": {
+        "pollIntervalMs": {
+          "type": "number",
+          "description": "Polling cadence in milliseconds. Default 2000. Minimum 250 (enforced by PI input attributes).",
+          "default": 2000,
+          "minimum": 250
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Text to display in the 'title' slot when nothing is playing. Default 'Apple Music'.",
+          "default": "Apple Music"
+        },
+        "showArtist": {
+          "type": "boolean",
+          "description": "When false, the artist slot is rendered as an empty string regardless of source data. Default true.",
+          "default": true
+        }
+      },
+      "required": [],
+      "additional_properties_allowed": false,
+      "note_on_missing_fields": "S4 must treat any missing field as 'use the default'. Empty settings object (the SDK's default initial state) means: pollIntervalMs=2000, placeholder='Apple Music', showArtist=true."
+    }
+  },
+  "pi_emission_mechanism": {
+    "when": "On change of any PI form control",
+    "call": "$SD.api.setSettings(uuid, settings)",
+    "constraint": "The settings argument is exactly an object matching settings_object above; no nesting under 'config' or similar."
+  },
+  "verification": "Edge-case-testing mounts the PI in a stub host that captures setSettings calls. For each PI control, change its value and assert that the captured settings object's corresponding field matches and that no other top-level keys appear."
+}

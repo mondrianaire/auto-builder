@@ -1,0 +1,237 @@
+{
+  "generated_at": "2026-05-09T21:20:53.649Z",
+  "cases": [
+    {
+      "name": "win line row 1 for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line row 2 for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line row 3 for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line col 1 for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line col 2 for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line col 3 for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line diag TL-BR for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line diag TR-BL for X",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line row 1 for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line row 2 for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line row 3 for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line col 1 for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line col 2 for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line col 3 for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line diag TL-BR for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "win line diag TR-BL for O",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "draw detection on full non-winning board",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "illegal click on filled cell rejected via WRONG-state error",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "illegal click out of range rejected",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "wrong player rejected",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "input not mutated by applyMove",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "legalMoves returns ascending indices",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "legalMoves on full board is empty",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI takes immediate win when available (row)",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI takes immediate win when available (column)",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI takes immediate win when available (diagonal)",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI blocks immediate loss (row)",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI blocks immediate loss (column)",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI blocks immediate loss (diagonal)",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI takes center when nothing forces it",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI takes corner when center is filled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI takes edge when no win/block, center taken, no free corner",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI win-priority beats block-priority",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI does not mutate input state",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "AI returns a legal move on a near-full board",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui-render: mount + initial render produces 9 empty cells, status, restart",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui-render: filled cell shows symbol, has --filled and --x/--o, button.disabled=true",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui-render: winning line applies --win class to the 3 indices",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui-render: cell click on empty enabled cell fires handler with index; ignored when disabled",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "ui-render: restart handler fires on restart click",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "index.html: loads CSS + 4 JS in correct order, no external URLs",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "controller.js: composes RE + AI + UI; uses setTimeout for AI delay; no DOM mutation outside UI",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "controller.js: defensive ignore of clicks on filled cell or after game-over",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "no-network / no-persistence: no fetch/XMLHttpRequest/localStorage in any artifact",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "integrated turn flow simulation (controller-level) using rules-engine + ai-opponent",
+      "status": "pass",
+      "detail": ""
+    },
+    {
+      "name": "restart logic: createBoard from any state returns clean GameState",
+      "status": "pass",
+      "detail": ""
+    }
+  ],
+  "pass_count": 46,
+  "fail_count": 0
+}

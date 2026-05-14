@@ -1,0 +1,8 @@
+{
+  "id": "dev-004",
+  "category": "test_or_assertion_fix",
+  "section": "section-7",
+  "decision": "Replaced the original split-pot test case with a setup where both players play the same 5-card straight from the board.",
+  "rationale": "The original case used hole cards [Ah,Kh] and [Ad,Kd] with a board QhJhTh-3c-2d. Player A makes a royal flush (uses three hearts on the board); player B does not have a flush. The hands are not actually equal — the original test was wrong, not the evaluator. Replacement: hole [2h,3d] and [4h,5d] on a board AKQJT — both players' best 5 is the board straight, and compareEvals returns 0.",
+  "nested_equivalent": "Under nested dispatch, the Critic on section-5b/section-7 would have caught the test-vs-implementation mismatch; same fix path."
+}

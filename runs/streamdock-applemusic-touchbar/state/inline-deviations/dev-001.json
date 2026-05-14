@@ -1,0 +1,9 @@
+{
+  "id": "dev-001",
+  "ts": "2026-05-13T00:01:30Z",
+  "category": "charter_clarification",
+  "section": "S1",
+  "summary": "PropertyInspectorPath value: briefing showed 'property_inspector/inspector.html' while contract C-S1-S2 specifies 'ui/inspector.html'. Chose contract value to keep S1<->S2 binding intact.",
+  "decision": "Use 'ui/inspector.html' as manifest.Actions[0].PropertyInspectorPath and as the on-disk path. Update bundle layout to place inspector at .sdPlugin/ui/inspector.html.",
+  "nested_equivalent": "An Overseer would have raised a contract-vs-briefing conflict to the Coordinator, who would resolve in favor of the contract (the canonical inter-section interface)."
+}

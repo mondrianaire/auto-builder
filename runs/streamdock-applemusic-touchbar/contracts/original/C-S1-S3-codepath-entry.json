@@ -1,0 +1,33 @@
+{
+  "contract_id": "C-S1-S3",
+  "between": ["S1", "S3"],
+  "topic": "How the plugin process is launched: the CodePathMac entrypoint",
+  "direction": "S1 declares the entrypoint path in manifest; S3 produces the runnable code at that path",
+  "data_passed_not_logic": true,
+  "schema": {
+    "manifest_code_path_mac": {
+      "type": "string",
+      "value": "plugin/run.sh",
+      "constraint": "Path relative to .sdPlugin folder root. S1 writes this into manifest.CodePathMac. S3 produces an executable shell script at exactly this path."
+    },
+    "run_sh_contract": {
+      "constraint": "The shell script's effective behavior must be: cd into its own directory and exec `node main.js \"$@\"` so the SDK's four CLI args (-port, -pluginUUID, -registerEvent, -info) reach the Node process verbatim. The script must be marked executable (mode 0755) when packaged.",
+      "must_invoke": "node",
+      "must_forward_args": true,
+      "must_be_executable": true
+    },
+    "main_js_contract": {
+      "path": "plugin/main.js",
+      "constraint": "Node module that, when run, parses process.argv for the four SDK CLI args, opens a WebSocket to ws://127.0.0.1:<port>, sends the registerPlugin frame, and dispatches received events to handlers."
+    },
+    "node_runtime_assumption": {
+      "version": ">=18",
+      "rationale": "Modern Node available on macOS 11+; allows native fetch/AbortController and works with bundled ws."
+    },
+    "vendored_ws": {
+      "path": "plugin/node_modules/ws/",
+      "constraint": "S3 must vendor the 'ws' WebSocket library under node_modules/ relative to main.js so the plugin is self-contained and doesn't require user-side npm install."
+    }
+  },
+  "verification": "Integrator runs `./plugin/run.sh -port=12345 -pluginUUID=test -registerEvent=registerPlugin -info='{}'` against a local mock WebSocket on port 12345 and observes the registerPlugin frame arriving with the correct uuid."
+}

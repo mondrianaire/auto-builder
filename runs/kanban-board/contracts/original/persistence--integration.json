@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "from_section": "persistence",
+  "to_section": "integration",
+  "interface": {
+    "load": {
+      "params": {},
+      "returns": "BoardState | null — null if absent or corrupt."
+    },
+    "save": {
+      "params": { "state": "BoardState" },
+      "returns": "void — writes to localStorage synchronously (or after small debounce)."
+    },
+    "clear": {
+      "params": {},
+      "returns": "void"
+    },
+    "STORAGE_KEY": {
+      "type": "string",
+      "notes": "Stable string constant, e.g. 'kanban-board:v1'. Used by tests to clear before runs."
+    }
+  },
+  "notes": "integration calls load() at boot, then registers save as a state-model subscriber so every mutation autosaves (per A7)."
+}

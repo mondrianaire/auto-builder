@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-2",
+  "interface": {
+    "fetchEarthquakes": {
+      "kind": "async_function",
+      "params": {},
+      "returns": {
+        "oneOf": [
+          {
+            "ok": true,
+            "events": "Array<EarthquakeEvent>"
+          },
+          {
+            "ok": false,
+            "error": {
+              "code": "string (one of: 'network', 'parse', 'http')",
+              "message": "string (human-readable, safe to surface in UI)"
+            }
+          }
+        ]
+      },
+      "shape": {
+        "EarthquakeEvent": {
+          "id": "string (USGS event id)",
+          "magnitude": "number | null (Richter-scale magnitude; null if absent in feed)",
+          "place": "string | null (human-readable place description from feed)",
+          "timeMs": "integer (event time in milliseconds since unix epoch)",
+          "lat": "number (latitude, WGS84 decimal degrees)",
+          "lon": "number (longitude, WGS84 decimal degrees)",
+          "depth": "number (kilometers below surface)"
+        }
+      }
+    }
+  },
+  "notes": "section-1 owns all knowledge of the USGS feed URL and GeoJSON schema. section-2 receives only the normalized EarthquakeEvent[] array and never sees raw GeoJSON. Error path returns { ok: false, error } so section-2 / section-3 can render an error banner without try/catching across module boundaries. timeMs is integer epoch ms (not ISO string) so the consumer can format with new Date(timeMs).toLocaleString() at render time."
+}

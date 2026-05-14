@@ -1,0 +1,16 @@
+{
+  "builder_id": "ec-b1",
+  "section": "edge-case-testing",
+  "status": "completed",
+  "output_files": ["test-runner.js", "report.json"],
+  "exposes": ["edge_case test report covering 16 assertions across sections 1-5"],
+  "execution_method": "Node.js + jsdom; loads the integrated artifact files (output/integration/*.js) via window.eval to test the actual deployed code",
+  "results_summary": { "total": 16, "passed": 16, "failed": 0 },
+  "covered_assertions": [
+    "S1.A2", "S1.A3", "S1.A4", "S1.A6", "S1.A7", "S1.A8",
+    "S2.A1", "S2.A2", "S2.A3", "S2.A5",
+    "S3.A1", "S3.A2", "S3.A4",
+    "S4.A3", "S4.A4",
+    "S5.A7"
+  ]
+}

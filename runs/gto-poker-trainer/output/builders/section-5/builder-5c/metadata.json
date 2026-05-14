@@ -1,0 +1,9 @@
+{
+  "section_id": "section-5",
+  "builder_id": "builder-5c",
+  "outputs": ["output.js"],
+  "registers_routes": ["table"],
+  "emits_events": ["hand_result"],
+  "depends_on_globals": ["AppShell", "TableEngine", "HandEval", "Archetypes", "AgentEngine"],
+  "assertions_satisfied": ["S5.A1","S5.A2","S5.A3","S5.A4","S5.A5","S5.A6","DCA.5","DCA.12"]
+}

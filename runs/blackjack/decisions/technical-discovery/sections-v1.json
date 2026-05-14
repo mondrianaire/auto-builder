@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:05:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Bankroll + per-hand bets",
+      "rationale": "Canonical blackjack with chip betting is the well-known default and is what 'play blackjack' means to most users. Both branches have similar implementation complexity (the no-betting branch removes the chip UI but the engine work is identical). No new external dependencies are introduced — chips are pure in-memory state. The choice is easily reversible: if betting were ever to be removed, the bankroll module is one of the optional wirings into the controller and could be swapped for a stub. All four quick-reasoning conditions hold; no Researcher dispatch needed. Locking the bankroll branch: starting pool = 1000 play chips, fixed minimum bet = 5, blackjack pays 3:2, on bust the player can hit a Reset button to restore the starting pool."
+    },
+    {
+      "ip_id": "IP2",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Full common actions (hit, stand, double-down, split)",
+      "rationale": "Canonical casino blackjack as understood by anyone who knows the game includes hit/stand/double/split. Insurance and surrender are explicitly omitted in the ledger and in this lock. Implementation complexity is similar between the two branches once the hand-state model is designed to hold a list of hands rather than a single hand — the difference is bounded engine code, not a new dependency. No new external dependencies. The choice is easily reversible: builders can hide buttons or short-circuit the actions in the controller without touching the rules engine. Note that defaulting to the full surface from day one is materially cheaper than retrofitting split later, which would force a hand-state model rewrite. All four conditions hold; no Researcher dispatch needed. Locking: dealer stands on all 17 (S17), six-deck shoe shuffled fresh per session, double allowed on any first two cards including after split, split allowed once per hand (no resplits), split aces receive one card each only, blackjack only counts on the initial deal (not after split)."
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "rules-engine",
+      "charter": "Own all blackjack rules logic as a pure JavaScript module with no DOM dependency. This includes deck construction and shuffling, dealing, hand evaluation (totals with soft-ace handling), legal-action determination per hand state, dealer auto-play (stand on all 17), and round outcome determination including blackjack, bust, push, win, and split-hand resolution. Expose the module on `window.RulesEngine` so other sections can import it via a global. The engine is deterministic given a seeded RNG hook for testability but defaults to Math.random.",
+      "acceptance": "A file named `rules-engine.js` exists at the project root and, when loaded in a browser, attaches a `RulesEngine` object to `window` exposing the methods specified in the contracts. Unit-style assertions embedded in the file's IIFE or a sibling test scaffold demonstrate: (a) blackjack detected on initial two-card 21, (b) ace counted as 1 vs 11 correctly via soft-total logic, (c) dealer hits below 17 and stands at 17+, (d) split produces two hands each receiving one extra card, (e) double-down deals exactly one card and locks the hand. No DOM access, no `document` references, no event listeners.",
+      "depends_on": [],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "DOM rendering or any UI",
+        "Chip/bankroll math",
+        "Persistence",
+        "Insurance, surrender, side bets",
+        "Multi-deck shoe management exposed to user (single shuffled shoe is internal)",
+        "Animation or timing logic"
+      ]
+    },
+    {
+      "id": "section-2",
+      "name": "betting-and-bankroll",
+      "charter": "Own all chip and bankroll logic as a pure JavaScript module with no DOM dependency. Track current bankroll, current bet, validate bet legality (must be >= min, <= bankroll), compute payouts on round outcomes (1:1 win, 3:2 blackjack, push returns bet, loss forfeits bet, split/double scale bet appropriately), handle bust-and-reset (when bankroll falls below min bet, allow a reset to the starting pool). Expose the module on `window.Bankroll`. This module is told outcomes by the controller; it does not call into the rules engine itself.",
+      "acceptance": "A file named `bankroll.js` exists at the project root and, when loaded, attaches a `Bankroll` object to `window` exposing the methods specified in the contracts. Demonstrable behaviors: (a) starting pool = 1000, min bet = 5, (b) `placeBet(50)` reduces available stake but is committed only on round resolution, (c) `resolve('win')` returns the bet plus equal winnings, `resolve('blackjack')` returns bet + 1.5x winnings, `resolve('push')` returns the bet only, `resolve('loss')` returns 0, (d) `canPlay()` returns false when bankroll < min bet, (e) `reset()` restores starting pool. No DOM, no rules logic.",
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "DOM rendering",
+        "Knowing what blackjack is — receives outcome strings from controller",
+        "Insurance side-bet payouts",
+        "Persistence across page reloads",
+        "Animations or chip-stack visuals (those belong to ui-render)"
+      ]
+    },
+    {
+      "id": "section-3",
+      "name": "ui-render",
+      "charter": "Own all DOM rendering of the table state as pure render functions. Given a state object describing dealer hand, player hand(s), bankroll, current bet, available actions, and round phase, produce DOM that visually communicates the table. Provide a small CSS file for the card-table metaphor (felt-green background, rectangular card faces with rank+suit, clear dealer/player zones, action button row, chip count display). Expose the module on `window.UIRender`. Render functions are idempotent: calling render twice with the same state produces the same DOM. The module does not bind events itself — it exposes element references or stable element IDs that the controller binds to.",
+      "acceptance": "Files `ui-render.js` and `styles.css` exist at the project root. When loaded together with a host HTML page, calling `UIRender.render(state, rootEl)` produces a recognizable blackjack table with cards visible by rank and suit, dealer area, player area (with multi-hand support for splits), bankroll display, current bet display, message area for round outcome, and action buttons whose IDs match the contract. Rendering an empty initial state (no cards, just buttons) does not throw. No game logic, no rules decisions, no bankroll math.",
+      "depends_on": [],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Game rules or bankroll math",
+        "Event handling (controller wires events)",
+        "Animations beyond simple CSS transitions",
+        "Sound, voice, themes",
+        "Routing or multi-page navigation",
+        "Advanced accessibility beyond semantic HTML and reasonable contrast"
+      ]
+    },
+    {
+      "id": "section-4",
+      "name": "controller-and-shell",
+      "charter": "Own `index.html` and `controller.js`. The shell HTML loads `rules-engine.js`, `bankroll.js`, `ui-render.js`, and `controller.js` in that order via `<script>` tags, plus `styles.css`. The controller is the only place that imports all three modules; it manages the round lifecycle (place-bet → deal → player-actions → dealer-play → resolve → next-or-reset), calls `RulesEngine` for legal moves and outcomes, calls `Bankroll` for bet placement and payout, and calls `UIRender` to repaint after each state transition. The controller binds DOM events on the rendered action buttons to the appropriate engine calls.",
+      "acceptance": "Files `index.html` and `controller.js` exist at the project root. Opening `index.html` in a modern browser shows a playable blackjack game where the user can place a bet, hit, stand, double, and split (when legal), see the dealer play out, see the round outcome, and start a new round. Bankroll updates correctly across rounds. When the bankroll falls below the minimum bet a Reset button restores the starting pool. The HTML script tag list is exactly: `rules-engine.js`, `bankroll.js`, `ui-render.js`, `controller.js`, in that order, and the CSS link is `styles.css`. No inline scripts beyond a minimal bootstrapping call to the controller's init function.",
+      "depends_on": ["section-1", "section-2", "section-3"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Re-implementing rules, bankroll, or rendering — controller only orchestrates",
+        "Persistence",
+        "Settings, profile, or routing",
+        "Multiplayer or networking"
+      ]
+    },
+    {
+      "id": "section-5",
+      "name": "edge-case-testing",
+      "charter": "Own a sandbox-driven verification pass against the integrated artifact. Copy the integrated build into a `sandbox/` directory and run a headless or scripted suite that exercises edge cases: blackjack on initial deal, dealer blackjack, push on equal totals, soft-17 evaluation, split on a pair, double-down win and loss, bust handling, bankroll-exhausted reset path, illegal-action rejection (e.g., split on non-pair, double when bankroll insufficient). Produce a JSON test report at `tests/report.json` summarizing pass/fail for each scenario with brief failure reasons. This section runs only after Integrator has produced the integrated artifact.",
+      "acceptance": "A directory `sandbox/` contains a copy of the integrated artifact. A file `tests/report.json` exists and conforms to the shape `{ passed: number, failed: number, total: number, scenarios: [{ id, name, status: 'pass'|'fail', detail }] }`. At least 10 scenarios are covered. The report is generated by a script `tests/run.js` that loads the sandbox modules in a Node-with-jsdom or pure-Node simulation harness; the harness exercises the modules' public interfaces only.",
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Modifying the integrated artifact (tests run read-only against sandbox)",
+        "Performance benchmarking",
+        "Cross-browser testing matrix",
+        "Visual regression testing"
+      ]
+    }
+  ]
+}

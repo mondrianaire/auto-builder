@@ -1,0 +1,142 @@
+{
+  "generated_at": "2026-05-10T06:02:34.252Z",
+  "integration_dir": "/sessions/inspiring-quirky-franklin/mnt/Auto Builder/runs/latex-equation-renderer/output/integration",
+  "total": 22,
+  "passed": 22,
+  "failed": 0,
+  "console_errors": [],
+  "results": [
+    {
+      "id": "IP1.A1",
+      "statement": "Exactly one LaTeX source input element.",
+      "passed": true,
+      "detail": "count=1"
+    },
+    {
+      "id": "IP1.A2",
+      "statement": "Exactly one rendered-output container.",
+      "passed": true,
+      "detail": "count=1"
+    },
+    {
+      "id": "IP1.A3",
+      "statement": "No list/repeater UI.",
+      "passed": true,
+      "detail": "bad=0"
+    },
+    {
+      "id": "IP2.A1",
+      "statement": "No export/download/copy/save controls.",
+      "passed": true,
+      "detail": "hits=0"
+    },
+    {
+      "id": "IP2.A2",
+      "statement": "No clipboard or download API usage.",
+      "passed": true,
+      "detail": "clean"
+    },
+    {
+      "id": "IP3.A1",
+      "statement": "No palette/snippets/examples UI.",
+      "passed": true,
+      "detail": "bad=0"
+    },
+    {
+      "id": "IP3.A2",
+      "statement": "Input element is a plain <textarea>.",
+      "passed": true,
+      "detail": "tag=TEXTAREA"
+    },
+    {
+      "id": "IP4.A1",
+      "statement": "Page loads KaTeX from a CDN.",
+      "passed": true,
+      "detail": "linkOk=true scriptOk=true"
+    },
+    {
+      "id": "IP4.A2",
+      "statement": "Page does not load MathJax.",
+      "passed": true,
+      "detail": "clean"
+    },
+    {
+      "id": "IP4.A3",
+      "statement": "Renderer module calls KaTeX render API.",
+      "passed": true,
+      "detail": "found katex.render"
+    },
+    {
+      "id": "S1.A2",
+      "statement": "Valid LaTeX populates target with KaTeX-generated DOM.",
+      "passed": true,
+      "detail": "ok=true hasKatex=true"
+    },
+    {
+      "id": "S1.A3",
+      "statement": "Malformed LaTeX returns structured error without throwing.",
+      "passed": true,
+      "detail": "threw=false result={\"ok\":false,\"message\":\"KaTeX parse error: Unexpected end of input in a macro argument, expected '}' at end of input: \\\\frac{1}{\"}"
+    },
+    {
+      "id": "S1.A5",
+      "statement": "Output uses display-mode KaTeX (.katex-display).",
+      "passed": true,
+      "detail": "hasDisplay=true"
+    },
+    {
+      "id": "S2.A2",
+      "statement": "Subscriber gets per-keystroke cumulative values.",
+      "passed": true,
+      "detail": "got=[\"a\",\"a^\",\"a^2\"]"
+    },
+    {
+      "id": "S3.A3",
+      "statement": "On error, success output is cleared or marked stale.",
+      "passed": true,
+      "detail": "afterValid=true stale=true children=0 data-stale=true"
+    },
+    {
+      "id": "S4.A4",
+      "statement": "No console errors on initial load.",
+      "passed": true,
+      "detail": "errors=[]"
+    },
+    {
+      "id": "S5.A2",
+      "statement": "Empty input -> no error, output empty.",
+      "passed": true,
+      "detail": "noError=true outputEmpty=true"
+    },
+    {
+      "id": "S5.A3",
+      "statement": "Whitespace-only input behaves as empty.",
+      "passed": true,
+      "detail": "noError=true outputEmpty=true"
+    },
+    {
+      "id": "S5.A4",
+      "statement": "Malformed input shows non-empty error and clears/marks-stale output.",
+      "passed": true,
+      "detail": "errVisible=true stale=true"
+    },
+    {
+      "id": "S5.A5",
+      "statement": "Valid input renders KaTeX DOM and hides error region.",
+      "passed": true,
+      "detail": "hasKatex=true errHidden=true"
+    },
+    {
+      "id": "S5.A6",
+      "statement": "Zero error-level console messages on initial load.",
+      "passed": true,
+      "detail": "errors=[]"
+    },
+    {
+      "id": "S5.A1",
+      "statement": "Every edge_case_testing assertion passes against the integrated artifact.",
+      "passed": true,
+      "detail": "all pass"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "from_section": "state-model",
+  "to_section": "integration",
+  "interface": {
+    "createStateModel": {
+      "params": { "initialState": "BoardState | null" },
+      "returns": "{ getState, setState, subscribe, createList, renameList, deleteList, createCard, editCard, deleteCard, moveCard, reorderCard } — full state-model API."
+    },
+    "DEFAULT_SEED": {
+      "type": "BoardState",
+      "value": "{ lists: [{id:<gen>, name:'To Do', cards:[]}, {id:<gen>, name:'Doing', cards:[]}, {id:<gen>, name:'Done', cards:[]}] }",
+      "notes": "Used by integration when persistence.load returns null. Per A11."
+    }
+  },
+  "notes": "integration constructs the state-model with persisted state if present, otherwise with DEFAULT_SEED."
+}

@@ -1,0 +1,18 @@
+{
+  "builder_id": "builder-ui-2",
+  "section": "ui-render",
+  "started_at": "2026-05-09T00:12:20Z",
+  "completed_at": "2026-05-09T00:12:35Z",
+  "output": {
+    "path": "output/builders/ui-render/builder-ui-2/output.css",
+    "target_filename": "styles.css"
+  },
+  "design_decisions": {
+    "felt_color": "#0d6b3a gradient",
+    "card_face": "white with red/black suit colors and Georgia serif rank",
+    "facedown_card": "diagonal blue stripe pattern",
+    "active_hand_indicator": "yellow border + soft yellow tint",
+    "responsive_breakpoint": "540px"
+  },
+  "notes": "All button disabled states are visibly different (opacity + grayscale). Reset button uses warning orange tint."
+}

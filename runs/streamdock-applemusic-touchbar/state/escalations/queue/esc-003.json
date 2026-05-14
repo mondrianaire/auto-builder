@@ -1,0 +1,23 @@
+{
+  "id": "esc-003",
+  "ts": "2026-05-13T00:08:00Z",
+  "raised_by": "critic_final_sweep",
+  "severity": "medium",
+  "category": "prose_coverage",
+  "check": "prose_coverage",
+  "summary": "Discovery prose-coverage gaps: 4 assumptions (A1, A3, A4, A9), 7 ledger-OOS items (indices 1,2,3,4,7,8,9), 19 per-section OOS items (across S1-S6), and TD chosen_verb are uncovered by the covers-graph.",
+  "affected_fields": {
+    "uncovered_assumptions": [
+      "ledger-v1.json#/assumption_ledger/0 (A1: SDK shape)",
+      "ledger-v1.json#/assumption_ledger/2 (A3: local Apple Music data source)",
+      "ledger-v1.json#/assumption_ledger/3 (A4: macOS host)",
+      "ledger-v1.json#/assumption_ledger/8 (A9: single-user/no-auth/no-telemetry)"
+    ],
+    "uncovered_ledger_oos_indices": [1, 2, 3, 4, 7, 8, 9],
+    "uncovered_section_oos_count": 19,
+    "uncovered_chosen_verb": "decisions/technical-discovery/sections-v1.json#/prompt_verb_analysis/chosen_verb"
+  },
+  "context": "Several uncovered claims are entailed by what IS covered: A1 (SDK shape) is verified by the entire MCA.TDIPA cluster; A3 (local Apple Music) by MCA.TDIPD.*; A4 (macOS) by MCA.TDIPA.2; A9 (no telemetry) by DCA.OOS.TELEMETRY.1. chosen_verb='display' is verified by PNV.1 which references it. The gap is in explicit covers-pointer wiring, not in behavioral verification. Section-level OOS items are mostly handoff demarcations (e.g., 'WebSocket transport (S3)') that are implicitly verified by depends_on edges and per-section ownership.",
+  "recommendation": "Defer to Arbiter for a Principle-C strict-pass decision. The simplest fix is to extend covers fields on existing assertions to also point at the related uncovered fields (multi-target covers, or duplicate covers on existing assertions). No new behavioral assertions are needed — only the schema-graph link.",
+  "blocking": false
+}

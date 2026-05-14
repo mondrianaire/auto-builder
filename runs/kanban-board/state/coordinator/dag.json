@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:00:00Z",
+  "updated_at": "2026-05-10T00:00:25Z",
+  "current_wave": 5,
+  "all_waves_complete": true,
+  "nodes": [
+    { "id": "section-1", "name": "state-model", "status": "verified", "wave": 1 },
+    { "id": "section-2", "name": "persistence", "status": "verified", "wave": 2 },
+    { "id": "section-3", "name": "ui-render", "status": "verified", "wave": 2 },
+    { "id": "section-4", "name": "dnd", "status": "verified", "wave": 3 },
+    { "id": "section-5", "name": "interactions", "status": "verified", "wave": 3 },
+    { "id": "section-6", "name": "integration", "status": "verified", "wave": 4 },
+    { "id": "integrator", "name": "integrator", "status": "verified", "wave": 4, "is_pseudo": true },
+    { "id": "section-7", "name": "edge-case-testing", "status": "verified", "wave": 5 }
+  ],
+  "edges": [
+    { "from": "section-1", "to": "section-2" },
+    { "from": "section-1", "to": "section-3" },
+    { "from": "section-1", "to": "section-4" },
+    { "from": "section-3", "to": "section-4" },
+    { "from": "section-1", "to": "section-5" },
+    { "from": "section-3", "to": "section-5" },
+    { "from": "section-1", "to": "section-6" },
+    { "from": "section-2", "to": "section-6" },
+    { "from": "section-3", "to": "section-6" },
+    { "from": "section-4", "to": "section-6" },
+    { "from": "section-5", "to": "section-6" },
+    { "from": "section-1", "to": "integrator" },
+    { "from": "section-2", "to": "integrator" },
+    { "from": "section-3", "to": "integrator" },
+    { "from": "section-4", "to": "integrator" },
+    { "from": "section-5", "to": "integrator" },
+    { "from": "section-6", "to": "integrator" },
+    { "from": "integrator", "to": "section-7" }
+  ],
+  "waves": {
+    "1": ["section-1"],
+    "2": ["section-2", "section-3"],
+    "3": ["section-4", "section-5"],
+    "4": ["section-6", "integrator"],
+    "5": ["section-7"]
+  }
+}

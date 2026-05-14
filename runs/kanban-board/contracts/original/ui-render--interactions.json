@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "from_section": "ui-render",
+  "to_section": "interactions",
+  "interface": {
+    "add_list_affordance": {
+      "selector": "[data-action='add-list']",
+      "notes": "Always present, even on empty boards."
+    },
+    "add_card_affordance": {
+      "selector": "[data-action='add-card'][data-list-id]",
+      "notes": "One per list; data-list-id identifies the target list."
+    },
+    "list_title": {
+      "selector": "[data-role='list-title'][data-list-id]",
+      "notes": "Click target for inline rename."
+    },
+    "list_delete": {
+      "selector": "[data-action='delete-list'][data-list-id]"
+    },
+    "card_element": {
+      "selector": "[data-card-id]",
+      "notes": "Click target for inline edit (excluding clicks on the delete control)."
+    },
+    "card_delete": {
+      "selector": "[data-action='delete-card'][data-card-id]"
+    },
+    "render_root": {
+      "type": "HTMLElement",
+      "notes": "interactions uses event delegation on this root."
+    }
+  },
+  "notes": "ui-render guarantees these selectors and data attributes are stable across re-renders. interactions attaches once at boot using event delegation. interactions may inject ephemeral input fields inline (e.g., for renaming or adding) but should not mutate the persistent DOM structure produced by ui-render."
+}

@@ -1,0 +1,23 @@
+{
+  "id": "nowplaying-fullbar",
+  "items": [
+    {
+      "key": "title",
+      "type": "text",
+      "rect": [0, 4, 200, 24],
+      "font": { "size": 18, "weight": 700 },
+      "alignment": "left",
+      "color": "#FFFFFF",
+      "text-overflow": "ellipsis"
+    },
+    {
+      "key": "artist",
+      "type": "text",
+      "rect": [0, 28, 200, 18],
+      "font": { "size": 14, "weight": 400 },
+      "alignment": "left",
+      "color": "#BBBBBB",
+      "text-overflow": "ellipsis"
+    }
+  ]
+}

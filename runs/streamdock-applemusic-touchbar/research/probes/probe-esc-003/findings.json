@@ -1,0 +1,122 @@
+{
+  "probe_id": "probe-esc-003",
+  "completed_at": "2026-05-13T00:13:00Z",
+  "options": [
+    {
+      "id": "opt-A",
+      "summary": "Widen the 'covers' field on existing assertions from a single string to a multi-target array, adding pointers to the uncovered schema paths. No new assertions, no behavior changes, no rebuild. The integrated bundle and harness output are unaffected. Mapping is mechanical and surgical: each escalated target maps to an existing assertion that already entails it. Examples: AA.S1.* covers also '.../sections/0/charter'; AA.S1.3 covers also 'contracts/original/C-S1-S2-...' and 'C-S1-S3-...'; AA.S3.4 covers also 'C-S2-S4-...' and 'C-S3-S4-...'; AA.S5.1 covers also 'C-S4-S5-...'; MCA.TDIPA.* covers also 'ledger-v1.json#/assumption_ledger/0' (A1); MCA.TDIPA.2 covers also '/assumption_ledger/3' (A4); MCA.TDIPD.* covers also '/assumption_ledger/2' (A3); DCA.OOS.TELEMETRY.1 covers also '/assumption_ledger/8' (A9); PNV.1 covers also '.../prompt_verb_analysis/chosen_verb'; out_of_scope items are covered by extending DCA.OOS.* and by adding section-OOS pointers to corresponding depends_on-verified AAs.",
+      "pros": [
+        "Smallest possible blast radius: edits live entirely in one file (sections-v1.json) on JSON leaf values; touches zero source code, zero build artifacts, zero harness state.",
+        "No new assertions to verify — the harness pass count remains 28/28 by construction.",
+        "Mechanical mapping; low risk of introducing a new gap or misalignment.",
+        "Preserves the principle that one behavioral check can cover multiple prose claims (which is true in fact)."
+      ],
+      "cons": [
+        "Requires 'covers' field to accept string-or-array (a permissive schema; if file_schemas.md says 'string only', need a v1.7 schema clarification — but it is a permissive change, not a contract-break).",
+        "Each existing assertion's covers list grows, slightly reducing per-assertion locality of intent in the file."
+      ],
+      "impact": {
+        "S1": "unaffected",
+        "S2": "unaffected",
+        "S3": "unaffected",
+        "S4": "unaffected",
+        "S5": "unaffected",
+        "S6": "unaffected",
+        "discovery_ledger": "unaffected",
+        "contracts": "unaffected",
+        "integrated_artifact": "unaffected",
+        "harness_report": "unaffected"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "opt-B",
+      "summary": "Author a coverage_aliases sidecar at decisions/technical-discovery/coverage-aliases-v1.json: a small mapping from uncovered schema-pointer to the assertion-id(s) that entail it, with one-sentence rationale per entry. Update file_schemas.md (or the prose_coverage checker's resolution rule) to consult this sidecar when computing coverage. sections-v1.json itself is untouched.",
+      "pros": [
+        "Sections file remains unchanged — strongest possible preservation of in-flight S1-S6 artifact.",
+        "Adapter-layer pattern: classic lowest-impact wiring fix.",
+        "Easy to audit (single sidecar file lists every entailment).",
+        "Easy to remove later if v2 rewires coverage natively."
+      ],
+      "cons": [
+        "Introduces a new file (coverage-aliases-v1.json) and a small change to the prose_coverage checker's resolution path.",
+        "Adds an indirection that future readers must learn about (a second place to look for coverage).",
+        "Slightly higher blast radius than opt-A because the prose_coverage tool itself must understand the sidecar."
+      ],
+      "impact": {
+        "S1": "unaffected",
+        "S2": "unaffected",
+        "S3": "unaffected",
+        "S4": "unaffected",
+        "S5": "unaffected",
+        "S6": "unaffected",
+        "discovery_ledger": "unaffected",
+        "contracts": "unaffected",
+        "integrated_artifact": "unaffected",
+        "harness_report": "unaffected",
+        "prose_coverage_checker": "new (small additive rule)",
+        "file_schemas": "salvageable (one-paragraph addition)"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "opt-C",
+      "summary": "Arbiter issues a Principle-C strict-pass waiver: accept that covers-graph completeness, on the documented gaps, is fully entailed by the behavioral coverage already in place; record one decision document under decisions/arbiter/strict-pass-esc-001-002-003.json enumerating each uncovered claim and the existing assertion that entails it. sections-v1.json and ledger-v1.json are untouched.",
+      "pros": [
+        "Zero changes to verified artifacts.",
+        "Honest record of the fact that the build is correct and the gap is purely in pointer-wiring.",
+        "Fastest to execute."
+      ],
+      "cons": [
+        "Leaves the schema-graph technically incomplete for any future tooling that re-runs prose_coverage strictly.",
+        "Sets a precedent that may be invoked carelessly later.",
+        "Does not actually resolve the escalation in a way a strict prose_coverage checker would re-validate green; only the human-arbiter audit log marks them resolved."
+      ],
+      "impact": {
+        "S1": "unaffected",
+        "S2": "unaffected",
+        "S3": "unaffected",
+        "S4": "unaffected",
+        "S5": "unaffected",
+        "S6": "unaffected",
+        "discovery_ledger": "unaffected",
+        "contracts": "unaffected",
+        "integrated_artifact": "unaffected",
+        "harness_report": "unaffected",
+        "arbitration_log": "new (one waiver doc)"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "opt-D",
+      "summary": "Add new dedicated coverage assertions (charter assertions per section, contract assertions per contract, assumption/OOS/chosen_verb assertions) that each duplicate an existing behavioral scenario but with a covers pointer aimed at the gap target. Each new assertion is verified by re-using the same harness scenario that already passes for the entailing assertion.",
+      "pros": [
+        "Most explicit: every uncovered claim gets its own first-class assertion in the file.",
+        "Future readers can find each claim by its own id."
+      ],
+      "cons": [
+        "Largest churn: roughly 6 charter + 6 contract + 4 assumption + 7 ledger-OOS + 19 section-OOS + 1 chosen_verb = ~43 new assertion entries in sections-v1.json.",
+        "Harness scenario manifest grows (or a 'verified by reference' shim is needed); the assertion total of 28 swells.",
+        "AA.S6.1 expectation ('every edge_case_testing assertion is exercised') is at risk unless every new assertion is bound to an existing scenario explicitly.",
+        "Highest editorial risk for introducing a new inconsistency."
+      ],
+      "impact": {
+        "S1": "salvageable",
+        "S2": "salvageable",
+        "S3": "salvageable",
+        "S4": "salvageable",
+        "S5": "salvageable",
+        "S6": "salvageable",
+        "discovery_ledger": "unaffected",
+        "contracts": "unaffected",
+        "integrated_artifact": "unaffected",
+        "harness_report": "salvageable (manifest must grow / map by reference)"
+      },
+      "confidence": "high"
+    }
+  ],
+  "recommended": "opt-A",
+  "rationale": "opt-A is the smallest-blast-radius option that actually resolves the escalations in a way a re-run of the prose_coverage checker can re-validate green. Every gap target maps cleanly to an existing assertion that already entails it, so the change is purely additive on the 'covers' field — no new assertions, no harness rework, no behavior touched, no source code touched. S1-S6, the integrated artifact, the 28/28 harness pass, and all 13 MCAs remain bit-identical. opt-B (sidecar adapter) is a strong runner-up and is preferable if file_schemas.md cannot be relaxed to accept multi-target covers — it adds one new file and one small checker rule but still leaves S1-S6 untouched. opt-C cleanly preserves artifacts but only resolves the escalations administratively, not in a way a strict re-run will see green; recommend reserving it for any individual sub-claims where entailment cannot be cleanly stated. opt-D is rejected as needlessly heavy: ~43 new assertions for a problem that is one missing pointer per claim.",
+  "secondary_recommendation": "If file_schemas.md mandates covers as a single string (not string-or-array), fall through to opt-B. The adapter sidecar adds one file rather than mutating the verified sections file's assertion shape.",
+  "framing_concern": null
+}

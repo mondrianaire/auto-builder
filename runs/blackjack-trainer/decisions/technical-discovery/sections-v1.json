@@ -1,0 +1,514 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:30:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "topic": "Rules variant the encoded basic-strategy table targets",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "S17 + DAS + no surrender (ProfitDuel-style default)",
+      "rationale": "Quick-reasoning rubric all four conditions hold: (1) all three rules variants are well-known canonical answers in training; (2) implementation complexity is similar across branches (H17 + late surrender adds only two cells of action-decision logic); (3) no new external dependencies introduced regardless of branch; (4) easily reversible by amending the strategy table and dealer auto-play function. ProfitDuel-style cheat sheets most commonly assume S17 + DAS + no-surrender, so this default minimizes mismatch with the user's referenced image. Locking to default branch.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "Dealer stands on all 17 (S17), including soft 17",
+          "check_type": "behavior",
+          "target_module": "rules-engine",
+          "target_method": "playDealer",
+          "scenario": "dealer hand totals 17 (hard or soft) at decision point",
+          "expected_result": "playDealer returns immediately; no further card drawn; final dealer total equals 17"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "Double after split (DAS) is allowed",
+          "check_type": "behavior",
+          "target_module": "rules-engine",
+          "target_method": "legalActions",
+          "scenario": "after a split, on the first decision of either split sub-hand with two cards dealt",
+          "expected_result": "'double' is included in returned actions array"
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "Surrender is not a legal action in any state",
+          "check_type": "absence",
+          "target_module": "rules-engine",
+          "target_method": "legalActions",
+          "scenario": "any player decision point throughout a hand",
+          "expected_result": "'surrender' never appears in returned actions array"
+        },
+        {
+          "id": "IP1.A4",
+          "statement": "Blackjack pays 3:2",
+          "check_type": "behavior",
+          "target_module": "rules-engine",
+          "target_method": "resolveHand",
+          "scenario": "player holds natural blackjack (A + ten-value) and dealer does not, with bet=10",
+          "expected_result": "player payout returned as 15 chips on top of the original bet (1.5x)"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "topic": "Mode structure: free play vs drill mode vs both",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Free play only (deal real hands, hint on demand, post-hand review)",
+      "rationale": "Quick-reasoning rubric all four conditions hold: (1) free-play and drill-mode are well-known training UI patterns; (2) drill mode adds a scenario generator and separate UI surface, but the prompt's wording 'during a hand' / 'after a hand' explicitly implies hand-by-hand play, so the default is what the prompt asks for; (3) no new dependencies; (4) drill mode can be added later without breaking free play. Locking to default.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "Application has no drill-mode UI surface or mode-selector",
+          "check_type": "absence",
+          "target_module": "ui-render",
+          "scenario": "DOM rendered after app initialization",
+          "expected_result": "no element with id/class matching 'drill', 'mode-select', or 'mode-toggle'"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "App enters a free-play loop on load: betting -> dealing -> player decisions -> dealer play -> resolution -> review -> next",
+          "check_type": "behavior",
+          "target_module": "game-state-machine",
+          "target_method": "currentPhase",
+          "scenario": "after init() with no further action",
+          "expected_result": "phase begins at 'betting' or 'dealable' (not at any drill scenario)"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "topic": "Granularity of post-hand suggestions",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Per-decision review (each action vs correct action)",
+      "rationale": "Quick-reasoning rubric all four conditions hold: (1) per-decision review is the canonical training pattern; (2) implementation cost difference is small once the engine logs every decision; (3) no new dependencies; (4) trivially reversible by collapsing the review into a verdict. Per-decision is meaningfully more educational and is what the prompt's 'suggestions after a hand' implies most usefully. Locking to default.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "Each player decision (hit/stand/double/split) is appended to a per-hand decision log with the player hand snapshot and dealer upcard at decision time",
+          "check_type": "structural",
+          "target_module": "game-state-machine",
+          "expected_pattern": "after a resolved hand, getDecisionLog() returns an Array where each entry contains { playerHandSnapshot, dealerUpcard, chosenAction, correctAction }"
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "Post-hand review panel lists every decision the user made, not just an aggregate verdict",
+          "check_type": "presence",
+          "target_module": "ui-render",
+          "scenario": "after a hand resolves with N>=2 player decisions",
+          "expected_result": "review panel renders N rows, one per logged decision"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP4",
+      "topic": "Hint presentation style",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Reveal recommended action only",
+      "rationale": "Quick-reasoning rubric all four conditions hold: (1) showing a single action label is the canonical minimum hint UI; (2) reasoning text or chart-cell highlight materially increases scope and copy work; (3) no new dependencies needed for the minimal branch; (4) easily upgradable later by enriching the hint payload. Locking to default.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.A1",
+          "statement": "Hint output is a single action label (one of hit/stand/double/split), with no accompanying reasoning text or cheat-sheet visualization",
+          "check_type": "structural",
+          "target_module": "hint-and-review",
+          "expected_pattern": "the hint surface displays a string in the set {'Hit','Stand','Double','Split'} and no additional explanatory paragraph or chart cell"
+        },
+        {
+          "id": "IP4.A2",
+          "statement": "No cheat-sheet image or table is rendered as part of the hint",
+          "check_type": "absence",
+          "target_module": "ui-render",
+          "scenario": "while a hint is being shown",
+          "expected_result": "no <img>, <table>, or chart element appears within the hint container"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP5",
+      "topic": "Whether to display the cheat-sheet chart in-app",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Do not embed the chart; trainer is the interactive surface",
+      "rationale": "Quick-reasoning rubric all four conditions hold: (1) embed-vs-don't-embed is a canonical product choice; (2) embedding adds image asset handling or chart-rendering code; (3) not embedding avoids the question of hotlinking the user's referenced image (no new external asset dependency); (4) trivially addable later. Locking to default.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP5.A1",
+          "statement": "No basic-strategy chart image, rendered chart table, or chart panel appears anywhere in the app DOM",
+          "check_type": "absence",
+          "target_module": "ui-render",
+          "scenario": "DOM rendered at any point in the hand lifecycle",
+          "expected_result": "no element with id/class matching 'chart', 'cheat-sheet', or 'strategy-chart'; no <img> with src referencing a strategy chart"
+        },
+        {
+          "id": "IP5.A2",
+          "statement": "The strategy table is consumed only as a programmatic lookup (single source of truth for hint and review), not displayed",
+          "check_type": "structural",
+          "target_module": "strategy-table",
+          "expected_pattern": "strategy-table exposes a function recommendation(player, dealerUpcard) but exposes no rendering function or template"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "rules-engine",
+      "charter": "Pure JavaScript module implementing standard blackjack mechanics: shoe construction (multi-deck) with shuffling, hand scoring with proper ace handling (soft vs hard totals), blackjack and bust detection, legal-actions evaluator for the current hand state, dealer auto-play under S17, and hand resolution with 3:2 blackjack payout. Exposes pure functions only; no DOM, no storage, no global mutation. Single source of truth for all rules-of-the-game questions.",
+      "acceptance": "Given any sequence of card draws, the module returns correct hand totals, correctly identifies blackjacks and busts, returns the legal action set per the locked ruleset (hit/stand/double/split, with double-after-split allowed and surrender absent), plays the dealer to S17 standing, and resolves hands at 3:2 for blackjack. Module is unit-testable in isolation in a Node sandbox without DOM stubs.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "returns correct hand totals",
+          "check_type": "behavior",
+          "scenario": "scoreHand([A, 7]) -> soft 18; scoreHand([A, 7, K]) -> hard 18; scoreHand([10, 6, 5]) -> 21; scoreHand([10, 6, 7]) -> bust 23",
+          "expected_result": "totals match the values above; isSoft true only on the [A,7] case",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "correctly identifies blackjacks and busts",
+          "check_type": "behavior",
+          "scenario": "scoreHand([A, K]) flagged as blackjack; scoreHand([10, 6, 6]) flagged as bust; scoreHand([A, K, 5]) NOT flagged as blackjack (3 cards)",
+          "expected_result": "isBlackjack and isBust flags are set per the rules above",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "returns the legal action set per the locked ruleset (hit/stand/double/split, with double-after-split allowed and surrender absent)",
+          "check_type": "behavior",
+          "scenario": "legalActions on initial 2-card hand of [8,8] vs dealer 6 returns set including hit, stand, double, split; legalActions after one hit returns {hit, stand} only (no double, no split); legalActions on first decision of a split sub-hand with two cards returns set including double",
+          "expected_result": "returned arrays match the rule above; 'surrender' never appears",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "plays the dealer to S17 standing",
+          "check_type": "behavior",
+          "scenario": "playDealer starting from [A,6] (soft 17): dealer stands and returns total 17. playDealer starting from [10,6]: dealer hits at least once.",
+          "expected_result": "S17 behavior verified for soft 17 and for any 17",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "resolves hands at 3:2 for blackjack",
+          "check_type": "behavior",
+          "scenario": "resolveHand with player=[A,K], dealer=[10,9], bet=10",
+          "expected_result": "outcome 'player_blackjack'; player payout is 15 in addition to original bet returned",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A6",
+          "from_acceptance_phrase": "Module is unit-testable in isolation in a Node sandbox without DOM stubs",
+          "check_type": "structural",
+          "scenario": "load rules-engine module in a Node sandbox with no window/document globals",
+          "expected_result": "module loads and exported functions execute without referencing window, document, or any DOM API",
+          "verifier": "cv_artifact_exercise"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 3,
+      "out_of_scope": [
+        "any DOM rendering",
+        "any storage / persistence",
+        "strategy lookups (lives in strategy-table)",
+        "decision logging (lives in game-state-machine)",
+        "betting economy beyond a nominal per-hand bet"
+      ]
+    },
+    {
+      "id": "section-2",
+      "name": "strategy-table",
+      "charter": "Pure JavaScript module encoding the standard basic-strategy table for the locked S17 + DAS + no-surrender variant: hard totals 5-21, soft totals A2-A9, and pair splits AA-TT, each keyed by player hand category and dealer upcard. Exposes a single recommendation function that returns one action label (Hit/Stand/Double/Split) for any (player hand state, dealer upcard) pair. Single source of truth for both proactive hints and post-hand correctness scoring. No DOM, no rendering, no chart display.",
+      "acceptance": "For any legal player hand state and dealer upcard, returns the basic-strategy-correct action under the locked ruleset. The table covers hard totals 5-21, soft totals A2-A9, and pair splits AA-TT. The module is data-only plus a lookup function; it does not render or expose chart visuals.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "returns the basic-strategy-correct action under the locked ruleset",
+          "check_type": "behavior",
+          "scenario": "spot checks across the table: hard 16 vs dealer 10 -> Hit; pair 8s vs dealer 10 -> Split; soft 18 (A,7) vs dealer 9 -> Hit; pair Aces vs anything -> Split; hard 11 vs dealer 5 -> Double; hard 20 vs dealer A -> Stand",
+          "expected_result": "each lookup returns the expected action label",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "table covers hard totals 5-21, soft totals A2-A9, and pair splits AA-TT",
+          "check_type": "structural",
+          "scenario": "enumerate every (category, total/pair, dealer upcard 2-A) cell",
+          "expected_result": "every cell yields a defined action label; no undefined/null returns from recommendation()",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "data-only plus a lookup function; it does not render or expose chart visuals",
+          "check_type": "absence",
+          "scenario": "module's exported surface inspected",
+          "expected_result": "no exported function returns HTML, no exported function manipulates DOM, no chart-rendering helper present",
+          "verifier": "cv_artifact_exercise"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "rules engine (lives in rules-engine)",
+        "any UI",
+        "rendering the chart for the user",
+        "insurance / surrender / side-bet decisions"
+      ]
+    },
+    {
+      "id": "section-3",
+      "name": "game-state-machine",
+      "charter": "Pure JavaScript module that orchestrates the hand lifecycle (betting -> dealing -> player decisions -> dealer play -> resolution -> review -> next), holds the canonical game state, exposes a subscribe/dispatch API for UI and hint/review consumers, and records a per-hand decision log capturing each player decision with the player hand snapshot and dealer upcard at decision time. Calls into rules-engine for all rules questions and into strategy-table for the correct-action recording inside each decision-log entry. No DOM.",
+      "acceptance": "Drives a hand from betting through resolution and into a review state, transitioning only via legal actions per rules-engine. Builds a decision log per hand with one entry per player decision, each entry annotated with the basic-strategy correct action from strategy-table. Exposes a subscribe(listener) API that fires on every state change. Provides a dispatch(action) entry point that accepts user actions and a 'next hand' command that returns the machine to a dealable state without page reload.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "Drives a hand from betting through resolution and into a review state",
+          "check_type": "user_flow",
+          "scenario": "from initial 'betting' phase: dispatch deal -> phase 'player_turn'; dispatch legal action(s) until stand or bust -> phase 'dealer_turn' -> phase 'resolved' -> phase 'review' (or resolved with review payload available)",
+          "expected_result": "phase transitions occur in the listed order; no illegal transitions accepted",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "transitioning only via legal actions per rules-engine",
+          "check_type": "behavior",
+          "scenario": "dispatch an illegal action (e.g., 'split' when hand is not a pair, or 'double' after a hit)",
+          "expected_result": "state machine rejects the dispatch (no state mutation, error or noop) and does not advance the phase",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "Builds a decision log per hand with one entry per player decision, each entry annotated with the basic-strategy correct action from strategy-table",
+          "check_type": "structural",
+          "scenario": "play a hand with 3 player decisions; read getDecisionLog()",
+          "expected_result": "log has length 3; each entry contains { playerHandSnapshot, dealerUpcard, chosenAction, correctAction } and correctAction matches strategy-table.recommendation(playerHandSnapshot, dealerUpcard)",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "Exposes a subscribe(listener) API that fires on every state change",
+          "check_type": "behavior",
+          "scenario": "register a listener, then dispatch deal then hit; count listener invocations",
+          "expected_result": "listener fires at least once for each phase or state mutation; receives the latest state snapshot",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "a 'next hand' command that returns the machine to a dealable state without page reload",
+          "check_type": "user_flow",
+          "scenario": "from 'resolved'/'review' phase, dispatch the 'next' (or 'deal') command",
+          "expected_result": "phase returns to 'betting' or directly 'player_turn' on a freshly dealt hand; no page reload required; state.handsPlayed (or equivalent) increments",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 3,
+      "out_of_scope": [
+        "rendering",
+        "DOM event wiring",
+        "displaying hint or review (state machine only emits the data)",
+        "persistence"
+      ]
+    },
+    {
+      "id": "section-4",
+      "name": "ui-render",
+      "charter": "DOM-rendering layer that subscribes to the game-state-machine and paints the table area, dealer hand, player hand(s) including any split sub-hands, action buttons (Hit/Stand/Double/Split), the Hint button, and the Deal/Next button. Buttons are enabled/disabled per phase and per the legal-actions set in current state. Renders the post-hand review panel structure (the hint-and-review section populates the recommendation data). Pure render: receives state, emits user-action callbacks via dispatch.",
+      "acceptance": "The page renders the dealer hand, player hand(s), action buttons, Hint button, Deal/Next button, and a post-hand review panel container. Action buttons are enabled only when the corresponding action is legal in the current phase. The Deal/Next button is live (enabled) in both 'betting' and 'resolved' phases so the user can deal a new hand without page reload. The Hint button is live during the player's turn. Render updates respond to every state-machine notification.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "renders the dealer hand, player hand(s), action buttons, Hint button, Deal/Next button, and a post-hand review panel container",
+          "check_type": "presence",
+          "scenario": "DOM after init",
+          "expected_result": "DOM contains identifiable elements for: dealer hand region, player hand region (capable of multiple sub-hands), action buttons hit/stand/double/split, hint button, deal/next button, review panel container",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "Action buttons are enabled only when the corresponding action is legal in the current phase",
+          "check_type": "behavior",
+          "scenario": "during phase 'player_turn' on an initial 2-card hand, then after one hit",
+          "expected_result": "double and split buttons are enabled on the initial 2-card hand if rules-engine reports them legal; after a hit, double and split become disabled; hit/stand remain enabled",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "The Deal/Next button is live (enabled) in both 'betting' and 'resolved' phases so the user can deal a new hand without page reload",
+          "check_type": "user_flow",
+          "scenario": "play a hand to resolution; without reloading the page, click the Deal/Next button",
+          "expected_result": "button is enabled in 'resolved' phase; clicking it returns the app to a dealable state; a new hand is dealt; this works without any page reload",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "The Hint button is live during the player's turn",
+          "check_type": "behavior",
+          "scenario": "during 'player_turn' phase, before any action is taken",
+          "expected_result": "Hint button is enabled and clickable",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S4.A5",
+          "from_acceptance_phrase": "Render updates respond to every state-machine notification",
+          "check_type": "behavior",
+          "scenario": "subscribe a spy listener AND check DOM after each dispatch (deal, hit, stand)",
+          "expected_result": "DOM reflects the new state on every notification (cards rendered, button states updated)",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": ["section-3"],
+      "estimated_builders": 3,
+      "out_of_scope": [
+        "rules logic (consume rules-engine indirectly via state machine)",
+        "strategy lookups (handled by hint-and-review)",
+        "page boilerplate / global styles (lives in app-shell)",
+        "persistence"
+      ]
+    },
+    {
+      "id": "section-5",
+      "name": "hint-and-review",
+      "charter": "Wires the Hint button and the post-hand review panel content. On hint click, queries strategy-table for the recommended action given the current player hand and dealer upcard, and surfaces a single action label into the hint area. After every hand resolves, walks the state-machine's decision log and renders, into the review panel, one row per decision showing the player's chosen action, the basic-strategy correct action, and a match indicator. Consumes ui-render's review panel container; does not own page layout.",
+      "acceptance": "Clicking the Hint button mid-hand reveals the basic-strategy action for the current state, sourced from strategy-table. After every resolved hand, the post-hand review panel appears and lists each decision the user made vs basic-strategy correct, with one row per decision. The hint shows a single action label only (no reasoning text, no chart visualization).",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "Clicking the Hint button mid-hand reveals the basic-strategy action for the current state",
+          "check_type": "user_flow",
+          "scenario": "during 'player_turn' phase with a known hand state (e.g., player 16 vs dealer 10), click the Hint button",
+          "expected_result": "the hint area shows the action label that strategy-table.recommendation returns for that state (e.g., 'Hit' for 16v10)",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "After every resolved hand, the post-hand review panel appears and lists each decision the user made vs basic-strategy correct, with one row per decision",
+          "check_type": "user_flow",
+          "scenario": "play a full hand involving N>=2 player decisions, then let it resolve",
+          "expected_result": "review panel becomes visible; renders exactly N rows; each row shows chosenAction, correctAction, and a match indicator; for any deliberately suboptimal play the row is marked as a mismatch",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "The hint shows a single action label only (no reasoning text, no chart visualization)",
+          "check_type": "absence",
+          "scenario": "hint area inspected while a hint is being shown",
+          "expected_result": "no explanatory paragraph, no chart/cell highlight, no <img>, no <table>; only the action label text",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": ["section-2", "section-3", "section-4"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "the strategy data itself (lives in strategy-table)",
+        "decision logging (state machine owns the log)",
+        "DOM layout of the review container (ui-render owns the container)",
+        "displaying any cheat-sheet chart"
+      ]
+    },
+    {
+      "id": "section-6",
+      "name": "app-shell",
+      "charter": "Top-level page wiring: index.html, styles.css, and the small bootstrap script that constructs the rules-engine, strategy-table, game-state-machine, ui-render, and hint-and-review modules and wires them together (state machine <-> ui-render subscription, ui-render dispatch -> state machine, hint-and-review consumes both). Provides the page chrome (table felt area, header) and desktop-first responsive layout. Contains no rules logic, no strategy data, no decision logic.",
+      "acceptance": "Loading index.html in a modern browser produces a working blackjack trainer single-page app with no build step required: dealer hand, player hand(s), action buttons, Hint button, Deal/Next button, and a review panel area are all present, and the modules are correctly wired so dispatching a player action flows through the state machine and re-renders the UI. Layout is desktop-first responsive (usable on mobile but not optimized).",
+      "acceptance_assertions": [
+        {
+          "id": "S6.A1",
+          "from_acceptance_phrase": "Loading index.html in a modern browser produces a working blackjack trainer single-page app with no build step required",
+          "check_type": "structural",
+          "scenario": "open output/integration/index.html directly (no bundler/build) in a modern browser",
+          "expected_result": "app boots, no missing-module errors in console, no 404s, all script tags resolve relative paths that exist in the integrated artifact",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S6.A2",
+          "from_acceptance_phrase": "dealer hand, player hand(s), action buttons, Hint button, Deal/Next button, and a review panel area are all present",
+          "check_type": "presence",
+          "scenario": "DOM after page load",
+          "expected_result": "all six surfaces are present in the rendered DOM",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S6.A3",
+          "from_acceptance_phrase": "the modules are correctly wired so dispatching a player action flows through the state machine and re-renders the UI",
+          "check_type": "user_flow",
+          "scenario": "click Deal, then click Hit, then click Stand",
+          "expected_result": "each click advances state and updates the rendered DOM (cards appear, button states change, eventually a resolved review appears)",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S6.A4",
+          "from_acceptance_phrase": "Layout is desktop-first responsive (usable on mobile but not optimized)",
+          "check_type": "structural",
+          "scenario": "inspect styles.css for at least one viewport-width media query and a flexible/fluid layout primitive (flex/grid/% widths)",
+          "expected_result": "stylesheet contains responsive scaffolding; layout does not break (no horizontal scroll, no overlapping critical controls) at common mobile widths",
+          "verifier": "critic_final_sweep"
+        }
+      ],
+      "depends_on": ["section-3", "section-4", "section-5"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "rules logic",
+        "strategy data",
+        "state machine internals",
+        "render details beyond page chrome",
+        "persistence / localStorage (not required by the core experience)"
+      ]
+    },
+    {
+      "id": "section-7",
+      "name": "edge-case-testing",
+      "charter": "Cover every acceptance assertion with `verifier: edge_case_testing` from the section list. Every section's `acceptance_assertions[]` is in scope. Build a runnable test harness that exercises the integrated artifact (DOM + wired modules) and verifies each `edge_case_testing` assertion across sections 1-6 and each `behavior` / `presence` / `absence` / `user_flow` IP-level assertion that is testable against the integrated artifact. Tests must drive real user-flow sequences (deal -> play -> resolve -> next-hand) end-to-end, not just unit-level shims, so that drift like 'Deal button disabled in resolved phase' is caught.",
+      "acceptance": "A runnable test harness exists in the integrated artifact and reports pass/fail per assertion id (S1.A1 through S6.A3, plus the IP-level assertions). Every acceptance assertion tagged `verifier: edge_case_testing` in sections-v1.json is covered by at least one test case. The harness simulates real user flows: after a hand resolves, the harness clicks the Deal/Next button and verifies a new hand starts without page reload; the harness clicks Hint mid-hand and verifies the action label appears; the harness completes a hand and verifies the review panel renders one row per decision.",
+      "acceptance_assertions": [
+        {
+          "id": "S7.A1",
+          "from_acceptance_phrase": "A runnable test harness exists in the integrated artifact and reports pass/fail per assertion id",
+          "check_type": "presence",
+          "scenario": "test harness runs (in Node + jsdom or in-browser) and emits a structured pass/fail report",
+          "expected_result": "report enumerates every assertion id covered, with verdict per id",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S7.A2",
+          "from_acceptance_phrase": "Every acceptance assertion tagged `verifier: edge_case_testing` in sections-v1.json is covered by at least one test case",
+          "check_type": "structural",
+          "scenario": "cross-reference sections-v1.json acceptance_assertions where verifier == 'edge_case_testing' against test harness coverage",
+          "expected_result": "100% coverage; no edge_case_testing-tagged assertion missing a test",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S7.A3",
+          "from_acceptance_phrase": "after a hand resolves, the harness clicks the Deal/Next button and verifies a new hand starts without page reload",
+          "check_type": "user_flow",
+          "scenario": "harness plays a hand to resolution; harness clicks Deal/Next; harness asserts no page-reload occurred and a new hand is in 'player_turn' or 'betting' phase",
+          "expected_result": "test passes; documented as covering S3.A5 and S4.A3",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S7.A4",
+          "from_acceptance_phrase": "the harness clicks Hint mid-hand and verifies the action label appears",
+          "check_type": "user_flow",
+          "scenario": "harness deals a hand, clicks Hint during 'player_turn'",
+          "expected_result": "hint surface contains a single action label from the set {Hit,Stand,Double,Split}; documented as covering S5.A1",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S7.A5",
+          "from_acceptance_phrase": "the harness completes a hand and verifies the review panel renders one row per decision",
+          "check_type": "user_flow",
+          "scenario": "harness plays a hand with N>=2 decisions, lets it resolve",
+          "expected_result": "review panel renders exactly N rows, each with chosenAction, correctAction, and match indicator; documented as covering S5.A2",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "writing or amending production code (tests only)",
+        "verifying assertions tagged `cv_artifact_exercise` or `critic_final_sweep` (different verifier owns those)",
+        "performance benchmarking",
+        "visual / pixel-level snapshot testing"
+      ]
+    }
+  ]
+}

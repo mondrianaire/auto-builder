@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Apple Music Now Playing — Property Inspector</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; color: #d8d8d8; background: #2d2d2d; margin: 0; padding: 12px; }
+    .sdpi-item { display: flex; align-items: center; margin-bottom: 8px; }
+    .sdpi-item-label { width: 110px; color: #9a9a9a; }
+    .sdpi-item-value { flex: 1; }
+    input[type="number"], input[type="text"] { width: 100%; padding: 4px 6px; background: #3d3d3d; color: #fff; border: 1px solid #555; border-radius: 3px; box-sizing: border-box; }
+    input[type="checkbox"] { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+  <div class="sdpi-wrapper">
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Poll interval (ms)</div>
+      <div class="sdpi-item-value"><input id="pollIntervalMs" type="number" min="250" step="250" value="2000"></div>
+    </div>
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Placeholder</div>
+      <div class="sdpi-item-value"><input id="placeholder" type="text" value="Apple Music"></div>
+    </div>
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Show artist</div>
+      <div class="sdpi-item-value"><input id="showArtist" type="checkbox" checked></div>
+    </div>
+  </div>
+
+  <script>
+    // Minimal Stream Deck PI bootstrap. Real SDK supplies these args via
+    // window.connectElgatoStreamDeckSocket; we stash uuid + websocket for use.
+    var websocket = null;
+    var uuid = null;
+    var settings = { pollIntervalMs: 2000, placeholder: "Apple Music", showArtist: true };
+
+    window.connectElgatoStreamDeckSocket = function (inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
+      uuid = inUUID;
+      try {
+        websocket = new WebSocket('ws://127.0.0.1:' + inPort);
+      } catch (_e) { websocket = null; }
+      if (websocket) {
+        websocket.addEventListener('open', function () {
+          try { websocket.send(JSON.stringify({ event: inRegisterEvent, uuid: inUUID })); } catch (_e) {}
+        });
+      }
+      try {
+        var parsed = typeof inActionInfo === 'string' ? JSON.parse(inActionInfo) : inActionInfo;
+        if (parsed && parsed.payload && parsed.payload.settings) {
+          applySettings(parsed.payload.settings);
+        }
+      } catch (_e) {}
+    };
+
+    function applySettings(s) {
+      if (typeof s.pollIntervalMs === 'number') document.getElementById('pollIntervalMs').value = s.pollIntervalMs;
+      if (typeof s.placeholder === 'string') document.getElementById('placeholder').value = s.placeholder;
+      if (typeof s.showArtist === 'boolean') document.getElementById('showArtist').checked = s.showArtist;
+      settings = readForm();
+    }
+
+    function readForm() {
+      var n = parseInt(document.getElementById('pollIntervalMs').value, 10);
+      if (!Number.isFinite(n) || n < 250) n = 2000;
+      return {
+        pollIntervalMs: n,
+        placeholder: document.getElementById('placeholder').value || 'Apple Music',
+        showArtist: !!document.getElementById('showArtist').checked
+      };
+    }
+
+    function emitSettings() {
+      settings = readForm();
+      // Stream Deck SDK PI side: send setSettings to the host.
+      if (websocket && websocket.readyState === 1 && uuid) {
+        try {
+          websocket.send(JSON.stringify({ event: 'setSettings', context: uuid, payload: settings }));
+        } catch (_e) {}
+      }
+      // Provide a stub-hook for the edge-case-testing harness.
+      if (window.$SD && window.$SD.api && typeof window.$SD.api.setSettings === 'function') {
+        window.$SD.api.setSettings(uuid, settings);
+      }
+    }
+
+    ['pollIntervalMs', 'placeholder', 'showArtist'].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.addEventListener('change', emitSettings);
+      el.addEventListener('input', emitSettings);
+    });
+
+    // Expose for tests
+    window.__pi_readForm = readForm;
+    window.__pi_emit = emitSettings;
+  </script>
+</body>
+</html>

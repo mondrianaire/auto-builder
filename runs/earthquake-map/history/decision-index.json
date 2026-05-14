@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-10T01:07:00Z",
+  "decisions": [
+    {
+      "id": "ledger-v1",
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "trigger": "Initial Discovery dispatch on the original prompt 'Build me a tool to visualize earthquake activity on a map.'",
+      "summary": "Discovery captured the restatement, A1-A12 assumptions, IP1-IP3 inflection points, and out-of-scope list."
+    },
+    {
+      "id": "sections-v1",
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "trigger": "Technical Discovery dispatch consuming ledger-v1.",
+      "summary": "TD chose verb 'visualize', resolved TD-IP1 (Leaflet vendored), TD-IP2 (USGS past-day feed), TD-IP3 (size+color encoding); decomposed into 4 sections (data fetcher, map renderer, page shell, edge-case testing); authored discovery_coverage_assertions and per-section acceptance_assertions."
+    },
+    {
+      "id": "contract-section-1--section-2",
+      "artifact": "contracts/original/section-1--section-2.json",
+      "trigger": "TD authored after sections-v1 to lock the EarthquakeEvent shape and fetchEarthquakes return contract.",
+      "summary": "Async fetchEarthquakes() returns { ok:true, events:[] } | { ok:false, error:{code,message} }. EarthquakeEvent fields: id, magnitude|null, place|null, timeMs, lat, lon, depth."
+    },
+    {
+      "id": "contract-section-1--section-3",
+      "artifact": "contracts/original/section-1--section-3.json",
+      "trigger": "TD authored after sections-v1 for the page bootstrap consumer.",
+      "summary": "Section-3 calls fetchEarthquakes() on DOMContentLoaded and forwards events to section-2 mount, or shows error.message on { ok:false }."
+    },
+    {
+      "id": "contract-section-2--section-3",
+      "artifact": "contracts/original/section-2--section-3.json",
+      "trigger": "TD authored after sections-v1 for the page-shell + map handshake.",
+      "summary": "section-2 exposes mount(containerId, events) -> { markerCount } plus pure styling fns magnitudeColor / magnitudeRadius for legend reuse."
+    },
+    {
+      "id": "contract-integrator--section-4",
+      "artifact": "contracts/original/integrator--section-4.json",
+      "trigger": "TD authored after sections-v1 to define the integrated-artifact layout edge-case-testing inspects.",
+      "summary": "Entry point at index.html, vendor/leaflet/ for library, modules and styles co-located. Runtime network deps: USGS feed + OSM tiles. No backend, no runtime stubs in section-4."
+    },
+    {
+      "id": "dag-v1",
+      "artifact": "state/coordinator/dag.json",
+      "trigger": "Coordinator boot after reading sections-v1.json.",
+      "summary": "5 nodes (4 sections + 1 integrator pseudo-node), 3 waves: [s1,s2,s3] -> [integrator] -> [s4]."
+    },
+    {
+      "id": "dev-001",
+      "artifact": "state/inline-deviations/dev-001.json",
+      "trigger": "Integrator-output-path mismatch between contract sketch (output/final/) and Coordinator briefing boundary (output/integration/).",
+      "summary": "Implementation_path_chosen: write to output/integration/. No contract or product-code change."
+    },
+    {
+      "id": "dev-002",
+      "artifact": "state/inline-deviations/dev-002.json",
+      "trigger": "Layout choice at integration root: flat vs nested js/css/ subdirs.",
+      "summary": "Implementation_path_chosen: flat layout. No contract or product-code change."
+    },
+    {
+      "id": "integrator-manifest",
+      "artifact": "output/integration/manifest.json",
+      "trigger": "Integrator stage (Wave 2) after section-1/-2/-3 verified.",
+      "summary": "12 files assembled into output/integration/; load order vendor/leaflet/leaflet.js -> data-fetcher.js -> map.js -> main.js."
+    },
+    {
+      "id": "edge-case-testing-report",
+      "artifact": "output/builders/edge-case-testing/builder-4a/report.json",
+      "trigger": "Section-4 dispatch (Wave 3) after integrator verified.",
+      "summary": "22 pass + 1 pass_with_caveat + 3 not_applicable_in_static (deferred to CV); 0 fail. No runtime stubs."
+    },
+    {
+      "id": "build-complete",
+      "artifact": "state/coordinator/build-complete.json",
+      "trigger": "All sections + integrator + edge-case-testing verified, historian artifacts written.",
+      "summary": "Signaled ready_for_final_verification = true with next_steps_required listing critic_final_sweep, CV, delivery, run_report."
+    }
+  ]
+}

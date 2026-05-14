@@ -1,0 +1,20 @@
+{
+  "completed_at": "2026-05-09T01:30:00Z",
+  "entry_point": "index.html",
+  "files": [
+    { "path": "index.html", "role": "page entry point" },
+    { "path": "styles.css", "role": "styling" },
+    { "path": "app.js", "role": "bootstrap; imports modules; wires state machine + UI + hint-and-review", "imports": ["./rules-engine.js", "./strategy-table.js", "./game-state-machine.js", "./ui-render.js", "./hint-and-review.js"] },
+    { "path": "rules-engine.js", "role": "section-1 module (pure rules)" },
+    { "path": "strategy-table.js", "role": "section-2 module (basic-strategy lookup)" },
+    { "path": "game-state-machine.js", "role": "section-3 module (state + dispatch + decision log)" },
+    { "path": "ui-render.js", "role": "section-4 module (DOM render-on-state)" },
+    { "path": "hint-and-review.js", "role": "section-5 module (hint click + review on resolve)" },
+    { "path": "tests.html", "role": "section-7 edge-case-testing harness page" },
+    { "path": "tests.js", "role": "section-7 test harness driver" }
+  ],
+  "verification": {
+    "critic_final_sweep": "clean (0 flags across 7 checks)",
+    "convergence_verifier": "pass (14/14 assumptions, 15/15 OOS absent, 5/5 IPs honored, 3/3 artifact-exercise checks, 21/21 edge-case + 12/12 IP-level harness assertions)"
+  }
+}

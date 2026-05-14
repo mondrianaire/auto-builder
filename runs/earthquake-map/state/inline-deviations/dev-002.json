@@ -1,0 +1,11 @@
+{
+  "id": "dev-002",
+  "ts": "2026-05-10T01:05:30Z",
+  "category": "implementation_path_chosen",
+  "summary": "Module + CSS files placed at integration root rather than under js/ and css/ subdirs.",
+  "context": "The integrator--section-4 contract sketches output/final/js/ and output/final/css/ subdirectories. The Coordinator briefing's section-3 guidance describes 'index.html, main.js, and styles.css' (flat). The vendored Leaflet still lives under vendor/leaflet/.",
+  "decision": "Use a flat layout at the integration root: index.html, main.js, map.js, data-fetcher.js, styles.css, vendor/leaflet/*. Index.html script tags reference relative paths like 'data-fetcher.js' and 'vendor/leaflet/leaflet.js'. This matches the Coordinator briefing more directly and avoids gratuitous path complexity for a 4-file artifact.",
+  "nested_equivalent": "Under nested mode, the Integrator role would face the same minor layout choice and pick the same flat structure (it's the simpler path for a 4-file artifact). The integrator--section-4 contract's js/ and css/ sketch is illustrative of separation-of-concerns, not a load-bearing requirement; section-4 verifies relative paths and absence-of-CDN, both satisfied by the flat layout.",
+  "affects_product_code": false,
+  "affects_contract": false
+}

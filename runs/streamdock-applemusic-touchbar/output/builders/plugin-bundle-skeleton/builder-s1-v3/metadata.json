@@ -1,0 +1,38 @@
+{
+  "section_id": "S1",
+  "builder_id": "builder-s1-v3",
+  "cycle": "v3-windows-rebuild",
+  "supersedes": "builder-s1-1",
+  "produced_at": "2026-05-13T00:50:00Z",
+  "files_produced": ["manifest.json"],
+  "files_carried_from_v1_unchanged": [
+    "icons/pluginIcon.png", "icons/pluginIcon@2x.png",
+    "icons/actionIcon.png", "icons/actionIcon@2x.png",
+    "icons/category.png", "icons/category@2x.png"
+  ],
+  "manifest_diff_from_v1": [
+    "OS: [{Platform:'mac', MinimumVersion:'11.0'}] -> [{Platform:'windows', MinimumVersion:'10'}]",
+    "REMOVED: CodePathMac ('plugin/run.sh')",
+    "ADDED: CodePathWin ('plugin/main.js')",
+    "ADDED: Nodejs ({Version: '20'})",
+    "UPDATED: Description (mentions Windows + Apple Music for Windows / Microsoft Store preview)"
+  ],
+  "assertions_satisfied": [
+    "MCA.TDIPA.1 (SDKVersion: 2) — unchanged",
+    "MCA.TDIPA.2 (OS array: [{Platform:'windows', MinimumVersion:'10'}])",
+    "MCA.TDIPA.3 (CodePathWin present, points at .js file in bundle)",
+    "MCA.TDIPA.4 (Nodejs.Version is non-empty string '20')",
+    "AA.S1.1 (folder presence — realized at integrator step)",
+    "AA.S1.2 (manifest parses; required keys present: Name, Version, Author, Description, Icon, Category, CategoryIcon, OS, SDKVersion, Software, CodePathWin, Nodejs, Actions)",
+    "AA.S1.3 (referenced paths resolve, no CodePathMac)",
+    "AA.S1.4 (Controllers: ['Encoder']) — unchanged",
+    "AA.S1.5 (OS Platform == 'windows', MinimumVersion set)",
+    "AA.S1.6 (Nodejs == {Version:'20'}, CodePathWin .js, CodePathMac absent)"
+  ],
+  "integrator_directives": [
+    "Replace integration bundle's manifest.json with this file",
+    "DELETE plugin/run.sh from the integrated bundle (macOS-only artifact)",
+    "All other plugin/* files (main.js, sdk.js, node_modules/ws) preserved verbatim from v1"
+  ],
+  "inline_deviation_note": "Nodejs object includes only 'Version' field; GenerateProfilerData omitted per Researcher findings (StreamDock host runs CodePathWin as Node script when Nodejs.Version is declared; GenerateProfilerData is not required). See dev-003."
+}

@@ -1,0 +1,35 @@
+{
+  "updated_at": "2026-05-09T01:13:00Z",
+  "version": 8,
+  "dispatch_mode": "inline",
+  "nodes": [
+    { "id": "section-1", "name": "rules-engine", "status": "verified", "wave": 1, "depends_on": [] },
+    { "id": "section-2", "name": "strategy-table", "status": "verified", "wave": 1, "depends_on": [] },
+    { "id": "section-3", "name": "game-state-machine", "status": "verified", "wave": 2, "depends_on": ["section-1", "section-2"] },
+    { "id": "section-4", "name": "ui-render", "status": "verified", "wave": 3, "depends_on": ["section-3"] },
+    { "id": "section-5", "name": "hint-and-review", "status": "verified", "wave": 4, "depends_on": ["section-2", "section-3", "section-4"] },
+    { "id": "section-6", "name": "app-shell", "status": "verified", "wave": 5, "depends_on": ["section-3", "section-4", "section-5"] },
+    { "id": "integrator", "name": "integrator", "status": "verified", "wave": 6, "depends_on": ["section-1", "section-2", "section-3", "section-4", "section-5", "section-6"] },
+    { "id": "section-7", "name": "edge-case-testing", "status": "verified", "wave": 7, "depends_on": ["integrator"] }
+  ],
+  "edges": [
+    { "from": "section-1", "to": "section-3" },
+    { "from": "section-2", "to": "section-3" },
+    { "from": "section-2", "to": "section-5" },
+    { "from": "section-3", "to": "section-4" },
+    { "from": "section-3", "to": "section-5" },
+    { "from": "section-3", "to": "section-6" },
+    { "from": "section-4", "to": "section-5" },
+    { "from": "section-4", "to": "section-6" },
+    { "from": "section-5", "to": "section-6" },
+    { "from": "section-1", "to": "integrator" },
+    { "from": "section-2", "to": "integrator" },
+    { "from": "section-3", "to": "integrator" },
+    { "from": "section-4", "to": "integrator" },
+    { "from": "section-5", "to": "integrator" },
+    { "from": "section-6", "to": "integrator" },
+    { "from": "integrator", "to": "section-7" }
+  ],
+  "current_wave": 7,
+  "rationale": "All waves complete. All 7 sections verified. Integrator complete. Edge-case-testing harness produced and report all-pass. Coordinator hand-off via build-complete.json."
+}

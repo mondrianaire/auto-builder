@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "integrated_at": "2026-05-10T01:05:45Z",
+  "entry_point": "index.html",
+  "files": [
+    { "path": "index.html",                              "source": "section-3/builder-3a", "bytes": 1489 },
+    { "path": "main.js",                                 "source": "section-3/builder-3a", "bytes": 3152 },
+    { "path": "styles.css",                              "source": "section-3/builder-3a", "bytes": 2316 },
+    { "path": "data-fetcher.js",                         "source": "section-1/builder-1a", "bytes": 3534 },
+    { "path": "map.js",                                  "source": "section-2/builder-2a", "bytes": 4152 },
+    { "path": "vendor/leaflet/leaflet.js",               "source": "section-2/builder-2-vendor", "bytes": 147552 },
+    { "path": "vendor/leaflet/leaflet.css",              "source": "section-2/builder-2-vendor", "bytes": 14806 },
+    { "path": "vendor/leaflet/images/marker-icon.png",   "source": "section-2/builder-2-vendor", "bytes": 1466 },
+    { "path": "vendor/leaflet/images/marker-icon-2x.png","source": "section-2/builder-2-vendor", "bytes": 2464 },
+    { "path": "vendor/leaflet/images/marker-shadow.png", "source": "section-2/builder-2-vendor", "bytes": 618 },
+    { "path": "vendor/leaflet/images/layers.png",        "source": "section-2/builder-2-vendor", "bytes": 696 },
+    { "path": "vendor/leaflet/images/layers-2x.png",     "source": "section-2/builder-2-vendor", "bytes": 1259 }
+  ],
+  "runtime_network_dependencies": [
+    "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+    "https://{a,b,c}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  ],
+  "no_backend": true,
+  "verification": {
+    "html_has_no_cdn_for_leaflet": true,
+    "html_script_tags_resolve_locally": true,
+    "vendor_leaflet_present": true,
+    "all_modules_present": true
+  },
+  "load_order": [
+    "vendor/leaflet/leaflet.js",
+    "data-fetcher.js",
+    "map.js",
+    "main.js"
+  ],
+  "notes": "Layout is flat at the integration root (modules + CSS at root, vendor under vendor/leaflet/). See state/inline-deviations/dev-002.json. Orchestrator delivers this directory tree to output/final/."
+}

@@ -1,0 +1,63 @@
+{
+  "completed_at": "2026-05-10T06:25:51Z",
+  "verdict": "pass",
+  "architecture_version": "v1.5",
+  "supersedes": "output/verification/report.json (verdict: fail under v1.5 reclassification)",
+  "checked_against_ledger": "decisions/discovery/ledger-v1.json",
+  "checked_against_sections": "decisions/technical-discovery/sections-v1.json",
+  "integrated_artifact": "output/final/",
+  "production_fidelity_environment": {
+    "engine": "jsdom@22.1.0",
+    "config": {
+      "url": "file:// load of output/final/index.html",
+      "runScripts": "dangerously",
+      "resources": "usable (real fetch via custom ResourceLoader; no substitution)"
+    },
+    "runtime_dependency_substitution": false,
+    "fetch_log_evidence": [
+      "file:///.../output/final/styles.css",
+      "file:///.../output/final/vendor/katex/katex.min.css",
+      "file:///.../output/final/vendor/katex/katex.min.js",
+      "file:///.../output/final/renderer.js",
+      "file:///.../output/final/input.js",
+      "file:///.../output/final/app.js"
+    ],
+    "external_cdn_fetched": false,
+    "katex_source_at_runtime": "local vendor/katex bundle (shipped inside output/final/)"
+  },
+  "prompt_named_verb_result": {
+    "assertion_id": "PNV.1",
+    "verb_from_prompt": "render mathematical equations from LaTeX input",
+    "scenario": "Open output/final/index.html under production fidelity; type 'x^2' into the input region; observe the output region",
+    "expected_result": "A typeset visual representation of x squared appears in the output region (specifically: a .katex element with the rendered glyphs as descendants, error region hidden)",
+    "result": "pass",
+    "detail": "output region contains .katex element after a single 'input' event; rendered DOM text is 'x2x^2x2' (KaTeX's HTML+MathML composite); error region remains hidden",
+    "production_fidelity": true,
+    "non_skippable": true
+  },
+  "artifact_exercise_results": [
+    {
+      "assertion_id": "PNV.1",
+      "scenario": "Type 'x^2' into the textarea, observe output region",
+      "result": "pass",
+      "details": "live render produced .katex DOM under file:// load with locally-bundled KaTeX; no error surfaced",
+      "production_fidelity": true
+    },
+    {
+      "assertion_id": "S3.A1",
+      "scenario": "Type 'a+b' into the textarea, observe live preview without button press",
+      "result": "pass",
+      "details": "live preview confirmed under production-fidelity exercise (file:// load, real KaTeX from local bundle)",
+      "production_fidelity": true
+    },
+    {
+      "assertion_id": "S3.A2",
+      "scenario": "Type invalid LaTeX (\\frac{1}{), observe error region",
+      "result": "pass",
+      "details": "error region visible with text 'KaTeX parse error: Unexpected end of input in a macro argument, expected }' at end of input: \\frac{1}{', under production-fidelity exercise",
+      "production_fidelity": true
+    }
+  ],
+  "summary": "Integrated artifact at output/final/ now satisfies the prompt's named verb under production-fidelity exercise. KaTeX is bundled into output/final/vendor/katex/ (katex.min.js + katex.min.css + 16 woff2 font files; ~530 KB total). index.html script and link tags reference the local bundle. No CDN dependency at runtime. v1.5 production-fidelity environment verified PNV.1 + S3.A1 + S3.A2 against the live wired modules with zero runtime dependency substitution, as evidenced by the fetch log. Prior v1.4 verdict ('pass') is reclassified to 'fail' on the original report.json; this report-v15.json is the authoritative verdict under v1.5.",
+  "v15_amendment_notes": "Per v1.5 (architecture/role_charters.md, Convergence Verifier charter §Production-fidelity exercise + §Prompt-named-verb pass): the cv_artifact_exercise pass may no longer run in a 'Node sandbox with stubbed DOM' that substitutes runtime dependencies. The prompt_named_verb_assertion is non-skippable and admits no pass_with_concerns. Both gates passed cleanly here."
+}

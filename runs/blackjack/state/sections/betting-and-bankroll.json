@@ -1,0 +1,20 @@
+{
+  "section_id": "section-2",
+  "section_name": "betting-and-bankroll",
+  "status": "verified",
+  "owner": "overseer-betting-and-bankroll",
+  "started_at": "2026-05-09T00:11:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-2",
+  "active_contracts": [
+    "contracts/original/betting-and-bankroll--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "br-sg-1",
+      "description": "Implement Bankroll module: init/getBalance/getTotalChips/canBet/placeBet/canAffordDouble/canAffordSplit/addToBet/resolve/canPlay/reset. Pure JS, no DOM, no rules logic. Pool 1000, min bet 5, payouts: blackjack 2.5x, win 2x, push 1x, loss 0.",
+      "status": "verified",
+      "builder_id": "builder-br-1",
+      "output_path": "output/builders/betting-and-bankroll/builder-br-1/output.js"
+    }
+  ]
+}

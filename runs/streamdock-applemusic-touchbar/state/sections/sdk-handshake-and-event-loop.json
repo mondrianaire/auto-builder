@@ -1,0 +1,17 @@
+{
+  "section_id": "S3",
+  "name": "sdk-handshake-and-event-loop",
+  "status": "verified",
+  "dispatched_at": "2026-05-13T00:03:30Z",
+  "verified_at": "2026-05-13T00:04:00Z",
+  "dispatch_mode": "inline",
+  "builders": [
+    {"builder_id": "builder-s3-1", "status": "verified"}
+  ],
+  "verification": {
+    "AA.S3.1": {"status": "passed", "note": "Live behavior test: first frame received by mock server was {event:'registerPlugin', uuid:'CTX-ABC'}."},
+    "AA.S3.2": {"status": "passed", "note": "willAppear stores context in CONTEXTS map; willDisappear deletes; _hasContext exposed for testing."},
+    "AA.S3.3": {"status": "passed", "note": "Live test: touchTap and dialRotate produced only logMessage frames; no setFeedback/setImage/setTitle/openUrl/setState."},
+    "AA.S3.4": {"status": "passed_inspection", "note": "sendFeedback emits {event:'setFeedback', context, payload:{title, artist}} via _safeSend."}
+  }
+}

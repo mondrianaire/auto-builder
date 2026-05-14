@@ -1,0 +1,22 @@
+{
+  "section_id": "section-6",
+  "section_name": "app-shell",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-09T01:03:32Z",
+  "verified_at": "2026-05-09T01:06:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-6",
+  "active_contracts": [
+    "contracts/original/section-3--section-6.json",
+    "contracts/original/section-4--section-6.json",
+    "contracts/original/section-5--section-6.json"
+  ],
+  "sub_goals": [
+    { "id": "6a", "description": "index.html + app.js bootstrap", "status": "verified", "builder_id": "builder-6a", "output_path": "output/builders/app-shell/builder-6a/" },
+    { "id": "6b", "description": "styles.css", "status": "verified", "builder_id": "builder-6b", "output_path": "output/builders/app-shell/builder-6b/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_notes": "S6.A1 no build step (ES modules + relative paths). S6.A2 all six surfaces present. S6.A3 click flow verified by code review (Deal -> dispatch -> render). S6.A4 responsive @media query + flex layout. CRITICAL S6.A3 confirmed: btn-deal click dispatches {type:'deal'}, which the state machine accepts in BOTH betting and resolved phases, triggering re-render.",
+  "rationale": "Wave 5 complete. Coordinator now dispatches Integrator."
+}

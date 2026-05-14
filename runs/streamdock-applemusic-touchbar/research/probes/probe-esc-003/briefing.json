@@ -1,0 +1,34 @@
+{
+  "probe_id": "probe-esc-003",
+  "received_at": "2026-05-13T00:09:00Z",
+  "dispatched_by": "arbiter",
+  "phase": "escalation",
+  "question_understood": "Resolve three Sev 2b/3 prose_coverage escalations (esc-001 section charters uncovered; esc-002 contract files uncovered; esc-003 Discovery assumptions A1/A3/A4/A9 + 7 ledger-OOS + 19 section-OOS + chosen_verb uncovered) with minimum disruption to the verified integrated build.",
+  "key_facts": [
+    "28/28 harness assertions passing including PNV.1 against the integrated bundle.",
+    "All 13 MCAs physically verified by Critic against the integrated artifact.",
+    "All three escalations are explicitly non-blocking and explicitly diagnosed as covers-pointer (schema-graph) gaps, NOT behavioral verification gaps.",
+    "Each escalation's own context paragraph identifies an existing assertion that entails the uncovered claim (e.g., AA.S1.3 already exercises C-S1-S2 and C-S1-S3; MCA.TDIPA.* entails A1; DCA.OOS.TELEMETRY.1 entails A9; PNV.1 references chosen_verb='display')."
+  ],
+  "constraints": [
+    "Do not require code changes (build is verified end-to-end).",
+    "Preserve S1-S6 acceptance assertions and MCAs untouched in behavior.",
+    "Optimization criterion: blast_radius_minimization.",
+    "Budget: 5 minutes; max 4 options.",
+    "Questioning authority granted: may flag framing concern if briefing misdiagnoses."
+  ],
+  "preserve_sections": ["S1", "S2", "S3", "S4", "S5", "S6"],
+  "investigation_targets": [
+    "sections-v1.json acceptance_assertions, MCAs, DCAs, PNV.1",
+    "ledger-v1.json (assumption_ledger, out_of_scope)",
+    "contracts/original/* (six contract files)",
+    "esc-001.json, esc-002.json, esc-003.json"
+  ],
+  "candidate_resolution_directions": [
+    "A: widen 'covers' fields on existing assertions to multi-target arrays pointing at the uncovered schema paths (pure JSON-graph patch, no behavior change)",
+    "B: add new charter/contract/OOS coverage assertions that duplicate existing scenarios but point covers at the gap targets",
+    "C: accept the gaps via Arbiter Principle-C strict-pass waiver; record rationale in arbitration log only",
+    "D: introduce a thin coverage_aliases sidecar (adapter layer) mapping gap schema-pointers to the assertions that entail them — sections file untouched"
+  ],
+  "framing_check": "Briefing framing matches Critic's own diagnosis: the gap is in covers-pointer wiring, not in behavior. Framing appears sound."
+}

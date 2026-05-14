@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "from_section": "section-3",
+  "to_section": "section-4",
+  "interface": {
+    "subscribe(listener)": {
+      "params": { "listener": "function(stateSnapshot) -> void" },
+      "returns": "function unsubscribe() -> void",
+      "notes": "Fires synchronously on every state mutation with the latest snapshot."
+    },
+    "getState()": {
+      "params": {},
+      "returns": "StateSnapshot  // see schema below"
+    },
+    "dispatch(action)": {
+      "params": {
+        "action": "{ type: 'deal' } | { type: 'hit' } | { type: 'stand' } | { type: 'double' } | { type: 'split' } | { type: 'next' }"
+      },
+      "returns": "void  // illegal actions are noops; no exceptions thrown into UI"
+    },
+    "StateSnapshot": {
+      "shape": {
+        "phase": "'betting' | 'player_turn' | 'dealer_turn' | 'resolved' | 'review'",
+        "dealerHand": "Array<{ card: Card, visible: bool }>  // hole card has visible=false until dealer_turn",
+        "playerHands": "Array<{ cards: Array<Card>, isActive: bool, outcome: 'player_blackjack'|'player_win'|'push'|'dealer_win'|'player_bust'|null, bet: number }>",
+        "activeHandIndex": "int  // index into playerHands",
+        "legalActions": "Array<'hit'|'stand'|'double'|'split'>  // for the active hand only; empty when phase != 'player_turn'",
+        "decisionLog": "Array<{ playerHandSnapshot, dealerUpcard, chosenAction, correctAction }>  // populated through the hand; consumed by hint-and-review on resolve",
+        "lastResolvedHandIndex": "int | null"
+      }
+    }
+  },
+  "notes": "ui-render is a pure render-on-state subscriber. It MUST NOT mutate state directly; all user input flows back through dispatch(). The legalActions array in the snapshot is the SINGLE SOURCE OF TRUTH for action-button enabled/disabled state — ui-render must not re-derive legality. Phase 'resolved' is the state where the Deal/Next button must be enabled (per S4.A3). Phase 'betting' is also a dealable state. dispatch({type:'next'}) returns the machine to a dealable phase without page reload."
+}

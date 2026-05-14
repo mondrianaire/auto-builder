@@ -1,0 +1,23 @@
+{
+  "section_id": "section-3",
+  "section_name": "game-state-machine",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-09T00:51:02Z",
+  "verified_at": "2026-05-09T00:56:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-3",
+  "active_contracts": [
+    "contracts/original/section-1--section-3.json",
+    "contracts/original/section-2--section-3.json",
+    "contracts/original/section-3--section-4.json",
+    "contracts/original/section-3--section-5.json",
+    "contracts/original/section-3--section-6.json"
+  ],
+  "sub_goals": [
+    { "id": "3a", "description": "createGameStateMachine factory + state machine logic", "status": "verified", "builder_id": "builder-3a", "output_path": "output/builders/game-state-machine/builder-3a/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_notes": "S3.A1 phases proceed betting->player_turn->dealer_turn->resolved (and review payload available in resolved snapshot via decisionLog). S3.A2 illegal actions noop without mutation. S3.A3 decisionLog populated with {playerHandSnapshot, dealerUpcard, chosenAction, correctAction}; correctAction comes from strategyTable.recommendation evaluated against the snapshot taken BEFORE the action was applied. S3.A4 subscribe(listener) fires immediately and on each accepted dispatch. S3.A5 dispatch({type:'deal'}) in resolved phase routes to doNext() which calls freshState() then startHand() with handsPlayed preserved — no page reload required. Contracts to sections 4,5,6 satisfied: subscribe/dispatch/getState/getCurrentHintQuery/getDecisionLog/createGameStateMachine all exposed.",
+  "rationale": "CRITICAL: dispatch({type:'deal'}) is accepted in BOTH betting AND resolved phases — this is the explicit fix preventing the prior blackjack run's silent S3.A5 violation."
+}

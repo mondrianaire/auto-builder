@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "from_section": "section-4",
+  "to_section": "section-5",
+  "summary": "Archetype roster exposes the decide() function and the static profile data that Table mode invokes whenever a non-hero seat must act.",
+  "interface": {
+    "decide": {
+      "name": "decide",
+      "shape": "(game_state: GameState, profile: ArchetypeProfile, rng_seed: number) => AgentDecision",
+      "GameState_shape_summary": "Read-only structural snapshot of the live hand: street, board, seat positions, stacks, current bet, pot, action history, and the agent's own hole cards (the agent reasons over its own hand only). Note: section-5 owns the canonical GameState type — section-4 only reads from a documented subset.",
+      "ArchetypeProfile_shape": "{ id, name, preflop_frequencies, postflop_heuristics, contrast_with_gto } (per section-4 schema)",
+      "AgentDecision_shape": "{ action: 'fold' | 'check' | 'call' | 'raise' | 'all_in', sizing?: number, rationale_tag?: string }",
+      "purpose": "Pure function. Same inputs produce same output. Sizing is required when action is 'raise' (in chips, must be >= min-raise constraint). 'rationale_tag' is optional debug info."
+    },
+    "get_archetype_by_id": {
+      "name": "getArchetypeById",
+      "shape": "(id: string) => ArchetypeProfile | null",
+      "purpose": "Table mode resolves seat -> profile."
+    },
+    "list_archetypes": {
+      "name": "listArchetypes",
+      "shape": "() => ArchetypeProfile[]",
+      "purpose": "Used at table-init time to assign 8 non-hero seats."
+    }
+  },
+  "data_passed_not_logic": "Table passes a game-state snapshot, a profile reference, and a seed. Section-4 returns a structured decision. Section-4 does not call back into table; table does not implement decision logic.",
+  "ownership": {
+    "section-4_owns": ["decide() implementation", "all archetype profiles", "rationale_tag vocabulary"],
+    "section-5_owns": ["GameState construction", "min-raise validation", "applying the decision to the table state"]
+  },
+  "test_seam": "Unit test: for each profile in listArchetypes(), call decide() twice with identical (state, profile, seed); assert deeply-equal AgentDecision and assert profile object is unchanged."
+}

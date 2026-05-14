@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Earthquake Activity - Past 24 Hours</title>
+  <meta name="viewport" content="width=1280, initial-scale=1">
+
+  <!-- Vendored Leaflet (no CDN) -->
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+
+  <!-- Page styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-header__title">Earthquake Activity &mdash; Past 24 Hours</h1>
+    <p class="app-header__subtitle">Worldwide seismic events from the USGS public feed.</p>
+  </header>
+
+  <div id="error-banner" class="error-banner" hidden role="alert">
+    <span class="error-banner__icon" aria-hidden="true">!</span>
+    <span class="error-banner__text" id="error-banner-text">Something went wrong.</span>
+  </div>
+
+  <main class="app-main">
+    <div id="map" class="map-region" aria-label="Map of recent earthquake activity"></div>
+    <aside id="legend" class="legend" aria-label="Magnitude legend">
+      <div class="legend__title">Magnitude</div>
+      <ol class="legend__list" id="legend-list">
+        <!-- populated by main.js using EarthquakeMap.magnitudeColor / magnitudeRadius -->
+      </ol>
+    </aside>
+  </main>
+
+  <!-- Vendored Leaflet (no CDN) -->
+  <script src="vendor/leaflet/leaflet.js"></script>
+
+  <!-- Section modules -->
+  <script src="data-fetcher.js"></script>
+  <script src="map.js"></script>
+
+  <!-- Page bootstrap -->
+  <script src="main.js"></script>
+</body>
+</html>

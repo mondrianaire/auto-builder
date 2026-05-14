@@ -1,0 +1,10 @@
+{
+  "escalation_id": "esc-002",
+  "routed_at": "2026-05-13T00:15:00Z",
+  "classified_severity": "2b",
+  "routing_decision": "Route to TD writer in impact-analysis mode to amend assertion metadata so that the six inter-section contract files in contracts/original/* gain covers-graph coverage. Resolution is extending covers fields on existing assertions (AA.S3.4, AA.S4.1/AA.S4.2, AA.S5.1-S5.4, AA.S1.3, AA.S2.5) or adding dedicated contract-coverage assertions. No section CODE changes required.",
+  "dispatched_to": "td_impact_analysis",
+  "rationale": "Type fits contract_semantics (covers-graph coverage of contract interfaces under v1.7 Principle C). Change spans all six contracts and multiple assertion records across S1-S5 — not a clean two-section data-shape change, so not Sev 2a. No Discovery assumption reference, so not Sev 3. Multiple resolution shapes are plausible (extend existing covers vs. dedicated assertions), but specific context confirms the path is well-defined TD-writer metadata work — Researcher not required.",
+  "research_dispatched": false,
+  "expected_resolution_path": "TD writer maps each contract file to the assertion(s) that behaviorally exercise it (per the context already enumerated in the escalation) and extends those covers arrays to include the contract path. Critic re-runs prose_coverage on contract targets."
+}

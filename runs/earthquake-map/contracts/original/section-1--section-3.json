@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-3",
+  "interface": {
+    "fetchEarthquakes": {
+      "kind": "async_function",
+      "params": {},
+      "returns": {
+        "oneOf": [
+          { "ok": true, "events": "Array<EarthquakeEvent>" },
+          { "ok": false, "error": { "code": "string", "message": "string" } }
+        ]
+      },
+      "shape": {
+        "EarthquakeEvent": "see section-1--section-2.json"
+      }
+    }
+  },
+  "notes": "section-3 (page shell + bootstrap) calls fetchEarthquakes() on DOMContentLoaded. On { ok: true } it forwards events to section-2's mount(). On { ok: false } it reads error.message and shows it in the error banner. section-3 never inspects the raw feed and never re-implements parsing."
+}

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "contract_id": "section-3-output-and-errors--section-4-page-shell-and-styling",
+  "producer": "section-3-output-and-errors",
+  "consumer": "section-4-page-shell-and-styling",
+  "summary": "The page shell reserves container slots for the rendered-output region and the error region; the output/error wiring populates and toggles visibility of those containers. The shell provides distinct visual treatments so the two regions are readable and distinguishable.",
+  "interface": {
+    "kind": "dom_slot",
+    "slots": [
+      {
+        "name": "output_region",
+        "container_selector": "[data-slot='output-region'] (or documented #id such as #latex-output)",
+        "ownership": "Shell owns the container element and its surrounding layout/heading. Output/error wiring owns the container's children (the rendered math DOM produced by the renderer) and may replace those children on every update.",
+        "stable_attributes": {
+          "data_role": "latex-output (so tests and other sections can locate it)"
+        }
+      },
+      {
+        "name": "error_region",
+        "container_selector": "[data-slot='error-region'] (or documented #id such as #latex-error)",
+        "ownership": "Shell owns the container element and base styling (color/border/role). Output/error wiring owns the visible/hidden state and the text content of the message inside.",
+        "stable_attributes": {
+          "data_role": "latex-error",
+          "aria": "role='alert' or aria-live='polite' on the error region (shell provides; output/error wiring may rely on it)."
+        }
+      }
+    ],
+    "visual_distinction_contract": "Shell CSS guarantees that output_region and error_region are visually distinct from each other and from the input region (e.g., distinct background, border, or text color). Output/error wiring relies on this and does not need to set inline error styling."
+  },
+  "data_passed": [
+    "Output (shell -> output/error wiring): two stable container DOM element references (or selectors) for output_region and error_region.",
+    "No runtime data flows through this contract — it is a structural/DOM contract only."
+  ],
+  "non_goals": [
+    "Shell does not call the renderer or read input.",
+    "Output/error wiring does not set page-level layout.",
+    "Shell does not decide error message text."
+  ],
+  "open_questions_for_builders": []
+}

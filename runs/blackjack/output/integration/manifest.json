@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "integrated_at": "2026-05-09T00:14:00Z",
+  "integrator_id": "integrator-1",
+  "dispatch_mode": "inline",
+  "files": [
+    {
+      "filename": "index.html",
+      "source": "output/builders/controller-and-shell/builder-cs-2/output.html",
+      "section": "controller-and-shell"
+    },
+    {
+      "filename": "rules-engine.js",
+      "source": "output/builders/rules-engine/builder-rg-1/output.js",
+      "section": "rules-engine"
+    },
+    {
+      "filename": "bankroll.js",
+      "source": "output/builders/betting-and-bankroll/builder-br-1/output.js",
+      "section": "betting-and-bankroll"
+    },
+    {
+      "filename": "ui-render.js",
+      "source": "output/builders/ui-render/builder-ui-1/output.js",
+      "section": "ui-render"
+    },
+    {
+      "filename": "styles.css",
+      "source": "output/builders/ui-render/builder-ui-2/output.css",
+      "section": "ui-render"
+    },
+    {
+      "filename": "controller.js",
+      "source": "output/builders/controller-and-shell/builder-cs-1/output.js",
+      "section": "controller-and-shell"
+    }
+  ],
+  "verification": {
+    "node_check_passed": ["rules-engine.js", "bankroll.js", "ui-render.js", "controller.js"],
+    "html_script_order_correct": true,
+    "stylesheet_link_present": true,
+    "globals_attached": ["window.RulesEngine", "window.Bankroll", "window.UIRender", "window.Controller"]
+  },
+  "notes": "Integration is a clean copy: contracts pinned exact filenames, so no glue code or rewrites needed. Each file is browser-loadable from the integration directory directly."
+}

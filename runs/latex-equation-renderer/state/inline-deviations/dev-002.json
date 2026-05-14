@@ -1,0 +1,10 @@
+{
+  "id": "dev-002",
+  "category": "implementation_path_chosen",
+  "section": "section-2-input-ui",
+  "decided_at": "2026-05-10T00:06:00Z",
+  "context": "Contract section-2-input-ui--section-3-output-and-errors offers two valid forms: (a) DOM 'input' event on the textarea, (b) exposed callback registration onLatexChange(cb). Builders must pick one and document it.",
+  "decision": "Pick exposed callback registration: window.inputUi.onLatexChange(cb). The textarea also fires the standard 'input' event (free side-effect), so consumers using either form will work.",
+  "rationale": "A named module function makes integration auditable and the consumer's subscription explicit. The DOM event still fires naturally so we get both forms.",
+  "nested_equivalent": "In nested mode, the section-2 builder would document this choice in its handoff package; section-3 consumer would read it and adapt."
+}

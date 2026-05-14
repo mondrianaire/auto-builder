@@ -1,0 +1,18 @@
+{
+  "builder_id": "builder-5a",
+  "task_id": "5a",
+  "section_id": "section-5",
+  "started_at": "2026-05-09T01:01:02Z",
+  "completed_at": "2026-05-09T01:03:00Z",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": [
+    { "symbol": "wireHintAndReview", "type": "function", "matches_contract": "contracts/original/section-5--section-6.json#wireHintAndReview" }
+  ],
+  "notes": "Hint click handler reads getCurrentHintQuery(), invokes strategyTable.recommendation, and writes a single action label to hint-display. No reasoning text, no chart embed. Review panel renders one row per decisionLog entry on transition into 'resolved'. Each row has handSnapshotSummary, chosenAction, correctAction, matched flag. Cleared on transition into 'betting' (fresh hand).",
+  "self_test_results": {
+    "S5_A1_hint_label": "Hint click writes single action label string to hint-display via renderHint helper or direct textContent — pass",
+    "S5_A2_review_one_row_per_decision": "renderReview maps decisionLog 1:1 to rows; rows array length === decisionLog.length — pass",
+    "S5_A3_no_reasoning_text": "hint-display.textContent === single action label only; no innerHTML, no chart, no img, no table emitted by hint path — pass"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "passed": 14,
+  "failed": 0,
+  "total": 14,
+  "scenarios": [
+    {
+      "id": "s1",
+      "name": "blackjack-on-initial-deal",
+      "status": "pass",
+      "detail": "player A+10 -> blackjack"
+    },
+    {
+      "id": "s2",
+      "name": "dealer-blackjack-push",
+      "status": "pass",
+      "detail": "both 21 on initial -> push"
+    },
+    {
+      "id": "s3",
+      "name": "player-bust-loses",
+      "status": "pass",
+      "detail": "busted to 22 -> loss"
+    },
+    {
+      "id": "s4",
+      "name": "dealer-bust-player-wins",
+      "status": "pass",
+      "detail": "dealer 26 bust, player 18 -> win"
+    },
+    {
+      "id": "s5",
+      "name": "push-on-equal",
+      "status": "pass",
+      "detail": "both 19 -> push"
+    },
+    {
+      "id": "s6",
+      "name": "soft-17-stands",
+      "status": "pass",
+      "detail": "dealer stood on soft 17"
+    },
+    {
+      "id": "s7",
+      "name": "split-pair",
+      "status": "pass",
+      "detail": "split produced two hands"
+    },
+    {
+      "id": "s8",
+      "name": "split-aces-one-card-only",
+      "status": "pass",
+      "detail": "both ace hands locked at 2 cards"
+    },
+    {
+      "id": "s9",
+      "name": "double-down-deals-one-card",
+      "status": "pass",
+      "detail": "11+10=21, hand locked"
+    },
+    {
+      "id": "s10",
+      "name": "illegal-split-on-non-pair",
+      "status": "pass",
+      "detail": "split correctly excluded"
+    },
+    {
+      "id": "s11",
+      "name": "illegal-double-without-funds",
+      "status": "pass",
+      "detail": "double correctly excluded when bankroll < bet"
+    },
+    {
+      "id": "s12",
+      "name": "bankroll-payouts-correct",
+      "status": "pass",
+      "detail": "win=+100, bj=+150, push=0, loss=-100 net"
+    },
+    {
+      "id": "s13",
+      "name": "bankroll-reset-restores-pool",
+      "status": "pass",
+      "detail": "reset returned 1000 (was 650)"
+    },
+    {
+      "id": "s14",
+      "name": "soft-ace-handling",
+      "status": "pass",
+      "detail": "A+7=soft18, A+7+5=hard13"
+    }
+  ]
+}

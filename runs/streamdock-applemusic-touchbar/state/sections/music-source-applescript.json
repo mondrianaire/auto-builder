@@ -1,0 +1,25 @@
+{
+  "section_id": "S5",
+  "name": "music-source-applescript",
+  "status": "superseded",
+  "superseded_by": "state/sections/music-source-smtc.json",
+  "superseded_at": "2026-05-13T00:55:00Z",
+  "superseded_rationale": "Renamed to music-source-smtc per ledger-diff-v2 IP1 -> Windows-only and impact-analysis-v3 stop_and_scrap_and_replace classification. Section.id 'S5' preserved for DAG stability; this v1 record retained for historical traceability.",
+  "v1_dispatched_at": "2026-05-13T00:02:00Z",
+  "v1_verified_at": "2026-05-13T00:02:30Z",
+  "v1_dispatch_mode": "inline",
+  "v1_builders": [
+    {
+      "builder_id": "builder-s5-1",
+      "task": "Produce plugin/music_source.js with getNowPlaying() async function spawning osascript.",
+      "output_dir": "output/builders/music-source-applescript/builder-s5-1/",
+      "status": "superseded_by_v3"
+    }
+  ],
+  "v1_verification": {
+    "AA.S5.1": {"status": "passed_v1", "note": "Historical: AppleScript fixture passed in v1."},
+    "AA.S5.2": {"status": "passed_v1", "note": "Historical: null-path passed in v1."},
+    "AA.S5.3": {"status": "passed_v1", "note": "Historical: used child_process.execFile with 'osascript'."},
+    "AA.S5.4": {"status": "passed_v1_then_amended", "note": "Historical: 4 AppleScript literals present in v1; v3 amends to 4 SMTC literals (see music-source-smtc.json)."}
+  }
+}

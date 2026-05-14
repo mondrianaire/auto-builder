@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:00:00Z",
+  "project_name": "blackjack-trainer",
+  "restatement": "A single-page web application that lets a user play hands of blackjack, request a hint before committing to an action (proactive guidance), and receive a post-hand review comparing the user's decisions against basic-strategy correct plays. Correctness is grounded in the standard basic-strategy cheat sheet referenced by URL in the prompt.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The application is a client-side single-page web app with no backend.",
+      "confidence": "high",
+      "rationale": "Prompt says 'web application' with no mention of accounts, sync, multi-device, or server features. Simplest-within-reason for silent infrastructure questions.",
+      "what_breaks_if_wrong": "If the user actually wanted shared leaderboards, multi-device progress, or analytics, none of that exists."
+    },
+    {
+      "id": "A2",
+      "assumption": "No user accounts, authentication, or login.",
+      "confidence": "high",
+      "rationale": "Prompt is silent on users; default per build heuristic is no auth.",
+      "what_breaks_if_wrong": "Per-user history would be unavailable across devices."
+    },
+    {
+      "id": "A3",
+      "assumption": "No server-side persistence. Any optional persistence (e.g., session stats) uses browser localStorage only, and is not required for the core experience.",
+      "confidence": "high",
+      "rationale": "No persistence requirement implied by prompt; localStorage is a trivial single-user fallback if persistence helps the trainer feel coherent.",
+      "what_breaks_if_wrong": "Stats reset on cache clear or different browser; acceptable for a training tool."
+    },
+    {
+      "id": "A4",
+      "assumption": "The user plays interactive hands of blackjack against a simulated dealer in the browser. Hand play must be fully functional (deal, hit, stand, double, split, dealer auto-play, payout/result resolution).",
+      "confidence": "high",
+      "rationale": "'Training' that doesn't let you play hands is not a trainer. This is the complexity floor required by the named goal."
+    },
+    {
+      "id": "A5",
+      "assumption": "Correct-play recommendations are generated from an encoded basic-strategy table that matches standard ProfitDuel-style cheat-sheet conventions (hard totals, soft totals, pair splits) keyed by player hand vs dealer upcard.",
+      "confidence": "high",
+      "rationale": "The prompt names a specific cheat-sheet image as canonical. The image is not directly readable in this pipeline, so we encode the standard basic-strategy table that matches common cheat-sheet conventions for that style of chart.",
+      "what_breaks_if_wrong": "If the referenced chart deviates from standard basic strategy in any cell, the trainer's 'correct' answer disagrees with the user's reference image. Mitigation: see IP1."
+    },
+    {
+      "id": "A6",
+      "assumption": "Hints are proactive: the user can request a hint before committing to an action on the current hand, and the hint reveals the basic-strategy-recommended action for the current player hand vs dealer upcard.",
+      "confidence": "high",
+      "rationale": "Prompt explicitly says 'hints during a hand if requested' — gated on user request, mid-hand."
+    },
+    {
+      "id": "A7",
+      "assumption": "Suggestions after a hand are a post-hand review listing each decision the user made, the basic-strategy correct action at that decision point, and whether they matched.",
+      "confidence": "high",
+      "rationale": "Prompt explicitly says 'suggestions after a hand'. Most useful interpretation is decision-by-decision review, since a single end-of-hand verdict is less educational."
+    },
+    {
+      "id": "A8",
+      "assumption": "Supported player actions are hit, stand, double (on first decision of a hand or split sub-hand), and split (on a pair). These are the actions covered by the cheat sheet.",
+      "confidence": "high",
+      "rationale": "The named cheat sheet style covers H/S/D/P. Actions outside the chart (e.g., insurance, surrender) default to absent unless IP resolves otherwise."
+    },
+    {
+      "id": "A9",
+      "assumption": "Single player seat against the dealer. No other players at the table.",
+      "confidence": "high",
+      "rationale": "Trainer context; prompt is silent. Simplest interpretation."
+    },
+    {
+      "id": "A10",
+      "assumption": "Standard casino blackjack rules: blackjack pays 3:2, dealer hits to 16 and stands per IP1 ruleset, cards dealt from a shuffled shoe (multi-deck acceptable; reshuffled regularly so card counting is not a feature).",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on rules; these are the conventional defaults that match common cheat-sheet contexts.",
+      "what_breaks_if_wrong": "If user expected 6:5 payout or single-deck specifics, the math diverges slightly; basic-strategy correctness is preserved."
+    },
+    {
+      "id": "A11",
+      "assumption": "No betting economy required for the core trainer. A nominal/abstract bet (e.g., 1 unit per hand) is sufficient to make double/split meaningful and to display win/loss outcomes.",
+      "confidence": "medium",
+      "rationale": "Training is about decision correctness, not bankroll management. Simplest-within-reason."
+    },
+    {
+      "id": "A12",
+      "assumption": "Single-page layout: table area (dealer hand, player hand, controls), action buttons (Hit/Stand/Double/Split), Hint button, and a post-hand review panel.",
+      "confidence": "medium",
+      "rationale": "Reflects the two named features (in-hand hint, post-hand review) plus the play surface they require."
+    },
+    {
+      "id": "A13",
+      "assumption": "Desktop-first responsive layout; usable on mobile but not optimized for it.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on platform. Web app default is desktop; responsive is the standard floor."
+    },
+    {
+      "id": "A14",
+      "assumption": "No accessibility requirements beyond standard semantic HTML and keyboard-operable buttons.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent. Floor-level a11y is the simplest defensible default; deeper a11y work is not requested."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Rules variant the encoded basic-strategy table targets",
+      "choices": [
+        "S17 + DAS + no surrender (ProfitDuel-style default)",
+        "H17 + DAS + late surrender",
+        "S17 + no DAS + no surrender"
+      ],
+      "default_branch": "S17 + DAS + no surrender",
+      "importance": "high",
+      "why_inflection": "Cascade depth: the chosen ruleset determines the entire strategy table contents (dozens of cells differ), the dealer auto-play logic, and which player actions exist. Reversibility: changing variant later means re-encoding the table and re-testing every cell. UX surface: the user sees the cheat sheet's recommendations as ground truth; a mismatch with the referenced image undermines trust. Option asymmetry: ProfitDuel cheat sheets most commonly assume S17+DAS+no-surrender, so this default minimizes mismatch risk."
+    },
+    {
+      "id": "IP2",
+      "topic": "Mode structure: free play vs drill mode vs both",
+      "choices": [
+        "Free play only (deal real hands, hint on demand, post-hand review)",
+        "Drill mode only (presented scenarios, user picks action, immediate feedback)",
+        "Both modes selectable"
+      ],
+      "default_branch": "Free play only",
+      "importance": "medium",
+      "why_inflection": "Cascade depth: drill mode requires a separate scenario generator, scoring system, and UI surface. UX surface: drill mode is arguably more efficient training, but the prompt's wording ('after a hand', 'during a hand') strongly implies hand-by-hand play, not drilling. Option asymmetry: drill mode can be added later without breaking free play. Default = smaller scope that still satisfies the prompt verbatim."
+    },
+    {
+      "id": "IP3",
+      "topic": "Granularity of post-hand suggestions",
+      "choices": [
+        "Per-decision review (each action vs correct action)",
+        "Single end-of-hand verdict (overall correct/incorrect summary)"
+      ],
+      "default_branch": "Per-decision review",
+      "importance": "medium",
+      "why_inflection": "UX surface: per-decision is meaningfully more educational. Cascade depth: requires the engine to log every decision point with the game state at that moment. Reversibility: easy to add but changes the data the engine must capture, so better to commit early."
+    },
+    {
+      "id": "IP4",
+      "topic": "Hint presentation style",
+      "choices": [
+        "Reveal recommended action only",
+        "Reveal recommended action plus brief reasoning (e.g., 'dealer shows weak upcard')",
+        "Reveal recommended action plus the relevant cheat-sheet cell highlighted visually"
+      ],
+      "default_branch": "Reveal recommended action only",
+      "importance": "low",
+      "why_inflection": "UX surface: richer hints are more pedagogical but increase scope (reasoning text per cell, or chart rendering). Reversibility: easily upgradable later. Default = smallest version that satisfies 'hint'."
+    },
+    {
+      "id": "IP5",
+      "topic": "Whether to display the cheat-sheet chart in-app",
+      "choices": [
+        "Do not embed the chart; trainer is the interactive surface",
+        "Embed the chart image (or a rendered table) as a reference panel"
+      ],
+      "default_branch": "Do not embed the chart",
+      "importance": "low",
+      "why_inflection": "UX surface: an embedded chart turns the app into a reference + trainer; without it, the trainer is the sole interaction. Option asymmetry: not embedding is smaller scope and avoids hotlinking the user's referenced image. Reversibility: trivially addable."
+    }
+  ],
+  "out_of_scope": [
+    "User accounts, login, or authentication",
+    "Server-side backend or database",
+    "Cross-device or multi-device progress sync",
+    "Multiplayer or multi-seat blackjack",
+    "Real-money betting or wallet integrations",
+    "Bankroll management training and bet-sizing strategy",
+    "Card counting features or true-count displays",
+    "Insurance and even-money decisions (not on the cheat sheet)",
+    "Side bets (e.g., perfect pairs, 21+3)",
+    "Tournament or timed-challenge modes",
+    "Leaderboards, social features, or sharing",
+    "Native mobile apps; only a responsive web app is in scope",
+    "Localization or multi-language support",
+    "Detailed analytics dashboards beyond a simple session tally",
+    "Tutorials covering blackjack rules from scratch (the trainer assumes the user knows the game)"
+  ]
+}

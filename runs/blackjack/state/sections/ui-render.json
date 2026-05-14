@@ -1,0 +1,27 @@
+{
+  "section_id": "section-3",
+  "section_name": "ui-render",
+  "status": "verified",
+  "owner": "overseer-ui-render",
+  "started_at": "2026-05-09T00:11:50Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-3",
+  "active_contracts": [
+    "contracts/original/ui-render--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "ui-sg-1",
+      "description": "Implement UIRender.render(state, rootEl) idempotent DOM repaint, with stable IDs (btn-deal, btn-hit, btn-stand, btn-double, btn-split, btn-reset, input-bet, display-balance, display-message, area-dealer, area-player, blackjack-app). No event binding. Cards rendered with rank+suit, facedown class for hole card, multi-hand support.",
+      "status": "verified",
+      "builder_id": "builder-ui-1",
+      "output_path": "output/builders/ui-render/builder-ui-1/output.js"
+    },
+    {
+      "id": "ui-sg-2",
+      "description": "Implement styles.css with felt-green table, white card faces, red/black suits, facedown style, dealer/player zones, action button row, disabled button styling, basic responsive layout.",
+      "status": "verified",
+      "builder_id": "builder-ui-2",
+      "output_path": "output/builders/ui-render/builder-ui-2/output.css"
+    }
+  ]
+}

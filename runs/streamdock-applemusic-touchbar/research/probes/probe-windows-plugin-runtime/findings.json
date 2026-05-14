@@ -1,0 +1,143 @@
+{
+  "probe_id": "probe-windows-plugin-runtime",
+  "phase": "escalation",
+  "completed_at": "2026-05-13",
+  "optimization_criterion": "blast_radius_minimization",
+
+  "summary": "The StreamDock VSD Craft plugin runtime is an Elgato Stream Deck SDK clone (MiraboxSpace/StreamDock-Plugin-SDK confirms API parity). On both Stream Deck and StreamDock, when manifest.json declares a `Nodejs` object with a `Version`, the host treats `CodePath`/`CodePathWin` as a JavaScript file and runs it with its OWN BUNDLED Node.js runtime. There is no need for a .bat wrapper, no need for a system Node installation, and CodePathWin can point directly at the .js entry. When `Nodejs` is NOT declared, the host treats CodePath as a native executable and the only way to run JS is a .bat/.exe wrapper plus a bundled or system Node, which is materially larger blast radius. Recommendation: declare `Nodejs.Version` in manifest, set `CodePathWin` to `plugin/main.js`, and leave main.js/sdk.js/ws untouched.",
+
+  "key_facts": [
+    {
+      "fact": "Elgato Stream Deck manifest schema supports a top-level `Nodejs` object: `{ \"Version\": \"20\", \"Debug\": \"enabled\" }`. When present, the host runs CodePath as a Node script using the bundled runtime.",
+      "source": "https://docs.elgato.com/streamdeck/sdk/references/manifest/",
+      "evidence": "Documented manifest example: \"CodePath\": \"bin/plugin.js\", \"Nodejs\": { \"Version\": \"20\" }, \"SDKVersion\": 2"
+    },
+    {
+      "fact": "Stream Deck 6.5+ bundles a Node.js runtime. From 7.1 the host auto-updates Node versions. No user-installed Node is required when Nodejs.Version is declared.",
+      "source": "https://docs.elgato.com/streamdeck/sdk/references/manifest/"
+    },
+    {
+      "fact": "StreamDock (MiraboxSpace) Plugin SDK mirrors the Elgato manifest format including the Nodejs field; their Node.js SDK demo uses the same convention. VSD Craft is StreamDock-family software (per Discovery A1).",
+      "source": "https://deepwiki.com/MiraboxSpace/StreamDock-Plugin-SDK/3.2-node.js-sdk"
+    },
+    {
+      "fact": "VSD Craft documentation states some plugins use the software's built-in node module, with version-of-host requirements — confirming a bundled Node runtime exists.",
+      "source": "https://www.vsdinside.com/blogs/tutorial/plugin-download"
+    },
+    {
+      "fact": "When NO Nodejs field is declared, CodePathWin must point to a native executable. Wrappers in use in the wild: streamdeck-batplug.exe (compiled C++ launcher), .bat files that call node.exe with %~dp0\\main.js, or ncc-bundled .exe via @vercel/ncc / pkg / nexe.",
+      "source": "https://github.com/CZDanol/streamdeck-batplug"
+    },
+    {
+      "fact": "Stream Deck host launches the plugin entry with CLI args: -port <N> -pluginUUID <UUID> -registerEvent <EVENT> -info <JSON>. The .js entry receives these as process.argv when launched in Node mode; a .bat wrapper would receive them as %* and must forward as `node.exe \"%~dp0main.js\" %*`.",
+      "source": "https://docs.elgato.com/streamdeck/sdk/introduction/plugin-environment/"
+    },
+    {
+      "fact": "Plugin process arch on Windows is x64 (per Elgato Plugin Environment doc). Any bundled Node must be win-x64.",
+      "source": "https://docs.elgato.com/streamdeck/sdk/introduction/plugin-environment/"
+    }
+  ],
+
+  "options": [
+    {
+      "id": "A",
+      "name": "Declare Nodejs.Version; point CodePathWin (and CodePath) directly at main.js",
+      "description": "Add `\"Nodejs\": { \"Version\": \"20\" }` to manifest.json. Set `\"CodePathWin\": \"plugin/main.js\"`. Optionally collapse CodePathMac to the same value and delete run.sh (or keep run.sh for older hosts). The host's bundled Node runtime executes main.js directly. No system Node required.",
+      "blast_radius": "MINIMAL — one new manifest field, one new field value. Zero changes to main.js, sdk.js, ws/. run.sh stays or goes.",
+      "files_touched": ["manifest.json"],
+      "files_added": [],
+      "files_removed": [],
+      "preserves": ["S2 (sdk.js)", "S3 (event wiring)", "S4 (main.js poll loop)", "S6 (vendored ws)"],
+      "risks": [
+        "Requires VSD Craft Software MinimumVersion that supports Nodejs.Version. Likely needs bumping Software.MinimumVersion to whatever the StreamDock release was that introduced the bundled Node runtime (Elgato shipped this in Stream Deck 6.5; StreamDock parity version needs confirmation — probably already covered by current MinimumVersion 6.0 but verify).",
+        "If the user's VSD Craft build predates bundled Node, plugin won't launch and host logs will show a runtime-missing error. Mitigation: doc the minimum host version in the plugin README."
+      ],
+      "user_install_burden": "None. User just drops .sdPlugin folder in plugins dir."
+    },
+    {
+      "id": "B",
+      "name": ".cmd wrapper invoking system node.exe",
+      "description": "Add `plugin/run.cmd` containing `@echo off` + `node \"%~dp0main.js\" %*`. Set `\"CodePathWin\": \"plugin/run.cmd\"`. Keep main.js untouched. Do NOT declare Nodejs in manifest.",
+      "blast_radius": "SMALL — one new file (~3 lines), one manifest field added.",
+      "files_touched": ["manifest.json"],
+      "files_added": ["plugin/run.cmd"],
+      "files_removed": [],
+      "preserves": ["S2", "S3", "S4", "S6"],
+      "risks": [
+        "REQUIRES user to have node.exe on PATH. If absent, plugin silently fails to start (host logs a launch error). Materially larger UX blast radius.",
+        "cmd-vs-bat argument quoting: the -info argument is JSON containing braces, quotes, and equals signs. Need to test that %* forwards verbatim; safer is `node \"%~dp0main.js\" %*` rather than expanding individual args.",
+        "Console window flash: a .cmd launched by the host normally inherits no console, but some host implementations spawn a visible cmd.exe window. Suppression via cscript+wsh or by compiling a tiny launcher .exe may be needed (more blast)."
+      ],
+      "user_install_burden": "Requires Node.js installed system-wide."
+    },
+    {
+      "id": "C",
+      "name": "Bundle a portable node.exe inside the plugin + .cmd wrapper",
+      "description": "Vendor `plugin/runtime/node.exe` (win-x64 portable, ~30MB). Add `plugin/run.cmd` with `\"%~dp0runtime\\node.exe\" \"%~dp0main.js\" %*`. Set `\"CodePathWin\": \"plugin/run.cmd\"`.",
+      "blast_radius": "MEDIUM — plugin folder size grows by ~30MB, distribution gets a binary dependency we have to track (license: MIT, fine), but main.js/sdk.js/ws untouched.",
+      "files_touched": ["manifest.json"],
+      "files_added": ["plugin/run.cmd", "plugin/runtime/node.exe"],
+      "files_removed": [],
+      "preserves": ["S2", "S3", "S4", "S6"],
+      "risks": [
+        "Distribution size and provenance — need to pin a specific Node release and document SHA256 for supply-chain hygiene.",
+        "Still has the .cmd quoting concern from Option B.",
+        "Antivirus may flag a fresh node.exe inside Program Files (x86)\\VSD Craft\\plugins\\... Mitigation: ship signed Node binary or document AV exception."
+      ],
+      "user_install_burden": "None."
+    },
+    {
+      "id": "D",
+      "name": "ncc / pkg single-exe bundle",
+      "description": "Use @vercel/ncc or pkg to compile main.js + sdk.js + ws into a single `plugin/app.exe`. Set `\"CodePathWin\": \"plugin/app.exe\"`. This is the StreamDock-SDK demo's recommended Windows path.",
+      "blast_radius": "LARGE — introduces a build step, a new toolchain dependency (ncc or pkg), and a binary artifact that has to be rebuilt on every code change. main.js source is preserved but no longer runs as source.",
+      "files_touched": ["manifest.json"],
+      "files_added": ["plugin/app.exe", "build/autofile.js or similar"],
+      "files_removed": [],
+      "preserves": ["S2", "S3", "S4", "S6"],
+      "risks": [
+        "pkg is in maintenance mode (Vercel deprecated their copy); ncc bundles but still needs Node — useless alone.",
+        "Build-step complexity contradicts Auto Builder's source-first ethos. Rebuild gate on every change.",
+        "Largest blast radius of the four."
+      ],
+      "user_install_burden": "None."
+    }
+  ],
+
+  "recommendation": {
+    "choice": "A",
+    "rationale": "Option A is the unambiguous minimum-blast-radius answer. The StreamDock host bundles its own Node runtime when the manifest declares `Nodejs.Version`, so CodePathWin can point directly at main.js. No new files, no wrappers, no bundled binaries, no system Node requirement, and the entire S2/S3/S4/S6 preservation list is honored. The only manifest changes are: add `Nodejs: { Version: \"20\" }` and add `CodePathWin: \"plugin/main.js\"`. The existing CodePathMac/run.sh can stay as-is for symmetry (or also collapse to plugin/main.js — Elgato hosts honor Nodejs mode cross-platform too).",
+    "manifest_diff": {
+      "add_fields": {
+        "CodePathWin": "plugin/main.js",
+        "Nodejs": { "Version": "20" }
+      },
+      "add_to_OS_array": { "Platform": "windows", "MinimumVersion": "10" },
+      "note_on_CodePathMac": "Can remain `plugin/run.sh` (no churn), OR can be collapsed to `plugin/main.js` once Nodejs.Version is declared. Leaving it alone is the lower-blast choice."
+    },
+    "fallback_if_A_fails": "If the user's VSD Craft build does not honor the `Nodejs` field (i.e., it's a pre-bundled-Node fork), fall back to Option C (vendor a portable node.exe + .cmd wrapper). Option B is rejected because requiring system Node is an unreasonable user burden. Option D is rejected as overkill for this plugin's size."
+  },
+
+  "open_questions_for_orchestrator": [
+    "Confirm the StreamDock VSD Craft minimum version that ships with bundled Node. The manifest currently has Software.MinimumVersion 6.0 — likely fine but worth verifying against the host the user actually has installed.",
+    "Decide whether to bump CodePathMac to plugin/main.js (collapses entry naming) or leave run.sh alone (zero churn on mac path). Recommend leaving run.sh alone since it works and is already shipped."
+  ],
+
+  "verification_steps_for_runner": [
+    "1. Inspect C:\\Program Files (x86)\\VSD Craft\\ for a bundled node.exe (likely under a `resources` or `runtime` subdir). Its presence confirms Option A works.",
+    "2. Look at any existing installed plugin under C:\\Program Files (x86)\\VSD Craft\\plugins\\*.sdPlugin\\manifest.json for examples of CodePathWin in the wild; check whether any declare `Nodejs`.",
+    "3. After updating manifest per Option A, restart VSD Craft and check its log directory for a plugin-launch error or success."
+  ],
+
+  "sources": [
+    "https://docs.elgato.com/streamdeck/sdk/references/manifest/",
+    "https://docs.elgato.com/streamdeck/sdk/introduction/plugin-environment/",
+    "https://docs.elgato.com/streamdeck/sdk/introduction/getting-started/",
+    "https://deepwiki.com/MiraboxSpace/StreamDock-Plugin-SDK/3.2-node.js-sdk",
+    "https://deepwiki.com/MiraboxSpace/StreamDock-Plugin-SDK/4.1-building-and-deployment",
+    "https://github.com/MiraboxSpace/StreamDock-Plugin-SDK",
+    "https://www.vsdinside.com/blogs/tutorial/plugin-download",
+    "https://github.com/CZDanol/streamdeck-batplug",
+    "https://sdk.key123.vip/en/guide/manifest.html"
+  ]
+}

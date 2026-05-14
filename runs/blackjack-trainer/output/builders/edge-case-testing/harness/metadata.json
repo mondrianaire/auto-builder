@@ -1,0 +1,12 @@
+{
+  "builder_id": "harness",
+  "task_id": "harness",
+  "section_id": "section-7",
+  "started_at": "2026-05-09T01:08:02Z",
+  "completed_at": "2026-05-09T01:12:00Z",
+  "status": "completed",
+  "output_files": ["report.json"],
+  "exposes": [],
+  "notes": "Harness implementation lives at output/integration/tests.html + tests.js (per delivery requirement that the user can open it directly in a browser). This builder directory holds the per-run report.json for that harness execution. The harness drives REAL user flows: dispatch deal -> hit/stand to resolve -> click Deal again -> assert new hand. Assertion coverage: every acceptance assertion with verifier=='edge_case_testing' from sections 1-6 plus IP-level assertions where testable against the integrated artifact, plus section-7's own self-coverage assertions S7.A1/A3/A4/A5.",
+  "self_test_results": null
+}

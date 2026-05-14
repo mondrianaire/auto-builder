@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "from_section": "ui-render",
+  "to_section": "controller-and-shell",
+  "interface": {
+    "exposed_module": "ui-render",
+    "data_shapes": {
+      "ViewModel": {
+        "cells": "Array<'X' | 'O' | null> of length 9 (mirrors Board layout)",
+        "statusText": "string — short outcome/turn message ('Your turn', 'Computer thinking...', 'You win!', 'Computer wins!', 'Draw', etc.)",
+        "winningLine": "Array<number> of 3 cell indices when a win has occurred, otherwise null",
+        "disabled": "boolean — true when the board should not respond to clicks (game over or AI mid-move)"
+      }
+    },
+    "methods": {
+      "render": {
+        "signature": "(viewModel: ViewModel) -> void",
+        "description": "Idempotently updates the DOM to reflect viewModel. Safe to call repeatedly with the same input. Applies winning-line CSS class when winningLine is non-null. Marks board non-interactive when disabled is true."
+      },
+      "onCellClick": {
+        "signature": "(handler: (cellIndex: number) => void) -> void",
+        "description": "Registers a single handler invoked when a user clicks an empty, enabled cell. Cell index is the 0..8 row-major position. Replaces any prior handler (last-registration-wins) — Builder may choose to support multiple, but a single replaceable handler is the minimum contract."
+      },
+      "onRestart": {
+        "signature": "(handler: () => void) -> void",
+        "description": "Registers a handler invoked when the user activates the restart control."
+      },
+      "mount": {
+        "signature": "(rootElement?: HTMLElement) -> void",
+        "description": "Optional initialization step that injects the renderer's DOM nodes into a host element (defaults to document.body or a designated #app element — Builder picks and documents). Called once by the controller during page load."
+      }
+    },
+    "guarantees": [
+      "Renderer holds no game logic: it does not detect wins, it does not validate moves, it does not advance turns. It is a pure projection of viewModel onto DOM.",
+      "Hover state on empty cells is purely a CSS concern; no JS hover handlers required.",
+      "Renderer does not import rules-engine or ai-opponent."
+    ]
+  },
+  "notes": "Controller composes the viewModel each frame: it pulls cells from the GameState's board, decides statusText based on whose turn it is and any Outcome, passes through winningLine from checkOutcome, and sets disabled=true on terminal state or while waiting for the AI. The controller is the only writer; the renderer is the only DOM toucher."
+}

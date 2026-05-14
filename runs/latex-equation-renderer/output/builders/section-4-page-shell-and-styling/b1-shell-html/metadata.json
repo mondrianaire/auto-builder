@@ -1,0 +1,32 @@
+{
+  "builder_id": "b1-shell-html",
+  "section": "section-4-page-shell-and-styling",
+  "output_file": "output.html",
+  "delivered_filename": "index.html",
+  "structural_facts": {
+    "title": "LaTeX Equation Renderer",
+    "h1_present": true,
+    "single_textarea": "textarea#latex-input[data-role='latex-input']",
+    "label_for_textarea": "<label for='latex-input'> (visually hidden) plus an h2 heading on the input region",
+    "single_output_container": "div#latex-output[data-role='latex-output']",
+    "error_region": "div#latex-error[data-role='latex-error'] role='alert' hidden by default",
+    "katex_cdn_link": "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
+    "katex_cdn_script": "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js",
+    "mathjax_present": false,
+    "submit_button_present": false,
+    "palette_present": false,
+    "list_repeater_present": false,
+    "export_controls_present": false,
+    "script_load_order": ["katex (defer)", "renderer.js (defer)", "input.js (defer)", "app.js (defer)"]
+  },
+  "satisfies_assertions": [
+    "IP1.A1", "IP1.A2", "IP1.A3",
+    "IP2.A1",
+    "IP3.A1", "IP3.A2",
+    "IP4.A1", "IP4.A2",
+    "S2.A1", "S2.A3",
+    "S3.A4", "S3.A5",
+    "S4.A1"
+  ],
+  "verified": true
+}

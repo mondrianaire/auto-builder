@@ -1,0 +1,19 @@
+{
+  "section_id": "section-1",
+  "section_name": "rules-engine",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-09T00:45:01Z",
+  "verified_at": "2026-05-09T00:48:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-1",
+  "active_contracts": [
+    "contracts/original/section-1--section-3.json"
+  ],
+  "sub_goals": [
+    { "id": "1abc", "description": "rules-engine: shoe + scoring + legal/dealer/resolve", "status": "verified", "builder_id": "builder-1abc", "output_path": "output/builders/rules-engine/builder-1abc/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_notes": "All 6 acceptance assertions for section-1 confirmed: S1.A1 scoreHand totals/isSoft correct on canonical cases; S1.A2 isBlackjack only on 2-card 21 and isBust on >21; S1.A3 legalActions includes h/s/d/p on initial pair, only h/s after hit, double allowed on split sub-hand 2-card decision, surrender never present; S1.A4 playDealer S17 verified for soft 17 and hard 16; S1.A5 resolveHand returns netDelta=15 on bet=10 player blackjack; S1.A6 module is pure ES module without any DOM references (grep clean for 'window', 'document'). Contract matches section-1--section-3.json signatures.",
+  "rationale": "Sub-goals 1a/1b/1c collapsed into a single builder dispatch (builder-1abc) because the three pieces share the same module file under ES module conventions and the consolidated unit was small enough to verify holistically. Section status set verified; coordinator may now unblock dependents (section-3)."
+}

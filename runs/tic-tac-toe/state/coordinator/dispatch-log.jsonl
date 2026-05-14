@@ -1,0 +1,27 @@
+{"ts":"2026-05-09T00:10:00Z","event":"coordinator_boot","note":"Read sections-v1.json, built DAG, identified 4 waves."}
+{"ts":"2026-05-09T00:10:01Z","event":"agent_tool_unavailable","note":"No Agent/Task subagent dispatch tool exposed in this SDK. Falling back to inline Overseer+Builder execution; preserving file layout and verification gates."}
+{"ts":"2026-05-09T00:10:05Z","event":"wave_start","wave":1,"sections":["rules-engine","ui-render"]}
+{"ts":"2026-05-09T00:10:05Z","event":"section_active","section":"rules-engine"}
+{"ts":"2026-05-09T00:10:05Z","event":"section_active","section":"ui-render"}
+{"ts":"2026-05-09T00:10:06Z","event":"builder_dispatch","section":"rules-engine","builder":"builder-rules-engine-b1"}
+{"ts":"2026-05-09T00:10:06Z","event":"builder_dispatch","section":"ui-render","builder":"builder-ui-render-b1"}
+{"ts":"2026-05-09T00:10:06Z","event":"builder_dispatch","section":"ui-render","builder":"builder-ui-render-b2"}
+{"ts":"2026-05-09T00:10:50Z","event":"section_verified","section":"rules-engine"}
+{"ts":"2026-05-09T00:10:50Z","event":"section_verified","section":"ui-render"}
+{"ts":"2026-05-09T00:10:50Z","event":"wave_complete","wave":1}
+{"ts":"2026-05-09T00:10:51Z","event":"wave_start","wave":2,"sections":["ai-opponent"]}
+{"ts":"2026-05-09T00:10:51Z","event":"section_active","section":"ai-opponent"}
+{"ts":"2026-05-09T00:10:51Z","event":"builder_dispatch","section":"ai-opponent","builder":"builder-ai-opponent-b1"}
+{"ts":"2026-05-09T00:11:10Z","event":"section_verified","section":"ai-opponent"}
+{"ts":"2026-05-09T00:11:10Z","event":"wave_complete","wave":2}
+{"ts":"2026-05-09T00:11:11Z","event":"wave_start","wave":3,"sections":["controller-and-shell"]}
+{"ts":"2026-05-09T00:11:11Z","event":"section_active","section":"controller-and-shell"}
+{"ts":"2026-05-09T00:11:11Z","event":"builder_dispatch","section":"controller-and-shell","builder":"builder-controller-b1"}
+{"ts":"2026-05-09T00:11:35Z","event":"section_verified","section":"controller-and-shell"}
+{"ts":"2026-05-09T00:11:35Z","event":"wave_complete","wave":3}
+{"ts":"2026-05-09T00:11:36Z","event":"wave_start","wave":4,"sections":["edge-case-testing"]}
+{"ts":"2026-05-09T00:11:36Z","event":"section_active","section":"edge-case-testing"}
+{"ts":"2026-05-09T00:11:36Z","event":"builder_dispatch","section":"edge-case-testing","builder":"builder-edge-b1"}
+{"ts":"2026-05-09T21:21:00Z","event":"section_verified","section":"edge-case-testing","tests":"46/46 pass"}
+{"ts":"2026-05-09T21:21:01Z","event":"wave_complete","wave":4}
+{"ts":"2026-05-09T21:21:01Z","event":"coordinator_complete","note":"All sections verified. Returning to orchestrator."}

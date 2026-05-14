@@ -1,0 +1,17 @@
+{
+  "builder_id": "builder-ui-1",
+  "section": "ui-render",
+  "started_at": "2026-05-09T00:11:50Z",
+  "completed_at": "2026-05-09T00:12:20Z",
+  "output": {
+    "path": "output/builders/ui-render/builder-ui-1/output.js",
+    "target_filename": "ui-render.js",
+    "global_attached": "window.UIRender"
+  },
+  "stable_dom_ids_implemented": [
+    "blackjack-app", "btn-deal", "btn-hit", "btn-stand", "btn-double", "btn-split",
+    "btn-reset", "input-bet", "display-balance", "display-message", "area-dealer", "area-player"
+  ],
+  "css_classes_used": ["card", "card-face-down", "card-red", "card-black", "hand", "hand-active", "hand-bust", "hand-blackjack", "blackjack-app"],
+  "notes": "Idempotent render: clears root and rebuilds. No event binding. Reset button hidden via style:display:none when canReset=false."
+}

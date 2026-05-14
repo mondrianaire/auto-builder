@@ -1,0 +1,154 @@
+{
+  "completed_at": "2026-05-10T06:11:30Z",
+  "verdict": "fail",
+  "reclassified_at": "2026-05-10",
+  "reclassified_to": "fail",
+  "reclassification_reason": "Original 'pass' verdict was unsound. The cv_artifact_exercise pass ran in a jsdom sandbox with KaTeX provided via npm-installed Node module (window.katex stubbed in by the harness). It never exercised the artifact in production fidelity — i.e., loading index.html the way a user opens it, with the CDN script tag actually fetching and executing. When the user opened the delivered artifact in a browser without reachable jsdelivr CDN, the renderer's own guard fired ('KaTeX library is not loaded.') and the artifact failed at the prompt's named verb (rendering LaTeX). No assertion in sections-v1.json or any verifier required end-to-end exercise of the prompt's named verb against the deliverable in its target deployment environment. This is a verification-stack failure, not a defect localized to a single section.",
+  "original_verdict_field": "pass",
+  "checked_against_ledger": "decisions/discovery/ledger-v1.json",
+  "checked_against_sections": "decisions/technical-discovery/sections-v1.json",
+  "integrated_artifact": "output/integration/",
+  "edge_case_report_consulted": "output/builders/section-5-edge-case-testing/b1-edge/report.json",
+  "assumption_checks": [
+    {
+      "id": "A1",
+      "assumption": "Input is LaTeX math syntax (the user supplies the source string).",
+      "verified": true,
+      "evidence": "index.html has <textarea id='latex-input' data-role='latex-input'> with placeholder 'e.g.  \\sum_{i=1}^{n} i^2 = \\frac{n(n+1)(2n+1)}{6}'. input.js wires its 'input' event to a notification stream consumed by app.js which feeds renderer.render(latex, target). User-supplied string is the input."
+    },
+    {
+      "id": "A2",
+      "assumption": "Output is a visible rendered equation (the user sees typeset math, not just a transformed string).",
+      "verified": true,
+      "evidence": "renderer.js calls global.katex.render(...) which produces visible KaTeX DOM into the output container; cv-harness S3.A1 confirmed .katex element appears in output panel after typing 'a+b'."
+    },
+    {
+      "id": "A3",
+      "assumption": "Single-user, no authentication, no accounts.",
+      "verified": true,
+      "evidence": "Grep across index.html, app.js, input.js, renderer.js, styles.css for /login|auth|signin|signup|account/ returned zero hits. No backend or identity layer is invoked."
+    },
+    {
+      "id": "A4",
+      "assumption": "No persistence required; equations are rendered transiently in-session.",
+      "verified": true,
+      "evidence": "Grep for /localStorage|sessionStorage|indexedDB|fetch\\(|XMLHttpRequest/ returned zero hits across all integration source files."
+    },
+    {
+      "id": "A5",
+      "assumption": "Desktop / standard browser viewport is the primary target.",
+      "verified": true,
+      "evidence": "styles.css .page-main uses grid-template-columns: 1fr 1fr by default; the @media (max-width: 900px) rule collapses to a single column only below 900px. cv-harness S4.A2 confirmed both regions present and laid out side-by-side at 1280px."
+    },
+    {
+      "id": "A6",
+      "assumption": "Live / responsive preview as the user types is the expected interaction.",
+      "verified": true,
+      "evidence": "app.js subscribes to inputUi.onLatexChange and calls renderer.render on every notification; no manual button is wired to trigger rendering. cv-harness S3.A1 confirmed render occurs without any button press."
+    },
+    {
+      "id": "A7",
+      "assumption": "Scope is math-mode LaTeX (equations), not full document compilation.",
+      "verified": true,
+      "evidence": "renderer.js calls katex.render with displayMode: true (math/display mode). No \\documentclass, \\begin{document}, sections, or bibliography tooling is referenced anywhere."
+    },
+    {
+      "id": "A8",
+      "assumption": "Errors in LaTeX input should be surfaced to the user.",
+      "verified": true,
+      "evidence": "index.html has #latex-error[data-role='latex-error'] with role='alert', initially hidden. app.js shows it with the renderer's error message on failure. cv-harness S3.A2 captured the visible parse-error message after typing '\\frac{1}{'."
+    },
+    {
+      "id": "A9",
+      "assumption": "Tool runs locally in the browser with no server-side rendering required.",
+      "verified": true,
+      "evidence": "All rendering runs in the browser via katex (loaded from jsdelivr CDN). No fetch/XHR/WebSocket calls in the source. Opening index.html in a browser is sufficient."
+    }
+  ],
+  "out_of_scope_checks": [
+    { "item": "User accounts, authentication, sign-in", "verified_absent": true, "evidence": "no /login|auth|signin|signup|account/ tokens in source" },
+    { "item": "Server-side persistence or saved equation libraries", "verified_absent": true, "evidence": "no fetch/XHR/localStorage/indexedDB usage" },
+    { "item": "Collaboration / sharing / multi-user features", "verified_absent": true, "evidence": "no share/upload/socket code; single textarea, single output" },
+    { "item": "Full LaTeX document compilation (\\documentclass, sections, bibliographies)", "verified_absent": true, "evidence": "no \\documentclass references; KaTeX displayMode is per-equation" },
+    { "item": "Custom LaTeX package installation / arbitrary TeX engine fidelity", "verified_absent": true, "evidence": "library is fixed at katex@0.16.9 CDN bundle; no extension or plugin loader" },
+    { "item": "Native mobile app", "verified_absent": true, "evidence": "no cordova/capacitor/native references; pure HTML+JS+CSS" },
+    { "item": "Offline installable desktop application", "verified_absent": true, "evidence": "no electron references; no service worker; CDN-dependent" },
+    { "item": "Conversion from images or handwriting to LaTeX (OCR)", "verified_absent": true, "evidence": "no OCR/upload/file-input tooling in source" }
+  ],
+  "inflection_point_checks": [
+    {
+      "id": "IP1",
+      "topic": "Input model: single equation field vs. multi-equation editor",
+      "default_branch_honored": true,
+      "evidence": "Exactly one textarea[data-role='latex-input'] and one [data-role='latex-output'] in index.html (edge-case report IP1.A1/IP1.A2 count=1). No equation-list/add-equation UI (IP1.A3 bad=0)."
+    },
+    {
+      "id": "IP2",
+      "topic": "Export / copy capability",
+      "default_branch_honored": true,
+      "evidence": "No buttons matching /export|download|copy|save|share/ (edge-case IP2.A1 hits=0). No navigator.clipboard / URL.createObjectURL / execCommand('copy') (edge-case IP2.A2 clean)."
+    },
+    {
+      "id": "IP3",
+      "topic": "Quick-insert helpers (symbol palette, snippets, examples)",
+      "default_branch_honored": true,
+      "evidence": "Input is a plain <textarea> (edge-case IP3.A2 tag=TEXTAREA). No palette/symbols/snippets/templates UI (edge-case IP3.A1 bad=0)."
+    },
+    {
+      "id": "IP4",
+      "topic": "Math-rendering library choice (KaTeX vs MathJax)",
+      "default_branch_honored": true,
+      "evidence": "katex.min.css and katex.min.js loaded from jsdelivr CDN (edge-case IP4.A1 linkOk=true scriptOk=true). No mathjax script tag (IP4.A2 clean). renderer.js invokes katex.render (IP4.A3 found)."
+    }
+  ],
+  "artifact_exercise_results": [
+    {
+      "assertion_id": "S2.A4",
+      "scenario": "Type 'x+y' (3 keystrokes) into the textarea and observe change-mechanism notifications and final value.",
+      "result": "pass",
+      "details": "Subscribed via inputUi.onLatexChange before typing. Three input events produced exactly three notifications in order ['x','x+','x+y']; final textarea value is 'x+y'. (cv-harness S2.A4)"
+    },
+    {
+      "assertion_id": "S3.A1",
+      "scenario": "Type 'a+b' into the textarea and observe the output panel.",
+      "result": "pass",
+      "details": "After dispatching the 'input' event, the output container synchronously contains a .katex element (KaTeX-rendered DOM) and the error region remains hidden. No render/compile/go/submit button exists in the DOM, confirming live-preview-without-button-press. (cv-harness S3.A1)"
+    },
+    {
+      "assertion_id": "S3.A2",
+      "scenario": "Type '\\frac{1}{' into the textarea and observe the error region.",
+      "result": "pass",
+      "details": "The error region became visible (hidden attr removed) with non-empty text 'KaTeX parse error: Unexpected end of input in a macro argument, expected '}' at...'. The error element has role='alert' and class 'latex-error', distinct from the success output element (class 'latex-output'). (cv-harness S3.A2)"
+    },
+    {
+      "assertion_id": "S4.A2",
+      "scenario": "Open the page at desktop width (>=1024px) and visually scan for the input and output areas.",
+      "result": "pass",
+      "details": "Both [data-slot='input-region'] and [data-slot='output-region'] sections exist with non-empty H2 headings ('LaTeX source' and 'Rendered equation'). Layout is grid-template-columns:1fr 1fr; the only responsive collapse breakpoint is max-width:900px, so 1024px+ viewports get the two-column layout. (cv-harness S4.A2)"
+    },
+    {
+      "assertion_id": "S4.A3",
+      "scenario": "Type valid then invalid LaTeX and visually compare the input, output, and error regions.",
+      "result": "pass",
+      "details": "Valid input populates .katex DOM in output; invalid input shows the error region. CSS confirms three distinct visual treatments: textarea#latex-input has its own background+border+font-family, .region--output has output-specific background+border-color, .latex-error has a red palette (--color-error-bg/--color-error-border/--color-error-text) and dedicated border. .latex-output sets font-size:1.1rem for readable math. (cv-harness S4.A3)"
+    }
+  ],
+  "edge_case_testing_summary": {
+    "report_path": "output/builders/section-5-edge-case-testing/b1-edge/report.json",
+    "total": 22,
+    "passed": 22,
+    "failed": 0,
+    "edge_case_assertions_in_spec": [
+      "S1.A2", "S1.A3", "S1.A5", "S2.A2", "S3.A3", "S4.A4",
+      "S5.A1", "S5.A2", "S5.A3", "S5.A4", "S5.A5", "S5.A6"
+    ],
+    "all_spec_edge_case_assertions_covered": true,
+    "verifier_note": "Edge-case harness report enumerates each spec edge_case_testing assertion plus all IP machine_checkable_assertions, and reports pass for all 22."
+  },
+  "static_inspection_summary": {
+    "page_structure": "index.html declares two main regions (input/output), pulls katex CSS/JS from jsdelivr CDN, defers local scripts in dependency order (renderer -> input -> app).",
+    "module_contracts": "renderer.js exposes window.renderer.render(latex, target) returning {ok:true}|{ok:false,message}; input.js exposes window.inputUi.onLatexChange(cb) emitting on every input event; app.js subscribes and routes to output or error region.",
+    "no_cv_artifact_exercise_concerns": true
+  },
+  "summary": "Integrated artifact at output/integration/ honors all 9 ledger assumptions, all 8 out-of-scope items, and all 4 inflection-point default branches. All 5 cv_artifact_exercise acceptance assertions (S2.A4, S3.A1, S3.A2, S4.A2, S4.A3) were exercised in jsdom against the live wired modules and passed; cv-harness output recorded at /tmp/latex-test/cv-report.json. Edge-case-testing report shows 22/22 assertions passing, covering every edge_case_testing assertion in the sections file. No failures; no Sev 0 fix required."
+}

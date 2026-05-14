@@ -1,0 +1,20 @@
+{
+  "id": "esc-002",
+  "ts": "2026-05-13T00:08:00Z",
+  "raised_by": "critic_final_sweep",
+  "severity": "high",
+  "category": "prose_coverage",
+  "check": "prose_coverage",
+  "summary": "Contract interfaces have no covers-graph coverage. All 6 inter-section contracts are coverage-required per file_schemas.md but zero assertions have covers fields pointing at any 'contracts/original/*.json'.",
+  "affected_fields": [
+    "contracts/original/C-S1-S2-manifest-references.json",
+    "contracts/original/C-S1-S3-codepath-entry.json",
+    "contracts/original/C-S2-S3-pi-settings.json",
+    "contracts/original/C-S2-S4-feedback-payload.json",
+    "contracts/original/C-S3-S4-internal-api.json",
+    "contracts/original/C-S4-S5-music-source.json"
+  ],
+  "context": "Contract surfaces ARE exercised behaviorally by the harness: AA.S3.4 verifies setFeedback frame shape (C-S2-S4); AA.S4.1/AA.S4.2 verify the same; AA.S5.1-AA.S5.4 verify the C-S4-S5 surface; AA.S1.3 verifies all manifest-referenced paths resolve which exercises C-S1-S2 and C-S1-S3. But no assertion has a covers field pointing at a contract file path. AA.S2.5 mentions the contract in its scenario but its covers points at section/1/acceptance.",
+  "recommendation": "Defer to Arbiter for a v1.7 Principle-C strict-pass decision: either (a) extend covers fields on relevant existing assertions to also point at the contract files (each AA already maps semantically to a contract; the covers field is just narrower than the actual coverage), (b) introduce dedicated contract-coverage assertions, or (c) accept the gap on grounds that behavioral coverage exists and the schema-strict pointer is a documentation gap rather than a build gap.",
+  "blocking": false
+}

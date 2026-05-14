@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "kind": "integration-manifest",
+  "created_at": "2026-05-10T00:00:18Z",
+  "entry_point": "index.html",
+  "files": [
+    "index.html",
+    "styles.css",
+    "state-model.js",
+    "persistence.js",
+    "ui-render.js",
+    "dnd.js",
+    "interactions.js",
+    "app.js"
+  ],
+  "module_globals": ["StateModel", "Persistence", "UiRender", "Dnd", "Interactions"],
+  "boot_sequence": [
+    "Persistence.load()",
+    "StateModel.createStateModel(initial)",
+    "UiRender.mountRenderer(rootEl, stateModel)",
+    "Dnd.wireDnd(rootEl, stateModel)",
+    "Interactions.wireInteractions(rootEl, stateModel)",
+    "stateModel.subscribe(state => Persistence.save(state))",
+    "Persistence.save(stateModel.getState())  // initial seed persisted"
+  ],
+  "dependencies": "none (vanilla JS, HTML5, CSS only)",
+  "runtime_target": "modern desktop browser, file:// or http://",
+  "self_contained": true
+}

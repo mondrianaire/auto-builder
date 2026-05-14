@@ -1,0 +1,34 @@
+{
+  "contract_id": "C-S4-S5",
+  "between": ["S4", "S5"],
+  "topic": "music-source module interface: how S4 asks S5 for the current track",
+  "direction": "S5 implements; S4 imports and calls",
+  "data_passed_not_logic": true,
+  "schema": {
+    "exported_module_path": "plugin/music_source.js",
+    "exports": {
+      "getNowPlaying": {
+        "signature": "() => Promise<{title: string, artist: string} | null>",
+        "description": "Resolves to {title, artist} when Music.app is playing a track. Resolves to null when (a) Music.app is paused, (b) Music.app is stopped, (c) Music.app is not running, (d) osascript exits non-zero, or (e) any unexpected error. Never rejects.",
+        "must_never_reject": true,
+        "must_never_throw_synchronously": true
+      }
+    },
+    "internal_constraints": {
+      "spawn_mechanism": "child_process.execFile or child_process.exec with command 'osascript'",
+      "applescript_must_contain": [
+        "application \"Music\"",
+        "player state",
+        "name of current track",
+        "artist of current track"
+      ],
+      "output_parsing": "Two tab-delimited fields on stdout. Empty stdout means null. Any error during parse means null."
+    },
+    "return_shape_when_playing": {
+      "title": "<non-empty string, never contains tab or newline>",
+      "artist": "<string; may be empty if track has no artist metadata>"
+    },
+    "return_shape_when_idle": null
+  },
+  "verification": "S4's polling loop calls getNowPlaying() and trusts the return shape. Edge-case-testing exercises both branches via a stubbed child_process and asserts that the return shape matches this contract exactly."
+}

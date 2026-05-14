@@ -1,0 +1,15 @@
+{
+  "builder_id": "b1-renderer",
+  "section": "section-1-renderer-core",
+  "output_file": "output.js",
+  "delivered_filename": "renderer.js",
+  "public_surface": {
+    "global": "window.renderer",
+    "function": "render(latex: string, target: HTMLElement) -> { ok: true } | { ok: false, message: string }"
+  },
+  "katex_api_used": "katex.render(latex, target, { throwOnError: true, displayMode: true })",
+  "satisfies_assertions": ["S1.A1", "S1.A2", "S1.A3", "S1.A5"],
+  "depends_on_runtime": ["KaTeX 0.16.9 (loaded from CDN by index.html before renderer.js)"],
+  "verified": true,
+  "verification_notes": "Single render export; signature matches contract; no exception escapes try/catch; empty input clears target; uses displayMode:true."
+}

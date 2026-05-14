@@ -1,0 +1,8 @@
+{
+  "id": "dev-003",
+  "category": "test_or_assertion_fix",
+  "section": "section-7",
+  "decision": "Refined absence-check regex patterns to match identifier shapes (e.g., 'new\\s+WebSocket', 'login\\b', 'solveTree\\(') instead of bare substrings. Original patterns produced false-positive matches against benign string content (the word 'register' in registerRoute, 'variant' inside glossary text, 'solver' inside a comment).",
+  "rationale": "The original section-7 charter calls for verifying absence of features. Substring grep over JS+HTML conflated identifier presence with content presence, surfacing failures that did not reflect feature presence. The fix is a sharpening of the verifier methodology, not a relaxation of the assertion.",
+  "nested_equivalent": "Under nested dispatch, a Critic reviewing the section-7 builder would have flagged the over-broad regex; the builder would have re-emitted; the Overseer would have accepted. Same end state with one extra cycle."
+}

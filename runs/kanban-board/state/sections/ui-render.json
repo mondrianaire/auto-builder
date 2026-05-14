@@ -1,0 +1,25 @@
+{
+  "section_id": "section-3",
+  "name": "ui-render",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-10T00:00:07Z",
+  "verified_at": "2026-05-10T00:00:10Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-3",
+  "active_contracts": [
+    "contracts/original/state-model--ui-render.json",
+    "contracts/original/ui-render--dnd.json",
+    "contracts/original/ui-render--interactions.json",
+    "contracts/original/ui-render--integration.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "ur-b1",
+      "description": "mountRenderer with column-per-list, card-per-card, draggable+data attributes, add-list/add-card/delete-list/delete-card affordances.",
+      "status": "verified",
+      "builder_id": "ur-b1",
+      "output_path": "output/builders/ui-render/ur-b1/output.js",
+      "verification_notes": "S3.A1: one section.list per list, one .card per card. S3.A2: cards have draggable=true, data-card-id, data-list-id. S3.A3: subscribes to stateModel and re-renders. S3.A4: add-list affordance present even when lists empty. IP1.A3: no .card-description / detail trigger / expand. IP2.A1: list header has no draggable attribute."
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "run_name": "tic-tac-toe",
+  "audit_at": "2026-05-10T07:00:00Z",
+  "audit_under_architecture_version": "v1.6",
+  "original_verdict": "pass",
+  "original_verdict_at": "2026-05-09T21:30:00Z",
+  "original_verdict_path": "runs/tic-tac-toe/output/verification/report.json",
+  "amendments_applied_since_original": ["v1.2", "v1.3", "v1.4", "v1.5", "v1.6"],
+  "gates_re_evaluated": [
+    {
+      "gate": "build_complete_handoff",
+      "introduced_in": "v1.2",
+      "result": "fail",
+      "rationale": "No state/coordinator/build-complete.json exists in this run. The run pre-dates the v1.2 explicit handoff signal."
+    },
+    {
+      "gate": "machine_checkable_assertions_per_ip_lock",
+      "introduced_in": "v1.2",
+      "result": "fail",
+      "rationale": "decisions/technical-discovery/sections-v1.json does not include machine_checkable_assertions[] on its inflection_resolutions[]. Critic's charter-implementation conformance check would have nothing to verify."
+    },
+    {
+      "gate": "acceptance_assertions_per_section",
+      "introduced_in": "v1.3",
+      "result": "fail",
+      "rationale": "Sections file lacks acceptance_assertions[]; prose acceptance criteria are not derivable into structured tests."
+    },
+    {
+      "gate": "cv_artifact_exercise_pass",
+      "introduced_in": "v1.3",
+      "result": "fail",
+      "rationale": "Verification report's checks are all static inspection (grep + structural). No artifact-exercise pass, no DOM-capable sandbox loading. Behavioral defects could not have been caught."
+    },
+    {
+      "gate": "inline_deviation_logging",
+      "introduced_in": "v1.4",
+      "result": "not_applicable_to_this_run",
+      "rationale": "No inline deviations documented, but no state/inline-deviations/ directory exists either. Cannot determine whether deviations occurred during build; pattern of skipped logging predates the requirement."
+    },
+    {
+      "gate": "cv_artifact_exercise_production_fidelity",
+      "introduced_in": "v1.5",
+      "result": "fail",
+      "rationale": "Original verification did not run under any DOM-capable sandbox at all (was static inspection only). Production fidelity is moot when behavioral exercise was never attempted. Compounded: tic-tac-toe has no runtime deps to substitute, so the failure is the absence of exercise rather than substitution per se."
+    },
+    {
+      "gate": "prompt_named_verb_assertion",
+      "introduced_in": "v1.5",
+      "result": "fail",
+      "rationale": "No PNV exists. The prompt's named verb 'play tic-tac-toe' is never asserted end-to-end against the deliverable."
+    },
+    {
+      "gate": "td_introduced_ip_schema",
+      "introduced_in": "v1.6",
+      "result": "not_applicable_to_this_run",
+      "rationale": "No TD-introduced IPs in this run; both IPs were Discovery-sourced. Schema absence is non-blocking."
+    },
+    {
+      "gate": "integration_final_divergence_record",
+      "introduced_in": "v1.6",
+      "result": "not_applicable_to_this_run",
+      "rationale": "output/final/ matches output/integration/ byte-for-byte (no recovery patches). Divergence record not required."
+    },
+    {
+      "gate": "historian_build_summary_and_decision_index",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "Neither history/build-summary.md nor history/decision-index.json exists. Required for delivery under v1.6."
+    },
+    {
+      "gate": "prompt_verb_analysis",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "TD did not enumerate candidate verbs or pick the load-bearing one. Coupled with PNV absence, the verification regime never tested the prompt's central job."
+    }
+  ],
+  "reclassified_verdict": "fail",
+  "fail_count": 7,
+  "not_applicable_count": 3,
+  "pass_count": 0,
+  "incidental_observations": [
+    "The artifact almost certainly does play tic-tac-toe correctly — the rules engine and UI from inspection look sound. The reclassification is about verification regime conformance, not artifact correctness.",
+    "Reflects the v1.0 era of the architecture: static inspection sufficed for the first run because the prompt's domain is small and the architecture's verification gates hadn't been built yet.",
+    "Useful as a baseline of how much the architecture has grown: 7 gates fail not because the build is bad but because the gates didn't exist when the build happened."
+  ],
+  "recovery_options": [
+    {
+      "type": "patch_artifact",
+      "description": "Add machine_checkable_assertions to sections, add acceptance_assertions, write a CV artifact-exercise runner that loads index.html in jsdom-with-real-resource-loading, derive PNV ('place an X in any cell, observe X rendered in that cell'), produce Historian artifacts, write divergence record (none) and verification report under v1.6 gates."
+    },
+    {
+      "type": "rebuild_under_v1.6",
+      "description": "Discard prior outputs and re-run the prompt 'build me a single-page tic-tac-toe game where I play against the computer' under the current v1.6 architecture. Cleaner; produces a v1.6-native run with all required artifacts in place from the start."
+    }
+  ],
+  "recommendation": "patch_artifact",
+  "recommendation_rationale": "The artifact appears correct from static inspection; rebuilding is wasteful when the gates that would be added are documentation/structuring rather than functional changes. Patching adds the missing artifacts (assertions, PNV, Historian outputs, exercise runner) without disturbing the working code. Estimated effort: 1 dispatch each of TD-amendment, edge-case-testing-rerun, CV-rerun, Historian. A rebuild would re-do the entire build for marginal benefit."
+}

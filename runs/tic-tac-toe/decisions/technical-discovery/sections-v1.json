@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:05:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "id": "I1",
+      "topic": "Computer opponent strength",
+      "resolution": "Beatable heuristic: take immediate win, else block immediate loss, else prefer center, then corners, then edges (random tie-break among equal-priority cells).",
+      "method": "quick_reasoning",
+      "rationale": "Both options are well-understood in training data; default is well-aligned with casual single-player framing. Unbeatable minimax produces only draws/losses for the human, which feels punishing for a demo. Heuristic is simpler, fun, and module-isolated so it can be swapped later if desired."
+    },
+    {
+      "id": "I2",
+      "topic": "Visual style / presentation",
+      "resolution": "Minimal but tidy: 3x3 CSS-grid board, system font stack, readable X/O glyphs, hover state on empty cells, highlighted winning line on game end, visible turn indicator, visible outcome message, clearly labeled restart button.",
+      "method": "quick_reasoning",
+      "rationale": "Cascade depth is low and the choice is easily reversible. Default hits the floor of 'looks like a game' without consuming effort better spent on logic. Defers polish (animations, custom typography) per out-of-scope list."
+    }
+  ],
+  "sections": [
+    {
+      "id": "rules-engine",
+      "name": "Rules Engine",
+      "charter": "Implement the pure game-rules layer of tic-tac-toe with no DOM, no I/O, no module-global mutable state beyond what the API exposes. Provide functions to create an empty board, apply a move (with legality check), detect a winner with the winning line, detect a draw, list legal moves, and clone state. All functions must be deterministic and synchronous, returning new state objects rather than mutating inputs. This module is the single source of truth for what is and is not a legal game position.",
+      "acceptance": [
+        "Exports a stable API matching contracts/original/rules-engine--ai-opponent.json and rules-engine--controller-and-shell.json.",
+        "createBoard() returns a fresh empty 3x3 board representation.",
+        "applyMove(state, index, player) returns a new state with the cell filled, or throws/returns an error sentinel for illegal moves (occupied cell, out-of-range index, wrong player given current turn).",
+        "checkOutcome(state) correctly identifies winner ('X' or 'O') with winning-line cell indices, or 'draw', or 'in_progress' for the eight winning lines and a full board.",
+        "legalMoves(state) returns array of empty-cell indices in deterministic order.",
+        "Pure functions: same input always produces same output; no side effects."
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Any DOM manipulation or styling",
+        "AI move selection (lives in ai-opponent)",
+        "Turn-flow orchestration (lives in controller-and-shell)",
+        "Variants beyond standard 3x3 (per ledger out-of-scope)"
+      ]
+    },
+    {
+      "id": "ai-opponent",
+      "name": "AI Opponent",
+      "charter": "Implement a beatable heuristic move selector that, given the current board state and the AI's symbol, returns a single chosen cell index. The heuristic priority is: (1) play any immediately winning move, (2) block any immediately losing move, (3) take center if free, (4) take a free corner, (5) take a free edge. Ties at any priority level are broken with deterministic-but-non-trivial selection (e.g., first-encountered or seeded random — Builder's choice). Consumes the rules-engine API for legality and win-detection; does not duplicate that logic.",
+      "acceptance": [
+        "Exports chooseMove(state, aiSymbol) per contracts/original/ai-opponent--controller-and-shell.json.",
+        "Returns a legal cell index for any non-terminal board state.",
+        "Demonstrates win-take and block-loss behavior for the canonical test boards (one move from win, one move from loss).",
+        "Falls through priority ladder cleanly when no immediate win/block exists.",
+        "Does not call into the DOM; does not mutate the input state."
+      ],
+      "depends_on": ["rules-engine"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Minimax / unbeatable play (I1 locked to beatable heuristic)",
+        "Difficulty selector (per ledger out-of-scope)",
+        "Animation or move-delay timing (controller decides delay; AI just picks)"
+      ]
+    },
+    {
+      "id": "ui-render",
+      "name": "UI Render Layer",
+      "charter": "Implement the presentation layer: CSS for a clean 3x3 grid, hover state on empty cells, X/O glyphs, turn indicator slot, outcome message slot, and restart button. Provide a JS renderer that takes a view-model (board cells + status text + winning-line indices + disabled flag) and updates the DOM idempotently. Expose a way for the controller to subscribe to cell-click events (with the cell index) and to restart-button clicks. The renderer is state-driven: same view-model in produces same DOM out; no internal game logic.",
+      "acceptance": [
+        "Exports a renderer matching contracts/original/ui-render--controller-and-shell.json.",
+        "render(viewModel) updates board cells, status text, turn indicator, and applies winning-line highlight when present.",
+        "onCellClick(handler) and onRestart(handler) wire user input to caller-supplied callbacks; handler receives cell index for cell clicks.",
+        "Empty cells show hover state; filled cells do not. Cells become non-interactive when viewModel.disabled is true (game over) or cell is filled.",
+        "Visually presents minimal-but-tidy aesthetic per I2 resolution: legible grid, system fonts, clear X vs O, highlighted winning line."
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Game rules or AI logic (renderer does not decide outcomes; it displays them)",
+        "Animations beyond simple state transitions (per ledger out-of-scope)",
+        "Mobile-first responsive tuning (per ledger out-of-scope; desktop-usable is sufficient)",
+        "Sound effects (out-of-scope)"
+      ]
+    },
+    {
+      "id": "controller-and-shell",
+      "name": "Controller and Page Shell",
+      "charter": "Build the single-page HTML shell (index.html) and the controller module that wires rules-engine, ai-opponent, and ui-render together. Own the turn-flow state machine: human (X) clicks, controller validates via rules-engine, applies move, checks outcome, if in-progress hands turn to AI (with a small delay so the AI move is perceptible), AI returns move, controller applies it, checks outcome, repeats. On terminal state, render outcome message and enable restart; restart resets to a fresh empty board with human's turn. The shell loads CSS and JS in vanilla form with no build step and no external dependencies.",
+      "acceptance": [
+        "index.html is a single self-contained page that loads the renderer's CSS and the JS modules in correct order; opens in a modern browser with no build step.",
+        "Game loop: human click on empty cell places X, AI places O after a brief perceptible delay (~250-500ms), turn indicator updates each turn.",
+        "On win, loss, or draw, outcome message displays the result and the winning line is highlighted (where applicable); board becomes non-interactive.",
+        "Restart control resets the board, clears outcome, and returns control to the human.",
+        "Illegal click attempts (occupied cell, game over) are gracefully ignored.",
+        "No external network calls, no persistence, no analytics."
+      ],
+      "depends_on": ["rules-engine", "ai-opponent", "ui-render"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Score tally across games (per ledger out-of-scope)",
+        "Difficulty selector or symbol selector (per ledger out-of-scope)",
+        "Undo/replay (per ledger out-of-scope)",
+        "Re-implementing rules or AI inline; this section composes, not duplicates"
+      ]
+    },
+    {
+      "id": "edge-case-testing",
+      "name": "Edge Case Testing",
+      "charter": "After all functional sections are complete, exercise the assembled artifact against edge cases. Verify all eight winning lines (3 rows, 3 columns, 2 diagonals) are detected for both X and O; verify draw detection on a full non-winning board; verify the AI takes an immediate win when available and blocks an immediate loss when available; verify clicks on filled cells and clicks after game-end are ignored; verify restart fully resets state including any winning-line highlight and disabled state; verify the page works opened directly from the file system (file://) with no build step. Produce a brief test report noting which edge cases pass and any defects found.",
+      "acceptance": [
+        "All eight winning lines detected and highlighted correctly for both symbols.",
+        "Draw detection fires on a full board with no winner.",
+        "AI win-take and AI block-loss behaviors are confirmed on canonical setups.",
+        "Illegal-input ignore behavior confirmed (clicking filled cell, clicking after terminal state).",
+        "Restart returns the artifact to identical initial state.",
+        "Artifact loads and plays via file:// open in at least one modern browser.",
+        "Test report committed (pass/fail per case, plus any defect notes for follow-up)."
+      ],
+      "depends_on": ["rules-engine", "ai-opponent", "ui-render", "controller-and-shell"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Formal accessibility audit (per ledger out-of-scope)",
+        "Cross-browser matrix testing (one modern browser is sufficient)",
+        "Performance benchmarking (game is trivially small)",
+        "Fixing defects discovered (testing flags them; fixes go through normal section-edit flow)"
+      ]
+    }
+  ]
+}

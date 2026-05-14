@@ -1,0 +1,10 @@
+{
+  "section_id": "section-6",
+  "builder_id": "builder-6a",
+  "outputs": ["output.js"],
+  "registers_routes": ["dashboard"],
+  "subscribes_to": ["hand_result", "decision_result"],
+  "storage_keys": ["stats/all-time", "stats/session/<id>"],
+  "metrics": ["hands_played","vpip","pfr","three_bet","wtsd","w_dollar_sd","bb_per_100","gto_deviation"],
+  "assertions_satisfied": ["S6.A1","S6.A2","S6.A3","S6.A4","IP5.A1","IP5.A2","DCA.10","DCA.29"]
+}

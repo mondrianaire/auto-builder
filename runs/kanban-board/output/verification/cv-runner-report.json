@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-05-10T04:26:11.633Z",
+  "total": 8,
+  "passed": 8,
+  "failed": 0,
+  "results": [
+    {
+      "scenario": "a. first-load seed",
+      "passed": true,
+      "detail": "rendered [\"To Do\",\"Doing\",\"Done\"] with 0 cards and add-list affordance"
+    },
+    {
+      "scenario": "b. add card persists across reload",
+      "passed": true,
+      "detail": "card \"My Card\" still in \"To Do\" after simulated reload"
+    },
+    {
+      "scenario": "c. dnd between lists changes state",
+      "passed": true,
+      "detail": "cA moved L1 -> L2 via dragstart/drop sequence"
+    },
+    {
+      "scenario": "d. reorder within list",
+      "passed": true,
+      "detail": "reorderCard wired on same-list drop with (B,L,...); state-model produces [B,A] when toIndex=0"
+    },
+    {
+      "scenario": "e. delete card",
+      "passed": true,
+      "detail": "card removed from DOM and localStorage"
+    },
+    {
+      "scenario": "f. rename list",
+      "passed": true,
+      "detail": "OldName -> NewName, persisted to localStorage"
+    },
+    {
+      "scenario": "g. add list (rightmost + persisted)",
+      "passed": true,
+      "detail": "Backlog appended; persisted"
+    },
+    {
+      "scenario": "h. delete list with cards",
+      "passed": true,
+      "detail": "list and its cards removed; persisted"
+    }
+  ]
+}

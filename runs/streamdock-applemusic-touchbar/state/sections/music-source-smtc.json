@@ -1,0 +1,36 @@
+{
+  "section_id": "S5",
+  "name": "music-source-smtc",
+  "previous_name": "music-source-applescript",
+  "rename_rationale": "Renamed per ledger-diff-v2 IP1 -> Windows-only and probe-windows-nowplaying recommendation (opt-A: PowerShell+WinRT SMTC). Section.id 'S5' preserved for DAG stability.",
+  "status": "verified",
+  "dispatched_at": "2026-05-13T00:02:00Z",
+  "verified_at": "2026-05-13T00:02:30Z",
+  "redispatched_at": "2026-05-13T00:55:00Z",
+  "reverified_at": "2026-05-13T00:57:00Z",
+  "cycle": "v3-windows-rebuild",
+  "v3_action": "stop_and_scrap_and_replace",
+  "dispatch_mode": "inline",
+  "builders": [
+    {
+      "builder_id": "builder-s5-1",
+      "task": "Produce plugin/music_source.js with getNowPlaying() async function spawning osascript (v1; macOS).",
+      "output_dir": "output/builders/music-source-applescript/builder-s5-1/",
+      "status": "superseded_by_v3"
+    },
+    {
+      "builder_id": "builder-s5-v3",
+      "task": "Rewrite plugin/music_source.js to spawn powershell.exe with inline WinRT SMTC script. Preserve C-S4-S5 surface and dev-002 MUSIC_SOURCE_FIXTURE shim verbatim.",
+      "output_dir": "output/builders/music-source-smtc/builder-s5-v3/",
+      "status": "verified"
+    }
+  ],
+  "verification": {
+    "AA.S5.1": {"status": "passed", "note": "Fixture 'Bohemian Rhapsody\\tQueen' resolves to {title:'Bohemian Rhapsody', artist:'Queen'}."},
+    "AA.S5.2": {"status": "passed", "note": "Empty and no-tab fixtures both return null; module never throws (Promise resolves to null on error)."},
+    "AA.S5.3": {"status": "passed", "note": "Uses child_process.execFile with 'powershell.exe'; no 'osascript' reference; sync invocation does not throw."},
+    "AA.S5.4": {"status": "passed", "note": "All 4 SMTC literals present: GlobalSystemMediaTransportControlsSessionManager, Windows.Media.Control, TryGetMediaPropertiesAsync, PlaybackStatus."},
+    "MCA.TDIPD.1": {"status": "passed", "note": "spawns powershell.exe + tab-delimited parsing + resolve-null-on-empty confirmed."},
+    "MCA.TDIPD.2": {"status": "passed", "note": "All 4 SMTC literals present in source string."}
+  }
+}

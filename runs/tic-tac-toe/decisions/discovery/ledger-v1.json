@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:00:00Z",
+  "project_name": "tic-tac-toe",
+  "restatement": "A single-page tic-tac-toe game where one human player plays against a computer opponent on the same device.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The application is a single self-contained page with no routing, no navigation, and no separate screens.",
+      "confidence": "high",
+      "rationale": "The prompt says 'single-page' explicitly.",
+      "what_breaks_if_wrong": "If multi-page was intended, navigation, routing, and shared-state plumbing would be missing."
+    },
+    {
+      "id": "A2",
+      "assumption": "Game uses the classic 3x3 grid with X and O markers and standard win conditions (three in a row horizontally, vertically, or diagonally) plus draw detection when the board fills.",
+      "confidence": "high",
+      "rationale": "Tic-tac-toe is a well-known canonical game; deviating from 3x3/X-O/standard rules would no longer be tic-tac-toe.",
+      "what_breaks_if_wrong": "If a variant (4x4, misere, ultimate tic-tac-toe) was intended, the board renderer and win-check logic would need to change."
+    },
+    {
+      "id": "A3",
+      "assumption": "There is exactly one human player and one computer opponent; no online multiplayer, no local two-human mode.",
+      "confidence": "high",
+      "rationale": "The prompt explicitly says 'I play against the computer' (singular human, computer opponent).",
+      "what_breaks_if_wrong": "If two-human or online play was intended, turn ownership, input routing, and possibly networking would be missing."
+    },
+    {
+      "id": "A4",
+      "assumption": "The human plays as X and moves first; the computer plays as O.",
+      "confidence": "medium",
+      "rationale": "X-first is the conventional default in tic-tac-toe and gives the human the familiar starting move; simplest defensible interpretation.",
+      "what_breaks_if_wrong": "If the user expected the computer to open (or to choose), the opening flow and any first-move AI heuristic would need a tweak; cosmetic, not structural."
+    },
+    {
+      "id": "A5",
+      "assumption": "Players input moves by clicking/tapping an empty cell on the board.",
+      "confidence": "high",
+      "rationale": "Click-to-place is the universal interaction model for grid-based browser games; no other input method is implied.",
+      "what_breaks_if_wrong": "If keyboard-only or voice input was required, an alternative input layer would be missing (still solvable, but not built)."
+    },
+    {
+      "id": "A6",
+      "assumption": "After a game ends (win, loss, or draw), the player can start a new game without reloading the page (e.g., a 'New Game' / 'Play Again' control).",
+      "confidence": "high",
+      "rationale": "A game that can only be played once per page-load is a degenerate experience; restartability is implied by 'game'.",
+      "what_breaks_if_wrong": "Without restart, the user would have to refresh manually after every match; UX would be poor but functionality would still 'work' once."
+    },
+    {
+      "id": "A7",
+      "assumption": "The end-state of the game is announced visibly to the user (who won, or that it's a draw) before/while offering the restart control.",
+      "confidence": "high",
+      "rationale": "Without an outcome message the player cannot tell the game is over; required for the game loop to be legible.",
+      "what_breaks_if_wrong": "If outcome messaging is omitted, the player cannot tell when to restart; game feels broken."
+    },
+    {
+      "id": "A8",
+      "assumption": "The game runs entirely client-side with no backend, no persistence between sessions, and no user accounts.",
+      "confidence": "high",
+      "rationale": "Per the system charter, backend/auth/persistence default to absent unless required. Tic-tac-toe vs computer needs none of these.",
+      "what_breaks_if_wrong": "If cross-device score history or accounts were expected, storage and auth layers would be missing."
+    },
+    {
+      "id": "A9",
+      "assumption": "Only the current game's state is tracked; no running win/loss/draw scoreboard across multiple games.",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason: the prompt names a game, not a session of games. Scoreboard is a common nice-to-have but not implied.",
+      "what_breaks_if_wrong": "If the user expected a tally, a small score counter would need to be added; trivially additive, not structural."
+    },
+    {
+      "id": "A10",
+      "assumption": "The game is played on a desktop browser by default; layout should be usable on a typical desktop viewport. Mobile responsiveness is not a stated requirement.",
+      "confidence": "medium",
+      "rationale": "Per charter, mobile-first defaults to not-present unless required. Browser desktop is the simplest target for a 'single-page' web game.",
+      "what_breaks_if_wrong": "On small touchscreens, cells may be undersized or layout may overflow; visual polish issue, not a logic break."
+    },
+    {
+      "id": "A11",
+      "assumption": "A turn indicator (whose turn it is) is shown during play.",
+      "confidence": "medium",
+      "rationale": "The computer's move happens between the human's clicks; without an indicator, very fast computer moves could feel ambiguous. Cheap to include and improves legibility.",
+      "what_breaks_if_wrong": "If omitted, the player can usually still infer turn from board state; minor UX downgrade."
+    },
+    {
+      "id": "A12",
+      "assumption": "Once a cell is played, it cannot be overwritten or undone; the human cannot take back moves.",
+      "confidence": "high",
+      "rationale": "Standard tic-tac-toe rules; undo is not implied by the prompt.",
+      "what_breaks_if_wrong": "If undo was expected, a move-history stack and revert UI would be missing."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "I1",
+      "topic": "Computer opponent strength",
+      "choices": [
+        {
+          "name": "Unbeatable (perfect play, e.g., minimax)",
+          "implication": "Human can at best draw; demonstrates 'real' AI; slightly more logic to implement."
+        },
+        {
+          "name": "Beatable (random or simple heuristic: take win, block win, else random)",
+          "implication": "Human can win sometimes; feels more like a casual game; simpler to implement."
+        }
+      ],
+      "default_branch": "Beatable (simple heuristic: take immediate win, block immediate loss, otherwise pick a reasonable cell)",
+      "importance": "high",
+      "why_inflection": "Cascade depth: shapes core gameplay feel and the AI module's complexity. UX surface: directly determines whether the player ever wins, which is the most visible aspect of the experience. Option asymmetry: a perfect minimax player and a heuristic player differ noticeably in code and in 'fun.' Reversibility: moderately reversible (AI module can be swapped) but the choice colors the whole demo."
+    },
+    {
+      "id": "I2",
+      "topic": "Visual style / presentation",
+      "choices": [
+        {
+          "name": "Minimal/utilitarian (plain grid, system fonts, basic colors)",
+          "implication": "Fastest to build; looks bare but unambiguous."
+        },
+        {
+          "name": "Polished/themed (custom typography, animation on placement, win-line highlight, hover states)",
+          "implication": "More appealing demo; more styling work; subjective taste calls."
+        }
+      ],
+      "default_branch": "Minimal but tidy: clear grid, readable X/O, hover state on empty cells, highlighted winning line on game end.",
+      "importance": "medium",
+      "why_inflection": "UX surface: this is the entire visible artifact of a single-page game, so style choices are highly visible. Cascade depth: low — does not fork logic. Reversibility: easy to restyle later. Option asymmetry: moderate effort difference. Worth flagging because 'good enough' and 'polished' diverge meaningfully and the prompt gives no guidance."
+    }
+  ],
+  "out_of_scope": [
+    "Online/networked multiplayer",
+    "Local pass-and-play two-human mode",
+    "User accounts, login, or profiles",
+    "Persistent score history across sessions or devices",
+    "Difficulty selector / multiple AI difficulty levels (one default difficulty only)",
+    "Choice of symbol or who goes first (fixed: human=X, human goes first)",
+    "Undo / move history / replay",
+    "Sound effects and background music",
+    "Animations beyond simple state transitions (no elaborate motion design)",
+    "Variants of tic-tac-toe (4x4, ultimate, misere, gravity, etc.)",
+    "Mobile-first responsive design and touch-specific tuning",
+    "Internationalization / multiple languages",
+    "Accessibility beyond baseline semantics (no formal WCAG audit committed)",
+    "Analytics, telemetry, or any external network calls",
+    "Backend, database, or server-side logic of any kind"
+  ]
+}

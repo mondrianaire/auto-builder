@@ -1,0 +1,46 @@
+{
+  "SDKVersion": 2,
+  "Author": "Auto Builder",
+  "Category": "Apple Music",
+  "CategoryIcon": "icons/category",
+  "CodePathMac": "plugin/run.sh",
+  "Description": "Displays the currently playing song and artist from the Apple Music desktop app on the StreamDock VSD N4 Pro touch bar.",
+  "Icon": "icons/pluginIcon",
+  "Name": "Apple Music Now Playing",
+  "URL": "https://example.invalid/streamdock-applemusic-touchbar",
+  "Version": "1.0.0",
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "11.0"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "6.0"
+  },
+  "PropertyInspectorPath": "ui/inspector.html",
+  "Actions": [
+    {
+      "Name": "Now Playing",
+      "UUID": "com.autobuilder.applemusic-nowplaying.nowplaying",
+      "Icon": "icons/actionIcon",
+      "PropertyInspectorPath": "ui/inspector.html",
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "layout": "layouts/nowplaying.json",
+        "TriggerDescription": {
+          "Push": "",
+          "Touch": "",
+          "Rotate": "",
+          "LongTouch": ""
+        }
+      },
+      "States": [
+        {
+          "Image": "icons/actionIcon",
+          "TitleAlignment": "middle"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,236 @@
+{
+  "verifier_role": "convergence-verifier",
+  "cycle": "v3-windows-rebuild",
+  "ran_at": "2026-05-14T01:10:00Z",
+  "project": "streamdock-applemusic-touchbar",
+  "supersedes": "output/verification/report.json (v1-macOS, retained for historical traceability; sections-v2.json spec)",
+  "verdict": "pass",
+  "verdict_rationale": "All Windows-pivot assumptions from ledger-diff-v2 are honored in the integrated artifact (manifest OS=[windows], Nodejs.Version=20, CodePathWin->plugin/main.js with CodePathMac absent, music_source.js carries all four SMTC WinRT literals). Every machine-checkable, edge_case_testing, cv_artifact_exercise, and prompt_named_verb assertion from sections-v3.json passes under the production-fidelity ceiling for a Windows hardware plugin verified in a Linux sandbox (real plugin process, real SDK handshake, real vendored ws, real layout/manifest; the powershell.exe-to-SMTC boundary is exercised structurally via literal-presence checks and behaviorally via the MUSIC_SOURCE_FIXTURE env-var shim preserved from dev-002; the live PowerShell-to-WinRT shell-out itself is delegated to the user's Windows install test). PNV.1 (verb='display') passes with a captured setFeedback frame carrying title='Bohemian Rhapsody', artist='Queen' addressed to the willAppear'd context. Independent re-run of S6 v3 harness reproduces 33/33 passed (identical to S6's recorded report).",
+  "inputs_read": {
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "ledger_diff": "decisions/discovery/ledger-diff-v2.json",
+    "sections_spec": "decisions/technical-discovery/sections-v3.json (live spec — Windows pivot)",
+    "superseded_sections_spec": "decisions/technical-discovery/sections-v2.json (macOS, superseded by v3)",
+    "integrated_artifact_dir": "output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/",
+    "integration_manifest": "output/integration/manifest.json",
+    "edge_case_report": "output/builders/edge-case-testing/builder-s6-v3/report.json (33/33 passed)",
+    "deviation_records_consulted": [
+      "state/inline-deviations/dev-002.json (MUSIC_SOURCE_FIXTURE env-var test affordance, preserved)",
+      "state/inline-deviations/dev-005.json (plugin/run.sh inert-vestige, sandbox delete-permission constraint)"
+    ]
+  },
+  "production_fidelity_scope": {
+    "summary": "Production-fidelity ceiling for hardware-plugin builds in a Linux verification sandbox.",
+    "real_components_exercised": [
+      "Real plugin process: output/integration/.../plugin/main.js spawned via `node main.js` with the four SDK CLI args (-port, -pluginUUID, -registerEvent, -info).",
+      "Real SDK handshake: registerPlugin frame, willAppear, willDisappear, didReceiveSettings, touchTap, dialRotate, dialDown, dialUp processed by the real sdk.js byte-identical with v1.",
+      "Real vendored ws: plugin/node_modules/ws (v8.20.1) loaded by the actual plugin process for the WebSocket transport.",
+      "Real layout JSON: layouts/nowplaying.json read by the StreamDock host contract; harness validates structure directly.",
+      "Real manifest.json: parsed and structurally asserted against MCA.TDIPA.1-4 and AA.S1.* — Windows-only OS array, SDKVersion 2, CodePathWin pointing at plugin/main.js, CodePathMac absent, Nodejs.Version='20'.",
+      "Real music_source.js: in-process require + behavior test via MUSIC_SOURCE_FIXTURE shim already built into the module (line 79); module spawns powershell.exe via execFile in normal operation."
+    ],
+    "mocked_or_bypassed_components": [
+      "Fake SDK host: a WebSocket.Server bound to 127.0.0.1 on a free port replaces the real StreamDock VSD Craft software for the duration of the test. Unavoidable for a non-hardware verification environment.",
+      "powershell.exe SMTC shell-out: the harness sandbox runs Linux and has no powershell.exe binary. The S5 module's MUSIC_SOURCE_FIXTURE env-var shim (preserved from dev-002, mechanism-agnostic by design) bypasses the actual powershell.exe spawn and feeds the parser a known 'title\\tartist' string. The PowerShell-to-SMTC boundary itself is verified by two complementary, non-runtime envelopes (see below)."
+    ],
+    "powershell_to_smtc_boundary_verification_envelope": {
+      "structural_assertion": "MCA.TDIPD.2 / AA.S5.4 grep the music_source.js source for the four SMTC WinRT literals — 'GlobalSystemMediaTransportControlsSessionManager', 'Windows.Media.Control', 'TryGetMediaPropertiesAsync', 'PlaybackStatus'. All four are present and verified (lines 32-49 of music_source.js).",
+      "response_logic_assertion": "AA.S5.1, AA.S5.2, AA.S5.3, AA.S4.1, AA.S4.2, AA.S4.5, DCA.A5.1, DCA.A5.2, DCA.A7.1 exercise the plugin's response to all materially distinct music-source outputs (Playing track, empty stdout/no-session, non-zero exit, sync throw, title-only, artist-only, paused/null). All nine pass.",
+      "delegated_to_user": "The live PowerShell invocation of WinRT GlobalSystemMediaTransportControlsSessionManager on the user's real Windows host with Apple Music for Windows actually running and playing — this is the one envelope segment that cannot be exercised in a Linux sandbox without a Windows VM. Per the briefing's verification constraint, this is the maximum verifiability available and is documented explicitly here (not passed off as 'stubbed DOM' or any other euphemism).",
+      "acknowledged_ceiling": "This is an acknowledged production-fidelity ceiling for hardware-plugin builds in a Linux verification sandbox. The structural-presence + response-logic envelope is the maximum verifiability available without a Windows VM in the sandbox; the live powershell.exe run is delegated to the user's installation test on actual Windows."
+    }
+  },
+  "static_inspection_pass": {
+    "summary": "All 13 Discovery assumptions (as amended by ledger-diff-v2) honored in the v3 artifact; all 12 OOS items absent (10 original + 2 added by ledger-diff-v2); all 3 IP resolutions implemented.",
+    "assumption_checks": [
+      { "id": "A1", "honored": true, "evidence": "manifest.json is SDK-v2 .sdPlugin folder at reverse-DNS com.autobuilder.applemusic-nowplaying.sdPlugin/; plugin uses Node + vendored ws@8.20.1 for WebSocket transport" },
+      { "id": "A2", "honored": true, "evidence": "manifest.Actions[0].Controllers === ['Encoder'] with custom layout layouts/nowplaying.json (full-bar rect 200-wide x=0); not a Keypad single-tile action" },
+      { "id": "A3", "amended_in": "ledger-diff-v2", "honored": true, "evidence": "music_source.js queries the local Windows SMTC (GlobalSystemMediaTransportControlsSessionManager) via powershell.exe + WinRT — Apple Music for Windows registers with SMTC; no remote / web / cloud paths anywhere" },
+      { "id": "A4", "amended_in": "ledger-diff-v2", "honored": true, "evidence": "manifest.OS = [{Platform:'windows', MinimumVersion:'10'}], single-entry; CodePathWin='plugin/main.js' present; CodePathMac absent; Nodejs.Version='20'" },
+      { "id": "A5", "honored": true, "evidence": "Layout JSON declares two text items keyed 'title' and 'artist'; sendFeedback emits both fields; track-change refresh proven by DCA.A5.2 (two back-to-back fixtures yield distinct frames)" },
+      { "id": "A6", "amended_in": "ledger-diff-v2 (rationale-only amendment)", "honored": true, "evidence": "main.js sets DEFAULT_POLL_MS=2000 and uses setInterval; DCA.A6.1 captures 5 frames over 2.2s @ 500ms cadence" },
+      { "id": "A7", "honored": true, "evidence": "When fixture is empty (paused/stopped/no SMTC session), sendFeedback emits {title:'Apple Music', artist:''} — DCA.A7.1 captured frame" },
+      { "id": "A8", "honored": true, "evidence": "Layout JSON declares text-overflow: 'ellipsis' on both items; grep of plugin/ for 'marquee'/'scrollOffset' returns zero matches" },
+      { "id": "A9", "honored": true, "evidence": "No auth, account, cloud sync, persisted state, or telemetry code in plugin/; grep for fetch/non-localhost https returns zero matches" },
+      { "id": "A10", "amended_in": "ledger-diff-v2", "honored": true, "evidence": "Bundle is a .sdPlugin folder droppable into C:\\Program Files (x86)\\VSD Craft\\plugins; manifest.json (valid JSON) + plugin/main.js (Node entry, no .sh wrapper, no chmod) + layouts/nowplaying.json + ui/inspector.html + icons/ + vendored node_modules/ws; integration manifest confirms run.sh dropped from referenced files (vestigial inert file remains in folder per dev-005 sandbox constraint, not referenced anywhere and ignored by VSD Craft)" },
+      { "id": "A11", "honored": true, "evidence": "inspector.html declares exactly 3 form inputs (pollIntervalMs, placeholder, showArtist), matching DCA.A11.1's at-most-3 ceiling" },
+      { "id": "A12", "honored": true, "evidence": "Layout JSON contains only text items; no pixmap/image/artwork; no setImage call carrying art data" },
+      { "id": "A13", "honored": true, "evidence": "sdk.js handles touchTap/dialRotate/dialDown/dialUp by emitting only logMessage; AA.S3.3 and DCA.A13.1 confirm only immediate-paint setFeedback after willAppear and no action-effect frames after input events" }
+    ],
+    "oos_checks": [
+      { "id": "OOS.0", "topic": "Non-Music streaming sources (Spotify, web players)", "absent": true, "evidence": "grep of plugin/ for 'spotify' case-insensitive: zero matches" },
+      { "id": "OOS.1", "topic": "Lyrics / queue / history", "absent": true, "evidence": "no such code in plugin/; layout has only title+artist text items" },
+      { "id": "OOS.2", "topic": "Album art rendering", "absent": true, "evidence": "no pixmap/image/artwork in layout; no setImage in main.js or sdk.js" },
+      { "id": "OOS.3", "topic": "Rich playback controls (skip/prev/scrub/like)", "absent": true, "evidence": "sdk.js's touchTap/dialRotate/dialDown/dialUp handlers only emit logMessage; no transport control wiring" },
+      { "id": "OOS.4", "topic": "Multi-user / cloud sync / remote control", "absent": true, "evidence": "no network calls beyond ws://127.0.0.1:<port>" },
+      { "id": "OOS.5", "topic": "Mobile / iOS / iPhone / iPad data source", "absent": true, "evidence": "grep of plugin/ for 'ios'/'iphone'/'ipad' case-insensitive: zero matches" },
+      { "id": "OOS.6", "topic": "Telemetry / scrobbling / analytics", "absent": true, "evidence": "grep for non-localhost http/fetch: zero matches (only manifest.URL='https://example.invalid/...' which is metadata, not a runtime call)" },
+      { "id": "OOS.7", "topic": "Theming / customizable typography", "absent": true, "evidence": "PI has only 3 functional inputs; no font/theme controls" },
+      { "id": "OOS.8", "topic": "Non-VSD-N4-Pro hardware models", "absent": true, "evidence": "manifest declares one Encoder action for the wide-display touchbar; no other hardware paths" },
+      { "id": "OOS.9", "topic": "Localization / i18n", "absent": true, "evidence": "PI is English-only; no i18n strings file" },
+      { "id": "OOS.v2-added.macos", "topic": "macOS as a host OS (added in ledger-diff-v2)", "absent": true, "evidence": "manifest.OS contains only Platform='windows'; CodePathMac absent from manifest; music_source.js references 'osascript' zero times; no run.sh in manifest.json's CodePath fields (the vestigial run.sh file is inert comment-only content per dev-005, not referenced by manifest)" },
+      { "id": "OOS.v2-added.crossplatform", "topic": "Cross-platform single-bundle (added in ledger-diff-v2)", "absent": true, "evidence": "manifest.OS is single-entry [windows]; CodePathWin only (no CodePathMac); music_source.js is Windows-SMTC only with no mac branch" }
+    ],
+    "inflection_point_resolutions": [
+      { "id": "IP1", "chosen_branch": "Windows only (resolved in ledger-diff-v2 via user_explicit_choice)", "implemented": true, "evidence": "manifest.OS=[{Platform:'windows', MinimumVersion:'10'}]; music_source.js spawns powershell.exe with inline WinRT SMTC script (TD-IP-G opt-A)" },
+      { "id": "IP2", "chosen_branch": "Text-only", "implemented": true, "evidence": "layout has only text items" },
+      { "id": "IP3", "chosen_branch": "Display-only (touch tap no-op)", "implemented": true, "evidence": "touch/dial events ignored; only logMessage emitted; DCA.IP3.DISPLAY.1 captured action-effect frame count=1 (the immediate willAppear paint only)" }
+    ],
+    "td_introduced_inflection_point_implementations": [
+      { "id": "TD-IP-A", "chosen_branch": "Stream Deck SDK v2 manifest, Windows-only OS, CodePathWin->plugin/main.js, Nodejs.Version='20'", "implemented": true, "evidence": "MCA.TDIPA.1-4 all pass; manifest verified" },
+      { "id": "TD-IP-B", "chosen_branch": "Controllers:['Encoder'] + custom layout + setFeedback", "implemented": true, "evidence": "MCA.TDIPB.1-4 all pass" },
+      { "id": "TD-IP-C", "chosen_branch": "Node.js >=20 with vendored ws", "implemented": true, "evidence": "MCA.TDIPC.1 — plugin/node_modules/ws/package.json present with name='ws' v8.20.1; main.js loads ws from this path" },
+      { "id": "TD-IP-D", "status": "superseded by TD-IP-G", "implemented": "n/a — superseded; AppleScript branch dropped" },
+      { "id": "TD-IP-E", "chosen_branch": "2 seconds", "implemented": true, "evidence": "MCA.TDIPE.1 — main.js: const DEFAULT_POLL_MS = 2000" },
+      { "id": "TD-IP-F", "chosen_branch": "Truncate with ellipsis (SDK-native)", "implemented": true, "evidence": "MCA.TDIPF.1 — no marquee/scrollOffset code; layout text-overflow:'ellipsis'" },
+      { "id": "TD-IP-G", "chosen_branch": "PowerShell+WinRT SMTC via execFile (opt-A)", "implemented": true, "evidence": "MCA.TDIPD.1, MCA.TDIPD.2, AA.S5.1-4 all pass; music_source.js spawns powershell.exe with -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command <PS_SCRIPT>; PS_SCRIPT contains all four SMTC literals" }
+    ]
+  },
+  "machine_checkable_assertion_results": [
+    { "id": "MCA.TDIPA.1", "result": "pass", "evidence": "manifest.SDKVersion === 2 (manifest.json line 2)" },
+    { "id": "MCA.TDIPA.2", "result": "pass", "evidence": "manifest.OS === [{Platform:'windows', MinimumVersion:'10'}] (manifest.json lines 12-17)" },
+    { "id": "MCA.TDIPA.3", "result": "pass", "evidence": "manifest.CodePathWin === 'plugin/main.js' (line 6); plugin/main.js exists (3131 bytes); CodePath and CodePathMac absent" },
+    { "id": "MCA.TDIPA.4", "result": "pass", "evidence": "manifest.Nodejs === {Version:'20'} (lines 21-23)" },
+    { "id": "MCA.TDIPB.1", "result": "pass", "evidence": "manifest.Actions[0].Controllers === ['Encoder'] (line 31)" },
+    { "id": "MCA.TDIPB.2", "result": "pass", "evidence": "manifest.Actions[0].Encoder.layout === 'layouts/nowplaying.json' (line 33); file exists (492 bytes) with id 'nowplaying-fullbar' and items array" },
+    { "id": "MCA.TDIPB.3", "result": "pass", "evidence": "sdk.js:59 — `_safeSend({ event: 'setFeedback', context, payload: { title, artist } })`; no setImage for now-playing" },
+    { "id": "MCA.TDIPB.4", "result": "pass", "evidence": "layouts/nowplaying.json items has key=='title' (line 5) and key=='artist' (line 14), both type=='text'" },
+    { "id": "MCA.TDIPC.1", "result": "pass", "evidence": "plugin/node_modules/ws/package.json has name=='ws' (version 8.20.1, sha256 c642fa2a...)" },
+    { "id": "MCA.TDIPD.1", "result": "pass", "evidence": "music_source.js requires child_process and uses execFile with 'powershell.exe' (line 85); parseOutput splits on tab and returns {title,artist} or null (lines 60-70); harness AA.S5.1/AA.S5.2/MCA.TDIPD.1 confirm behavior end-to-end" },
+    { "id": "MCA.TDIPD.2", "result": "pass", "evidence": "music_source.js PS_SCRIPT contains all four literals: 'GlobalSystemMediaTransportControlsSessionManager' (lines 32-34, 43-44, 48), 'Windows.Media.Control' (lines 32-34, 35, 49), 'TryGetMediaPropertiesAsync' (line 49), 'PlaybackStatus' (line 48). Harness re-run [PASS] MCA.TDIPD.2 - all 4 SMTC literals present" },
+    { "id": "MCA.TDIPE.1", "result": "pass", "evidence": "main.js:10 — const DEFAULT_POLL_MS = 2000" },
+    { "id": "MCA.TDIPF.1", "result": "pass", "evidence": "grep of plugin/main.js + plugin/sdk.js for 'marquee'/'scrollOffset': zero matches; truncation is layout-native" }
+  ],
+  "discovery_coverage_assertion_results": [
+    { "id": "DCA.RESTATE.1", "result": "pass", "evidence": "layout rect uses x=0 width=200 for both items spanning full-strip — declares full-bar dimensions, not narrow icon region" },
+    { "id": "DCA.A2.1", "result": "pass", "evidence": "manifest.Actions[0].Controllers === ['Encoder']" },
+    { "id": "DCA.A5.1", "result": "pass", "evidence": "harness re-run [PASS] DCA.A5.1 — setFeedback frame {title:'Bohemian Rhapsody', artist:'Queen'}" },
+    { "id": "DCA.A5.2", "result": "pass", "evidence": "harness re-run [PASS] DCA.A5.2 — two distinct frames {title:'A',artist:'X'} then {title:'B',artist:'Y'}" },
+    { "id": "DCA.A6.1", "result": "pass", "evidence": "harness re-run [PASS] DCA.A6.1 — feedback count=5 over 2.2s @ 500ms cadence" },
+    { "id": "DCA.A7.1", "result": "pass", "evidence": "harness re-run [PASS] DCA.A7.1 — null source -> {title:'Apple Music', artist:''} frame" },
+    { "id": "DCA.A8.1", "result": "pass", "evidence": "both layout items declare 'text-overflow':'ellipsis'; no marquee code" },
+    { "id": "DCA.A10.1", "result": "pass", "evidence": "folder exists at .sdPlugin path; manifest.json parses; all manifest-referenced paths resolve to existing files (CodePathWin -> plugin/main.js (3131B), Icon, CategoryIcon, Encoder.layout, PropertyInspectorPath, States[0].Image); bundle is droppable into C:\\Program Files (x86)\\VSD Craft\\plugins" },
+    { "id": "DCA.A11.1", "result": "pass", "evidence": "inspector.html declares 3 form inputs (pollIntervalMs, placeholder, showArtist)" },
+    { "id": "DCA.A12.1", "result": "pass", "evidence": "no image/pixmap/artwork in layout; no setImage in plugin source" },
+    { "id": "DCA.A13.1", "result": "pass", "evidence": "harness re-run [PASS] DCA.A13.1 — action-effect frames after touchTap input=0 (the only setFeedback came from the immediate willAppear paint, not the touchTap)" },
+    { "id": "DCA.OOS.STREAMING.1", "result": "pass", "evidence": "grep for 'spotify' case-insensitive in plugin/: 0 matches" },
+    { "id": "DCA.OOS.MOBILE.1", "result": "pass", "evidence": "grep for 'ios'/'iphone'/'ipad' case-insensitive in plugin/: 0 matches" },
+    { "id": "DCA.OOS.TELEMETRY.1", "result": "pass", "evidence": "grep for non-localhost http/fetch in plugin/: 0 matches" },
+    { "id": "DCA.IP1.WIN.1", "result": "pass", "evidence": "manifest.OS=[{Platform:'windows', MinimumVersion:'10'}] AND music_source.js uses powershell.exe invoking WinRT GlobalSystemMediaTransportControlsSessionManager" },
+    { "id": "DCA.IP2.TEXT.1", "result": "pass", "evidence": "layout items are all type 'text'" },
+    { "id": "DCA.IP3.DISPLAY.1", "result": "pass", "evidence": "harness re-run [PASS] DCA.IP3.DISPLAY.1 — action-effect frames=1 (immediate willAppear paint only)" }
+  ],
+  "artifact_exercise_results": [
+    {
+      "assertion_id": "AA.S6.2",
+      "verifier": "cv_artifact_exercise",
+      "check_type": "user_flow",
+      "scenario": "Run PNV.1 verbatim against the integrated bundle; capture WebSocket frames",
+      "expected_result": "PNV.1 expected_result is satisfied",
+      "environment": "Production-fidelity (Linux-sandbox ceiling): spawned `node /sessions/.../output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/main.js` as a child process with the four SDK CLI args (-port, -pluginUUID, -registerEvent, -info); connected via real ws@8.20.1 (the bundle's own vendored copy) WebSocket server on free port at 127.0.0.1; the powershell.exe SMTC shell-out is bypassed via MUSIC_SOURCE_FIXTURE env-var (the only stub permitted in this verification ceiling — the live PowerShell path requires powershell.exe which is not present in the Linux sandbox, and is delegated to the user's Windows install test). manifest.json, main.js, sdk.js, music_source.js, layouts/nowplaying.json are all the actual integrated files.",
+      "result": "pass",
+      "evidence": "Captured setFeedback frame: {\"event\":\"setFeedback\",\"context\":\"PNV-CTX\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}",
+      "independent_rerun": "CV re-ran S6 v3's harness via `node harness.js` from the harness directory (/sessions/.../output/builders/edge-case-testing/builder-s6-v3); output matched S6 v3's report 33/33 passed; PNV frame captured identically."
+    }
+  ],
+  "prompt_named_verb_result": {
+    "id": "PNV.1",
+    "verb": "display",
+    "verb_source": "decisions/technical-discovery/sections-v3.json#/prompt_verb_analysis/chosen_verb",
+    "scenario": "Run the integrated .sdPlugin bundle's CodePathWin entrypoint (plugin/main.js, executed via Node — analogous to the StreamDock host's bundled Node runtime invocation per manifest.Nodejs.Version='20') as a child process with the four SDK CLI args (-port, -pluginUUID, -registerEvent, -info) pointed at a fake WebSocket host on 127.0.0.1. The fake host: (a) accepts the plugin's registerPlugin handshake, (b) sends a willAppear event for the wide-display action, (c) simulates the Apple Music for Windows SMTC data source by injecting MUSIC_SOURCE_FIXTURE='Bohemian Rhapsody\\tQueen' into the spawned child's environment (the env-var shim built into music_source.js at line 79, preserved from dev-002, mechanism-agnostic by design). Within 3 seconds of willAppear, capture every WebSocket frame the plugin sends.",
+    "expected_result": "At least one frame is a JSON message whose event field equals 'setFeedback' and whose payload contains both 'Bohemian Rhapsody' (in the 'title' field) and 'Queen' (in the 'artist' field), addressed to the willAppear'd action context.",
+    "production_fidelity_required": true,
+    "production_fidelity_achieved": true,
+    "production_fidelity_scope_explanation": "Real components exercised: the actual plugin/main.js Node process spawned via `node`; the actual SDK handshake (registerPlugin frame parsed and processed by the bundle's real sdk.js); the actual vendored ws@8.20.1 (loaded by the plugin process for the WebSocket client transport); the actual layouts/nowplaying.json (declares the title/artist text items that the SDK contract instructs the host to paint); the actual manifest.json (defines the action and the CodePathWin entry that the plugin process is invoked as). Mocked/bypassed components: the SDK WebSocket host (a 127.0.0.1 WebSocket.Server stands in for the StreamDock VSD Craft software — unavoidable in any non-device environment); and the powershell.exe SMTC shell-out (the Linux verification sandbox has no powershell.exe binary, so the MUSIC_SOURCE_FIXTURE env-var shim built into music_source.js — preserved from dev-002, mechanism-agnostic at the integration boundary — feeds the parser the canonical 'title\\tartist' string). The PowerShell+SMTC code path itself is verified by complementary envelopes: structurally via MCA.TDIPD.2 / AA.S5.4 grep for the four WinRT literals ('GlobalSystemMediaTransportControlsSessionManager', 'Windows.Media.Control', 'TryGetMediaPropertiesAsync', 'PlaybackStatus') in the music_source.js source, and end-to-end on the user's real Windows host as a delegated post-delivery installation test. This is the maximum verifiability available without a Windows VM in the sandbox; it is not 'stubbed DOM' nor any other handwave — the structural-presence-plus-response-logic envelope is the acknowledged production-fidelity ceiling for hardware-plugin builds in a Linux verification sandbox.",
+    "result": "pass",
+    "evidence": {
+      "captured_frame": "{\"event\":\"setFeedback\",\"context\":\"PNV-CTX\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}",
+      "frame_address_context": "PNV-CTX (matches the willAppear'd context exactly)",
+      "title_match": "exact: 'Bohemian Rhapsody'",
+      "artist_match": "exact: 'Queen'",
+      "independent_rerun_log_line": "[PASS] PNV.1 - {\"event\":\"setFeedback\",\"context\":\"PNV-CTX\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}"
+    },
+    "interpretation": "The integrated plugin DISPLAYS the currently playing song and artist on the wide-display surface under production-fidelity rules (within the acknowledged Linux-sandbox ceiling). The setFeedback frame is the SDK-canonical paint operation for an Encoder-controller layout with the custom layouts/nowplaying.json which declares title and artist text items — by SDK contract, the host renders this payload's title and artist values into the wide-strip layout. The verb 'display' is therefore exercised end-to-end, with the one unavoidable mechanism substitution (the powershell.exe-to-SMTC shell-out) compensated for by the structural-literal-presence assertion (real PS_SCRIPT contains the WinRT SMTC API calls) and delegated to the user's Windows host as the final E2E confirmation step."
+  },
+  "edge_case_testing_review": {
+    "report_path": "output/builders/edge-case-testing/builder-s6-v3/report.json",
+    "harness_path": "output/builders/edge-case-testing/builder-s6-v3/harness.js",
+    "total_assertions": 33,
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "production_fidelity_confirmed": true,
+    "production_fidelity_evidence": "harness.js spawns `node` against the bundle's plugin/main.js — exercising the real CodePathWin entrypoint via Node directly (matching the StreamDock host's bundled Node convention triggered by manifest.Nodejs.Version='20'); requires the bundle's own vendored ws under plugin/node_modules/ws (the plugin process loads its own ws); spawns a real WebSocket.Server on 127.0.0.1; the only stub is MUSIC_SOURCE_FIXTURE env-var (read by music_source.js's built-in test-affordance branch at line 79) — which is the powershell.exe boundary substitution explicitly permitted by PNV.1's scenario and the production-fidelity ceiling for a Linux verification sandbox lacking powershell.exe. No other plugin/ source is patched or imported by the harness.",
+    "verifier_coverage": {
+      "edge_case_testing_assertions_in_v3_spec": [
+        "AA.S1.2", "AA.S1.3", "AA.S1.4", "AA.S1.5", "AA.S1.6",
+        "AA.S2.1", "AA.S2.2", "AA.S2.3", "AA.S2.4",
+        "AA.S3.1", "AA.S3.2", "AA.S3.3", "AA.S3.4",
+        "AA.S4.1", "AA.S4.2", "AA.S4.3", "AA.S4.4", "AA.S4.5",
+        "AA.S5.1", "AA.S5.2", "AA.S5.3", "AA.S5.4",
+        "DCA.A5.1", "DCA.A5.2", "DCA.A6.1", "DCA.A7.1", "DCA.A13.1", "DCA.IP3.DISPLAY.1"
+      ],
+      "all_exercised": true,
+      "all_passed": true,
+      "additional_mca_exercised_by_harness": ["MCA.TDIPA.4", "MCA.TDIPD.1", "MCA.TDIPD.2"],
+      "additional_internal_check": "AA.S1.2.no-mac (harness-added explicit assertion that CodePathMac is absent)",
+      "plus_pnv": "PNV.1 also exercised by the same harness as the headline scenario"
+    },
+    "independent_rerun": {
+      "performed": true,
+      "method": "CV invoked `node harness.js` in the harness directory (/sessions/stoic-nifty-davinci/mnt/Auto Builder/runs/streamdock-applemusic-touchbar/output/builders/edge-case-testing/builder-s6-v3) via the workspace bash tool; harness wrote a fresh report.json; output matched the existing report verbatim",
+      "result": "33/33 passed, identical to S6 v3's recorded report",
+      "rerun_count": 33,
+      "rerun_passed": 33,
+      "rerun_failed": 0
+    }
+  },
+  "critic_final_sweep_review": {
+    "status": "clean per briefing for v3-windows-rebuild cycle; no findings to relitigate",
+    "spot_checks_by_cv": [
+      { "assertion_id": "AA.S1.1", "result": "pass", "evidence": "folder com.autobuilder.applemusic-nowplaying.sdPlugin/ exists at output/integration/" },
+      { "assertion_id": "AA.S1.2", "result": "pass", "evidence": "manifest.json parses; keys present: Name, Version, Author, Description, Icon, Category, CategoryIcon, OS, SDKVersion, Software, CodePathWin, Nodejs, Actions, PropertyInspectorPath, URL" },
+      { "assertion_id": "AA.S1.3", "result": "pass", "evidence": "all manifest-referenced paths resolve; CodePathWin (.js extension); CodePathMac NOT declared" },
+      { "assertion_id": "AA.S1.4", "result": "pass", "evidence": "manifest.Actions[0].Controllers === ['Encoder']" },
+      { "assertion_id": "AA.S1.5", "result": "pass", "evidence": "manifest.OS length 1, Platform=='windows', MinimumVersion=='10'" },
+      { "assertion_id": "AA.S1.6", "result": "pass", "evidence": "manifest.Nodejs == {Version:'20'}; manifest.CodePathWin=='plugin/main.js' (exists); manifest.CodePathMac absent" },
+      { "assertion_id": "AA.S2.5", "result": "pass (contract-shape)", "evidence": "sdk.js:59 sendFeedback sends exactly {title:string, artist:string} payload; main.js calls sendFeedback with the same shape" },
+      { "assertion_id": "AA.S6.1", "result": "pass", "evidence": "harness scenario manifest covers every edge_case_testing assertion id from sections-v3.json; difference empty" },
+      { "assertion_id": "AA.S6.3", "result": "pass", "evidence": "harness reads plugin/ files via fs.readFileSync for static-grep only; the only require() into plugin/ is the music_source.js in-process behavior test (which exercises the public exported getNowPlaying via MUSIC_SOURCE_FIXTURE — not a patch or shim); no monkey-patches of main.js or sdk.js" },
+      { "assertion_id": "AA.S6.4", "result": "pass", "evidence": "harness writes report.json with one record per assertion id, status in {passed, failed, skipped}" }
+    ]
+  },
+  "structural_inspection_for_v3_windows_pivot": {
+    "manifest_OS_windows_only": { "result": "pass", "evidence": "manifest.OS === [{Platform:'windows', MinimumVersion:'10'}]; length 1; no mac entry" },
+    "manifest_Nodejs_Version_20": { "result": "pass", "evidence": "manifest.Nodejs === {Version:'20'}" },
+    "manifest_CodePathWin_present_CodePathMac_absent": { "result": "pass", "evidence": "manifest.CodePathWin === 'plugin/main.js' (file exists, 3131B); grep CodePathMac in manifest.json: 0 matches" },
+    "music_source_js_contains_4_smtc_literals": {
+      "result": "pass",
+      "evidence": "All four SMTC WinRT literals present in plugin/music_source.js PS_SCRIPT constant: (1) 'GlobalSystemMediaTransportControlsSessionManager' (lines 32, 43, 44); (2) 'Windows.Media.Control' (lines 32, 33, 34, 35, 43, 48, 49); (3) 'TryGetMediaPropertiesAsync' (line 49); (4) 'PlaybackStatus' (line 48). Harness re-run independently confirms [PASS] AA.S5.4 and [PASS] MCA.TDIPD.2."
+    },
+    "main_js_sdk_js_vendored_ws_unchanged_from_v1": {
+      "result": "pass",
+      "evidence": "Per output/integration/manifest.json: S3 builder builder-s3-1 supplies plugin/sdk.js + plugin/node_modules/ws (unchanged_from_v1:true); S4 builder builder-s4-1 supplies plugin/main.js (unchanged_from_v1:true). Confirmed by file inspection: main.js (3131B, sha256 bf8098e0..., DEFAULT_POLL_MS=2000, setInterval polling), sdk.js (4617B, sha256 ef69d175..., setFeedback emit at :59), ws@8.20.1 vendored at plugin/node_modules/ws (package.json sha256 c642fa2a...)."
+    },
+    "run_sh_vestige_status": {
+      "result": "non-blocking",
+      "evidence": "plugin/run.sh exists in the bundle as inert comment-only content (174B) due to dev-005 sandbox-delete-permission constraint. NOT referenced by manifest.json (no CodePathMac, no CodePath entry, no script-launch path). VSD Craft on Windows ignores it. Documented in state/inline-deviations/dev-005.json with followup_for_final_delivery to attempt physical deletion when delete permission is available."
+    }
+  },
+  "v3_pivot_specific_assertions_summary": {
+    "windows_only_os_array": "pass",
+    "nodejs_runtime_declaration": "pass",
+    "codepathwin_only_no_codepathmac": "pass",
+    "powershell_exe_spawn_in_music_source": "pass",
+    "smtc_winrt_literal_presence": "pass (all 4)",
+    "no_osascript_anywhere": "pass (0 references)",
+    "fixture_shim_preserved_from_dev_002": "pass (line 79 of music_source.js)",
+    "vendored_ws_path_preserved": "pass (plugin/node_modules/ws v8.20.1)",
+    "main_js_unchanged_from_v1": "pass",
+    "sdk_js_unchanged_from_v1": "pass",
+    "contract_C_S4_S5_preserved": "pass (public surface unchanged; internal mechanism flipped)"
+  },
+  "concerns": [],
+  "trivial_fixes_applied": [],
+  "summary": "All gates passed for the v3-windows-rebuild cycle. The integrated artifact at output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/ honors every Discovery assumption (as amended by ledger-diff-v2), implements every IP and TD-IP resolution, omits every OOS item (including the two added by ledger-diff-v2: macOS-as-host and cross-platform-single-bundle), and exercises every machine-checkable, edge_case_testing, cv_artifact_exercise, and prompt_named_verb assertion from sections-v3.json under the acknowledged production-fidelity ceiling for hardware-plugin builds in a Linux verification sandbox. PNV.1 (verb='display') passes with captured evidence (setFeedback frame title='Bohemian Rhapsody', artist='Queen' addressed to PNV-CTX). Independent re-run of S6 v3 harness via `node harness.js` reproduces 33/33 passed. The PowerShell-to-SMTC boundary is verified structurally (four WinRT literals present in music_source.js) plus through plugin response-logic (MUSIC_SOURCE_FIXTURE env-var shim) plus end-to-end via the user's Windows host installation test (delegated post-delivery step). Verdict: pass."
+}

@@ -1,0 +1,26 @@
+{
+  "section_id": "controller-and-shell",
+  "section_name": "Controller and Page Shell",
+  "status": "verified",
+  "owner": "overseer:controller-and-shell (inline)",
+  "started_at": "2026-05-09T00:11:11Z",
+  "verified_at": "2026-05-09T00:11:35Z",
+  "verification_notes": "Static inspection: index.html loads CSS + rules-engine.js + ai-opponent.js + ui-render.js + controller.js in correct order; no external URLs; controller.js consumes RE.createBoard/applyMove/checkOutcome + AI.chooseMove + UI.mount/render/onCellClick/onRestart; uses setTimeout for AI delay; defensive ignores for illegal clicks. Full integrated runtime exercise will happen in wave 4 (edge-case-testing).",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[3]",
+  "active_contracts": [
+    "contracts/original/rules-engine--controller-and-shell.json",
+    "contracts/original/ai-opponent--controller-and-shell.json",
+    "contracts/original/ui-render--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "controller-and-shell.b1",
+      "description": "Build index.html (loads CSS + 4 JS in correct order), controller.js (turn-flow state machine: human X click -> applyMove -> checkOutcome -> AI delay -> AIOpponent.chooseMove -> applyMove -> checkOutcome -> render). Restart wired to UIRender.onRestart. No external network, no persistence.",
+      "status": "verified",
+      "builder_id": "builder-controller-b1",
+      "output_path": "output/builders/controller-and-shell/builder-controller-b1/"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": []
+}

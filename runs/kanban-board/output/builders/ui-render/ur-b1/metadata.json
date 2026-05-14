@@ -1,0 +1,8 @@
+{
+  "builder_id": "ur-b1",
+  "section": "ui-render",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": ["mountRenderer(rootEl, stateModel) -> {unmount, rerender}"],
+  "contracts_honored": ["state-model--ui-render", "ui-render--dnd", "ui-render--interactions", "ui-render--integration"]
+}

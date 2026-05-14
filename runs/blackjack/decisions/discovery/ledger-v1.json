@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:00:00Z",
+  "project_name": "blackjack-web-app",
+  "restatement": "Build a single-page web application that lets a user play the card game blackjack against a computer dealer in their browser. The user prompt names blackjack as the game and 'web app' as the form factor; everything else (rules variant, visual style, persistence, multiplayer, accounts, money) is unspecified and will default to the simplest standalone single-player experience that demonstrably plays blackjack end-to-end.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "Single human player versus a computer dealer; no multiplayer, no other seats at the table.",
+      "confidence": "high",
+      "rationale": "Prompt says 'play blackjack' (singular) with no mention of opponents, friends, or other players. Casino blackjack is canonically player-vs-dealer; adding multiplayer would be extra scope the prompt never asked for.",
+      "what_breaks_if_wrong": "If the user actually wanted multiplayer, the entire turn-management, networking, and state-sync layer would be missing — a near-total rebuild."
+    },
+    {
+      "id": "A2",
+      "assumption": "Runs entirely client-side in the browser with no backend server, no database, and no API calls.",
+      "confidence": "high",
+      "rationale": "Blackjack requires no server-side logic to play locally. Prompt does not mention accounts, leaderboards, or persistence. A static front-end is the simplest defensible interpretation of 'web app' for this game.",
+      "what_breaks_if_wrong": "If persistence, accounts, or anti-cheat were required, the architecture would need a server, database, and auth system — none of which are in scope here."
+    },
+    {
+      "id": "A3",
+      "assumption": "No user accounts, login, or authentication of any kind. Anyone who opens the page can play.",
+      "confidence": "high",
+      "rationale": "Prompt is silent on identity. Auth is a heavy addition that 'play blackjack' does not imply. Default to anonymous, open access.",
+      "what_breaks_if_wrong": "Per-user history, friend lists, or cross-device profiles would be impossible without rework."
+    },
+    {
+      "id": "A4",
+      "assumption": "Play money only — chips/credits that exist purely within the session, never real currency and never any payment integration.",
+      "confidence": "high",
+      "rationale": "Prompt does not mention money, gambling, or payments. Real-money gambling triggers regulatory, legal, and integration burdens that are wildly out of proportion with a one-line prompt.",
+      "what_breaks_if_wrong": "If the user wanted real-money play, the entire compliance, KYC, and payments stack would be missing — but more importantly, this is a hard 'do not assume' line."
+    },
+    {
+      "id": "A5",
+      "assumption": "Standard casino blackjack rules with sensible defaults: dealer hits on soft 17 or stands on 17 (TD picks one and documents it), blackjack pays 3:2, player can hit/stand/double-down/split, no insurance or surrender required for v1.",
+      "confidence": "medium",
+      "rationale": "Prompt names the game by its common name without specifying a variant. The set above is what most people picture as 'blackjack'. Insurance and surrender are commonly omitted in casual implementations and add UI states without changing the core loop.",
+      "what_breaks_if_wrong": "If a specific variant (e.g., Spanish 21, Vegas Strip rules, European no-hole-card) was intended, rule logic would need adjustment — but the core engine shape stays the same."
+    },
+    {
+      "id": "A6",
+      "assumption": "A standard 52-card deck, shuffled fresh for each hand (or each session). No card counting concerns, no shoe management exposed to the user.",
+      "confidence": "medium",
+      "rationale": "Simplest defensible deck model. Multi-deck shoes and persistent shoe state are casino realism the prompt does not require.",
+      "what_breaks_if_wrong": "Card-counting practice tools or realistic casino simulation would need a shoe model — but those are different products."
+    },
+    {
+      "id": "A7",
+      "assumption": "The player starts each session with a fixed pool of play chips (e.g., 1000) and bets per hand. If they go bust they can reset.",
+      "confidence": "medium",
+      "rationale": "Blackjack with no betting is just card-flipping; betting is part of what makes it the game. A fixed starting pool with reset is the simplest betting loop. Exact amount is a TD/Builder detail.",
+      "what_breaks_if_wrong": "If the user wanted no betting at all (pure rules trainer), the betting UI would be unnecessary scope. If they wanted persistent bankroll across sessions, A2's no-persistence assumption blocks it."
+    },
+    {
+      "id": "A8",
+      "assumption": "Desktop-first responsive layout that also works on a phone in portrait, but is not designed mobile-first or as a PWA.",
+      "confidence": "medium",
+      "rationale": "Prompt says 'web app' with no mention of mobile, touch, or installability. Desktop-first is the historical default for card games on the web. Basic responsiveness costs little; full mobile-first design is extra scope.",
+      "what_breaks_if_wrong": "If the user wanted a phone-first, install-to-home-screen experience, viewport priorities and asset choices would need to flip."
+    },
+    {
+      "id": "A9",
+      "assumption": "Visual presentation is a recognizable card-table metaphor: cards rendered as cards (rank + suit), dealer area, player area, chip count, action buttons. No 3D, no animated dealer character, no voice.",
+      "confidence": "medium",
+      "rationale": "Cheapest visual that reads as 'blackjack'. Anything richer is unprompted scope.",
+      "what_breaks_if_wrong": "If the user wanted a stylized themed experience (e.g., neon, pixel-art, animated dealer), aesthetic direction would need a redo — but the underlying engine is unaffected."
+    },
+    {
+      "id": "A10",
+      "assumption": "Dealer plays automatically by fixed-rule logic (no AI, no difficulty levels). The player just plays their own hand.",
+      "confidence": "high",
+      "rationale": "Casino blackjack dealers play by deterministic rule; that is the canonical behavior. 'Difficulty' isn't a real concept in dealer play.",
+      "what_breaks_if_wrong": "Almost nothing — this is one of the most settled aspects of the game."
+    },
+    {
+      "id": "A11",
+      "assumption": "English-language UI only, no localization, no accessibility-beyond-basics. Standard semantic HTML and reasonable contrast are expected; full WCAG AA conformance is not a v1 goal but should not be actively undermined.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on language and a11y. English + sensible defaults is the simplest baseline. Active a11y work is real engineering scope.",
+      "what_breaks_if_wrong": "If a11y was a hard requirement, retrofit cost is meaningful but not catastrophic; if localization was required, copy and layout work would expand."
+    },
+    {
+      "id": "A12",
+      "assumption": "Single-page app with no routing, no separate screens beyond the table itself plus minor overlays (rules help, game-over modal). No settings page, no profile, no history view.",
+      "confidence": "medium",
+      "rationale": "The named goal is 'play blackjack', singular. One screen accomplishes it.",
+      "what_breaks_if_wrong": "Adding views later is straightforward; this assumption mostly bounds Builder from inventing screens that weren't asked for."
+    },
+    {
+      "id": "A13",
+      "assumption": "No sound effects or music in v1.",
+      "confidence": "medium",
+      "rationale": "Audio is unprompted, requires asset sourcing/licensing, and adds autoplay-policy and mute-control UX. Visual feedback alone can carry the game.",
+      "what_breaks_if_wrong": "Adding audio later is a scoped addition, not a rewrite."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Betting model: fixed starting bankroll with reset, vs. no betting at all (pure rules play).",
+      "choices": [
+        "Bankroll + per-hand bets (chip UI, win/lose payout, bust-and-reset)",
+        "No betting — every hand is just play, win/loss is informational only"
+      ],
+      "default_branch": "Bankroll + per-hand bets",
+      "importance": "medium",
+      "why_inflection": "Cascade depth is moderate (chip UI, bet selection, payout logic, game-over state all hinge on this). Reversibility is fine if caught early. UX surface is large — bet sizing is a visible interaction every hand. Option asymmetry: bankroll path is the conventional blackjack experience and what most people mean by 'play blackjack'; no-betting is genuinely simpler but arguably not the full game."
+    },
+    {
+      "id": "IP2",
+      "topic": "Hand actions surface: minimal (hit / stand only) vs. full table (hit / stand / double / split, with insurance/surrender omitted).",
+      "choices": [
+        "Minimal — hit and stand only",
+        "Full common actions — hit, stand, double-down, split"
+      ],
+      "default_branch": "Full common actions (hit, stand, double, split)",
+      "importance": "medium",
+      "why_inflection": "Cascade depth: split in particular forks hand-state into multiple parallel hands, which is real engine complexity. UX surface: visible buttons and hand layout. Reversibility: adding split later means reworking hand-state model. Option asymmetry: minimal is much cheaper to build but a player who knows blackjack will immediately notice missing actions and judge it incomplete."
+    }
+  ],
+  "out_of_scope": [
+    "Multiplayer or multi-seat tables",
+    "Real money, payments, or any gambling integration",
+    "User accounts, login, or social features",
+    "Persistent bankroll, statistics, or history across sessions or devices",
+    "Leaderboards or competitive ranking",
+    "Backend server, database, or API",
+    "AI-driven dealer, opponent personalities, or adjustable difficulty",
+    "Card-counting trainer, strategy hints, or basic-strategy coaching",
+    "Other card games (poker, baccarat, solitaire) or other blackjack variants beyond standard rules",
+    "Insurance, surrender, side bets, or progressive jackpots in v1",
+    "Native mobile app, PWA installability, or offline support",
+    "Sound effects, music, or voice",
+    "Localization or multi-language support",
+    "Animated 3D dealer, casino environment, or immersive theming",
+    "Email, share-to-social, or invite-a-friend flows"
+  ]
+}

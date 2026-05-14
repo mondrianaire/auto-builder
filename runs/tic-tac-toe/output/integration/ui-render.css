@@ -1,0 +1,143 @@
+/*
+ * ui-render.css
+ *
+ * Minimal-but-tidy presentation per inflection I2.
+ * Owns the visual spec only; no game logic.
+ */
+
+:root {
+  --ttt-bg: #fafafa;
+  --ttt-fg: #1f2328;
+  --ttt-muted: #6e7781;
+  --ttt-cell-bg: #ffffff;
+  --ttt-cell-bg-hover: #eef2ff;
+  --ttt-cell-border: #d0d7de;
+  --ttt-x: #2563eb;
+  --ttt-o: #dc2626;
+  --ttt-win-bg: #fff8c5;
+  --ttt-win-border: #d4a72c;
+  --ttt-button-bg: #1f2328;
+  --ttt-button-fg: #ffffff;
+  --ttt-button-bg-hover: #3a4048;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--ttt-bg);
+  color: var(--ttt-fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ttt-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+.ttt-status {
+  font-size: 18px;
+  font-weight: 500;
+  min-height: 1.4em;
+  letter-spacing: 0.2px;
+  color: var(--ttt-fg);
+  text-align: center;
+}
+
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 96px);
+  grid-template-rows: repeat(3, 96px);
+  gap: 8px;
+  background: var(--ttt-cell-border);
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.ttt-cell {
+  all: unset;            /* reset button defaults */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  background: var(--ttt-cell-bg);
+  border-radius: 8px;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: default;
+  user-select: none;
+  transition: background-color 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+}
+
+/* Hover only on empty + enabled cells */
+.ttt-root:not(.ttt-root--disabled) .ttt-cell--empty:hover {
+  background: var(--ttt-cell-bg-hover);
+  cursor: pointer;
+}
+.ttt-root:not(.ttt-root--disabled) .ttt-cell--empty:active {
+  transform: scale(0.97);
+}
+
+/* Filled cells: glyph color and no hover */
+.ttt-cell--filled {
+  cursor: default;
+}
+.ttt-cell--x { color: var(--ttt-x); }
+.ttt-cell--o { color: var(--ttt-o); }
+
+/* Winning line highlight */
+.ttt-cell--win {
+  background: var(--ttt-win-bg) !important;
+  box-shadow: 0 0 0 2px var(--ttt-win-border) inset;
+}
+
+/* Disabled board: kill hover, kill pointer events */
+.ttt-root--disabled .ttt-cell--empty {
+  cursor: default;
+  background: var(--ttt-cell-bg);
+}
+.ttt-board--disabled .ttt-cell--empty {
+  pointer-events: none;
+}
+
+/* Restart button */
+.ttt-restart {
+  all: unset;
+  box-sizing: border-box;
+  background: var(--ttt-button-bg);
+  color: var(--ttt-button-fg);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.ttt-restart:hover {
+  background: var(--ttt-button-bg-hover);
+}
+.ttt-restart:focus-visible {
+  outline: 2px solid var(--ttt-x);
+  outline-offset: 2px;
+}
+
+/* Focus ring for cells when keyboard navigated */
+.ttt-cell:focus-visible {
+  outline: 2px solid var(--ttt-x);
+  outline-offset: 2px;
+}

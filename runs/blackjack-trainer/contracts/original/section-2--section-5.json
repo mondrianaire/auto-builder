@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-5",
+  "interface": {
+    "recommendation(playerHandSnapshot, dealerUpcard)": {
+      "params": {
+        "playerHandSnapshot": "{ cards: Array<Card>, total: int, isSoft: bool, isPair: bool, canDouble: bool, canSplit: bool }",
+        "dealerUpcard": "Card"
+      },
+      "returns": "'Hit' | 'Stand' | 'Double' | 'Split'"
+    }
+  },
+  "notes": "section-5 (hint-and-review) calls recommendation() on Hint button click, passing the CURRENT player hand snapshot from state-machine and the visible dealer upcard. The single returned action label is rendered as the hint, with no additional reasoning text per IP4 lock. Same function signature as the strategy-table -> game-state-machine contract; identical pure lookup semantics."
+}

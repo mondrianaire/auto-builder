@@ -1,0 +1,7 @@
+{
+  "section_id": "section-5",
+  "builder_id": "builder-5a",
+  "outputs": ["output.js"],
+  "exports": { "global": "TableEngine", "members": ["newTable","startHand","applyAction","isStreetComplete","advanceStreet","resolveShowdown","agentState","getPositionLabel","SB_AMOUNT","BB_AMOUNT","STARTING_STACK"] },
+  "covers": "deck/shuffle/deal, blinds, betting rounds, side pots, showdown."
+}

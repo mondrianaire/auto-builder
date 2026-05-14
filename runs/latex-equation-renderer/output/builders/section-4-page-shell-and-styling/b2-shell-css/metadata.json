@@ -1,0 +1,15 @@
+{
+  "builder_id": "b2-shell-css",
+  "section": "section-4-page-shell-and-styling",
+  "output_file": "output.css",
+  "delivered_filename": "styles.css",
+  "design": {
+    "layout": "Desktop-first 2-column grid (input | output) at >=900px; stacks below.",
+    "input_distinction": "Light-tinted background (#fdfdff), monospace textarea.",
+    "output_distinction": "White background with indigo (#c7d2fe) border, larger serif/math font.",
+    "error_distinction": "Red palette: #fff1f2 background, #ef4444 border, #991b1b text, role='alert'.",
+    "stale_marker": ".latex-output[data-stale='true'] { opacity: 0.4; filter: grayscale(0.5); }"
+  },
+  "satisfies_assertions": ["S4.A2", "S4.A3"],
+  "verified": true
+}

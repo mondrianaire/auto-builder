@@ -1,0 +1,11 @@
+{
+  "id": "dev-003",
+  "ts": "2026-05-13T00:52:00Z",
+  "cycle": "v3-windows-rebuild",
+  "category": "implementation_path_chosen",
+  "section": "S1",
+  "summary": "Manifest Nodejs object includes only the 'Version' field; GenerateProfilerData is omitted.",
+  "decision": "Per the dispatch briefing's guidance ('include GenerateProfilerData only if Stream Deck convention requires; otherwise just Version'), and per probe-windows-plugin-runtime which names Nodejs.Version as the load-bearing field, the Nodejs object is set to {Version:'20'} only. This matches MCA.TDIPA.4's expected_value '{Version: 20}' exactly. If the StreamDock host on the real Windows machine fails to launch the plugin and the host log reports a missing GenerateProfilerData, the field would be added as {Version:'20', GenerateProfilerData:false} — no other section impact.",
+  "nested_equivalent": "Overseer would surface this; Coordinator would approve as a minimum-change-that-satisfies-the-MCA decision.",
+  "contract_impact": "None. C-S1-S3 is preserved at the load-bearing 'main.js parses argv' clause; the Nodejs field is documentation of the implementation choice."
+}

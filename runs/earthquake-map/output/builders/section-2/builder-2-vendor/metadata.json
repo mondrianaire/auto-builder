@@ -1,0 +1,26 @@
+{
+  "builder_id": "builder-2-vendor",
+  "section_id": "section-2",
+  "task": "Vendor Leaflet 1.9.4 (leaflet.js, leaflet.css, image assets) into vendor/leaflet/.",
+  "outputs": [
+    { "path": "output/vendor/leaflet/leaflet.js",                "kind": "vendor", "bytes": 147552 },
+    { "path": "output/vendor/leaflet/leaflet.css",               "kind": "vendor", "bytes": 14806 },
+    { "path": "output/vendor/leaflet/images/marker-icon.png",    "kind": "vendor", "bytes": 1466 },
+    { "path": "output/vendor/leaflet/images/marker-icon-2x.png", "kind": "vendor", "bytes": 2464 },
+    { "path": "output/vendor/leaflet/images/marker-shadow.png",  "kind": "vendor", "bytes": 618 },
+    { "path": "output/vendor/leaflet/images/layers.png",         "kind": "vendor", "bytes": 696 },
+    { "path": "output/vendor/leaflet/images/layers-2x.png",      "kind": "vendor", "bytes": 1259 }
+  ],
+  "verifies": ["S2.A6", "TDIP1.A1", "DC.A11"],
+  "verification_notes": [
+    "S2.A6: Leaflet JS+CSS present at vendor/leaflet/; index.html will reference local relative paths only.",
+    "TDIP1.A1: no CDN URLs needed at runtime for Leaflet itself.",
+    "DC.A11: artifact opens via file:// with library code local."
+  ],
+  "source_urls": [
+    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+    "https://unpkg.com/leaflet@1.9.4/dist/images/{marker-icon,marker-icon-2x,marker-shadow,layers,layers-2x}.png"
+  ],
+  "completed_at": "2026-05-10T01:03:00Z"
+}

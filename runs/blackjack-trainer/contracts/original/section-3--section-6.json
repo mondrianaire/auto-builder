@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_section": "section-3",
+  "to_section": "section-6",
+  "interface": {
+    "createGameStateMachine(deps)": {
+      "params": {
+        "deps": "{ rulesEngine: <module exports from section-1>, strategyTable: <module exports from section-2> }"
+      },
+      "returns": "{ subscribe, getState, dispatch, getCurrentHintQuery, getDecisionLog }",
+      "notes": "Factory function exposed by section-3 for app-shell to instantiate the state machine and inject the rules-engine and strategy-table modules. App-shell wires the dependencies once at boot and passes the resulting instance to ui-render and hint-and-review."
+    }
+  },
+  "notes": "App-shell is the only place the state machine is constructed. App-shell does NOT call dispatch() or getState() in steady state — those flow through ui-render and hint-and-review. App-shell may call dispatch() exactly once to dispatch the initial 'deal' if the desired UX is auto-deal-on-load (Overseer judgment); default is to wait for the user's first Deal click."
+}

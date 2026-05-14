@@ -1,0 +1,12 @@
+{
+  "section_id": "section-6",
+  "status": "verified",
+  "builders": ["builder-6a"],
+  "verification": {
+    "S6.A1": "PASS - dashboard renders all 8 metrics with toggle between session/all-time scopes.",
+    "S6.A2": "PASS - all_time loaded from storage at boot; session is fresh per page load. Reloading restores all-time totals; session resets.",
+    "S6.A3": "PASS - hand_result and decision_result subscribed via AppShell.bus.on; injectHandResult and injectDecisionResult exposed for testing.",
+    "S6.A4": "PASS - applyHandResult writes to allTime which is then saved to storage under 'stats/all-time'."
+  },
+  "verified_at": "2026-05-10T01:20:00Z"
+}

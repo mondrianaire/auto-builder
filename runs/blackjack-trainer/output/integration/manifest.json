@@ -1,0 +1,34 @@
+{
+  "completed_at": "2026-05-09T01:08:00Z",
+  "entry_point": "index.html",
+  "files": [
+    { "path": "index.html", "role": "page entry point" },
+    { "path": "styles.css", "role": "styling" },
+    { "path": "app.js", "role": "bootstrap; imports modules; wires state machine + UI + hint-and-review", "imports": ["./rules-engine.js", "./strategy-table.js", "./game-state-machine.js", "./ui-render.js", "./hint-and-review.js"] },
+    { "path": "rules-engine.js", "role": "section-1 module (pure rules)" },
+    { "path": "strategy-table.js", "role": "section-2 module (basic-strategy lookup)" },
+    { "path": "game-state-machine.js", "role": "section-3 module (state + dispatch + decision log)" },
+    { "path": "ui-render.js", "role": "section-4 module (DOM render-on-state)" },
+    { "path": "hint-and-review.js", "role": "section-5 module (hint click + review on resolve)" },
+    { "path": "tests.html", "role": "section-7 edge-case-testing harness page" },
+    { "path": "tests.js", "role": "section-7 test harness driver" }
+  ],
+  "section_outputs_used": [
+    { "section": "section-1", "files": ["rules-engine.js"] },
+    { "section": "section-2", "files": ["strategy-table.js"] },
+    { "section": "section-3", "files": ["game-state-machine.js"] },
+    { "section": "section-4", "files": ["ui-render.js"] },
+    { "section": "section-5", "files": ["hint-and-review.js"] },
+    { "section": "section-6", "files": ["index.html", "app.js", "styles.css"] },
+    { "section": "section-7", "files": ["tests.html", "tests.js"] }
+  ],
+  "glue_code_added": [
+    { "file": "app.js", "lines": "1-44", "purpose": "import modules; build state machine via factory; mountUI; wire hint-and-review using ui.elements; expose window.__bj for the test harness; subscribe handsPlayed footer" }
+  ],
+  "issues_resolved_during_integration": [
+    "Confirmed all module imports use relative paths with explicit .js extension (browser ES modules require explicit extensions).",
+    "Confirmed Deal button has no `phase!=='betting'` short-circuit; explicit allow-list (betting OR resolved OR review).",
+    "Confirmed dispatch({type:'deal'}) is accepted by state machine in BOTH betting AND resolved phases (S3.A5/S4.A3 fix verified at the seam).",
+    "No Sev 0 fixes applied — integration was clean."
+  ]
+}

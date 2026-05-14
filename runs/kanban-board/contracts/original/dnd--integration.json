@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_section": "dnd",
+  "to_section": "integration",
+  "interface": {
+    "wireDnd": {
+      "params": {
+        "rootEl": "HTMLElement",
+        "stateModel": "state-model instance (must expose moveCard, reorderCard, getState)"
+      },
+      "returns": "{ unwire: () => void } — removes event listeners."
+    }
+  },
+  "notes": "integration calls wireDnd once after mountRenderer. Uses event delegation so it survives re-renders."
+}

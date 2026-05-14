@@ -1,0 +1,91 @@
+{
+  "run_name": "blackjack",
+  "audit_at": "2026-05-10T07:00:00Z",
+  "audit_under_architecture_version": "v1.6",
+  "original_verdict": "pass",
+  "original_verdict_at": "2026-05-09T00:30:00Z (approximate)",
+  "original_verdict_path": "runs/blackjack/output/verification/report.json",
+  "previously_reclassified": {
+    "by": "latex-equation-renderer run-report (v1.5 amendment)",
+    "to": "fail",
+    "reason": "Same root-cause class as latex defect: cv_artifact_exercise (when added retroactively) ran or would have run with substituted runtime deps; the deliverable's true behavior in user environment was never verified. Compounded: behavioral defect (Deal button stayed disabled after phase==='resolved') was discovered post-delivery."
+  },
+  "amendments_applied_since_original": ["v1.2", "v1.3", "v1.4", "v1.5", "v1.6"],
+  "gates_re_evaluated": [
+    {
+      "gate": "build_complete_handoff",
+      "introduced_in": "v1.2",
+      "result": "fail",
+      "rationale": "No state/coordinator/build-complete.json. Run terminated after edge-case-testing without writing the v1.2 handoff signal — same pattern that motivated the v1.2 amendment."
+    },
+    {
+      "gate": "delivery_checklist",
+      "introduced_in": "v1.2",
+      "result": "fail",
+      "rationale": "Original blackjack run was missing output/final/, audit/flags.jsonl with final-sweep entry, output/verification/report.json. Subsequent re-runs added these incidentally but the run as-delivered failed delivery checklist."
+    },
+    {
+      "gate": "machine_checkable_assertions_per_ip_lock",
+      "introduced_in": "v1.2",
+      "result": "fail",
+      "rationale": "Sections file lacks machine_checkable_assertions[] on inflection_resolutions. The IP2 'six-deck shoe shuffled per session' lock had no machine-checkable form, which is exactly why the per-round shoe drift went undetected."
+    },
+    {
+      "gate": "acceptance_assertions_per_section",
+      "introduced_in": "v1.3",
+      "result": "fail",
+      "rationale": "Sections lack acceptance_assertions[]. The 'see the round outcome and start a new round' acceptance phrase was prose-only, structurally untestable, and the Deal-button-stays-disabled-after-resolve defect shipped past every gate."
+    },
+    {
+      "gate": "cv_artifact_exercise_pass",
+      "introduced_in": "v1.3",
+      "result": "fail",
+      "rationale": "No cv_artifact_exercise was performed. The verification report is static inspection only. This is the gate v1.3 introduced; this run pre-dates it."
+    },
+    {
+      "gate": "cv_artifact_exercise_production_fidelity",
+      "introduced_in": "v1.5",
+      "result": "fail",
+      "rationale": "Even had cv_artifact_exercise been added retroactively under v1.3 substrate, it would have run in jsdom with stubs (the substrate v1.5 strikes). The deliverable was never loaded the way users open it."
+    },
+    {
+      "gate": "prompt_named_verb_assertion",
+      "introduced_in": "v1.5",
+      "result": "fail",
+      "rationale": "No PNV exists. The prompt's named verb 'play blackjack' was never asserted end-to-end against the deliverable in production fidelity."
+    },
+    {
+      "gate": "historian_build_summary_and_decision_index",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "Neither artifact exists."
+    },
+    {
+      "gate": "prompt_verb_analysis",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "Absent."
+    }
+  ],
+  "reclassified_verdict": "fail",
+  "fail_count": 9,
+  "not_applicable_count": 0,
+  "pass_count": 0,
+  "incidental_observations": [
+    "The artifact also has the Deal-button-disabled defect (per the conversation context where another Claude found it post-delivery). That is a real artifact defect on top of the verification regime gaps.",
+    "The IP2 shoe drift (per-round vs per-session) is also a real artifact deviation from the locked spec.",
+    "This run failed on every load-bearing v1.2-onward gate. It is the canonical example of why the architecture has grown the gates it has."
+  ],
+  "recovery_options": [
+    {
+      "type": "patch_artifact",
+      "description": "Patch the Deal button (Sev 0 fix already documented in the conversation), patch the per-round shoe (per-session shoe construction), then add v1.2-v1.6 gate artifacts (machine_checkable_assertions, acceptance_assertions, PNV, prompt_verb_analysis, build-complete.json, Historian artifacts), run CV artifact-exercise under v1.5 production fidelity. Substantial patching effort given how many gates failed."
+    },
+    {
+      "type": "rebuild_under_v1.6",
+      "description": "Discard prior outputs and re-run 'build me a web app to play blackjack' under v1.6. Cleaner; the v1.6 architecture would catch the Deal button issue (PNV: 'place a bet, deal, play to resolution, deal again, observe new round') and the shoe drift (machine_checkable_assertion on six-deck-shoe-per-session) automatically."
+    }
+  ],
+  "recommendation": "rebuild_under_v1.6",
+  "recommendation_rationale": "Nine gate failures span structural (build-complete, Historian artifacts) and behavioral (PNV, production fidelity, acceptance assertions). Patching would touch every layer of the build and still leave the underlying architectural mismatches. A clean v1.6 rebuild is cheaper and produces a v1.6-native run with all required artifacts. Also: v1.6 would catch both real artifact defects (Deal button, per-round shoe) on its first verification pass, providing strong validation of the new gates."
+}

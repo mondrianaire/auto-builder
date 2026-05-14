@@ -1,0 +1,23 @@
+{
+  "section_id": "section-2",
+  "name": "persistence",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-10T00:00:07Z",
+  "verified_at": "2026-05-10T00:00:10Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-2",
+  "active_contracts": [
+    "contracts/original/state-model--persistence.json",
+    "contracts/original/persistence--integration.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "ps-b1",
+      "description": "localStorage adapter with load/save/clear and STORAGE_KEY.",
+      "status": "verified",
+      "builder_id": "ps-b1",
+      "output_path": "output/builders/persistence/ps-b1/output.js",
+      "verification_notes": "S2.A1: load returns null on absent or corrupt JSON (try/catch + isValidBoardState). S2.A2: save serializes via JSON.stringify under STORAGE_KEY. S2.A3: clear() removes the key. S2.A5: corrupt JSON caught and returns null."
+    }
+  ]
+}

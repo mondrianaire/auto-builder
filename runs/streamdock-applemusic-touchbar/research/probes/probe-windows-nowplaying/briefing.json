@@ -1,0 +1,25 @@
+{
+  "probe_id": "probe-windows-nowplaying",
+  "phase": "escalation",
+  "dispatched_by": "orchestrator",
+  "created_at": "2026-05-13T00:25:00Z",
+  "question": "On Windows 10/11, what is the simplest reliable mechanism for a Node.js plugin process to query the currently-playing song title and artist when Apple Music for Windows (Microsoft Store version) is the playback source? The mechanism must be invokable as a child process from Node (spawning a helper that returns title+artist on stdout, or similar), produce parseable output, work without elevated privileges, and ideally have zero install footprint beyond what the .sdPlugin bundle can carry.",
+  "context_pointers": [
+    "decisions/discovery/ledger-v1.json",
+    "decisions/discovery/ledger-diff-v2.json",
+    "decisions/technical-discovery/sections-v2.json",
+    "contracts/original/C-S4-S5-music-source.json"
+  ],
+  "constraints": [
+    "Must preserve the C-S4-S5 contract: getNowPlaying() returns {title, artist} or null; never rejects.",
+    "Must be invokable from Node.js (the plugin process is Node).",
+    "No admin privileges, no driver install, no antivirus-triggering operations.",
+    "Should work whether Apple Music is the active session or not (if Apple Music is the foreground media session, return its track; if nothing is playing, return null).",
+    "Bundle size budget: the music source helper should ideally fit in the .sdPlugin folder without external installer."
+  ],
+  "optimization_criterion": "blast_radius_minimization",
+  "preserve_sections": ["S2", "S3", "S4", "S6"],
+  "questioning_authority": true,
+  "budget_minutes": 5,
+  "max_options": 4
+}

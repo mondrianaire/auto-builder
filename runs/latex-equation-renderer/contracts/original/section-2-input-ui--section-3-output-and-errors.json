@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "contract_id": "section-2-input-ui--section-3-output-and-errors",
+  "producer": "section-2-input-ui",
+  "consumer": "section-3-output-and-errors",
+  "summary": "The input UI exposes a change stream that emits the current LaTeX source string on every user edit. The output/error wiring subscribes and re-renders on each emission.",
+  "interface": {
+    "kind": "event_stream",
+    "subscription_options": [
+      {
+        "form": "DOM event",
+        "detail": "The input element fires the standard 'input' event on every user edit; consumer reads element.value.",
+        "consumer_usage_example": "inputEl.addEventListener('input', () => { const latex = inputEl.value; /* call renderer */ });"
+      },
+      {
+        "form": "exposed callback registration",
+        "detail": "The input UI module exposes a function such as onLatexChange(callback) that invokes callback(currentValue) on every user edit.",
+        "consumer_usage_example": "inputUi.onLatexChange((latex) => { /* call renderer */ });"
+      }
+    ],
+    "selection_rule": "Builders choose ONE form and document it. Either form satisfies the contract; the consumer must adapt to whichever is provided.",
+    "discovery": {
+      "input_element_selector": "[data-role='latex-input'] (or documented #id) — single, stable element on the page.",
+      "module_export": "If using callback registration form, the symbol must be reachable from a known global or module export documented at integration time."
+    },
+    "emission_semantics": {
+      "fires_on": "Every user-driven change to the textarea value (keystroke, paste, cut).",
+      "payload": "The current full string value of the textarea at the moment of emission.",
+      "throttling": "None required at this contract level. If builders add debouncing, the contract still requires that the LAST emission after a quiescent period reflect the final value."
+    }
+  },
+  "data_passed": [
+    "Output: the current LaTeX string — a plain string, not a DOM node, not an event object."
+  ],
+  "non_goals": [
+    "The input UI does not call the renderer.",
+    "The input UI does not validate LaTeX.",
+    "The consumer does not write to the input element."
+  ],
+  "open_questions_for_builders": []
+}

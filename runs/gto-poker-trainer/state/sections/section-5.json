@@ -1,0 +1,14 @@
+{
+  "section_id": "section-5",
+  "status": "verified",
+  "builders": ["builder-5a", "builder-5b", "builder-5c"],
+  "verification": {
+    "S5.A1": "PASS - mountTable creates 9-seat table; hero in seat 0; 8 archetypes round-robin assigned.",
+    "S5.A2": "PASS - resolveShowdown uses HandEval.evaluateHand for best-5-of-7; uncontested pots awarded to last folder.",
+    "S5.A3": "PASS - SB and BB amounts are constants (10/20); never modified by gameplay.",
+    "S5.A4": "PASS - action panel renders Fold/Check/Call/Raise as appropriate; raise input clamped to [min_raise, stack]; alerts on invalid input.",
+    "S5.A5": "PASS - finishHand emits 'hand_result' on AppShell.bus with all required fields.",
+    "S5.A6": "PASS - each non-hero seat has clickable archetype label; click shows tooltip with display_name + contrast_with_gto first paragraph."
+  },
+  "verified_at": "2026-05-10T01:10:00Z"
+}

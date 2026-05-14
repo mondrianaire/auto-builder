@@ -1,0 +1,74 @@
+{
+  "id": "esc-001",
+  "ts": "2026-05-10T01:08:00Z",
+  "raised_by": "critic",
+  "phase": "final_sweep",
+  "severity": "high",
+  "category": "prose_coverage_gap",
+  "summary": "Several Coverage-Required Fields per file_schemas.md have zero assertions whose `covers` field names them. The corresponding behaviors are honored by the build, but the explicit coverage pointer is missing.",
+  "details": {
+    "uncovered_fields": [
+      {
+        "field": "decisions/technical-discovery/sections-v1.json#sections[].charter",
+        "instances_missing_covers": [
+          "section-1.charter",
+          "section-2.charter",
+          "section-3.charter",
+          "section-4.charter"
+        ],
+        "evidence": "Grep for `covers.*charter` across the run returned no matches. Per-section assertions cover the `acceptance` prose but no assertion's covers field names the section charter.",
+        "implicit_satisfaction": "Each section's acceptance prose is a direct restatement of its charter scope, and acceptance_assertions cover the acceptance prose; therefore the charter is honored transitively but not explicitly tagged."
+      },
+      {
+        "field": "decisions/technical-discovery/sections-v1.json#sections[].out_of_scope[]",
+        "instances_missing_covers": [
+          "section-1.out_of_scope[0..3]",
+          "section-2.out_of_scope[0..3]",
+          "section-3.out_of_scope[0..3]",
+          "section-4.out_of_scope[0..3]"
+        ],
+        "evidence": "Grep for `covers.*out_of_scope` returned only project-level DC.OOS* entries pointing to ledger out_of_scope[0..11]. No assertion covers per-section out_of_scope items.",
+        "implicit_satisfaction": "Per-section OOS items (e.g., 'Polling/auto-refresh' on section-1, 'Filter controls' on section-3) overlap with project-level IP1-3 OOS already covered by IP*.A* and DC.IP* assertions. Out-of-scope check 2 (this sweep) confirmed none of these features appear in the artifact."
+      },
+      {
+        "field": "contracts/original/*.json#interface (methods, fields) and #notes",
+        "instances_missing_covers": [
+          "contract.section-1--section-2.interface.fetchEarthquakes",
+          "contract.section-1--section-2.interface.fetchEarthquakes.shape.EarthquakeEvent (and each field id, magnitude, place, timeMs, lat, lon, depth)",
+          "contract.section-1--section-2.notes",
+          "contract.section-1--section-3.interface.fetchEarthquakes",
+          "contract.section-1--section-3.notes",
+          "contract.section-2--section-3.interface.mount",
+          "contract.section-2--section-3.interface.magnitudeColor",
+          "contract.section-2--section-3.interface.magnitudeRadius",
+          "contract.section-2--section-3.notes",
+          "contract.integrator--section-4.interface.integratedArtifact",
+          "contract.integrator--section-4.notes"
+        ],
+        "evidence": "Grep for `covers.*contract` and `covers.*notes` returned no matches. Section assertions cover the prose `acceptance` of each section, which paraphrases the contract surface, but no assertion's covers field directly names a contract interface method/field or the notes block.",
+        "implicit_satisfaction": "Contract interface fields ARE structurally enforced: S1.A2/A3 verify EarthquakeEvent shape; S1.A4 verifies the {ok,error} discriminated-union return; S2.A2 verifies mount() places one marker per event; S2.A3/A4 verify magnitudeRadius/magnitudeColor exist and behave correctly. Coordination notes (e.g., 'section-2 never sees raw GeoJSON', 'mount returns markerCount') are honored by the implementation."
+      }
+    ],
+    "missing_or_unresolved_covers_pointers": [],
+    "assertions_missing_covers_field": []
+  },
+  "interpretation": "This is a documentation-shape gap, not a behavior gap. The integrated artifact correctly implements every charter, every per-section out-of-scope exclusion, and every contract interface element. What is missing is explicit `covers` traceability from individual assertions back to those source-of-truth fields, which the v1.7 prose-coverage rule (`file_schemas.md` § Coverage-Required Fields) requires to be flagged as severity high regardless of implicit satisfaction.",
+  "no_behavior_regression": true,
+  "no_contract_violation": true,
+  "no_out_of_scope_leak": true,
+  "recommended_resolution_paths": [
+    "Author additional discovery_coverage_assertions (or per-section-coverage assertions) whose `covers` field names each section charter, each per-section out_of_scope item, and each contract interface method/field plus `.notes`. They can re-use existing structural/absence checks; the change is purely adding covers pointers.",
+    "Alternatively, amend file_schemas.md § Coverage-Required Fields to formally exempt fields that are transitively covered through paraphrased prose (e.g., charter -> acceptance -> acceptance_assertion). This is a charter-level rule change and out of Critic scope; flagging only.",
+    "Arbiter to choose."
+  ],
+  "blocking": false,
+  "verdict_recommendation": "needs_arbiter",
+  "context_pointers": {
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections": "decisions/technical-discovery/sections-v1.json",
+    "contracts": "contracts/original/",
+    "audit_flags": "audit/flags.jsonl",
+    "edge_case_report": "output/builders/edge-case-testing/builder-4a/report.json",
+    "build_complete": "state/coordinator/build-complete.json"
+  }
+}

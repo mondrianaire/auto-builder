@@ -1,0 +1,18 @@
+{
+  "section_id": "section-5",
+  "section_name": "edge-case-testing",
+  "status": "verified",
+  "owner": "overseer-edge-case-testing",
+  "started_at": "2026-05-09T00:14:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-5",
+  "active_contracts": [],
+  "sub_goals": [
+    {
+      "id": "ec-sg-1",
+      "description": "Copy integrated artifact into sandbox/, write tests/run.js to load each module via fs+vm into a fake window, exercise public APIs across at least 13 scenarios, write tests/report.json.",
+      "status": "verified",
+      "builder_id": "builder-ec-1",
+      "output_path": "output/builders/edge-case-testing/builder-ec-1/"
+    }
+  ]
+}

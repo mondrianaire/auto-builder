@@ -1,0 +1,25 @@
+{
+  "builder_id": "builder-3a",
+  "task_id": "3a",
+  "section_id": "section-3",
+  "started_at": "2026-05-09T00:51:02Z",
+  "completed_at": "2026-05-09T00:55:30Z",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": [
+    { "symbol": "createGameStateMachine", "type": "factory_function", "matches_contract": "contracts/original/section-3--section-6.json#createGameStateMachine" }
+  ],
+  "notes": "Factory injects rulesEngine + strategyTable. Returns { subscribe, dispatch, getState, getCurrentHintQuery, getDecisionLog }. Phases: betting -> player_turn -> dealer_turn -> resolved. Dispatch type 'deal' is accepted in BOTH 'betting' phase (starts a hand) AND in 'resolved'/'review' phase (begins a new hand) — this is the explicit fix for the S3.A5/S4.A3/S6.A3 critical user_flow. Decision log records every player action with playerHandSnapshot, dealerUpcard, chosenAction, correctAction (correctAction sourced from strategyTable.recommendation BEFORE the action is applied). Subscribe fires immediate snapshot to new subscribers and on every state mutation. Illegal dispatches are silent noops.",
+  "self_test_results": {
+    "phase_init": "begins at 'betting' (IP2.A2 verified)",
+    "deal_from_betting": "transitions to 'player_turn' with 2 player + 2 dealer cards (1 hidden)",
+    "deal_from_resolved": "transitions through fresh hand to 'player_turn' (S3.A5/S4.A3 fix)",
+    "next_from_resolved": "same as deal_from_resolved",
+    "illegal_split_on_non_pair": "noop, no state change (S3.A2)",
+    "illegal_double_after_hit": "noop (legalActions excludes 'double' once hasHit=true)",
+    "subscribe_fires_initial": "listener invoked immediately upon subscribe()",
+    "subscribe_fires_on_mutation": "listener invoked once per accepted dispatch",
+    "decisionLog_correctAction_populated": "every entry has correctAction set via strategyTable lookup BEFORE action applied",
+    "blackjack_immediate_resolve": "natural 21 reveals dealer hole and resolves immediately"
+  }
+}

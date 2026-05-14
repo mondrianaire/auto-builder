@@ -1,0 +1,21 @@
+{"ts":"2026-05-10T00:00:00Z","event":"coordinator-boot","dispatch_mode":"inline","note":"DAG built; 7 sections + integrator pseudo-node; 5 waves."}
+{"ts":"2026-05-10T00:00:01Z","event":"overseer-dispatch","section":"state-model","dispatch_mode":"inline","wave":1}
+{"ts":"2026-05-10T00:00:02Z","event":"builder-dispatch","section":"state-model","builder_id":"sm-b1","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:07Z","event":"wave-advance","new_wave":2,"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:07Z","event":"overseer-dispatch","section":"persistence","dispatch_mode":"inline","wave":2}
+{"ts":"2026-05-10T00:00:07Z","event":"builder-dispatch","section":"persistence","builder_id":"ps-b1","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:07Z","event":"overseer-dispatch","section":"ui-render","dispatch_mode":"inline","wave":2}
+{"ts":"2026-05-10T00:00:07Z","event":"builder-dispatch","section":"ui-render","builder_id":"ur-b1","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:11Z","event":"wave-advance","new_wave":3,"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:11Z","event":"overseer-dispatch","section":"dnd","dispatch_mode":"inline","wave":3}
+{"ts":"2026-05-10T00:00:11Z","event":"builder-dispatch","section":"dnd","builder_id":"dn-b1","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:11Z","event":"overseer-dispatch","section":"interactions","dispatch_mode":"inline","wave":3}
+{"ts":"2026-05-10T00:00:11Z","event":"builder-dispatch","section":"interactions","builder_id":"ix-b1","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:15Z","event":"wave-advance","new_wave":4,"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:15Z","event":"overseer-dispatch","section":"integration","dispatch_mode":"inline","wave":4}
+{"ts":"2026-05-10T00:00:15Z","event":"builder-dispatch","section":"integration","builder_id":"in-b1","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:15Z","event":"integrator-dispatch","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:19Z","event":"wave-advance","new_wave":5,"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:19Z","event":"overseer-dispatch","section":"edge-case-testing","dispatch_mode":"inline","wave":5}
+{"ts":"2026-05-10T00:00:19Z","event":"builder-dispatch","section":"edge-case-testing","builder_id":"ec-b1","dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:00:26Z","event":"build-complete","dispatch_mode":"inline","summary":"All sections verified; integration artifact assembled; 16/16 edge-case tests pass."}

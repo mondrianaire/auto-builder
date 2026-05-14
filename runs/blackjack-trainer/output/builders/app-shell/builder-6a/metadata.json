@@ -1,0 +1,19 @@
+{
+  "builder_id": "builder-6a",
+  "task_id": "6a",
+  "section_id": "section-6",
+  "started_at": "2026-05-09T01:03:32Z",
+  "completed_at": "2026-05-09T01:05:00Z",
+  "status": "completed",
+  "output_files": ["output.html", "output.js"],
+  "exposes": [
+    { "symbol": "boot", "type": "function", "note": "internal; not exported" },
+    { "symbol": "window.__bj", "type": "global_debug_handle", "note": "{ stateMachine, ui, rulesEngine, strategyTable } — used by the test harness to drive the integrated artifact" }
+  ],
+  "notes": "index.html includes <script type=\"module\" src=\"app.js\"></script>. app.js imports all modules as ES modules with relative paths. boot() builds the state machine via factory, calls mountUI(root, stateMachine), then wireHintAndReview. window.__bj is exposed so tests.html can drive real user flows.",
+  "self_test_results": {
+    "S6_A1_no_build_step": "All script tags use relative paths to .js files; type=module; no bundler required",
+    "S6_A2_six_surfaces": "DOM after mountUI contains all six required surfaces — pass",
+    "S6_A3_module_wiring": "Click flow: btn-deal -> stateMachine.dispatch({type:'deal'}) -> render fires via subscribe; btn-hint -> hint-and-review handler -> renderHint helper — pass"
+  }
+}

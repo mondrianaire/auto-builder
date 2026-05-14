@@ -1,0 +1,48 @@
+{
+  "completed_at": "2026-05-13T01:00:00Z",
+  "cycle": "v3-windows-rebuild",
+  "supersedes_v1_completed_at": "2026-05-13T00:05:30Z",
+  "entry_point": "com.autobuilder.applemusic-nowplaying.sdPlugin",
+  "files": [
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/icons/pluginIcon.png",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/icons/pluginIcon@2x.png",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/icons/actionIcon.png",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/icons/actionIcon@2x.png",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/icons/category.png",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/icons/category@2x.png",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/layouts/nowplaying.json",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/ui/inspector.html",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/main.js",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/sdk.js",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/music_source.js",
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/node_modules/ws/"
+  ],
+  "files_dropped_from_v1": [
+    "com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/run.sh (macOS-only artifact; CodePathMac removed in v3)"
+  ],
+  "vestiges_present_but_unreferenced": [
+    "plugin/run.sh — reduced to inert comment-only content; could not be physically deleted in cowork sandbox (no delete permission in unsupervised mode). NOT referenced by manifest.json; StreamDock host on Windows ignores it. See dev-005."
+  ],
+  "section_outputs_used": [
+    {"section": "S1", "builder": "builder-s1-v3", "files": ["manifest.json"], "supersedes": "builder-s1-1"},
+    {"section": "S2", "builder": "builder-s2-1", "files": ["layouts/nowplaying.json", "ui/inspector.html"], "unchanged_from_v1": true},
+    {"section": "S3", "builder": "builder-s3-1", "files": ["plugin/sdk.js", "plugin/node_modules/ws/"], "unchanged_from_v1": true, "note": "plugin/run.sh from S3 builder is no longer integrated (macOS branch dropped)"},
+    {"section": "S4", "builder": "builder-s4-1", "files": ["plugin/main.js"], "unchanged_from_v1": true},
+    {"section": "S5", "builder": "builder-s5-v3", "files": ["plugin/music_source.js"], "supersedes": "builder-s5-1"},
+    {"section": "S1-icons", "builder": "builder-s1-1", "files": ["icons/*.png"], "unchanged_from_v1": true}
+  ],
+  "glue_code_added": [
+    "None for v3. Windows host runs CodePathWin (plugin/main.js) under its bundled Node runtime per the manifest's Nodejs.Version declaration; no wrapper script, no chmod step, no vendored node.exe."
+  ],
+  "verification": {
+    "manifest_parses": true,
+    "manifest_OS": "[{Platform:'windows', MinimumVersion:'10'}]",
+    "manifest_CodePathWin": "plugin/main.js (resolves to existing file)",
+    "manifest_CodePathMac_absent": true,
+    "manifest_Nodejs_Version": "20",
+    "all_manifest_paths_resolve": true,
+    "ws_vendored": true,
+    "ws_version": "8.20.1"
+  }
+}

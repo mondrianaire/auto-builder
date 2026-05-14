@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-3",
+  "summary": "App shell exposes the route container and the storage adapter that walkthrough mode mounts into and uses for any persisted state.",
+  "interface": {
+    "route_registration": {
+      "name": "registerRoute",
+      "shape": "(routeId: string, mountFn: (container: HTMLElement) => void, unmountFn?: () => void) => void",
+      "purpose": "Walkthrough mode registers itself under routeId='walkthrough' at boot; shell calls mountFn when the user navigates there."
+    },
+    "storage_adapter": {
+      "name": "storage",
+      "shape": "{ get(key: string): any|null, set(key: string, value: any): void, clear(prefix?: string): void }",
+      "namespace_rule": "All keys written by walkthrough mode MUST be prefixed with 'gto-trainer/v1/walkthrough/'. The adapter handles namespace prefixing internally — callers pass the suffix only.",
+      "purpose": "Walkthrough mode uses storage for any local state it persists (e.g., last-viewed hand id)."
+    },
+    "navigation": {
+      "name": "navigateHome",
+      "shape": "() => void",
+      "purpose": "Walkthrough exposes a back-to-home affordance via this shell-provided function."
+    }
+  },
+  "data_passed_not_logic": "Shell passes a DOM container reference, three function references (storage methods), and a navigation callback. Shell does not implement any walkthrough logic; walkthrough does not implement any shell-level navigation or storage backend.",
+  "ownership": {
+    "section-1_owns": ["registerRoute implementation", "storage adapter implementation and key namespacing", "navigateHome implementation", "boot ordering"],
+    "section-3_owns": ["mountFn / unmountFn for routeId='walkthrough'", "any state stored via storage under its prefix"]
+  },
+  "test_seam": "An integration test mounts walkthrough into a test container by calling registerRoute with a stub container and verifying mountFn is invoked when navigateTo('walkthrough') is called."
+}

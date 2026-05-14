@@ -1,0 +1,7 @@
+{
+  "escalation_id": "esc-001",
+  "resolved_at": "2026-05-10T01:18:00Z",
+  "resolved_by": "td_impact_mode + critic_resweep",
+  "resolution_artifact": "decisions/technical-discovery/sections-v2.json",
+  "verdict": "resolved"
+}

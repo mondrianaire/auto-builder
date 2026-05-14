@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T01:00:00Z",
+  "dispatch_mode": "inline",
+  "nodes": [
+    {
+      "id": "section-1",
+      "name": "Earthquake Data Fetcher",
+      "status": "verified",
+      "wave": 1,
+      "is_pseudo": false,
+      "owner": "coordinator-inline",
+      "depends_on": []
+    },
+    {
+      "id": "section-2",
+      "name": "Map Renderer with Earthquake Markers",
+      "status": "verified",
+      "wave": 1,
+      "is_pseudo": false,
+      "owner": "coordinator-inline",
+      "depends_on": ["section-1"]
+    },
+    {
+      "id": "section-3",
+      "name": "Page Shell, Legend, and Error State",
+      "status": "verified",
+      "wave": 1,
+      "is_pseudo": false,
+      "owner": "coordinator-inline",
+      "depends_on": ["section-1", "section-2"]
+    },
+    {
+      "id": "integrator",
+      "name": "Integrator (pseudo-node)",
+      "status": "verified",
+      "wave": 2,
+      "is_pseudo": true,
+      "owner": "coordinator-inline",
+      "depends_on": ["section-1", "section-2", "section-3"]
+    },
+    {
+      "id": "section-4",
+      "name": "Edge-Case Testing (production-fidelity)",
+      "status": "verified",
+      "wave": 3,
+      "is_pseudo": false,
+      "owner": "coordinator-inline",
+      "depends_on": ["integrator"]
+    }
+  ],
+  "edges": [
+    { "from": "section-1", "to": "section-2" },
+    { "from": "section-1", "to": "section-3" },
+    { "from": "section-2", "to": "section-3" },
+    { "from": "section-1", "to": "integrator" },
+    { "from": "section-2", "to": "integrator" },
+    { "from": "section-3", "to": "integrator" },
+    { "from": "integrator", "to": "section-4" }
+  ],
+  "waves": {
+    "1": ["section-1", "section-2", "section-3"],
+    "2": ["integrator"],
+    "3": ["section-4"]
+  },
+  "notes": "Wave 1 sections build in parallel against contracts (not runtime). Wave 2 is the Integrator pseudo-node assembling output/integration/. Wave 3 runs edge-case-testing against the integrated artifact."
+}

@@ -1,0 +1,19 @@
+{
+  "section_id": "section-7",
+  "name": "edge-case-testing",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-10T00:00:19Z",
+  "verified_at": "2026-05-10T00:00:25Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-7",
+  "sub_goals": [
+    {
+      "id": "ec-b1",
+      "description": "Run all edge_case_testing assertions against the integrated artifact via Node + jsdom.",
+      "status": "verified",
+      "builder_id": "ec-b1",
+      "output_path": "output/builders/edge-case-testing/ec-b1/",
+      "verification_notes": "16/16 tests pass. Coverage: S1.A2,A3,A4,A6,A7,A8; S2.A1,A2,A3,A5; S3.A1,A2,A4; S4.A3,A4; S5.A7. Tests load the actual integrated JS files from output/integration/."
+    }
+  ]
+}

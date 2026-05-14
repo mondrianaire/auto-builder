@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "created_at": "2026-05-13T00:15:00Z",
+  "trigger": {
+    "type": "escalation_batch",
+    "escalation_ids": ["esc-001", "esc-002", "esc-003"],
+    "research_findings": "research/probes/probe-esc-003/findings.json"
+  },
+  "chosen_option": "opt-A",
+  "chosen_option_rationale": "opt-A (extend `covers` from a single string to a multi-target array on existing assertions) is the Researcher's primary recommendation. The dispatch authorization explicitly permits interpreting `covers` as string-or-array under file_schemas.md's permissive-field clause. Every escalated gap target maps cleanly to at least one existing assertion that already entails it behaviorally — no new assertions, no harness rework, no source-code touch, no Builder re-dispatch. The integrated artifact and the 28/28 harness pass remain bit-identical. opt-B (sidecar) would add a new file and a new checker rule with no compensating benefit since opt-A is permitted. opt-C (Arbiter waiver) would leave the schema-graph technically incomplete on a strict re-run. opt-D (43 new assertions) is the heavyweight option for a pure pointer-wiring fix and was rejected by the Researcher.",
+  "delta_plan": {
+    "S1": {
+      "action": "salvageable",
+      "rationale": "Metadata-only edit: extend AA.S1.1..AA.S1.5 `covers` to also point at sections[0].charter and at the manifest-relevant contracts (C-S1-S2, C-S1-S3) and at A1/A4 in the assumption ledger. Section CODE is bit-identical; the built artifact under output/integration/ is unchanged. Charter, acceptance, and out_of_scope text are unchanged. AA.* statements and scenarios are unchanged. Only `covers` array contents grow."
+    },
+    "S2": {
+      "action": "salvageable",
+      "rationale": "Metadata-only edit: extend AA.S2.1..AA.S2.5 `covers` to also point at sections[1].charter, the relevant contract files (C-S1-S2 layout/PI references, C-S2-S3 PI settings, C-S2-S4 feedback payload), and per-section OOS items where natural. Section CODE unchanged."
+    },
+    "S3": {
+      "action": "salvageable",
+      "rationale": "Metadata-only edit: extend AA.S3.1..AA.S3.4 `covers` to also point at sections[2].charter, C-S2-S3 (PI settings), C-S2-S4 (setFeedback shape — AA.S3.4 already verifies this), C-S3-S4 (internal API surface). Section CODE unchanged."
+    },
+    "S4": {
+      "action": "salvageable",
+      "rationale": "Metadata-only edit: extend AA.S4.1..AA.S4.5 `covers` to also point at sections[3].charter, C-S2-S4 (setFeedback payload), C-S3-S4 (internal API), C-S4-S5 (music-source surface) where AA.S4.1/AA.S4.2 already verify those interfaces. Section CODE unchanged."
+    },
+    "S5": {
+      "action": "salvageable",
+      "rationale": "Metadata-only edit: extend AA.S5.1..AA.S5.4 `covers` to also point at sections[4].charter, C-S4-S5 (music-source interface), and A3 (local Apple Music data source) in the assumption ledger. Section CODE unchanged."
+    },
+    "S6": {
+      "action": "salvageable",
+      "rationale": "Metadata-only edit: extend AA.S6.1..AA.S6.4 `covers` to also point at sections[5].charter and per-section OOS items where natural. Harness CODE and report unchanged."
+    },
+    "discovery_ledger": {
+      "action": "unaffected",
+      "rationale": "Ledger-v1.json is not modified. The gap is in covers-pointer wiring on the TD side."
+    },
+    "contracts": {
+      "action": "unaffected",
+      "rationale": "Contract files are not modified. Existing assertions extend their `covers` to also point at the contracts they already verify."
+    },
+    "integrated_artifact": {
+      "action": "unaffected",
+      "rationale": "output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/ is bit-identical. No source-code touch, no rebuild."
+    },
+    "harness_report": {
+      "action": "unaffected",
+      "rationale": "28/28 pass remains; no new assertions added; no scenario manifest growth required. AA.S6.1's set-difference check still holds."
+    }
+  },
+  "contract_amendments": [],
+  "spec_amendments_inline": "Apply opt-A: convert `covers` field on existing assertions in sections-v1.json from a single string to an array of strings when adding additional pointers; leave as a single string when only one pointer applies. Specifically (sections-v2.json applies these): \n\n--- ESC-001 (section charters) ---\n- AA.S1.1, AA.S1.2, AA.S1.3, AA.S1.4, AA.S1.5: extend covers to also include 'decisions/technical-discovery/sections-v1.json#/sections/0/charter'.\n- AA.S2.1, AA.S2.2, AA.S2.3, AA.S2.4, AA.S2.5: extend covers to also include 'decisions/technical-discovery/sections-v1.json#/sections/1/charter'.\n- AA.S3.1, AA.S3.2, AA.S3.3, AA.S3.4: extend covers to also include 'decisions/technical-discovery/sections-v1.json#/sections/2/charter'.\n- AA.S4.1, AA.S4.2, AA.S4.3, AA.S4.4, AA.S4.5: extend covers to also include 'decisions/technical-discovery/sections-v1.json#/sections/3/charter'.\n- AA.S5.1, AA.S5.2, AA.S5.3, AA.S5.4: extend covers to also include 'decisions/technical-discovery/sections-v1.json#/sections/4/charter'.\n- AA.S6.1, AA.S6.2, AA.S6.3, AA.S6.4: extend covers to also include 'decisions/technical-discovery/sections-v1.json#/sections/5/charter'.\n\n--- ESC-002 (contract interfaces and notes) ---\n- AA.S1.3 (manifest paths resolve): also covers 'contracts/original/C-S1-S2-manifest-references.json#/interface' and 'contracts/original/C-S1-S3-codepath-entry.json#/interface'.\n- AA.S1.2 (manifest required keys): also covers 'contracts/original/C-S1-S2-manifest-references.json#/notes' and 'contracts/original/C-S1-S3-codepath-entry.json#/notes'.\n- AA.S2.5 (setFeedback payload shape documented): also covers 'contracts/original/C-S2-S4-feedback-payload.json#/interface' and 'contracts/original/C-S2-S4-feedback-payload.json#/notes'.\n- AA.S2.4 (PI emits setSettings of documented shape): also covers 'contracts/original/C-S2-S3-pi-settings.json#/interface' and 'contracts/original/C-S2-S3-pi-settings.json#/notes'.\n- AA.S3.4 (sendFeedback helper): also covers 'contracts/original/C-S3-S4-internal-api.json#/interface', 'contracts/original/C-S3-S4-internal-api.json#/notes', and 'contracts/original/C-S2-S4-feedback-payload.json#/interface'.\n- AA.S4.1, AA.S4.2 (music-source -> sendFeedback flow): also cover 'contracts/original/C-S4-S5-music-source.json#/interface' and 'contracts/original/C-S4-S5-music-source.json#/notes'.\n- AA.S5.1 (getNowPlaying happy path): also covers 'contracts/original/C-S4-S5-music-source.json#/interface' and 'contracts/original/C-S4-S5-music-source.json#/notes'.\n\n--- ESC-003 (assumptions A1/A3/A4/A9, ledger OOS 1/2/3/4/7/8/9, chosen_verb, 19 section OOS) ---\n- MCA.TDIPA.1, MCA.TDIPA.2, MCA.TDIPA.3 (SDK-v2 manifest, mac OS, CodePathMac): extend covers to also include 'decisions/discovery/ledger-v1.json#/assumption_ledger/0' (A1: SDK shape).\n- MCA.TDIPA.2 (OS array Platform=mac): additionally also covers 'decisions/discovery/ledger-v1.json#/assumption_ledger/3' (A4: macOS host).\n- MCA.TDIPD.1, MCA.TDIPD.2 (osascript / AppleScript surface): extend covers to also include 'decisions/discovery/ledger-v1.json#/assumption_ledger/2' (A3: local Apple Music).\n- DCA.OOS.TELEMETRY.1 (no outbound network): extend covers to also include 'decisions/discovery/ledger-v1.json#/assumption_ledger/8' (A9: no telemetry / single-user / no-auth).\n- PNV.1 (display verb proven by setFeedback frame): extend covers to also include 'decisions/technical-discovery/sections-v1.json#/prompt_verb_analysis/chosen_verb'.\n- DCA.A5.1 (title+artist present): extend covers to also include 'decisions/discovery/ledger-v1.json#/out_of_scope/1' (no lyrics/queue/history — entailed: only title+artist shown means lyrics/queue items are absent in the layout).\n- DCA.A12.1 (no album art): extend covers to also include 'decisions/discovery/ledger-v1.json#/out_of_scope/2' (Album art rendering OOS).\n- DCA.A13.1 (touchTap no-op): extend covers to also include 'decisions/discovery/ledger-v1.json#/out_of_scope/3' (Rich playback controls OOS).\n- DCA.OOS.TELEMETRY.1: also covers 'decisions/discovery/ledger-v1.json#/out_of_scope/4' (Multi-user/cloud/remote OOS: entailed by no outbound non-loopback traffic).\n- DCA.A11.1 (minimal PI, at most 3 controls): also covers 'decisions/discovery/ledger-v1.json#/out_of_scope/7' (Theming/skinning OOS — entailed: minimal PI means no theming UI).\n- MCA.TDIPA.1 (SDKVersion 2 plus mac-only OS): also covers 'decisions/discovery/ledger-v1.json#/out_of_scope/8' (Other StreamDock hardware OOS — entailed: manifest declares mac-only with this single Encoder action and SDK-v2; nothing supports other models).\n- AA.S2.3 (PI HTML loads without errors, basic English controls): also covers 'decisions/discovery/ledger-v1.json#/out_of_scope/9' (Localization / i18n OOS — entailed: PI is single-language, no i18n machinery).\n\n--- Per-section OOS (19 items) ---\nEach section OOS is a hand-off demarcation already entailed by the depends_on/charter scope of the receiving section. Map each section OOS to the AA on the receiving section that verifies the demarcated capability is actually owned elsewhere:\n- sections/0/out_of_scope/0 ('Wiring up the WebSocket handshake (S3)') -> AA.S3.1 covers extension\n- sections/0/out_of_scope/1 ('Implementing the polling/data flow (S4)') -> AA.S4.1 covers extension\n- sections/0/out_of_scope/2 ('Property inspector UI logic (S2)') -> AA.S2.3 covers extension\n- sections/0/out_of_scope/3 ('Layout rendering / setFeedback payload shape (S2)') -> AA.S2.5 covers extension\n- sections/1/out_of_scope/0 ('Actually emitting setFeedback at runtime (S4)') -> AA.S4.1 covers extension\n- sections/1/out_of_scope/1 ('WebSocket connection wiring (S3)') -> AA.S3.1 covers extension\n- sections/1/out_of_scope/2 ('AppleScript invocation (S5)') -> AA.S5.1 covers extension\n- sections/2/out_of_scope/0 ('Polling / data source (S5)') -> AA.S5.1 covers extension\n- sections/2/out_of_scope/1 ('Wiring polled data to setFeedback (S4)') -> AA.S4.1 covers extension\n- sections/2/out_of_scope/2 ('Layout JSON (S2)') -> AA.S2.1 covers extension\n- sections/3/out_of_scope/0 ('Implementation of the music-source itself (S5)') -> AA.S5.1 covers extension\n- sections/3/out_of_scope/1 ('WebSocket transport (S3)') -> AA.S3.1 covers extension\n- sections/3/out_of_scope/2 ('Layout authoring (S2)') -> AA.S2.1 covers extension\n- sections/4/out_of_scope/0 ('Polling cadence (S4 owns the loop)') -> AA.S4.1 covers extension\n- sections/4/out_of_scope/1 ('Property inspector / settings (S2)') -> AA.S2.3 covers extension\n- sections/4/out_of_scope/2 ('MediaRemote, nowplaying-cli, or any non-osascript path') -> MCA.TDIPD.1 covers extension (already verifies osascript-only)\n- sections/4/out_of_scope/3 ('Album art extraction') -> DCA.A12.1 covers extension\n- sections/5/out_of_scope/0 ('Implementing the plugin itself (S1-S5)') -> AA.S6.3 covers extension (already verifies stub injection touches only the osascript boundary and SDK WebSocket peer)\n- sections/5/out_of_scope/1 ('Hardware-on-device verification') -> AA.S6.2 covers extension (already verifies the production-fidelity harness boundary).",
+  "summary": {
+    "chosen_option": "opt-A",
+    "covers_extensions_count": 50,
+    "new_assertion_entries_count": 0,
+    "sections_modified": ["S1", "S2", "S3", "S4", "S5", "S6"],
+    "sections_with_code_changes": [],
+    "contracts_modified": [],
+    "ledger_modified": false,
+    "harness_rerun_required": false,
+    "coverage_path_confirmed": "Every coverage-required field listed in file_schemas.md and called out by esc-001/002/003 now has at least one assertion in sections-v2.json whose `covers` (array) includes a pointer to it."
+  }
+}

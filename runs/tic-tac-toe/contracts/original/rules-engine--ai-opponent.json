@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "from_section": "rules-engine",
+  "to_section": "ai-opponent",
+  "interface": {
+    "exposed_module": "rules-engine",
+    "data_shapes": {
+      "Cell": "string enum: 'X' | 'O' | null  (null = empty)",
+      "Player": "string enum: 'X' | 'O'",
+      "Board": "Array<Cell> of length 9, indexed 0..8 in row-major order (0,1,2 = top row; 6,7,8 = bottom row)",
+      "GameState": {
+        "board": "Board",
+        "currentPlayer": "Player (whose turn it is)",
+        "moveCount": "number (0 at start, increments per applied move)"
+      },
+      "Outcome": {
+        "status": "string enum: 'in_progress' | 'win' | 'draw'",
+        "winner": "Player | null  (null when status != 'win')",
+        "line": "Array<number> of 3 cell indices when status='win'; otherwise null"
+      }
+    },
+    "methods": {
+      "createBoard": {
+        "signature": "() -> GameState",
+        "description": "Returns a fresh GameState with all cells null, currentPlayer='X', moveCount=0."
+      },
+      "applyMove": {
+        "signature": "(state: GameState, index: number, player: Player) -> GameState",
+        "description": "Returns a new GameState with the given cell filled. Throws (or returns sentinel — Builder picks one and documents) if index out of [0..8], cell is non-null, or player != state.currentPlayer. Does not mutate input.",
+        "error_contract": "Builder must document whether illegal moves throw or return a sentinel; controller-and-shell must adapt to that choice."
+      },
+      "checkOutcome": {
+        "signature": "(state: GameState) -> Outcome",
+        "description": "Inspects the board for any of the 8 winning lines. Returns winner and line indices on win, 'draw' if board is full with no winner, else 'in_progress'."
+      },
+      "legalMoves": {
+        "signature": "(state: GameState) -> Array<number>",
+        "description": "Returns indices of empty cells in ascending order. Empty array when board is full."
+      }
+    },
+    "guarantees": [
+      "All methods are pure: no I/O, no module-global mutable state, no DOM access.",
+      "Return values are new objects; inputs are never mutated.",
+      "Indexing convention is row-major 0..8 and is stable across the whole project."
+    ]
+  },
+  "notes": "ai-opponent calls legalMoves to enumerate options, applyMove (on a cloned state) to test hypothetical outcomes, and checkOutcome to detect win/block opportunities. It must NOT reimplement the 8-line win check."
+}

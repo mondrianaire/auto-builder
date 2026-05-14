@@ -1,0 +1,18 @@
+{
+  "section_id": "S2",
+  "name": "touchbar-layout-and-property-inspector",
+  "status": "verified",
+  "dispatched_at": "2026-05-13T00:03:00Z",
+  "verified_at": "2026-05-13T00:03:30Z",
+  "dispatch_mode": "inline",
+  "builders": [
+    {"builder_id": "builder-s2-1", "status": "verified"}
+  ],
+  "verification": {
+    "AA.S2.1": {"status": "passed", "note": "layout items[] has key=='title' and key=='artist', both type=='text'."},
+    "AA.S2.2": {"status": "passed", "note": "Both items declare text-overflow: ellipsis."},
+    "AA.S2.3": {"status": "passed_inspection", "note": "Vanilla HTML+JS; no module imports or syntax that would error in a browser."},
+    "AA.S2.4": {"status": "passed_inspection", "note": "Form-change handlers call setSettings with {pollIntervalMs, placeholder, showArtist}."},
+    "AA.S2.5": {"status": "passed", "note": "C-S2-S4 contract specifies {title:string, artist:string} payload; layout matches."}
+  }
+}

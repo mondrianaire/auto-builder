@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:00:00Z",
+  "project_name": "latex-equation-renderer",
+  "restatement": "A tool that takes LaTeX source as input and renders it as a visible mathematical equation. The user types/pastes LaTeX, the tool shows the typeset math.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "Input is LaTeX math syntax (the user supplies the source string).",
+      "confidence": "high",
+      "rationale": "Stated explicitly in the prompt: 'from LaTeX input'.",
+      "what_breaks_if_wrong": "Wrong input format would invalidate the entire parsing/rendering pipeline."
+    },
+    {
+      "id": "A2",
+      "assumption": "Output is a visible rendered equation (the user sees typeset math, not just a transformed string).",
+      "confidence": "high",
+      "rationale": "The verb 'render' implies visual output, not transformation to another markup.",
+      "what_breaks_if_wrong": "If output is meant to be a non-visual artifact (e.g., MathML string only), the UI surface would be wrong."
+    },
+    {
+      "id": "A3",
+      "assumption": "Single-user, no authentication, no accounts.",
+      "confidence": "high",
+      "rationale": "Prompt is silent on users/auth; default-not-present per heuristics. Equation rendering is a stateless utility.",
+      "what_breaks_if_wrong": "If multi-user sharing was intended, would need backend + identity layer."
+    },
+    {
+      "id": "A4",
+      "assumption": "No persistence required; equations are rendered transiently in-session.",
+      "confidence": "medium",
+      "rationale": "Prompt says 'render', not 'save' or 'manage'. Default-not-present.",
+      "what_breaks_if_wrong": "If user expected a saved equation library, they'd lose work between sessions."
+    },
+    {
+      "id": "A5",
+      "assumption": "Desktop / standard browser viewport is the primary target.",
+      "confidence": "medium",
+      "rationale": "LaTeX authoring is overwhelmingly a keyboard-heavy, desktop activity. Default per heuristics.",
+      "what_breaks_if_wrong": "Mobile users would have a degraded but not broken experience."
+    },
+    {
+      "id": "A6",
+      "assumption": "Live / responsive preview as the user types is the expected interaction (vs. a click-to-render button).",
+      "confidence": "medium",
+      "rationale": "Modern equation tools (Overleaf preview, KaTeX demos, etc.) set this expectation; tight feedback loops are core to LaTeX authoring.",
+      "what_breaks_if_wrong": "Users would still get correct output, just a clunkier feel; reversible later."
+    },
+    {
+      "id": "A7",
+      "assumption": "Scope is math-mode LaTeX (equations), not full document compilation.",
+      "confidence": "high",
+      "rationale": "Prompt says 'mathematical equations', explicitly narrowing to math, not full \\documentclass papers.",
+      "what_breaks_if_wrong": "Tool would over-deliver; users expecting full LaTeX docs would be disappointed but the named goal still ships."
+    },
+    {
+      "id": "A8",
+      "assumption": "Errors in LaTeX input should be surfaced to the user (not silently swallowed).",
+      "confidence": "medium",
+      "rationale": "Authoring tools require feedback on syntax errors; otherwise debugging is impossible.",
+      "what_breaks_if_wrong": "Users would be confused by blank/broken output with no hint why."
+    },
+    {
+      "id": "A9",
+      "assumption": "Tool runs locally in the browser with no server-side rendering required.",
+      "confidence": "medium",
+      "rationale": "LaTeX-to-HTML/SVG math rendering is a solved client-side problem; backend default-not-present.",
+      "what_breaks_if_wrong": "If full TeX engine fidelity (e.g., obscure packages) were needed, would require server-side TeX."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Input model: single equation field vs. multi-equation editor",
+      "choices": [
+        "Single textarea + single rendered output (one equation at a time)",
+        "Document-style editor where multiple equations can be authored and rendered in a list"
+      ],
+      "default_branch": "Single textarea + single rendered output",
+      "importance": "medium",
+      "why_inflection": "Cascades into UI layout, state model, and whether 'export' means one image or a document. Reversibility is moderate; the smaller-scope branch is the named goal floor."
+    },
+    {
+      "id": "IP2",
+      "topic": "Export / copy capability",
+      "choices": [
+        "Render-only (view in app, no export)",
+        "Export rendered output (image / SVG / MathML / copy-to-clipboard)"
+      ],
+      "default_branch": "Render-only",
+      "importance": "medium",
+      "why_inflection": "UX surface is real (export buttons visible or not) and option asymmetry exists (export adds format choices, file handling). The prompt says 'render' not 'export', so render-only matches the literal floor."
+    },
+    {
+      "id": "IP3",
+      "topic": "Quick-insert helpers (symbol palette, snippets, examples)",
+      "choices": [
+        "Plain text input only",
+        "Include a symbol/template palette to assist non-fluent LaTeX users"
+      ],
+      "default_branch": "Plain text input only",
+      "importance": "low",
+      "why_inflection": "UX surface differs noticeably but reversible; helpers can be layered on later without disrupting core."
+    }
+  ],
+  "out_of_scope": [
+    "User accounts, authentication, sign-in",
+    "Server-side persistence or saved equation libraries",
+    "Collaboration / sharing / multi-user features",
+    "Full LaTeX document compilation (\\documentclass, sections, bibliographies)",
+    "Custom LaTeX package installation / arbitrary TeX engine fidelity",
+    "Native mobile app",
+    "Offline installable desktop application",
+    "Conversion from images or handwriting to LaTeX (OCR)"
+  ]
+}

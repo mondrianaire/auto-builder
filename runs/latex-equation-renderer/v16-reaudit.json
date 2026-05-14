@@ -1,0 +1,103 @@
+{
+  "run_name": "latex-equation-renderer",
+  "audit_at": "2026-05-10T07:00:00Z",
+  "audit_under_architecture_version": "v1.6",
+  "original_verdict": "pass (under v1.4)",
+  "original_verdict_at": "2026-05-10T03:50:00Z (approximate)",
+  "original_verdict_path": "runs/latex-equation-renderer/output/verification/report.json",
+  "v15_recovery": {
+    "verdict": "pass (under v1.5)",
+    "report_path": "runs/latex-equation-renderer/output/verification/report-v15.json",
+    "recovery_action": "Bundled KaTeX locally to eliminate runtime CDN dependency; re-verified under production-fidelity environment (jsdom@22 with usable resources, file:// load, no substitution)."
+  },
+  "amendments_applied_since_v15_recovery": ["v1.6"],
+  "gates_re_evaluated": [
+    {
+      "gate": "build_complete_handoff",
+      "introduced_in": "v1.2",
+      "result": "pass",
+      "rationale": "state/coordinator/build-complete.json present."
+    },
+    {
+      "gate": "machine_checkable_assertions_per_ip_lock",
+      "introduced_in": "v1.2",
+      "result": "pass",
+      "rationale": "Per the run-report: 22/22 assertions including 10 IP-level. IP locks have machine_checkable_assertions[]."
+    },
+    {
+      "gate": "acceptance_assertions_per_section",
+      "introduced_in": "v1.3",
+      "result": "pass",
+      "rationale": "Per run-report: 12 section + 10 IP assertions. Sections have acceptance_assertions[]."
+    },
+    {
+      "gate": "cv_artifact_exercise_pass",
+      "introduced_in": "v1.3",
+      "result": "pass",
+      "rationale": "report-v15.json documents 5 user_flow assertions exercised in production fidelity."
+    },
+    {
+      "gate": "cv_artifact_exercise_production_fidelity",
+      "introduced_in": "v1.5",
+      "result": "pass",
+      "rationale": "report-v15.json explicitly documents production_fidelity_environment with runtime_dependency_substitution: false and a fetch_log_evidence array showing local file:// loads only. This is the exemplar passing case for the v1.5 amendment."
+    },
+    {
+      "gate": "prompt_named_verb_assertion",
+      "introduced_in": "v1.5",
+      "result": "pass",
+      "rationale": "PNV.1 ('render mathematical equations from LaTeX input') passes per report-v15.json with explicit production_fidelity: true and non_skippable: true."
+    },
+    {
+      "gate": "inline_deviation_logging",
+      "introduced_in": "v1.4",
+      "result": "pass",
+      "rationale": "3 inline deviations logged at state/inline-deviations/dev-001.json through dev-003.json. Each has nested_equivalent articulated per run-report."
+    },
+    {
+      "gate": "td_introduced_ip_schema",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "Per run-report, TD added IP4 (KaTeX vs MathJax) beyond Discovery's 3 IPs. The sections file does not have a `source: \"td\"` field on IP4 because the v1.6 schema didn't exist when the run was built. Easy patch: add `source: \"td\"` and `td_introduction_rationale` to IP4's resolution entry."
+    },
+    {
+      "gate": "integration_final_divergence_record",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "output/final/ diverges from output/integration/ (final/ contains vendor/katex/ that integration/ does not). Per v1.6, this requires output/final/divergence-from-integration.json. The recovery action that bundled KaTeX is documented in run-report.md but not in the structured divergence record. Also missing: output/final/vendor-manifest.json describing the vendored KaTeX assets."
+    },
+    {
+      "gate": "historian_build_summary_and_decision_index",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "history/log.jsonl exists. Per run-report, neither history/build-summary.md nor history/decision-index.json was produced. Run-report explicitly flags this as a gap: 'No Historian summary or decision-index.'"
+    },
+    {
+      "gate": "prompt_verb_analysis",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "TD's sections file does not include prompt_verb_analysis. The verb 'render' was correctly chosen for PNV but the alternatives (display, typeset, format) and selection rationale are not documented. PNV would have benefited from the same explicit-articulation discipline that machine_checkable_assertions get."
+    }
+  ],
+  "reclassified_verdict": "pass_with_concerns",
+  "fail_count": 4,
+  "pass_count": 7,
+  "incidental_observations": [
+    "All v1.5 gates pass cleanly — this run is the canonical post-v1.5-recovery example.",
+    "All four v1.6 failures are pure documentation/structure additions, no behavioral concerns. The artifact is verifiably correct under production fidelity.",
+    "The four failures are exactly the gates that v1.6 was designed to introduce based on this run's experience. The latex run is both the proof v1.5 works and the motivation for v1.6.",
+    "Patches needed are surgical and additive: add 4 fields/files. No artifact code touched."
+  ],
+  "recovery_options": [
+    {
+      "type": "patch_artifact",
+      "description": "1) Add `source: \"td\"` + td_introduction_rationale to IP4 in sections-v1.json. 2) Write output/final/divergence-from-integration.json documenting the KaTeX vendor bundling. 3) Write output/final/vendor-manifest.json listing katex.min.js, katex.min.css, and 16 woff2 fonts. 4) Add prompt_verb_analysis to sections-v1.json (candidates: render, display, typeset, format; chosen: render; rationale: literal head verb of the prompt). 5) Generate Historian build-summary.md and decision-index.json from history/log.jsonl. Estimated effort: 1 Re-Verification dispatch + 1 patch dispatch + Historian dispatch."
+    },
+    {
+      "type": "rebuild_under_v1.6",
+      "description": "Re-run 'build me a tool to render mathematical equations from LaTeX input'. Would naturally produce all v1.6 artifacts and would also benefit from v1.6 TD's design-time production-fidelity heuristic (vendoring KaTeX from the start rather than discovering at verification)."
+    }
+  ],
+  "recommendation": "patch_artifact",
+  "recommendation_rationale": "The artifact is production-fidelity verified and works for the user. The four failures are all documentation gaps that v1.6 introduced. Patching is genuinely small (~4 files) and preserves the working build. The latex run remains the best example of v1.5+v1.6 conformance once patched; rebuilding would discard that exemplar status."
+}

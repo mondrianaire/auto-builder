@@ -1,0 +1,11 @@
+{
+  "builder_id": "builder-s3-1",
+  "section": "S3",
+  "produced": [
+    "sdk.js",
+    "node_modules/ws/ (vendored)"
+  ],
+  "exports": ["start", "onWillAppear", "onWillDisappear", "onDidReceiveSettings", "sendFeedback", "log"],
+  "ws_version": "8.20.1",
+  "notes": "Parses both '-port 1234' and '-port=1234' forms. Touch/dial events are received and produce only logMessage frames (no action-effect outbound — AA.S3.3 / IP3)."
+}

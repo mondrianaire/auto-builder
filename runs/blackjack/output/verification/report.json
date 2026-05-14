@@ -1,0 +1,135 @@
+{
+  "completed_at": "2026-05-09T00:18:00Z",
+  "verdict": "pass_with_concerns",
+  "checked_against_ledger": "decisions/discovery/ledger-v1.json",
+  "assumption_checks": [
+    {
+      "id": "A1",
+      "assumption": "Single human player versus a computer dealer; no multiplayer.",
+      "verified": true,
+      "evidence": "rules-engine.js exposes one playerHands array driven by a single client, one dealerHand; controller.js init wires a single root element with no seat/player concept; index.html instantiates exactly one Controller instance bound to #root."
+    },
+    {
+      "id": "A2",
+      "assumption": "Runs entirely client-side; no backend, database, or API calls.",
+      "verified": true,
+      "evidence": "manifest.json lists six static files (index.html, 3 JS modules, controller.js, styles.css). No fetch/XHR/WebSocket calls in any script. index.html loads only local relative scripts and a local stylesheet; no <link> or <script> with remote URLs."
+    },
+    {
+      "id": "A3",
+      "assumption": "No accounts, login, or auth.",
+      "verified": true,
+      "evidence": "No auth UI in ui-render.js, no token/session/cookie code in controller.js or bankroll.js, no login/logout flows in index.html. App initializes directly to the table on DOMContentLoaded."
+    },
+    {
+      "id": "A4",
+      "assumption": "Play money only — chips/credits in-session, no real currency or payment integration.",
+      "verified": true,
+      "evidence": "bankroll.js holds an in-memory state object with STARTING_POOL=1000 reset on init/reset(); no payment API, no currency strings ('$', 'USD'), no Stripe/PayPal/etc. references anywhere."
+    },
+    {
+      "id": "A5",
+      "assumption": "Standard casino rules: dealer S17 picked, blackjack pays 3:2, hit/stand/double/split, no insurance/surrender.",
+      "verified": true,
+      "evidence": "rules-engine.js playDealer() comments 'S17: stand on all 17 including soft 17' and implements while(total<17) hit. bankroll.js resolve() pays blackjack at 2.5x bet (= 1.5x winnings + original = 3:2). legalActions returns subset of [hit,stand,double,split]; no 'insurance' or 'surrender' tokens appear in any file. Edge-case test s6 (soft-17-stands) passed."
+    },
+    {
+      "id": "A6",
+      "assumption": "Standard 52-card deck, shuffled fresh for each hand (or each session). No card counting concerns, no shoe management exposed to the user.",
+      "verified": true,
+      "evidence": "rules-engine.js builds a DECK_COUNT=6 shoe (312 cards) — a tightening of A6 to a 6-deck shoe by downstream Tech Designer (header comment: 'Per contract: 6-deck shoe'). However: shoe is rebuilt and reshuffled each round (controller.js line 117: createInitialState() called inside onDeal), so 'shuffled fresh for each hand' holds. Shoe is not exposed to the user (no count display, no penetration UI). A6 explicitly leaves exact deck count as a TD/Builder detail; the spec-relevant property (no card-counting concerns, no shoe UX) is honored."
+    },
+    {
+      "id": "A7",
+      "assumption": "Fixed starting chip pool (~1000), bet per hand, reset on bust.",
+      "verified": true,
+      "evidence": "bankroll.js STARTING_POOL=1000, MIN_BET=5; placeBet/resolve/canPlay drive a per-hand betting loop. controller.js buildViewState computes gameOver = !canPlay between rounds and exposes canReset; ui-render.js renders the Reset Bankroll button when canReset is true. Edge-case test s13 confirms reset restores 1000."
+    },
+    {
+      "id": "A8",
+      "assumption": "Desktop-first responsive, also works on phone in portrait, not mobile-first or PWA.",
+      "verified": true,
+      "evidence": "styles.css max-width 920px container with 16px desktop padding (desktop-first). Single @media (max-width:540px) block adjusts card sizes/padding for phones — present but minimal. No manifest.webmanifest, no service-worker registration, no install prompt. index.html has standard viewport meta but no theme-color/apple-touch icons."
+    },
+    {
+      "id": "A9",
+      "assumption": "Recognizable card-table metaphor: card rank+suit, dealer/player areas, chip count, action buttons. No 3D, no animated dealer, no voice.",
+      "verified": true,
+      "evidence": "ui-render.js renders rank+suit-glyph per card; renderDealerArea + renderPlayerArea + renderControls + status strip with bankroll. styles.css uses flat green-table gradient, no 3D transforms, no <canvas>/WebGL, no <video>/<audio>. SUIT_GLYPH map uses unicode hearts/diamonds/clubs/spades."
+    },
+    {
+      "id": "A10",
+      "assumption": "Dealer plays automatically by fixed rule (no AI, no difficulty).",
+      "verified": true,
+      "evidence": "rules-engine.js playDealer() is deterministic: while total<17 draw, then stand. No difficulty parameter, no random behavior beyond the shuffle. ui-render.js has no difficulty selector."
+    },
+    {
+      "id": "A11",
+      "assumption": "English-only UI, basic semantic HTML and contrast, no full WCAG AA.",
+      "verified": true,
+      "evidence": "All visible text in ui-render.js is English ('Deal','Hit','Stand','Double','Split','Reset Bankroll','Bankroll:','Place a bet to begin.'). Semantic h2 area headings, label-for-input pairing on bet input, button elements (not divs). disabled attribute used correctly on inactive controls. No i18n framework, no aria-label scaffolding beyond defaults — consistent with 'a11y-beyond-basics not required'."
+    },
+    {
+      "id": "A12",
+      "assumption": "Single-page, no routing, only the table plus minor overlays. No settings/profile/history.",
+      "verified": true,
+      "evidence": "index.html contains a single #root element. No router (no hashchange, no History API, no react-router), no separate views — Controller.repaint() always rebuilds the same status+dealer+player+controls layout. No settings or profile screens in any file."
+    },
+    {
+      "id": "A13",
+      "assumption": "No sound effects or music in v1.",
+      "verified": true,
+      "evidence": "No <audio> tags in index.html, no Audio() / AudioContext / play() calls in any JS file, no .mp3/.wav/.ogg assets in the integration directory."
+    }
+  ],
+  "out_of_scope_checks": [
+    { "item": "Multiplayer or multi-seat tables", "verified_absent": true, "evidence": "Single playerHands list, single Controller instance, no networking code." },
+    { "item": "Real money, payments, or any gambling integration", "verified_absent": true, "evidence": "bankroll.js is purely in-memory; no Stripe/PayPal/checkout/IAP references; no currency symbols." },
+    { "item": "User accounts, login, or social features", "verified_absent": true, "evidence": "No auth, no profile, no friends/share UI in any file." },
+    { "item": "Persistent bankroll, statistics, or history across sessions or devices", "verified_absent": true, "evidence": "bankroll.js state is a module-scoped JS object; no localStorage/sessionStorage/IndexedDB/cookie writes anywhere." },
+    { "item": "Leaderboards or competitive ranking", "verified_absent": true, "evidence": "No leaderboard view, no score-submission code, no remote calls." },
+    { "item": "Backend server, database, or API", "verified_absent": true, "evidence": "Six static files, no fetch/XHR/WebSocket, no server-package files (package.json/server.js/etc.) in integration output." },
+    { "item": "AI-driven dealer, opponent personalities, or adjustable difficulty", "verified_absent": true, "evidence": "Dealer is rule-based (S17). No difficulty selector, no AI/ML imports, no opponent persona references." },
+    { "item": "Card-counting trainer, strategy hints, or basic-strategy coaching", "verified_absent": true, "evidence": "No 'hint'/'strategy'/'count' UI strings; no overlay component for advice." },
+    { "item": "Other card games (poker, baccarat, solitaire) or other blackjack variants beyond standard rules", "verified_absent": true, "evidence": "Only standard hit/stand/double/split implemented. No game selector, no variant rule branches." },
+    { "item": "Insurance, surrender, side bets, or progressive jackpots in v1", "verified_absent": true, "evidence": "No 'insurance'/'surrender'/'side bet'/'jackpot' tokens in rules-engine.js, controller.js, or ui-render.js. legalActions limited to hit/stand/double/split." },
+    { "item": "Native mobile app, PWA installability, or offline support", "verified_absent": true, "evidence": "No manifest.webmanifest, no service-worker.js, no native-app shell. Just static HTML/JS/CSS." },
+    { "item": "Sound effects, music, or voice", "verified_absent": true, "evidence": "No audio tags, no Audio()/AudioContext/play() calls, no audio assets." },
+    { "item": "Localization or multi-language support", "verified_absent": true, "evidence": "All strings hard-coded English in ui-render.js/controller.js. No i18n library, no locale selector, no translation files." },
+    { "item": "Animated 3D dealer, casino environment, or immersive theming", "verified_absent": true, "evidence": "Flat 2D card-table CSS, no <canvas>/WebGL/three.js, no animated dealer character. Only sub-second hover transforms on buttons." },
+    { "item": "Email, share-to-social, or invite-a-friend flows", "verified_absent": true, "evidence": "No mailto:, no share/social buttons, no invite UI in any file." }
+  ],
+  "inflection_point_checks": [
+    {
+      "id": "IP1",
+      "topic": "Betting model: bankroll + per-hand bets vs. no betting",
+      "default_branch": "Bankroll + per-hand bets",
+      "default_branch_honored": true,
+      "evidence": "bankroll.js implements a full chip lifecycle: STARTING_POOL=1000, placeBet, addToBet (for double/split), resolve with payout multipliers (blackjack 2.5x, win 2x, push 1x, loss 0), reset(). controller.js onDeal validates bet and places it before dealing; finishRound resolves each hand against Bankroll. ui-render.js shows a bet number input, current balance, committed bets, outcome strings, and a Reset Bankroll button. Edge-case tests s12 and s13 confirm payout math and reset behavior."
+    },
+    {
+      "id": "IP2",
+      "topic": "Hand actions surface: minimal vs. full common actions (hit/stand/double/split)",
+      "default_branch": "Full common actions (hit, stand, double, split)",
+      "default_branch_honored": true,
+      "evidence": "rules-engine.js legalActions returns subset of ['hit','stand','double','split']; applyAction handles all four with correct semantics (double deals one card and locks; split forks into two hands, dealing one card each, with split-aces frozen at one card). ui-render.js renders all four buttons (btn-hit/btn-stand/btn-double/btn-split) with proper disabled wiring. Edge-case tests s7, s8, s9, s10, s11 cover split, split-aces, double, and illegal-action gating — all pass."
+    }
+  ],
+  "edge_case_testing_summary": {
+    "passed": 14,
+    "failed": 0,
+    "total": 14,
+    "report_path": "output/builders/edge-case-testing/builder-ec-1/tests/report.json"
+  },
+  "concerns": [
+    {
+      "topic": "Deck count tightening (A6)",
+      "detail": "Discovery's A6 named 'a standard 52-card deck' as the simplest defensible deck model and explicitly left exact deck count as a TD/Builder detail. Downstream contracts tightened this to a 6-deck shoe (rules-engine.js DECK_COUNT=6, header comment 'Per contract: 6-deck shoe'). The shoe is reshuffled every round so the spec-relevant properties — fresh shuffle per hand, no card-counting, no shoe UX — are intact. Worth surfacing as a divergence from A6's literal wording but not a spec violation; A6's what_breaks_if_wrong concerns (card-counting trainer, persistent shoe) do not apply here."
+    },
+    {
+      "topic": "canReset visibility timing",
+      "detail": "controller.js comments note canReset is kept strict (true only when bankroll exhausted) per contract, so the user cannot proactively reset before going broke. This matches the contract but is a UX choice worth noting; spec does not require a non-game-over reset path."
+    }
+  ],
+  "summary": "Verdict: pass_with_concerns. All 13 assumptions are honored, all 15 out-of-scope items confirmed absent, both inflection-point default branches (bankroll betting and full hit/stand/double/split actions) are implemented, and the edge-case test suite reports 14/14 passing. The single notable divergence is a downstream tightening of A6 from a 52-card deck to a 6-deck shoe; because the shoe is reshuffled each round and never exposed to the user, the spec-relevant properties of A6 still hold, and Discovery explicitly delegated exact deck count to the TD/Builder layer. Integrated artifact is browser-ready and meets the discovery spec."
+}

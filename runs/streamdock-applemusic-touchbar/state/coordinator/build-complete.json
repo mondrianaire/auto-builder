@@ -1,0 +1,25 @@
+{
+  "signaled_at": "2026-05-13T00:07:30Z",
+  "all_sections_verified": true,
+  "integrator_verified": true,
+  "edge_case_testing_executed": true,
+  "ready_for_final_verification": true,
+  "next_steps_required": [
+    "critic_final_sweep",
+    "convergence_verifier",
+    "delivery_to_final_directory",
+    "run_report"
+  ],
+  "summary": "Build complete. 6/6 sections + integrator verified under inline dispatch. S6 harness ran the integrated .sdPlugin bundle against a fake SDK WebSocket on free ports, with the AppleScript boundary shimmed via MUSIC_SOURCE_FIXTURE env-var only — 28/28 assertions passed including PNV.1 (real plugin process captured 'Bohemian Rhapsody'/'Queen' as a setFeedback frame addressed to the willAppear'd context). The deliverable is at output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/. Two inline deviations logged: dev-001 (PI path resolved in favor of contract C-S1-S2) and dev-002 (MUSIC_SOURCE_FIXTURE env-var test-affordance in music_source.js; contract C-S4-S5 unchanged).",
+  "verified_sections": ["S1", "S2", "S3", "S4", "S5", "S6"],
+  "deliverable_path": "output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/",
+  "integration_manifest": "output/integration/manifest.json",
+  "harness_report": "output/builders/edge-case-testing/builder-s6-1/report.json",
+  "harness_results": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "skipped": 0
+  },
+  "inline_deviations": ["dev-001", "dev-002"]
+}

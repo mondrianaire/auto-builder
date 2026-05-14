@@ -1,0 +1,30 @@
+{
+  "contract_id": "C-S1-S2",
+  "between": ["S1", "S2"],
+  "topic": "Manifest references the layout JSON and Property Inspector HTML produced by S2",
+  "direction": "S1 declares slots; S2 fills them",
+  "data_passed_not_logic": true,
+  "schema": {
+    "manifest_action_encoder_layout_path": {
+      "type": "string",
+      "value": "layouts/nowplaying.json",
+      "constraint": "Path is relative to the .sdPlugin folder root. S1 writes this string into manifest.Actions[0].Encoder.layout. S2 produces a file at exactly this path."
+    },
+    "manifest_action_property_inspector_path": {
+      "type": "string",
+      "value": "ui/inspector.html",
+      "constraint": "Path is relative to the .sdPlugin folder root. S1 writes this string into manifest.Actions[0].PropertyInspectorPath. S2 produces a file at exactly this path."
+    },
+    "layout_json_shape": {
+      "$schema_note": "S2 must produce a layout JSON whose root object has at least an 'items' array. Each item is an object with at minimum 'key', 'type', and 'rect' fields. The two text items must have keys 'title' and 'artist'.",
+      "required_items": [
+        {"key": "title", "type": "text"},
+        {"key": "artist", "type": "text"}
+      ]
+    },
+    "property_inspector_html_shape": {
+      "constraint": "Standard SDK PI: <html> with a script tag that defines connectElgatoStreamDeckSocket(port, uuid, registerEvent, info, actionInfo). On settings change, calls $SD.api.setSettings(uuid, settings) where settings is the JSON object documented in C-S2-S3."
+    }
+  },
+  "verification": "After both sections are built, the integrator confirms: (1) manifest.Actions[0].Encoder.layout === 'layouts/nowplaying.json' and that file exists in the bundle; (2) manifest.Actions[0].PropertyInspectorPath === 'ui/inspector.html' and that file exists; (3) the layout JSON has items with keys 'title' and 'artist'."
+}

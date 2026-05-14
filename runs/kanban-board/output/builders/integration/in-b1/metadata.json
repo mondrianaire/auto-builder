@@ -1,0 +1,24 @@
+{
+  "builder_id": "in-b1",
+  "section": "integration",
+  "status": "completed",
+  "output_files": [
+    "../../integration/index.html",
+    "../../integration/styles.css",
+    "../../integration/state-model.js",
+    "../../integration/persistence.js",
+    "../../integration/ui-render.js",
+    "../../integration/dnd.js",
+    "../../integration/interactions.js",
+    "../../integration/app.js",
+    "../../integration/manifest.json"
+  ],
+  "exposes": ["index.html (entry)", "app.js (boot glue)"],
+  "contracts_honored": [
+    "state-model--integration",
+    "persistence--integration",
+    "ui-render--integration",
+    "dnd--integration",
+    "interactions--integration"
+  ]
+}

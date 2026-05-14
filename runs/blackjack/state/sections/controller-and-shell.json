@@ -1,0 +1,29 @@
+{
+  "section_id": "section-4",
+  "section_name": "controller-and-shell",
+  "status": "verified",
+  "owner": "overseer-controller-and-shell",
+  "started_at": "2026-05-09T00:12:50Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-4",
+  "active_contracts": [
+    "contracts/original/rules-engine--controller-and-shell.json",
+    "contracts/original/betting-and-bankroll--controller-and-shell.json",
+    "contracts/original/ui-render--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "cs-sg-1",
+      "description": "Write controller.js — Controller.init(rootEl) on DOMContentLoaded. Maintains state, wires DOM events for deal/hit/stand/double/split/reset by stable IDs, calls RulesEngine + Bankroll, repaints via UIRender after each transition. Handles blackjack-on-deal short-circuit.",
+      "status": "verified",
+      "builder_id": "builder-cs-1",
+      "output_path": "output/builders/controller-and-shell/builder-cs-1/output.js"
+    },
+    {
+      "id": "cs-sg-2",
+      "description": "Write index.html — minimal HTML5 page, link styles.css, script tags in exact order: rules-engine.js, bankroll.js, ui-render.js, controller.js, plus inline DOMContentLoaded bootstrap.",
+      "status": "verified",
+      "builder_id": "builder-cs-2",
+      "output_path": "output/builders/controller-and-shell/builder-cs-2/output.html"
+    }
+  ]
+}

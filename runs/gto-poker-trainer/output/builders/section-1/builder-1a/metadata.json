@@ -1,0 +1,12 @@
+{
+  "section_id": "section-1",
+  "builder_id": "builder-1a",
+  "outputs": ["output.html", "output.css", "output.js"],
+  "exports": {
+    "global": "AppShell",
+    "members": ["storage", "bus", "registerRoute", "navigateTo", "navigateHome", "SCHEMA_VERSION", "REFERENCE_STACK_BB"]
+  },
+  "assertions_satisfied": ["S1.A1","S1.A2","S1.A3","S1.A4","S1.A5","IP1.A1","IP1.A2","IP1.A3"],
+  "namespace": "gto-trainer/v1/",
+  "production_fidelity": "vendored only; no http(s) refs; no external scripts."
+}

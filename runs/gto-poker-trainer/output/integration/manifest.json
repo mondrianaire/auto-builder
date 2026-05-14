@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "entry_point": "index.html",
+  "open_via": "file://",
+  "files": [
+    { "path": "index.html", "role": "entry", "from_section": "section-1" },
+    { "path": "styles.css", "role": "stylesheet", "from_section": "section-1" },
+    { "path": "shell.js", "role": "app shell + storage + router", "from_section": "section-1" },
+    { "path": "data/preflop-ranges.js", "role": "GTO preflop data", "from_section": "section-2" },
+    { "path": "data/curated-hands.js", "role": "GTO postflop hands + glossary", "from_section": "section-2" },
+    { "path": "archetypes.js", "role": "archetype roster", "from_section": "section-4" },
+    { "path": "agent-engine.js", "role": "decide() pure function", "from_section": "section-4" },
+    { "path": "hand-eval.js", "role": "best-5-of-7 evaluator", "from_section": "section-5" },
+    { "path": "table-engine.js", "role": "9-handed engine + side pots", "from_section": "section-5" },
+    { "path": "walkthrough.js", "role": "walkthrough mode + glossary route", "from_section": "section-3" },
+    { "path": "table-ui.js", "role": "table mode UI", "from_section": "section-5" },
+    { "path": "stats.js", "role": "stats writer + dashboard", "from_section": "section-6" }
+  ],
+  "globals": ["AppShell","GTOData","Archetypes","AgentEngine","HandEval","TableEngine","Stats"],
+  "external_references": [],
+  "production_fidelity_notes": [
+    "Zero http(s) references in any file.",
+    "All scripts load via relative paths.",
+    "Storage uses window.localStorage with namespace 'gto-trainer/v1/'.",
+    "Smoke-tested via node loader: all modules load; 100 hands chip-conservation holds; hand evaluator correct on royal flush, full house, wheel."
+  ],
+  "load_order_invariants": [
+    "shell.js MUST load before any other module (provides AppShell.registerRoute and bus).",
+    "data/* MUST load before walkthrough.js (which reads GTOData.HANDS).",
+    "archetypes.js MUST load before agent-engine.js and table-ui.js.",
+    "hand-eval.js MUST load before table-engine.js (resolveShowdown calls HandEval.evaluateHand)."
+  ]
+}

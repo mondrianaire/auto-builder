@@ -1,0 +1,22 @@
+{
+  "section_id": "section-5",
+  "section_name": "hint-and-review",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-09T01:01:02Z",
+  "verified_at": "2026-05-09T01:03:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-5",
+  "active_contracts": [
+    "contracts/original/section-2--section-5.json",
+    "contracts/original/section-3--section-5.json",
+    "contracts/original/section-4--section-5.json",
+    "contracts/original/section-5--section-6.json"
+  ],
+  "sub_goals": [
+    { "id": "5a", "description": "wireHintAndReview", "status": "verified", "builder_id": "builder-5a", "output_path": "output/builders/hint-and-review/builder-5a/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_notes": "S5.A1 Hint click reveals basic-strategy action label sourced from strategyTable.recommendation(getCurrentHintQuery()). S5.A2 review panel renders one row per decision after each resolved hand. S5.A3 hint area writes only the action label as textContent — no reasoning, no chart, no <img>, no <table>.",
+  "rationale": "Critical S5.A1 and S5.A2 user_flow assertions verified by code review."
+}

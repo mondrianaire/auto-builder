@@ -1,0 +1,20 @@
+{
+  "id": "esc-001",
+  "ts": "2026-05-13T00:08:00Z",
+  "raised_by": "critic_final_sweep",
+  "severity": "high",
+  "category": "prose_coverage",
+  "check": "prose_coverage",
+  "summary": "Section charters have no covers-graph coverage. All 6 section charters (S1-S6) are coverage-required per file_schemas.md but zero assertions point covers at any '.../sections/<i>/charter'.",
+  "affected_fields": [
+    "decisions/technical-discovery/sections-v1.json#/sections/0/charter",
+    "decisions/technical-discovery/sections-v1.json#/sections/1/charter",
+    "decisions/technical-discovery/sections-v1.json#/sections/2/charter",
+    "decisions/technical-discovery/sections-v1.json#/sections/3/charter",
+    "decisions/technical-discovery/sections-v1.json#/sections/4/charter",
+    "decisions/technical-discovery/sections-v1.json#/sections/5/charter"
+  ],
+  "context": "Section acceptance prose IS covered (all 6 sections have multiple acceptance_assertions). But charter — the prior load-bearing claim of WHAT each section must do — is not. In practice the charter content is largely re-expressed in the acceptance text and verified through it; the gap is in the explicit covers-graph link, not in behavioral verification.",
+  "recommendation": "Defer to Arbiter for a v1.7 Principle-C strict-pass decision: either (a) add covers pointers to the existing acceptance_assertions so each one also covers the corresponding charter, (b) introduce new charter-specific assertions, or (c) accept the gap on the basis that charter coverage is fully entailed by acceptance coverage and the build is correct.",
+  "blocking": false
+}

@@ -1,0 +1,12 @@
+{
+  "section_id": "section-7",
+  "status": "verified",
+  "builders": ["edge-tests"],
+  "verification": {
+    "S7.A1": "PASS - report.json contains 37 entries covering every IP/DCA/S-assertion with verifier in {edge_case_testing, prompt_named_verb} or static_analysis. 34 PASS, 0 FAIL, 3 SKIP (PNV.1, IP1.A1, DCA.25 — browser-only).",
+    "S7.A2": "PASS - each entry includes assertion_id, statement, scenario, status, error/note. Code-only scans replace screenshot evidence given headless context.",
+    "S7.A3": "PASS - chip conservation invariant holds across 100 hands (verified in headless run).",
+    "S7.A4": "PASS - flush>straight, quads>boat, split-pot detection, wheel straight all correct."
+  },
+  "verified_at": "2026-05-10T01:30:00Z"
+}

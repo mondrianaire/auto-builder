@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-10T01:35:30Z",
+  "decisions": [
+    { "kind": "discovery", "id": "ledger-v1", "path": "decisions/discovery/ledger-v1.json", "summary": "Restatement, 12-item assumption ledger, 11-item out-of-scope list, 5 inflection points." },
+    { "kind": "technical-discovery", "id": "sections-v1", "path": "decisions/technical-discovery/sections-v1.json", "summary": "5 IP resolutions; 29 DCA coverage assertions; 7 sections with acceptance assertions; PNV.1 prompt-named-verb assertion." },
+    { "kind": "contract", "id": "section-1--section-3", "path": "contracts/original/section-1--section-3.json", "summary": "Shell exposes registerRoute, storage adapter (namespaced), navigateHome to walkthrough." },
+    { "kind": "contract", "id": "section-1--section-4", "path": "contracts/original/section-1--section-4.json", "summary": "Shell -> archetype data exposure." },
+    { "kind": "contract", "id": "section-1--section-5", "path": "contracts/original/section-1--section-5.json", "summary": "Shell -> table mode route + storage." },
+    { "kind": "contract", "id": "section-1--section-6", "path": "contracts/original/section-1--section-6.json", "summary": "Shell -> stats subscription via event bus + persistence keys." },
+    { "kind": "contract", "id": "section-2--section-3", "path": "contracts/original/section-2--section-3.json", "summary": "GTOData read API for walkthrough hand library and glossary." },
+    { "kind": "contract", "id": "section-2--section-4", "path": "contracts/original/section-2--section-4.json", "summary": "Preflop ranges available for archetype frequency lookup baseline." },
+    { "kind": "contract", "id": "section-2--section-5", "path": "contracts/original/section-2--section-5.json", "summary": "Reference data for table-mode contrast surfaces." },
+    { "kind": "contract", "id": "section-3--section-6", "path": "contracts/original/section-3--section-6.json", "summary": "DecisionResult event shape from walkthrough -> stats intake." },
+    { "kind": "contract", "id": "section-4--section-5", "path": "contracts/original/section-4--section-5.json", "summary": "decide(state, profile, seed) signature consumed by table engine on agent turns." },
+    { "kind": "contract", "id": "section-5--section-6", "path": "contracts/original/section-5--section-6.json", "summary": "HandResult event shape from table -> stats intake." },
+    { "kind": "inline-deviation", "id": "dev-001", "path": "state/inline-deviations/dev-001.json", "category": "subtask_decomposition" },
+    { "kind": "inline-deviation", "id": "dev-002", "path": "state/inline-deviations/dev-002.json", "category": "test_or_assertion_fix", "severity": "Sev 0" },
+    { "kind": "inline-deviation", "id": "dev-003", "path": "state/inline-deviations/dev-003.json", "category": "test_or_assertion_fix" },
+    { "kind": "inline-deviation", "id": "dev-004", "path": "state/inline-deviations/dev-004.json", "category": "test_or_assertion_fix" },
+    { "kind": "build", "id": "build-complete", "path": "state/coordinator/build-complete.json", "summary": "All 7 sections verified; deliverable at output/integration/index.html." }
+  ]
+}

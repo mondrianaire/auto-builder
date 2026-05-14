@@ -1,0 +1,8 @@
+{
+  "section_id": "section-5",
+  "builder_id": "builder-5b",
+  "outputs": ["output.js"],
+  "exports": { "global": "HandEval", "members": ["evaluateHand", "compareEvals", "HAND_RANK", "HAND_NAME"] },
+  "covers": "best-5-of-7 NLHE evaluation including wheel straight; flushes; full houses; four of a kind; straight flush.",
+  "assertions_satisfied": ["S7.A4 (partial - covered in eval logic)"]
+}

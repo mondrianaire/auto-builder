@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-3",
+  "interface": {
+    "buildShoe(numDecks)": {
+      "params": { "numDecks": "int (default 6)" },
+      "returns": "Array<Card>  // shuffled, where Card = { rank: 'A'|'2'..'10'|'J'|'Q'|'K', suit: 'S'|'H'|'D'|'C' }"
+    },
+    "drawCard(shoe)": {
+      "params": { "shoe": "Array<Card>" },
+      "returns": "{ card: Card, shoeAfter: Array<Card> }  // pure; no input mutation"
+    },
+    "scoreHand(cards)": {
+      "params": { "cards": "Array<Card>" },
+      "returns": "{ total: int, isSoft: bool, isBlackjack: bool, isBust: bool }"
+    },
+    "legalActions(handState)": {
+      "params": {
+        "handState": "{ cards: Array<Card>, isSplitHand: bool, alreadySplit: bool, hasHit: bool, dealerUpcard: Card }"
+      },
+      "returns": "Array<'hit'|'stand'|'double'|'split'>"
+    },
+    "playDealer(dealerHand, shoe)": {
+      "params": {
+        "dealerHand": "Array<Card>  // initial 2 cards, hole-card included",
+        "shoe": "Array<Card>"
+      },
+      "returns": "{ finalDealerHand: Array<Card>, shoeAfter: Array<Card> }  // S17 stand on all 17"
+    },
+    "resolveHand(playerHand, dealerHand, bet, context)": {
+      "params": {
+        "playerHand": "Array<Card>",
+        "dealerHand": "Array<Card>",
+        "bet": "number",
+        "context": "{ wasDoubled: bool, wasSplit: bool }"
+      },
+      "returns": "{ outcome: 'player_blackjack'|'player_win'|'push'|'dealer_win'|'player_bust'|'dealer_bust', netDelta: number  // signed payout (3:2 on player_blackjack) }"
+    }
+  },
+  "notes": "All functions are pure: no mutation of inputs, no globals, no DOM. section-3 calls these as the canonical rules layer. 'surrender' must never appear in legalActions per IP1 lock. S17 enforced inside playDealer per IP1 lock. Blackjack pays 3:2 inside resolveHand per IP1 lock."
+}

@@ -1,0 +1,39 @@
+{
+  "builder_id": "builder-controller-b1",
+  "section_id": "controller-and-shell",
+  "status": "completed",
+  "completed_at": "2026-05-09T00:11:30Z",
+  "outputs": [
+    {
+      "path": "output/builders/controller-and-shell/builder-controller-b1/controller.js",
+      "filename_for_integration": "controller.js",
+      "type": "javascript"
+    },
+    {
+      "path": "output/builders/controller-and-shell/builder-controller-b1/index.html",
+      "filename_for_integration": "index.html",
+      "type": "html"
+    }
+  ],
+  "exposed_symbols": {
+    "global_namespace": "window.TTTController (debug-only hooks: _getState, _getOutcome, _restart, _humanClick, AI_DELAY_MS)"
+  },
+  "depends_on_runtime": ["window.RulesEngine", "window.AIOpponent", "window.UIRender"],
+  "loading_order_in_index_html": ["ui-render.css", "rules-engine.js", "ai-opponent.js", "ui-render.js", "controller.js"],
+  "integrator_instructions": {
+    "copy_layout": "Place the following files at the same directory level as index.html: rules-engine.js (from output/builders/rules-engine/builder-rules-engine-b1/output.js), ai-opponent.js (from output/builders/ai-opponent/builder-ai-opponent-b1/output.js), ui-render.js (from output/builders/ui-render/builder-ui-render-b1/output.js), ui-render.css (from output/builders/ui-render/builder-ui-render-b2/output.css), controller.js (this builder), index.html (this builder).",
+    "no_build_step": "Open index.html directly in a modern browser via file:// or any static server."
+  },
+  "ai_delay_ms": 350,
+  "fixed_assignments": {"human": "X", "computer": "O", "human_moves_first": true},
+  "contract_compliance": {
+    "rules-engine--controller-and-shell.json": "consumes createBoard, applyMove (try/catch wrapped per documented error contract), checkOutcome.",
+    "ai-opponent--controller-and-shell.json": "calls AIOpponent.chooseMove only when state.currentPlayer == 'O' and outcome.status == 'in_progress'; controller owns the perceptual delay.",
+    "ui-render--controller-and-shell.json": "controller is the only writer; renderer is the only DOM toucher; viewModel composed each frame from state + outcome."
+  },
+  "notes": [
+    "Restart cancels any pending AI setTimeout to avoid stale moves on a fresh board.",
+    "Defensive checks in click handler ignore clicks during AI's turn or after game-over (acceptance: graceful illegal-input handling).",
+    "DOMContentLoaded gating allows index.html to keep scripts at the end of body OR move them to head later without breaking init."
+  ]
+}

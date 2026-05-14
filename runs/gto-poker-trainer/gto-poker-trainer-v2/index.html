@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>GTO Poker Trainer</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">GTO Poker Trainer</h1>
+    <nav class="app-nav" id="app-nav"></nav>
+  </header>
+  <main id="route-container" class="route-container"></main>
+  <footer class="app-footer">
+    <span id="storage-status">storage: ready</span>
+    <span class="footer-sep">|</span>
+    <span>9-max NLHE | 100bb | local-only</span>
+  </footer>
+  <!-- Load order: shell -> data -> archetypes -> agent engine -> hand eval -> table engine -> mode UIs -> stats -->
+  <script src="shell.js"></script>
+  <script src="data/preflop-ranges.js"></script>
+  <script src="data/curated-hands.js"></script>
+  <script src="archetypes.js"></script>
+  <script src="agent-engine.js"></script>
+  <script src="hand-eval.js"></script>
+  <script src="table-engine.js"></script>
+  <script src="walkthrough.js"></script>
+  <script src="table-ui.js"></script>
+  <script src="stats.js"></script>
+</body>
+</html>

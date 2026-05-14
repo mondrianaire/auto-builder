@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "created_at": "2026-05-13T00:00:00Z",
+  "updated_at": "2026-05-13T01:10:00Z",
+  "dispatch_mode": "inline",
+  "cycle": "v3-windows-rebuild",
+  "supersedes_versions": [1],
+  "nodes": [
+    {"id": "S1", "name": "plugin-bundle-skeleton", "depends_on": [], "status": "verified", "wave": 1, "v3_action": "salvageable_amended", "active_builder": "builder-s1-v3"},
+    {"id": "S2", "name": "touchbar-layout-and-property-inspector", "depends_on": ["S1"], "status": "verified", "wave": 2, "v3_action": "unaffected", "active_builder": "builder-s2-1"},
+    {"id": "S3", "name": "sdk-handshake-and-event-loop", "depends_on": ["S1"], "status": "verified", "wave": 2, "v3_action": "unaffected", "active_builder": "builder-s3-1"},
+    {"id": "S4", "name": "polling-orchestrator-and-paint", "depends_on": ["S2", "S3", "S5"], "status": "verified", "wave": 3, "v3_action": "unaffected", "active_builder": "builder-s4-1"},
+    {"id": "S5", "name": "music-source-smtc", "previous_name": "music-source-applescript", "depends_on": [], "status": "verified", "wave": 1, "v3_action": "stop_and_scrap_and_replace", "active_builder": "builder-s5-v3"},
+    {"id": "integrator", "name": "integrator", "depends_on": ["S1", "S2", "S3", "S4", "S5"], "status": "verified", "wave": 4, "pseudo_node": true, "v3_action": "re-integrated"},
+    {"id": "S6", "name": "edge-case-testing", "depends_on": ["integrator"], "status": "verified", "wave": 5, "v3_action": "salvageable_amended", "active_builder": "builder-s6-v3"}
+  ],
+  "current_wave": 5,
+  "all_verified": true,
+  "wave_plan": {
+    "1": ["S1", "S5"],
+    "2": ["S2", "S3"],
+    "3": ["S4"],
+    "4": ["integrator"],
+    "5": ["S6"]
+  }
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Auto Builder — Role Architecture</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #fafafa; font-family: Arial, Helvetica, sans-serif; overflow: hidden; }
+  #toolbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 44px;
+    background: #fff; border-bottom: 1px solid #ddd;
+    display: flex; align-items: center; padding: 0 14px; gap: 14px; z-index: 10;
+    font-size: 13px; color: #444;
+  }
+  #toolbar button {
+    border: 1px solid #bbb; background: #fff; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 13px;
+  }
+  #toolbar button:hover { background: #f0f0f0; }
+  #toolbar .hint { color: #888; }
+  #stage { position: absolute; top: 44px; left: 0; right: 0; bottom: 0; overflow: hidden; cursor: default; }
+  #stage svg { display: block; width: 100%; height: 100%; user-select: none; }
+  #stage.panning { cursor: grabbing; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <strong>Auto Builder Architecture</strong>
+  <span class="hint">scroll to zoom • middle-click drag to pan • left-drag also pans</span>
+  <button id="reset">Reset view</button>
+  <button id="zoomin">+</button>
+  <button id="zoomout">−</button>
+  <span id="zoominfo" style="margin-left:auto; color:#888;"></span>
+</div>
+<div id="stage"></div>
+
+<script>
+const SVG_VIEWBOX = { x: 0, y: 0, w: 1800, h: 1750 };
+let view = { ...SVG_VIEWBOX };
+const stage = document.getElementById('stage');
+const zoomInfo = document.getElementById('zoominfo');
+
+// Fetch the external SVG. If running locally as file://, we inline the SVG by injecting at runtime.
+async function loadSvg() {
+  try {
+    const r = await fetch('architecture_diagram.svg');
+    if (!r.ok) throw new Error('not ok');
+    const text = await r.text();
+    stage.innerHTML = text;
+    init();
+  } catch (e) {
+    // Fallback: embedded SVG (kept short — see external file for canonical version)
+    stage.innerHTML = '<div style="padding:40px;color:#a00;">Could not load architecture_diagram.svg. Open this HTML from the same folder as the .svg file.</div>';
+  }
+}
+
+function init() {
+  const svg = stage.querySelector('svg');
+  if (!svg) return;
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  applyView();
+
+  // Wheel zoom (zoom toward cursor)
+  stage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    // svg point under cursor
+    const sx = view.x + (mx / rect.width) * view.w;
+    const sy = view.y + (my / rect.height) * view.h;
+    const factor = e.deltaY > 0 ? 1.15 : 1 / 1.15;
+    view.w *= factor;
+    view.h *= factor;
+    // clamp zoom
+    const minW = SVG_VIEWBOX.w / 12;
+    const maxW = SVG_VIEWBOX.w * 4;
+    if (view.w < minW) { const f = minW / view.w; view.w *= f; view.h *= f; }
+    if (view.w > maxW) { const f = maxW / view.w; view.w *= f; view.h *= f; }
+    view.x = sx - (mx / rect.width) * view.w;
+    view.y = sy - (my / rect.height) * view.h;
+    applyView();
+  }, { passive: false });
+
+  // Pan (middle mouse OR left mouse drag)
+  let panning = false;
+  let last = { x: 0, y: 0 };
+  stage.addEventListener('mousedown', (e) => {
+    if (e.button === 1 || e.button === 0) {
+      e.preventDefault();
+      panning = true;
+      last = { x: e.clientX, y: e.clientY };
+      stage.classList.add('panning');
+    }
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!panning) return;
+    const rect = stage.getBoundingClientRect();
+    const dx = (e.clientX - last.x) * (view.w / rect.width);
+    const dy = (e.clientY - last.y) * (view.h / rect.height);
+    view.x -= dx;
+    view.y -= dy;
+    last = { x: e.clientX, y: e.clientY };
+    applyView();
+  });
+  window.addEventListener('mouseup', (e) => {
+    if (panning) { panning = false; stage.classList.remove('panning'); }
+  });
+  // Prevent middle-click autoscroll
+  stage.addEventListener('auxclick', (e) => { if (e.button === 1) e.preventDefault(); });
+}
+
+function applyView() {
+  const svg = stage.querySelector('svg');
+  if (!svg) return;
+  svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+  const z = (SVG_VIEWBOX.w / view.w * 100).toFixed(0);
+  zoomInfo.textContent = `${z}%`;
+}
+
+document.getElementById('reset').addEventListener('click', () => { view = { ...SVG_VIEWBOX }; applyView(); });
+document.getElementById('zoomin').addEventListener('click', () => { view.w /= 1.3; view.h /= 1.3; applyView(); });
+document.getElementById('zoomout').addEventListener('click', () => { view.w *= 1.3; view.h *= 1.3; applyView(); });
+
+loadSvg();
+</script>
+</body>
+</html>

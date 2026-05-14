@@ -1,0 +1,12 @@
+{
+  "id": "dev-004",
+  "ts": "2026-05-13T00:57:00Z",
+  "cycle": "v3-windows-rebuild",
+  "category": "implementation_path_chosen",
+  "section": "S5",
+  "summary": "PowerShell script embedded in music_source.js as an array of single-quoted JS strings joined with '\\n' (rather than a JS template literal).",
+  "decision": "PowerShell uses backticks (`) as its own escape character (e.g., `t for tab) and dollar-sigils ($var). JS template literals would interpret these, requiring extensive JS-side escaping that risks introducing transcription bugs. Using an array of single-quoted JS strings joined with '\\n' lets PowerShell text pass through verbatim: each line is a complete PS statement, JS sees only ordinary string literals, and the resulting PS_SCRIPT constant is a faithful multi-line PowerShell program. Format-string tab uses PS's own backtick-t (\"{0}`t{1}\" -f $title, $artist) which prints a literal tab character.",
+  "nested_equivalent": "Overseer would surface this as a code-style judgment call; Coordinator would approve since it directly serves correctness and the dispatch briefing flagged escape pattern choice as an inline-deviation candidate.",
+  "contract_impact": "None. PS_SCRIPT is internal to S5; the C-S4-S5 surface (tab-delimited stdout, resolve-null on empty) is unchanged.",
+  "related": ["dispatch briefing 'Critical note': inline deviations expected for PS escape pattern", "probe-windows-nowplaying Q2 (AsTask shim vs Status-poll): chose AsTask shim for ~15 fewer lines and simpler semantics"]
+}

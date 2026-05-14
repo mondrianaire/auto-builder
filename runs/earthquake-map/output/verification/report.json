@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "role": "convergence-verifier",
+  "generated_at": "2026-05-10T02:30:00Z",
+  "artifact_under_test": {
+    "root": "output/integration/",
+    "entry_point": "output/integration/index.html",
+    "absolute_path": "C:/Users/mondr/Documents/Claude/Projects/Auto Builder/runs/earthquake-map/output/integration/index.html"
+  },
+  "environment": {
+    "tier": "best",
+    "tool": "playwright",
+    "browser": "chromium (headless), playwright build 147.0.7727.15",
+    "viewport": { "width": 1280, "height": 800 },
+    "page_url": "file:///sessions/elegant-laughing-lovelace/mnt/Auto Builder/runs/earthquake-map/output/integration/index.html",
+    "runtime_stubs": false,
+    "leaflet_substituted": false,
+    "fetch_substituted": false,
+    "tile_layer_substituted": false,
+    "network": {
+      "usgs_status": 200,
+      "osm_tiles_loaded": true,
+      "tile_zoom_levels_seen": ["2", "3"]
+    },
+    "page_errors": [],
+    "console_errors": [],
+    "notes": "Loaded the integration artifact via file:// in real headless Chromium with real network. No production runtime dependency was stubbed. USGS feed returned HTTP 200; OSM tile pyramid loaded for zoom levels 2 and 3 across the pan/zoom interactions."
+  },
+
+  "static_inspection": {
+    "files_present": [
+      "output/integration/index.html",
+      "output/integration/data-fetcher.js",
+      "output/integration/map.js",
+      "output/integration/main.js",
+      "output/integration/styles.css",
+      "output/integration/manifest.json",
+      "output/integration/vendor/leaflet/leaflet.js",
+      "output/integration/vendor/leaflet/leaflet.css",
+      "output/integration/vendor/leaflet/images/{layers,layers-2x,marker-icon,marker-icon-2x,marker-shadow}.png"
+    ],
+    "leaflet_loaded_locally": true,
+    "no_cdn_for_leaflet": true,
+    "no_mapbox_or_maplibre_tokens_or_imports": true,
+    "no_polling_constructs_in_source": true,
+    "no_filter_or_window_ui_elements_in_dom": true,
+    "no_persistence_or_auth_or_export_apis": true
+  },
+
+  "assumption_checks": [
+    { "id": "A1",  "result": "pass", "evidence": "Single web page artifact: index.html + co-located JS/CSS. No report/dataset/pipeline output." },
+    { "id": "A2",  "result": "pass", "evidence": "Map region occupies 91.875% of the 1280x800 viewport per measured bounding rect. Earthquakes rendered as L.circleMarker SVG paths (480 markers in past-24h feed run). No heatmap/polygon overlays." },
+    { "id": "A3",  "result": "pass", "evidence": "magnitudeRadius and magnitudeColor encode magnitude on size and color. Live exercise observed 4 distinct fill colors across rendered markers (#ffffb2, #fed976, #fd8d3c, #f03b20); the 5th bucket #bd0026 is M>=6 and was not present in this 24h sample but is reachable per code path." },
+    { "id": "A4",  "result": "pass", "evidence": "No login/auth UI in DOM; no auth/session code in source." },
+    { "id": "A5",  "result": "pass", "evidence": "No localStorage/sessionStorage/IndexedDB/cookie writes for user state in any source file." },
+    { "id": "A6",  "result": "pass", "evidence": "No file picker / drag-drop / URL parameter for data; data-fetcher.js fetches the fixed USGS public GeoJSON URL." },
+    { "id": "A7",  "result": "pass", "evidence": "Initial map view set to center [20,0], zoom 2 (worldCopyJump enabled). Live exercise: tile pyramid at z=2 loaded a global view; markers rendered across multiple continents (480 across the past-24h feed)." },
+    { "id": "A8",  "result": "pass", "evidence": "FEED_URL constant = https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson (past-day endpoint)." },
+    { "id": "A9",  "result": "pass", "evidence": "Pan via mouse drag shifted .leaflet-map-pane transform from translate3d(0,0,0) to translate3d(283px,113px,0); SVG viewBox shifted accordingly. Zoom-in control click loaded new z=3 tiles. Marker click opened popup containing time, magnitude, place, depth." },
+    { "id": "A10", "result": "pass", "evidence": "Viewport meta width=1280; styles use desktop-typical proportions; no horizontal scroll at 1280x800 baseline; no mobile hamburger nav." },
+    { "id": "A11", "result": "pass", "evidence": "Artifact opens directly via file:// without any backend; Leaflet loaded from vendor/leaflet/ paths; no server code present." },
+    { "id": "A12", "result": "pass", "evidence": "No focal-mechanism/depth-slice/fault-overlay specialized seismologist tooling. Single map + legend + popup audience-appropriate UI." }
+  ],
+
+  "out_of_scope_checks": [
+    { "id": "OOS1",  "phrase": "User accounts, login, or authentication", "result": "pass", "evidence": "No login form, no auth code paths, no Authorization headers in fetch." },
+    { "id": "OOS2",  "phrase": "Saving views, bookmarks, or annotations", "result": "pass", "evidence": "No save/bookmark/annotate UI; no persistence calls in source." },
+    { "id": "OOS3",  "phrase": "Multi-user collaboration or sharing", "result": "pass", "evidence": "No share-link / collaborator / multiplayer UI in DOM." },
+    { "id": "OOS4",  "phrase": "Mobile-first or native mobile app", "result": "pass", "evidence": "Desktop-baseline layout; no mobile-first @media query primitives; viewport pinned at width=1280." },
+    { "id": "OOS5",  "phrase": "Hosted backend / server-side / database", "result": "pass", "evidence": "Static file artifact; no server, DB client, or own API endpoints." },
+    { "id": "OOS6",  "phrase": "User-uploaded earthquake datasets", "result": "pass", "evidence": "No file inputs / drag-drop in DOM (input[type=file] count = 0)." },
+    { "id": "OOS7",  "phrase": "Predictive modeling, forecasting, risk analysis", "result": "pass", "evidence": "No forecast/predict/risk text or code paths in the source." },
+    { "id": "OOS8",  "phrase": "Tsunami / aftershock / fault overlays", "result": "pass", "evidence": "No such overlays referenced in map.js; no plugin imports." },
+    { "id": "OOS9",  "phrase": "Alerts, notifications, subscriptions", "result": "pass", "evidence": "No Notification API usage; no subscribe UI." },
+    { "id": "OOS10", "phrase": "Data export (CSV, GeoJSON, image download)", "result": "pass", "evidence": "No export/download buttons in DOM; no Blob/anchor[download] code." },
+    { "id": "OOS11", "phrase": "Accessibility certification beyond defaults", "result": "pass", "evidence": "Reasonable defaults only (aria-label on map, role=alert on banner). No formal-compliance claim." },
+    { "id": "OOS12", "phrase": "Internationalization / multi-language UI", "result": "pass", "evidence": "Single-language English strings; no i18n library; no locale switcher." }
+  ],
+
+  "inflection_point_checks": [
+    {
+      "id": "IP1",
+      "topic": "Live/refreshing data vs static snapshot",
+      "chosen_branch": "Static snapshot",
+      "result": "pass",
+      "evidence": "data-fetcher.js: single await fetch with no setInterval/setTimeout/recursion. main.js: bootstrap invoked once on DOMContentLoaded. Live exercise: marker count stable at 480 before and after 4-second observation window (no auto-refresh side effects)."
+    },
+    {
+      "id": "IP2",
+      "topic": "Time-window control",
+      "chosen_branch": "Fixed past-24h window",
+      "result": "pass",
+      "evidence": "FEED_URL targets all_day.geojson. DOM has 0 input[type=range], 0 date inputs, 0 select elements. No window-control UI."
+    },
+    {
+      "id": "IP3",
+      "topic": "Filtering controls",
+      "chosen_branch": "No filters",
+      "result": "pass",
+      "evidence": "No magnitude/depth/region threshold inputs in DOM. data-fetcher.js maps every feature; map.js iterates all events (skips only entries with non-finite lat/lon — safety guard, not a filter)."
+    }
+  ],
+
+  "td_inflection_point_checks": [
+    { "id": "TD-IP1", "topic": "Map library = Leaflet (vendored)", "result": "pass", "evidence": "index.html loads vendor/leaflet/leaflet.{js,css}; map.js calls L.map(), L.tileLayer(), L.circleMarker(); no Mapbox/MapLibre/CDN references anywhere." },
+    { "id": "TD-IP2", "topic": "Data source = USGS past-day GeoJSON", "result": "pass", "evidence": "USGS_FEED_URL constant matches the contracted endpoint; live exercise returned HTTP 200 from this endpoint and produced 480 normalized records." },
+    { "id": "TD-IP3", "topic": "Marker encoding = size + color", "result": "pass", "evidence": "magnitudeRadius monotonic (3 + 1.6*max(0,m), clamped to 22). magnitudeColor returns 5 distinct hex values across [-1,9]. Legend renders all 5 buckets with size+color swatches in the rendered DOM." }
+  ],
+
+  "artifact_exercise_results": [
+    {
+      "id": "PV1",
+      "verb": "visualize",
+      "verifier": "prompt_named_verb",
+      "result": "pass",
+      "scenario": "Open output/integration/index.html via file:// in headless Chromium with real network connectivity. Wait for the page to settle.",
+      "expected": "A geographic map fills a substantial portion of the viewport. Multiple earthquake markers are visible on it, magnitude-encoded. Pan, zoom, and marker-click->popup work.",
+      "actual": "Map filled 91.875% of the 1280x800 viewport (>= 50% threshold). 480 earthquake markers rendered as SVG circle paths in .leaflet-overlay-pane, with 4 distinct fill colors observed across the magnitude range. Pan via mouse drag shifted the map pane transform and SVG viewBox. Zoom-in control click triggered loading of z=3 OSM tiles. Marker click opened a Leaflet popup showing place ('9 km ENE of Ocotillo Wells, CA'), magnitude (1.5), depth (4.5 km), and human-readable time. No page errors, no console errors."
+    },
+    {
+      "id": "DC.R1",
+      "verifier": "cv_artifact_exercise",
+      "from": "restatement",
+      "phrase": "displays earthquake events as markers on a geographic map",
+      "result": "pass",
+      "evidence": "Loaded artifact in real Chromium; .leaflet-container present, .leaflet-tile-pane has 24 tile imgs (geographic basemap), 480 .leaflet-overlay-pane svg path nodes (event markers)."
+    },
+    {
+      "id": "DC.R2",
+      "verifier": "cv_artifact_exercise",
+      "from": "restatement",
+      "phrase": "see where earthquakes have occurred and get a sense of distribution and intensity at a glance",
+      "result": "pass",
+      "evidence": "480 markers distributed across the global basemap (worldCopyJump + initial center [20,0] z=2 view). Marker fill colors observed in 4 distinct buckets (#ffffb2 -> #fed976 -> #fd8d3c -> #f03b20) and radii vary by magnitude (legend confirms: M<2, 2-4, 4-5, 5-6, 6+ rendered with size+color swatches). Intensity legible without interaction."
+    },
+    {
+      "id": "DC.A2",
+      "verifier": "cv_artifact_exercise",
+      "from": "assumption",
+      "phrase": "Map is the primary UI surface; earthquakes are point markers",
+      "result": "pass",
+      "evidence": "Map region: x=0, y=65, width=1280, height=735; area = 91.875% of viewport. Markers are L.circleMarker SVG paths (point markers, not heatmap, not polygons)."
+    },
+    {
+      "id": "DC.A7",
+      "verifier": "cv_artifact_exercise",
+      "from": "assumption",
+      "phrase": "Global geographic coverage",
+      "result": "pass",
+      "evidence": "Initial view at center [20,0] zoom 2 with worldCopyJump=true shows the whole world. Live feed produced 480 markers spanning multiple continents (sample popup hit a California event; feed worldwide-by-default)."
+    },
+    {
+      "id": "DC.A10",
+      "verifier": "cv_artifact_exercise",
+      "from": "assumption",
+      "phrase": "Desktop-first viewing context",
+      "result": "pass",
+      "evidence": "Viewport meta width=1280; rendered at 1280x800 with no horizontal scroll, no mobile hamburger nav, header/legend/map laid out for desktop proportions."
+    },
+    {
+      "id": "DC.A11",
+      "verifier": "cv_artifact_exercise",
+      "from": "assumption",
+      "phrase": "Local/standalone deployment via file://",
+      "result": "pass",
+      "evidence": "Page loaded directly from file:// URL; vendor/leaflet/leaflet.{js,css} resolved as relative paths; no backend/server required. Leaflet global L present, EarthquakeMap & EarthquakeData modules registered correctly."
+    },
+    {
+      "id": "S2.A1",
+      "verifier": "cv_artifact_exercise",
+      "from": "section_acceptance",
+      "phrase": "produces a visible, interactive (pan, zoom) world map",
+      "result": "pass",
+      "evidence": "Map canvas visible (.leaflet-container present, 91.875% viewport coverage). Pan: mouse drag from center shifted .leaflet-map-pane transform from translate3d(0,0,0) to translate3d(283px,113px,0); SVG viewBox shifted from '-128 -73 1536 882' to '-411 -186 1536 882'. Zoom: clicking .leaflet-control-zoom-in triggered tile pyramid request at z=3 (was z=2)."
+    },
+    {
+      "id": "S2.A5",
+      "verifier": "cv_artifact_exercise",
+      "from": "section_acceptance",
+      "phrase": "Clicking a marker opens a popup with time, magnitude, place, depth",
+      "result": "pass",
+      "evidence": "Click on first marker opened .leaflet-popup. Popup content: '9 km ENE of Ocotillo Wells, CA / Magnitude: 1.5 / Depth: 4.5 km / Time: 5/9/2026, 10:14:46 AM' — all four required fields present, time is human-readable (toLocaleString)."
+    },
+    {
+      "id": "S3.A1",
+      "verifier": "cv_artifact_exercise",
+      "from": "section_acceptance",
+      "phrase": "renders a header",
+      "result": "pass",
+      "evidence": "Exactly 1 <header> element present, containing non-empty title 'Earthquake Activity — Past 24 Hours' and subtitle 'Worldwide seismic events from the USGS public feed.'"
+    },
+    {
+      "id": "S3.A2",
+      "verifier": "cv_artifact_exercise",
+      "from": "section_acceptance",
+      "phrase": "map region occupies dominant area of viewport",
+      "result": "pass",
+      "evidence": "At 1280x800 baseline, #map bounding rect = (0, 65, 1280, 735) = 91.875% of viewport area. Threshold >= 50% met."
+    },
+    {
+      "id": "S3.A3",
+      "verifier": "cv_artifact_exercise",
+      "from": "section_acceptance",
+      "phrase": "visible legend labels at least three magnitude buckets",
+      "result": "pass",
+      "evidence": "#legend visible. legend-list contains 5 .legend__item entries: 'M < 2', 'M 2 - 4', 'M 4 - 5', 'M 5 - 6', 'M 6+'. Each item has a circular size+color swatch styled via shared EarthquakeMap.magnitudeColor / magnitudeRadius."
+    },
+    {
+      "id": "S3.A5",
+      "verifier": "cv_artifact_exercise",
+      "from": "section_acceptance",
+      "phrase": "page sized for typical desktop viewport",
+      "result": "pass",
+      "evidence": "Rendered at 1280x800: header + map + legend overlay; no horizontal scroll; no mobile-only navigation; layout proportions match desktop baseline."
+    }
+  ],
+
+  "prompt_named_verb_result": {
+    "verb": "visualize",
+    "assertion_id": "PV1",
+    "scenario": "Open output/integration/index.html via file:// in real headless Chromium with allowed network access, viewport 1280x800.",
+    "environment": "Playwright (chromium, headless build 147.0.7727.15) — production fidelity: vendored Leaflet loaded, real fetch to USGS, real OSM tile requests. No runtime dependency stubbed.",
+    "expected": "A visible map fills the viewport; multiple earthquake markers appear, magnitude-encoded; pan, zoom, and marker-click-to-popup work as a user would expect.",
+    "actual": "Map covers 91.875% of viewport. 480 markers rendered with 4 distinct color buckets observed (5 defined). Pan and zoom both interactive (verified via map-pane transform mutation and tile-pyramid zoom-level change). Marker click opens popup with place/magnitude/depth/human-readable-time. No page or console errors.",
+    "verdict": "pass"
+  },
+
+  "edge_case_testing_cross_check": {
+    "report_path": "output/builders/edge-case-testing/builder-4a/report.json",
+    "harness_used_static_inspection": true,
+    "deferred_to_cv": ["PV1", "DC.A9", "S2.A1", "S2.A5", "IP1.A2"],
+    "cv_resolution": {
+      "PV1": "pass (production-fidelity Playwright run)",
+      "DC.A9": "pass (pan + zoom + marker-click-popup all exercised)",
+      "S2.A1": "pass (pan and zoom verified)",
+      "S2.A5": "pass (popup content verified)",
+      "IP1.A2": "pass (marker count stable at 480 across 4-second observation; no refresh code path exists by source inspection)"
+    },
+    "edge_case_coverage_complete": true,
+    "non_deferred_edge_case_assertions_pass": true,
+    "notes": "Builder-4a's report explicitly deferred all real-browser user-flow assertions to CV with the rationale that this run permits static + structural inspection in section-4. Static prediction was 'pass'. CV's production-fidelity run confirms each deferred assertion passes."
+  },
+
+  "summary": {
+    "assumptions_checked": 12,
+    "assumptions_pass": 12,
+    "out_of_scope_checked": 12,
+    "out_of_scope_pass": 12,
+    "inflection_points_checked": 3,
+    "inflection_points_pass": 3,
+    "td_inflection_points_checked": 3,
+    "td_inflection_points_pass": 3,
+    "artifact_exercise_assertions_checked": 13,
+    "artifact_exercise_assertions_pass": 13,
+    "prompt_named_verb_pass": true,
+    "deferred_resolutions_from_edge_case_testing_pass": 5,
+    "production_fidelity_violations": 0,
+    "concerns": [],
+    "key_observations": [
+      "Production-fidelity exercise used real Chromium loading file:// with vendored Leaflet, real USGS fetch (HTTP 200), and real OSM tile loading. No stubs.",
+      "USGS past-24h feed delivered 480 events. All rendered as L.circleMarker SVG paths.",
+      "Live distinct fill colors observed: 4 of 5 defined buckets. The fifth (deep red #bd0026, M>=6) was not present in this 24h sample but the code path is verifiably correct via static inspection of magnitudeColor.",
+      "Pan/zoom/popup all interactive without errors.",
+      "Edge-case-testing builder ran static-only and explicitly deferred runtime user-flow assertions to CV; CV resolved all of them as pass."
+    ]
+  },
+
+  "verdict": "pass"
+}

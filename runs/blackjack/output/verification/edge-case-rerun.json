@@ -1,0 +1,48 @@
+{
+  "completed_at": "2026-05-09T00:00:00Z",
+  "existing_runner": {
+    "passed": 14,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "spot_checks": [
+    {
+      "id": "smoke",
+      "name": "createInitialState returns betting state",
+      "status": "pass",
+      "detail": "phase='betting', deck has 312 cards, playerHands.length=1"
+    },
+    {
+      "id": "deal-mechanics",
+      "name": "dealInitial deals 2+2 with dealer hole face-down",
+      "status": "pass",
+      "detail": "dealer=2 cards, player=2 cards, dealer[1].faceUp=false"
+    },
+    {
+      "id": "bankroll-win",
+      "name": "placeBet 100 + resolve win = +100 net from starting 1000",
+      "status": "pass",
+      "detail": "start=1000, end=1100, net=+100"
+    },
+    {
+      "id": "blackjack-payout",
+      "name": "blackjack 3:2 payout returns bet+1.5x (balance=1150)",
+      "status": "pass",
+      "detail": "balance=1150, payout=250 (1000-100+250)"
+    },
+    {
+      "id": "soft-ace",
+      "name": "handTotal soft/hard transitions (A+7 -> soft 18, +5 -> hard 13)",
+      "status": "pass",
+      "detail": "A+7={total:18, isSoft:true}; A+7+5={total:13, isSoft:false}"
+    },
+    {
+      "id": "html-script-order",
+      "name": "index.html script tag order",
+      "status": "pass",
+      "detail": "order=[rules-engine.js, bankroll.js, ui-render.js, controller.js], inline DOMContentLoaded bootstrapper count=1"
+    }
+  ],
+  "verdict": "pass",
+  "summary": "Existing edge-case test runner reproduced 14/14 passing with exit code 0. All 6 independent spot-checks against the integrated artifact in output/integration/ also passed: rules engine creates a 312-card betting state, dealInitial produces 2+2 cards with dealer's hole card face-down, bankroll math is correct for win (+100 net) and blackjack (3:2 payout, balance=1150), soft-ace handling correctly downgrades A+7+5 from soft 18 to hard 13, and index.html loads scripts in the required order (rules-engine, bankroll, ui-render, controller) with a single inline DOMContentLoaded bootstrapper. Integration is functionally sound."
+}

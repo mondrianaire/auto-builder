@@ -1,0 +1,17 @@
+{"ts":"2026-05-09T00:45:00Z","action":"dispatch","role":"coordinator","dispatch_mode":"inline","note":"coordinator booted; built DAG; 7 sections + integrator pseudo-node identified","briefing_path":"inline"}
+{"ts":"2026-05-09T00:45:01Z","action":"dispatch","role":"overseer","section_id":"section-1","dispatch_mode":"inline","note":"wave 1 — coordinator executing overseer+builder work for rules-engine inline"}
+{"ts":"2026-05-09T00:45:02Z","action":"dispatch","role":"overseer","section_id":"section-2","dispatch_mode":"inline","note":"wave 1 — coordinator executing overseer+builder work for strategy-table inline"}
+{"ts":"2026-05-09T00:51:01Z","action":"wave_complete","wave":1,"verified_sections":["section-1","section-2"],"note":"unblocking section-3"}
+{"ts":"2026-05-09T00:51:02Z","action":"dispatch","role":"overseer","section_id":"section-3","dispatch_mode":"inline","note":"wave 2 — game-state-machine"}
+{"ts":"2026-05-09T00:56:01Z","action":"wave_complete","wave":2,"verified_sections":["section-3"],"note":"unblocking section-4"}
+{"ts":"2026-05-09T00:56:02Z","action":"dispatch","role":"overseer","section_id":"section-4","dispatch_mode":"inline","note":"wave 3 — ui-render"}
+{"ts":"2026-05-09T01:01:01Z","action":"wave_complete","wave":3,"verified_sections":["section-4"],"note":"unblocking section-5"}
+{"ts":"2026-05-09T01:01:02Z","action":"dispatch","role":"overseer","section_id":"section-5","dispatch_mode":"inline","note":"wave 4 — hint-and-review"}
+{"ts":"2026-05-09T01:03:31Z","action":"wave_complete","wave":4,"verified_sections":["section-5"],"note":"unblocking section-6"}
+{"ts":"2026-05-09T01:03:32Z","action":"dispatch","role":"overseer","section_id":"section-6","dispatch_mode":"inline","note":"wave 5 — app-shell"}
+{"ts":"2026-05-09T01:06:31Z","action":"wave_complete","wave":5,"verified_sections":["section-6"],"note":"all pre-integrator sections verified; dispatching Integrator"}
+{"ts":"2026-05-09T01:06:32Z","action":"dispatch","role":"integrator","dispatch_mode":"inline","note":"assembling output/integration/"}
+{"ts":"2026-05-09T01:08:01Z","action":"integrator_complete","note":"output/integration/ assembled; manifest.json written; no Sev 0 fixes applied"}
+{"ts":"2026-05-09T01:08:02Z","action":"dispatch","role":"overseer","section_id":"section-7","dispatch_mode":"inline","note":"wave 6 — edge-case-testing harness"}
+{"ts":"2026-05-09T01:12:30Z","action":"section_verified","section_id":"section-7","note":"harness present + report all-pass"}
+{"ts":"2026-05-09T01:13:00Z","action":"build_complete","artifact":"state/coordinator/build-complete.json","note":"Coordinator handoff to Orchestrator"}

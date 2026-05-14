@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "from_section": "state-model",
+  "to_section": "dnd",
+  "interface": {
+    "moveCard": {
+      "params": {
+        "cardId": "string",
+        "fromListId": "string",
+        "toListId": "string",
+        "toIndex": "number (0-based insertion index in target list's cards array)"
+      },
+      "returns": "boolean — true on success, false if any id is invalid. No-ops if fromListId === toListId."
+    },
+    "reorderCard": {
+      "params": {
+        "cardId": "string",
+        "listId": "string",
+        "toIndex": "number (0-based insertion index)"
+      },
+      "returns": "boolean — true on success, false if card or list not found."
+    },
+    "getState": {
+      "params": {},
+      "returns": "BoardState — used by dnd to validate ids before invoking mutations if needed."
+    }
+  },
+  "notes": "dnd computes toIndex from drop coordinates and the order of card DOM siblings, then invokes the appropriate mutation. dnd never mutates state directly. moveCard with fromListId === toListId should not be used; dnd must call reorderCard for same-list moves."
+}

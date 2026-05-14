@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "from_section": "ui-render",
+  "to_section": "controller-and-shell",
+  "interface": {
+    "global_name": "window.UIRender",
+    "script_filename": "ui-render.js",
+    "stylesheet_filename": "styles.css",
+    "data_shapes": {
+      "ViewState": {
+        "phase": "string — 'betting' | 'playerTurn' | 'dealerTurn' | 'resolved' | 'gameOver'",
+        "dealerHand": "{ cards: Card[], total: number|null, isBust: boolean }",
+        "playerHands": "{ cards: Card[], total: number, bet: number, isActive: boolean, isBust: boolean, isBlackjack: boolean, outcome: string|null }[]",
+        "balance": "number",
+        "committedBets": "number",
+        "currentBetInput": "number — value to prefill bet input during betting phase",
+        "legalActions": "string[] — subset of ['hit','stand','double','split'] to enable",
+        "message": "string — outcome or status message to display",
+        "canReset": "boolean — true when bankroll exhausted, surfaces Reset button"
+      },
+      "Card": {
+        "rank": "string",
+        "suit": "string",
+        "faceUp": "boolean"
+      }
+    },
+    "methods": {
+      "render": {
+        "params": { "state": "ViewState", "rootEl": "HTMLElement" },
+        "returns": "void — idempotently repaints rootEl to reflect state"
+      },
+      "getActionButtonId": {
+        "params": { "action": "string" },
+        "returns": "string — stable DOM id for the action button, one of 'btn-hit','btn-stand','btn-double','btn-split'"
+      }
+    },
+    "stable_dom_ids": {
+      "root_container": "blackjack-app",
+      "deal_button": "btn-deal",
+      "hit_button": "btn-hit",
+      "stand_button": "btn-stand",
+      "double_button": "btn-double",
+      "split_button": "btn-split",
+      "reset_button": "btn-reset",
+      "bet_input": "input-bet",
+      "balance_display": "display-balance",
+      "message_area": "display-message",
+      "dealer_area": "area-dealer",
+      "player_area": "area-player"
+    },
+    "css_classes": {
+      "card": "card",
+      "card_face_down": "card card-face-down",
+      "card_red_suit": "card card-red",
+      "active_hand": "hand hand-active",
+      "bust_hand": "hand hand-bust",
+      "blackjack_hand": "hand hand-blackjack"
+    }
+  },
+  "notes": "UIRender exposes a single render(state, rootEl) entry point. The controller calls render after every state transition. UIRender does not bind events; the controller queries elements by the stable IDs above and attaches listeners. Action buttons that should be disabled (not in legalActions) get the 'disabled' attribute set by render. The Reset button is hidden unless state.canReset is true. Mobile responsiveness is achieved via CSS media queries in styles.css; no JS-side responsive logic."
+}

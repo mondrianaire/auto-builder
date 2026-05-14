@@ -1,0 +1,25 @@
+{
+  "builder_id": "builder-ec-1",
+  "section": "edge-case-testing",
+  "started_at": "2026-05-09T00:14:30Z",
+  "completed_at": "2026-05-09T00:15:00Z",
+  "outputs": {
+    "sandbox_dir": "output/builders/edge-case-testing/builder-ec-1/sandbox/",
+    "test_runner": "output/builders/edge-case-testing/builder-ec-1/tests/run.js",
+    "report": "output/builders/edge-case-testing/builder-ec-1/tests/report.json"
+  },
+  "sandbox_contents": ["index.html", "rules-engine.js", "bankroll.js", "ui-render.js", "controller.js", "styles.css"],
+  "harness": "Node vm context with fake `window`. Loads rules-engine.js and bankroll.js into shared sandbox; ui-render.js is not exercised in tests (DOM-required) but is present in sandbox for completeness.",
+  "scenario_count": 14,
+  "scenarios_passed": 14,
+  "scenarios_failed": 0,
+  "scenarios_covered": [
+    "blackjack-on-initial-deal", "dealer-blackjack-push", "player-bust-loses",
+    "dealer-bust-player-wins", "push-on-equal", "soft-17-stands",
+    "split-pair", "split-aces-one-card-only", "double-down-deals-one-card",
+    "illegal-split-on-non-pair", "illegal-double-without-funds",
+    "bankroll-payouts-correct", "bankroll-reset-restores-pool",
+    "soft-ace-handling"
+  ],
+  "notes": "Tests directly construct controlled hands to bypass random shuffling; deck tail is provided as needed for hits/draws. Run via: `node tests/run.js` from the builder-ec-1 directory."
+}

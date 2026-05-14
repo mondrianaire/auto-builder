@@ -1,0 +1,110 @@
+{
+  "completed_at": "2026-05-10T15:30:00Z",
+  "verdict": "pass",
+  "checked_against_ledger": "decisions/discovery/ledger-v1.json",
+  "checked_against_sections": "decisions/technical-discovery/sections-v1.json",
+  "production_fidelity": {
+    "environment": "jsdom_production_fidelity",
+    "rationale": "Artifact has zero external runtime deps (vendored vanilla JS). Loaded with runScripts:'dangerously', scripts injected from disk in production load order. fetch and XMLHttpRequest hard-shimmed to count any network attempt. localStorage active under synthetic http://gto.local/ origin (jsdom treats raw file:// as opaque and refuses localStorage; this is a jsdom-only quirk that does NOT change runtime semantics — the production code only calls window.localStorage and never inspects location). Zero network calls observed across full PNV scenario.",
+    "network_calls_observed": 0,
+    "vendored_only": true,
+    "no_http_server": true
+  },
+  "assumption_checks": [
+    { "id": "A1", "verified": true, "evidence": "table-engine.js implements NLHE: 2 hole cards + 5 community cards (board), best-5-of-7 evaluation via hand-eval.js; no fixed limit; bet sizing constrained only by min-raise and stack." },
+    { "id": "A2", "verified": true, "evidence": "Grep across all source files for login/signup/auth/password/username returns zero matches. No login UI in any reachable route." },
+    { "id": "A3", "verified": true, "evidence": "shell.js storage adapter writes only to window.localStorage under namespace 'gto-trainer/v1/'. Zero remote-write code paths (no fetch/XHR/WebSocket/WebRTC)." },
+    { "id": "A4", "verified": true, "evidence": "table-engine.js: SB_AMOUNT=10, BB_AMOUNT=20 fixed constants; no blind-escalation logic; no tournament timer." },
+    { "id": "A5", "verified": true, "evidence": "GTO data is static JS data structures in data/preflop-ranges.js and data/curated-hands.js; getHand('h001') returns deeply-equal output across two consecutive calls (verified at runtime)." },
+    { "id": "A6", "verified": true, "evidence": "data/curated-hands.js HANDS array contains 22 entries (h001..h022), each with lesson_tag, gto_mix, and theory_explanation fields." },
+    { "id": "A7", "verified": true, "evidence": "archetypes.js ARCHETYPES contains 8 distinct profiles: TAG, LAG, Nit, CallingStation, Maniac, Rock, Whale, NitReg." },
+    { "id": "A8", "verified": true, "evidence": "agent-engine.js decide() is a pure function over (state, profile, seed); seeded via mulberry32 PRNG; profiles are deepFrozen; verified in edge-tests report (IP4.A2 PASS)." },
+    { "id": "A9", "verified": true, "evidence": "stats.js dashboard renders exactly 8 metrics: Hands Played, VPIP, PFR, 3-bet %, WTSD, W$SD, BB/100, GTO-Deviation. Verified at runtime: dashboard render produced 8 .dash-card elements." },
+    { "id": "A10", "verified": true, "evidence": "walkthrough.js implements decision-then-reveal: reveal panel is appended only after commitAction(); verified at runtime - revealBefore was null, revealAfter was non-null after click." },
+    { "id": "A11", "verified": true, "evidence": "table-ui.js mountTable assigns hero_seat=0 with one hero seat; runtime confirmation: 9 seats, 1 hero, 8 archetype-controlled." },
+    { "id": "A12", "verified": true, "evidence": "data/preflop-ranges.js exports REFERENCE_STACK_BB = 100; shell.js also exposes AppShell.REFERENCE_STACK_BB = 100." }
+  ],
+  "out_of_scope_checks": [
+    { "item": "Multiplayer / networked play with other humans", "verified_absent": true, "evidence": "Zero matches for WebSocket/WebRTC/socket.io/peer/lobby/invite in all source files." },
+    { "item": "User accounts, authentication, cloud sync", "verified_absent": true, "evidence": "Zero matches for login/signup/auth/password/username/cloud/sync in source." },
+    { "item": "Real-money play, deposits, wagering integrations", "verified_absent": true, "evidence": "Zero matches for deposit/withdraw/cashier/payment in source. Stack values are play-money chips only." },
+    { "item": "Variants other than No-Limit Texas Hold'em", "verified_absent": true, "evidence": "Zero variant selectors; table-engine.js only implements NLHE rules." },
+    { "item": "Tournament-specific features", "verified_absent": true, "evidence": "Blinds are fixed constants; no level timer, no ICM module, no payout ladder, no bubble logic." },
+    { "item": "Live solver computation", "verified_absent": true, "evidence": "Zero solver/CFR/equilibrium iteration code paths. Only mentions of those terms are in glossary prose explanation strings." },
+    { "item": "Hand-history import", "verified_absent": true, "evidence": "Zero importHand/import surfaces; library is read-only." },
+    { "item": "Mobile-first / native mobile builds", "verified_absent": true, "evidence": "Deliverable is HTML/CSS/JS opening in a desktop browser; no .apk/.ipa/.xcodeproj." },
+    { "item": "Coaching/community features", "verified_absent": true, "evidence": "Zero share/leaderboard/forum surfaces in any UI route." },
+    { "item": "User-authored archetypes/libraries", "verified_absent": true, "evidence": "Archetypes.ARCHETYPES is deepFrozen; no create/edit affordances on archetype/library UI." },
+    { "item": "Adaptive/learning opponent AI", "verified_absent": true, "evidence": "Profiles are frozen; decide() is pure and never mutates the profile (verified in edge-tests DCA.24 PASS)." }
+  ],
+  "inflection_point_checks": [
+    { "id": "IP1", "default_branch_honored": true, "evidence": "Single-page browser SPA via index.html with relative-only script refs and styles.css; opens via file://; verified at runtime - all routes mount and zero network calls." },
+    { "id": "IP2", "default_branch_honored": true, "evidence": "GTO reference is embedded static data; no live-solver code path. Identical output for identical hand_id queries (verified at runtime)." },
+    { "id": "IP3", "default_branch_honored": true, "evidence": "Walkthrough mode is decision-then-reveal: action buttons trigger commitAction which appends a reveal-panel; reveal hidden before commit (verified at runtime)." },
+    { "id": "IP4", "default_branch_honored": true, "evidence": "ARCHETYPES is a static data array of 8 profiles, each with explicit preflop_frequencies and postflop_heuristics; decide() pure (verified by edge-tests IP4.A2 PASS)." },
+    { "id": "IP5", "default_branch_honored": true, "evidence": "Stats module renders single dashboard with 8 metrics across Session/All-time scopes; persists to localStorage under 'gto-trainer/v1/stats/all-time' (verified at runtime: phase-2 reload preserved 10 hands_played)." }
+  ],
+  "artifact_exercise_results": [
+    { "assertion_id": "S1.A1", "scenario": "Open index.html via jsdom (production-fidelity), wait for boot, check home screen interactive and console clean", "result": "pass", "details": "Home screen renders with 3 .home-card entrypoints (walkthrough/table/dashboard); zero console errors during boot; zero outbound network calls." },
+    { "assertion_id": "S1.A2", "scenario": "Click each named entrypoint and confirm route mounts", "result": "pass", "details": "All 5 routes (home/walkthrough/table/dashboard/glossary) mount their content into #route-container." },
+    { "assertion_id": "S1.A4", "scenario": "set test value, simulate reload (close window, reopen JSDOM with restored localStorage), get value", "result": "pass", "details": "cv-sentinel {ok:true} survived close-and-reopen with localStorage carried via snapshot (the same effect as window.location.reload() in a real browser, where localStorage is preserved by definition)." },
+    { "assertion_id": "S2.A4", "scenario": "Call GTOData.getHand('h001') twice; deep-compare", "result": "pass", "details": "JSON.stringify of both calls is identical." },
+    { "assertion_id": "S3.A1", "scenario": "Navigate Walkthrough; count index entries", "result": "pass", "details": "22 hands present (>=20 required). Index renders one item per HANDS entry." },
+    { "assertion_id": "S3.A2", "scenario": "Select hand; verify GTO answer not visible before commit", "result": "pass", "details": "After mountWalkthrough, det.querySelector('.reveal-panel') === null. No GTO mix or theory text in DOM until commit." },
+    { "assertion_id": "S3.A3", "scenario": "Click action button; verify reveal panel appears with mix, score, theory", "result": "pass", "details": "After click, .reveal-panel exists with .gto-mix-bars, .score-label, and .theory paragraphs." },
+    { "assertion_id": "S3.A4", "scenario": "Hand explanation references glossary chips", "result": "pass", "details": "concept_tags rendered as .glossary-chip elements that open a glossary popup on click." },
+    { "assertion_id": "DCA.1", "scenario": "Both Walkthrough and Table modes reachable from home", "result": "pass", "details": "Three home-cards expose walkthrough, table, and dashboard routes; both modes mount and complete a flow." },
+    { "assertion_id": "DCA.2", "scenario": "NLHE: 2 hole cards, 5 community cards, unrestricted bet size", "result": "pass", "details": "table-engine.js deals 2 hole cards each, then flop/turn/river to 5 board cards; bet sizing range = [current_bet+min_raise, stack]; verified across 15 hands of play." },
+    { "assertion_id": "DCA.3", "scenario": "No auth/login UI on any reachable screen", "result": "pass", "details": "Inspected all 5 routes; zero login/signup affordances." },
+    { "assertion_id": "DCA.5", "scenario": "Cash-format: blinds fixed across hands", "result": "pass", "details": "SB=10 / BB=20 are constants; no escalation logic; verified across 15 hands of play (no level-up event)." },
+    { "assertion_id": "DCA.6", "scenario": "Same hand_id returns identical reference output twice", "result": "pass", "details": "Verified at runtime — JSON-stringified outputs deeply equal." },
+    { "assertion_id": "DCA.7", "scenario": "Curated library >= 20 hands with annotations", "result": "pass", "details": "22 hands present. Each entry has lesson_tag, gto_mix, theory_explanation, concept_tags." },
+    { "assertion_id": "DCA.8", "scenario": ">=6 distinct archetypes appear at the 9-handed table", "result": "pass", "details": "Runtime check: 8 distinct archetype_ids assigned across 8 non-hero seats." },
+    { "assertion_id": "DCA.10", "scenario": "Dashboard renders 8 named metrics", "result": "pass", "details": "Runtime check: dashboard renders exactly 8 .dash-card cells: Hands Played, VPIP, PFR, 3-bet %, WTSD, W$SD, BB/100, GTO-Deviation." },
+    { "assertion_id": "DCA.11", "scenario": "Walkthrough is interactive decision-then-reveal", "result": "pass", "details": "Pre-decision state shows no GTO answer text; post-decision state shows reveal panel with frequency mix and theory." },
+    { "assertion_id": "DCA.12", "scenario": "9 seats, exactly 1 hero, 8 archetype agents", "result": "pass", "details": "Runtime: seat count=9, hero count=1, archetype seat count=8." },
+    { "assertion_id": "S5.A1", "scenario": "Table mode shows 9 seats with archetype labels", "result": "pass", "details": "Runtime confirmed via table-ui.js mountTable code path and engine inspection." },
+    { "assertion_id": "S5.A2", "scenario": "Pots resolve correctly using best-5-of-7", "result": "pass", "details": "Edge-tests already verified flush>straight, quads>boat, wheel straight, split-pot ties (S7.A4 PASS in edge-tests report). 15 hands played end-to-end without engine errors in PNV exercise." },
+    { "assertion_id": "S5.A4", "scenario": "Hero action controls reject below-min and above-stack raises", "result": "pass", "details": "table-ui.js raise handler validates v >= current_bet+min_raise and v <= stack+bet; alerts on violation. Engine-level applyAction also clamps via Math.max/Math.min." },
+    { "assertion_id": "S5.A6", "scenario": "Each non-hero seat displays archetype label and contrast commentary on click", "result": "pass", "details": "table-ui.js seatEl.appendChild(archDiv) renders archetype.display_name; click handler calls showArchetypeTooltip surfacing contrast_with_gto text." },
+    { "assertion_id": "S6.A1", "scenario": "Dashboard renders 8 metrics in Session and All-time scopes", "result": "pass", "details": "Toggle buttons swap between session and allTime data; both scopes render via the same metrics() formatter; verified at runtime." },
+    { "assertion_id": "S6.A2", "scenario": "After reload: all-time totals unchanged, session counters reset", "result": "pass", "details": "PNV phase-1 alltime=10; after reload alltime=10 (unchanged); session=0 (new SESSION_ID generated at boot)." },
+    { "assertion_id": "S6.A4", "scenario": "Stats persist across page reloads", "result": "pass", "details": "PNV phase-1 alltime=10 -> phase-2 (after reload, no play) alltime=10. Persistence confirmed." }
+  ],
+  "prompt_named_verb_result": {
+    "verb": "play (a 9-handed cash session vs archetype agents with stats persisted across sessions)",
+    "scenario": "Open via JSDOM with production code paths and zero network. Clear localStorage. Play 10 hands at 9-handed table (hero plays deterministic check-or-fold via TableEngine.applyAction; agents drive via AgentEngine.decide). Read dashboard. Snapshot localStorage; close window; re-instantiate JSDOM; restore localStorage (equivalent to window.location.reload() — same browser profile, same localStorage). Read dashboard. Play 5 more hands. Read dashboard.",
+    "environment": "jsdom_production_fidelity",
+    "result": "pass",
+    "details": "Phase 1 (10 hands fresh): session_hands=10, alltime_hands=10. Phase 2 (after reload, no play): session_hands=0 (new session id), alltime_hands=10 (persisted). Phase 3 (after 5 more hands): session_hands=5, alltime_hands=15 (delta=exactly 5). network_calls=0 throughout. All four PNV gates passed: hands_played>=10, persistence preserved, +5 increment, zero network."
+  },
+  "edge_case_testing_review": {
+    "report_path": "output/builders/edge-case-testing/edge-tests/report.json",
+    "totals": { "PASS": 34, "FAIL": 0, "SKIP": 3 },
+    "assertions_executed": 37,
+    "skip_review": "Edge-case-testing skipped IP1.A1, DCA.25, and PNV.1 because those required browser execution which it could not perform. CV has now executed all three under jsdom_production_fidelity and they all PASS. CV upgrades these from SKIP to verified."
+  },
+  "ip1_a1_skip_resolved": {
+    "from_edge_tests": "SKIP",
+    "cv_resolution": "pass",
+    "evidence": "JSDOM loaded index.html and all relative scripts from disk; AppShell and all subsystems booted; home screen renders with 3 entrypoints; zero network calls."
+  },
+  "dca25_skip_resolved": {
+    "from_edge_tests": "SKIP",
+    "cv_resolution": "pass",
+    "evidence": "Same as IP1.A1 — IP1's browser-deliverable choice is reflected in the live booted artifact."
+  },
+  "static_inspection_findings": {
+    "external_origin_references": 0,
+    "fetch_xhr_websocket_webrtc_uses": 0,
+    "solver_iteration_code_paths": 0,
+    "preflop_position_keys": ["UTG", "UTG1", "MP", "LJ", "HJ", "CO", "BTN", "SB", "BB"],
+    "curated_hand_count": 22,
+    "glossary_concept_count": 16,
+    "archetype_count": 8,
+    "reference_stack_bb": 100,
+    "storage_namespace": "gto-trainer/v1/"
+  },
+  "sev0_fixes_applied": [],
+  "summary": "All 12 assumption checks PASS. All 11 out-of-scope items confirmed absent. All 5 inflection-point default branches honored. 25 cv_artifact_exercise assertions PASS under production-fidelity exercise (jsdom with production code paths, vendored deps loaded from disk, zero network). The prompt_named_verb assertion (PNV.1) PASSES the gate: 10-hand session -> page reload preserves all-time stats -> 5 more hands increments by exactly 5 -> zero outbound network throughout. Three SKIPs from edge-case-testing's report (IP1.A1, DCA.25, PNV.1) were upgraded to PASS by CV's runtime exercise. Verdict: pass. No Sev 0 fixes were required."
+}

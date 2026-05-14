@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-3",
+  "interface": {
+    "mount": {
+      "kind": "function",
+      "params": {
+        "containerId": "string (DOM id of the element that will host the Leaflet map; element must already be in the DOM and have non-zero size)",
+        "events": "Array<EarthquakeEvent> (normalized events as defined in section-1--section-2.json)"
+      },
+      "returns": {
+        "type": "object",
+        "shape": {
+          "markerCount": "integer (number of circle markers actually placed on the map)"
+        }
+      }
+    },
+    "magnitudeColor": {
+      "kind": "function",
+      "params": { "magnitude": "number | null" },
+      "returns": "string (hex/rgb color usable in Leaflet circleMarker fillColor; used by section-3 to render the legend swatches consistently with the markers)"
+    },
+    "magnitudeRadius": {
+      "kind": "function",
+      "params": { "magnitude": "number | null" },
+      "returns": "number (pixel radius for the circle marker; used by section-3 to size the legend swatches consistently with the markers)"
+    }
+  },
+  "notes": "section-2 exposes mount() plus the two pure styling functions magnitudeColor() and magnitudeRadius() so section-3 can build a legend whose swatches exactly match what's rendered on the map (single source of truth for encoding). Legend doesn't reach into Leaflet — it just calls the styling functions and renders ordinary HTML/CSS swatches."
+}

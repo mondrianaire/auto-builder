@@ -1,0 +1,27 @@
+{
+  "section_id": "edge-case-testing",
+  "section_name": "Edge Case Testing",
+  "status": "verified",
+  "owner": "overseer:edge-case-testing (inline)",
+  "started_at": "2026-05-09T00:11:36Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[4]",
+  "active_contracts": [
+    "contracts/original/rules-engine--ai-opponent.json",
+    "contracts/original/rules-engine--controller-and-shell.json",
+    "contracts/original/ai-opponent--controller-and-shell.json",
+    "contracts/original/ui-render--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "edge-case-testing.b1",
+      "description": "Run a node-based component test suite covering all 8 winning lines (both X and O), draw detection, AI win-take, AI block-loss, illegal-input ignore (via rules-engine error contract), AI-determinism on canonical setups. Plus static inspection of controller.js and index.html confirming load order and no-build/no-network. Plus a jsdom-flavored inspection of ui-render.js verifying DOM shape (we mount under a stubbed document and confirm cells, status, restart, hover gating).",
+      "status": "verified",
+      "builder_id": "builder-edge-b1",
+      "output_path": "output/builders/edge-case-testing/builder-edge-b1/"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verified_at": "2026-05-09T21:21:00Z",
+  "verification_notes": "Test harness ran 46/46 pass: all 8 winning lines both symbols, draw, illegal-input ignore, AI win-take/block (row/col/diag), heuristic ladder fall-throughs (center/corner/edge), AI immutability, UI render under DOM stub (mount/filled/winning-line/click-guards/restart), index.html load order + no-external-URLs, controller composition + defensive guards, no fetch/storage anywhere, integrated turn-flow terminates with valid outcome, restart returns clean state."
+}

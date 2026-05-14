@@ -1,0 +1,21 @@
+{
+  "builder_id": "builder-s6-1",
+  "section": "S6",
+  "produced": ["harness.js", "report.json"],
+  "harness_strategy": "Spawns the real plugin/run.sh against a fresh fake SDK WebSocket on a free port for each scenario. AppleScript boundary is shimmed via MUSIC_SOURCE_FIXTURE env var (the only stub injection — see dev-002).",
+  "report_summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "skipped": 0
+  },
+  "assertion_coverage": [
+    "AA.S1.2", "AA.S1.3", "AA.S1.4", "AA.S1.5",
+    "AA.S2.1", "AA.S2.2", "AA.S2.3", "AA.S2.4",
+    "AA.S3.1", "AA.S3.2", "AA.S3.3", "AA.S3.4",
+    "AA.S4.1", "AA.S4.2", "AA.S4.3", "AA.S4.4", "AA.S4.5",
+    "AA.S5.1", "AA.S5.2", "AA.S5.3", "AA.S5.4",
+    "DCA.A5.1", "DCA.A5.2", "DCA.A6.1", "DCA.A7.1", "DCA.A13.1", "DCA.IP3.DISPLAY.1",
+    "PNV.1"
+  ]
+}

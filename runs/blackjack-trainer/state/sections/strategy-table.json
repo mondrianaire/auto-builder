@@ -1,0 +1,20 @@
+{
+  "section_id": "section-2",
+  "section_name": "strategy-table",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-09T00:45:02Z",
+  "verified_at": "2026-05-09T00:51:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-2",
+  "active_contracts": [
+    "contracts/original/section-2--section-3.json",
+    "contracts/original/section-2--section-5.json"
+  ],
+  "sub_goals": [
+    { "id": "2a", "description": "Encode hard/soft/pair tables and recommendation lookup", "status": "verified", "builder_id": "builder-2a", "output_path": "output/builders/strategy-table/builder-2a/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_notes": "S2.A1 spot-checks pass: hard 16 v 10 -> Hit; pair 8s v 10 -> Split; soft 18 v 9 -> Hit; pair Aces v 2 -> Split; hard 11 v 5 -> Double; hard 20 v A -> Stand. S2.A2 every (category, total/pair, dealer 2-A) cell yields a defined action label (170 hard cells + 80 soft cells + 100 pair cells = 350 cells, all populated, no undefined symbols). S2.A3 module exports only 'recommendation' (data-only + lookup); no DOM, no rendering helper, no chart-drawing function.",
+  "rationale": "Wave 1 complete after this. Coordinator now unblocks section-3 (depends on 1+2)."
+}

@@ -1,0 +1,20 @@
+{
+  "builder_id": "builder-4a",
+  "task_id": "4a",
+  "section_id": "section-4",
+  "started_at": "2026-05-09T00:56:02Z",
+  "completed_at": "2026-05-09T01:00:30Z",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": [
+    { "symbol": "mountUI", "type": "function", "matches_contract": "contracts/original/section-4--section-6.json#mountUI" }
+  ],
+  "notes": "Pure render-on-state subscriber. CRITICAL: Deal/Next button enabled when phase ∈ {betting, resolved, review} (S4.A3 fix — explicit check `(phase === 'betting' || phase === 'resolved' || phase === 'review')`; no `phase!=='betting'` shortcut). Action buttons (hit/stand/double/split) enabled per state.legalActions array — single source of truth, never re-derived locally. Hint button enabled during 'player_turn' only (S4.A4). DOM contract: stable selectors btn-deal, btn-hit, btn-stand, btn-double, btn-split, btn-hint, dealer-hand, player-hand, hint-display, review-panel all present. Exposes optional helpers renderHint/renderReviewRows for hint-and-review per section-4--section-5 contract. Returns {unmount, renderHint, renderReviewRows, elements} so app-shell can pass DOM nodes to wireHintAndReview.",
+  "self_test_results": {
+    "S4_A1_presence": "DOM scaffold contains all required ids: dealer-hand, player-hand, btn-hit/stand/double/split, btn-hint, btn-deal, hint-display, review-panel — pass",
+    "S4_A2_button_enable_after_hit": "After hit, hand.hasHit=true so legalActions excludes double+split; render disables those buttons via setBtn(legal.includes(...)) — pass",
+    "S4_A3_deal_button_resolved": "btn-deal disabled = !(phase==='betting' || phase==='resolved' || phase==='review') — explicitly enabled in resolved phase — pass",
+    "S4_A4_hint_button_player_turn": "btn-hint enabled iff phase==='player_turn' — pass",
+    "S4_A5_render_on_each_notification": "subscribe(render) fires render on every state mutation including the immediate snapshot — pass"
+  }
+}

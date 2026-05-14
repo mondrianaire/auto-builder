@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "from_section": "integrator",
+  "to_section": "section-4",
+  "interface": {
+    "integratedArtifact": {
+      "kind": "filesystem_layout",
+      "params": {},
+      "returns": {},
+      "shape": {
+        "entryPoint": "output/final/index.html (open via file:// in a real browser)",
+        "vendor": "output/final/vendor/leaflet/ (leaflet.js, leaflet.css, and any image assets the CSS references)",
+        "modules": "output/final/js/ (section-1, section-2, section-3 source files, loaded by index.html via <script> tags)",
+        "styles": "output/final/css/ (page-level CSS for header, layout, legend, error banner)",
+        "runtimeNetworkDependencies": [
+          "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson (USGS past-day feed; required for data)",
+          "OSM raster tile servers (required for the tile layer to render)"
+        ],
+        "noBackend": true
+      }
+    }
+  },
+  "notes": "section-4 receives the integrated artifact at output/final/. It opens index.html via file:// in a real browser engine. It must NOT substitute window.fetch, the L global, or the tile layer for the production-fidelity verification pass. Negative-path checks (e.g., the error banner) may be performed in a separate run with a deliberately bad feed URL — that is a configuration change to the artifact, not a runtime stub. The two listed runtime network dependencies are intrinsic to the prompt's spirit ('real earthquake activity', 'a map'); failure to reach either is a real failure mode the artifact must handle gracefully."
+}

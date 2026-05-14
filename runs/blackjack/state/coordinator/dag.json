@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "created_at": "2026-05-09T00:10:00Z",
+  "updated_at": "2026-05-09T00:15:10Z",
+  "dispatch_mode": "inline",
+  "current_wave": 4,
+  "all_verified": true,
+  "nodes": [
+    {
+      "id": "section-1",
+      "name": "rules-engine",
+      "type": "section",
+      "status": "verified",
+      "depends_on": [],
+      "wave": 1
+    },
+    {
+      "id": "section-2",
+      "name": "betting-and-bankroll",
+      "type": "section",
+      "status": "verified",
+      "depends_on": [],
+      "wave": 1
+    },
+    {
+      "id": "section-3",
+      "name": "ui-render",
+      "type": "section",
+      "status": "verified",
+      "depends_on": [],
+      "wave": 1
+    },
+    {
+      "id": "section-4",
+      "name": "controller-and-shell",
+      "type": "section",
+      "status": "verified",
+      "depends_on": ["section-1", "section-2", "section-3"],
+      "wave": 2
+    },
+    {
+      "id": "integrator",
+      "name": "integrator",
+      "type": "pseudo-node",
+      "status": "verified",
+      "depends_on": ["section-1", "section-2", "section-3", "section-4"],
+      "wave": 3
+    },
+    {
+      "id": "section-5",
+      "name": "edge-case-testing",
+      "type": "section",
+      "status": "verified",
+      "depends_on": ["integrator"],
+      "wave": 4
+    }
+  ],
+  "edges": [
+    { "from": "section-1", "to": "section-4" },
+    { "from": "section-2", "to": "section-4" },
+    { "from": "section-3", "to": "section-4" },
+    { "from": "section-1", "to": "integrator" },
+    { "from": "section-2", "to": "integrator" },
+    { "from": "section-3", "to": "integrator" },
+    { "from": "section-4", "to": "integrator" },
+    { "from": "integrator", "to": "section-5" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-4",
+  "summary": "App shell calls into section-4 only to load the archetype roster at boot; section-4 does not own any routes itself, so the contract is narrow.",
+  "interface": {
+    "boot_load": {
+      "name": "loadArchetypes",
+      "shape": "() => ArchetypeRoster",
+      "ArchetypeRoster_shape": "{ profiles: ArchetypeProfile[] } where ArchetypeProfile = { id: string, name: string, preflop_frequencies: object, postflop_heuristics: object, contrast_with_gto: string }",
+      "purpose": "Shell calls this synchronously during boot and stores the resulting roster in a shell-level registry that section-5 reads."
+    }
+  },
+  "data_passed_not_logic": "Section-4 returns a static data structure. Shell does not interpret the structure beyond storing it in the registry; section-4 does not know how the shell mounts modes.",
+  "ownership": {
+    "section-1_owns": ["calling loadArchetypes at boot", "the registry that holds the result for section-5 to read"],
+    "section-4_owns": ["the archetype data and decide() function", "the contrast_with_gto strings"]
+  },
+  "test_seam": "A unit test calls loadArchetypes() and asserts the returned roster shape and content (>= 6 profiles, all required fields populated)."
+}

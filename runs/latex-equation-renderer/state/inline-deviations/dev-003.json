@@ -1,0 +1,11 @@
+{
+  "id": "dev-003",
+  "category": "test_or_assertion_fix",
+  "section": "section-5-edge-case-testing",
+  "decided_at": "2026-05-10T00:09:00Z",
+  "context": "Initial harness run produced 5 false negatives because the KaTeX Node module looks up `document` as a Node global, while jsdom only exposes `document` on its window. The product code itself (renderer.js) was untouched.",
+  "decision": "In the harness only, hoist window.document, window, HTMLElement, and Node to globals before evaluating the integrated scripts.",
+  "rationale": "This is a Node-side test-environment shim with no analogue in the actual browser runtime where the artifact ships. Browsers expose document as a window property already, so the production code is correct as-is.",
+  "nested_equivalent": "In nested mode, the section-5 builder would document this harness wiring as part of its handoff; Critic would acknowledge it as a test-only shim and not flag the product code.",
+  "product_code_changed": false
+}

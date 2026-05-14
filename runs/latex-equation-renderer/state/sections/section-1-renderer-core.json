@@ -1,0 +1,20 @@
+{
+  "section_id": "section-1-renderer-core",
+  "status": "verified",
+  "wave": 1,
+  "started_at": "2026-05-10T00:05:30Z",
+  "verified_at": "2026-05-10T00:06:00Z",
+  "overseer_decomposition": {
+    "builders": [
+      {
+        "id": "b1-renderer",
+        "subgoal": "Implement renderer.js exposing window.renderer.render(latex, target) using KaTeX. Return {ok:true} on success or {ok:false, message} on failure. Empty/whitespace input returns {ok:true} with target cleared.",
+        "outputs": ["renderer.js"],
+        "satisfies": ["S1.A1", "S1.A2", "S1.A3", "S1.A5"],
+        "verified": true
+      }
+    ]
+  },
+  "verification_summary": "Builder produced renderer.js. Single public render function with the contracted signature. No exception escapes. Empty/whitespace short-circuit. displayMode:true. S1.A4 (CDN tags) is satisfied by section-4 page shell.",
+  "inline_deviations": ["dev-001"]
+}

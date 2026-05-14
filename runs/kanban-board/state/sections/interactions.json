@@ -1,0 +1,24 @@
+{
+  "section_id": "section-5",
+  "name": "interactions",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-10T00:00:11Z",
+  "verified_at": "2026-05-10T00:00:14Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-5",
+  "active_contracts": [
+    "contracts/original/state-model--interactions.json",
+    "contracts/original/ui-render--interactions.json",
+    "contracts/original/interactions--integration.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "ix-b1",
+      "description": "Event delegation for add/rename/delete list, add/edit/delete card. Empty/whitespace rejected.",
+      "status": "verified",
+      "builder_id": "ix-b1",
+      "output_path": "output/builders/interactions/ix-b1/output.js",
+      "verification_notes": "S5.A1-A6 each interaction routes to the correct mutation. S5.A7 empty/whitespace inputs do not trigger createCard/createList. S5.A8 no undo/trash UI."
+    }
+  ]
+}

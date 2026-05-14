@@ -1,0 +1,138 @@
+{
+  "verifier_role": "convergence-verifier",
+  "ran_at": "2026-05-13T23:50:00Z",
+  "project": "streamdock-applemusic-touchbar",
+  "verdict": "pass",
+  "verdict_rationale": "All static-inspection checks against ledger-v1 assumptions, IP resolutions, and OOS list confirmed. All 28 edge_case_testing + cv_artifact_exercise + prompt_named_verb assertions pass under production fidelity, verified by an independent re-run of S6's harness against the integrated bundle. PNV.1 (verb='display') passes with a captured setFeedback frame carrying {title: 'Bohemian Rhapsody', artist: 'Queen'} addressed to the willAppear'd context.",
+  "inputs_read": {
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections_spec": "decisions/technical-discovery/sections-v2.json (live spec; v1 superseded by metadata-only covers-field amendment)",
+    "amendments": "none beyond the v1->v2 covers-field amendment, which is metadata-only and required no rebuild",
+    "integrated_artifact_dir": "output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/",
+    "edge_case_report": "output/builders/edge-case-testing/builder-s6-1/report.json (28/28 passed)"
+  },
+  "static_inspection_pass": {
+    "summary": "All 13 Discovery assumptions honored in the integrated artifact; all 10 OOS items absent; all 3 inflection point default branches implemented.",
+    "assumption_checks": [
+      { "id": "A1", "honored": true, "evidence": "manifest.json is SDK-v2 .sdPlugin folder at reverse-DNS com.autobuilder.applemusic-nowplaying.sdPlugin/; plugin uses Node + vendored ws@8.20.1 for WebSocket transport" },
+      { "id": "A2", "honored": true, "evidence": "manifest.Actions[0].Controllers === ['Encoder'] with custom layout layouts/nowplaying.json; not a Keypad single-tile action" },
+      { "id": "A3", "honored": true, "evidence": "music_source.js queries local Apple Music.app via osascript; no remote / web / cloud paths anywhere" },
+      { "id": "A4", "honored": true, "evidence": "manifest.OS = [{Platform: 'mac', MinimumVersion: '11.0'}], single-entry; CodePathMac present, no CodePath/CodePathWin" },
+      { "id": "A5", "honored": true, "evidence": "Layout JSON declares two text items keyed 'title' and 'artist'; sendFeedback emits both fields; track-change refresh proven by DCA.A5.2 (two back-to-back fixtures yield distinct frames)" },
+      { "id": "A6", "honored": true, "evidence": "main.js sets DEFAULT_POLL_MS=2000 and uses setInterval; DCA.A6.1 captures ~5 frames over 2.2s @ 500ms cadence" },
+      { "id": "A7", "honored": true, "evidence": "When fixture is empty (paused/stopped), sendFeedback emits {title:'Apple Music', artist:''} — DCA.A7.1 captured frame" },
+      { "id": "A8", "honored": true, "evidence": "Layout JSON declares text-overflow: 'ellipsis' on both items; grep of plugin/ for 'marquee'/'scrollOffset' returns zero matches" },
+      { "id": "A9", "honored": true, "evidence": "No auth, account, cloud sync, persisted state, or telemetry code in plugin/; grep for fetch/non-localhost https returns zero matches" },
+      { "id": "A10", "honored": true, "evidence": "Bundle is a .sdPlugin folder with manifest.json (valid JSON), plugin/run.sh entrypoint, layouts/nowplaying.json, ui/inspector.html, icons/, and vendored node_modules/ws — installable by drop-in" },
+      { "id": "A11", "honored": true, "evidence": "inspector.html declares exactly 3 input controls (pollIntervalMs, placeholder, showArtist), matching DCA.A11.1's at-most-3 ceiling" },
+      { "id": "A12", "honored": true, "evidence": "Layout JSON contains only text items; no pixmap/image/artwork; no setImage call carrying art data" },
+      { "id": "A13", "honored": true, "evidence": "sdk.js handles touchTap/dialRotate/dialDown/dialUp by emitting only logMessage; AA.S3.3 and DCA.A13.1 confirm no action-effect frames after input events" }
+    ],
+    "oos_checks": [
+      { "id": "OOS.0", "topic": "Non-Music streaming sources (Spotify, web players)", "absent": true, "evidence": "grep of plugin/ for 'spotify' case-insensitive: zero matches" },
+      { "id": "OOS.1", "topic": "Lyrics / queue / history", "absent": true, "evidence": "no such code in plugin/; layout has only title+artist text items" },
+      { "id": "OOS.2", "topic": "Album art rendering", "absent": true, "evidence": "no pixmap/image/artwork in layout; no setImage in main.js or sdk.js" },
+      { "id": "OOS.3", "topic": "Rich playback controls (skip/prev/scrub/like)", "absent": true, "evidence": "sdk.js's touchTap/dialRotate/dialDown/dialUp handlers only emit logMessage; no transport control wiring" },
+      { "id": "OOS.4", "topic": "Multi-user / cloud sync / remote control", "absent": true, "evidence": "no network calls beyond ws://127.0.0.1:<port>" },
+      { "id": "OOS.5", "topic": "Mobile / iOS / iPhone / iPad data source", "absent": true, "evidence": "grep of plugin/ for 'ios'/'iphone'/'ipad': zero matches" },
+      { "id": "OOS.6", "topic": "Telemetry / scrobbling / analytics", "absent": true, "evidence": "no fetch/http to non-localhost; no telemetry/analytics references" },
+      { "id": "OOS.7", "topic": "Theming / customizable typography", "absent": true, "evidence": "PI has only 3 functional inputs; no font/theme controls" },
+      { "id": "OOS.8", "topic": "Non-VSD-N4-Pro hardware models", "absent": true, "evidence": "manifest declares one Encoder action for the wide-display touchbar; no other hardware paths" },
+      { "id": "OOS.9", "topic": "Localization / i18n", "absent": true, "evidence": "PI is English-only; no i18n strings file" }
+    ],
+    "inflection_point_resolutions": [
+      { "id": "IP1", "chosen_branch": "macOS only (AppleScript)", "implemented": true, "evidence": "manifest.OS=[mac]; music_source.js spawns 'osascript'" },
+      { "id": "IP2", "chosen_branch": "Text-only", "implemented": true, "evidence": "layout has only text items" },
+      { "id": "IP3", "chosen_branch": "Display-only (touch tap no-op)", "implemented": true, "evidence": "touch/dial events ignored; only logMessage emitted; DCA.IP3.DISPLAY.1 captured action-effect frame count=1 (the immediate willAppear paint only)" }
+    ]
+  },
+  "artifact_exercise_results": [
+    {
+      "assertion_id": "AA.S6.2",
+      "verifier": "cv_artifact_exercise",
+      "check_type": "user_flow",
+      "scenario": "Run PNV.1 verbatim against the integrated bundle; capture WebSocket frames",
+      "expected_result": "PNV.1 expected_result is satisfied",
+      "environment": "Production-fidelity: spawned output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/run.sh as a child process with the four SDK CLI args (-port, -pluginUUID, -registerEvent, -info); connected via real ws@8.20.1 (the bundle's own vendored copy) WebSocket server on free port at 127.0.0.1; AppleScript source replaced by MUSIC_SOURCE_FIXTURE env-var as the only stub (unavoidable in non-device environment per TD's PNV scenario). manifest.json, main.js, sdk.js, music_source.js, layouts/nowplaying.json are all the actual integrated files.",
+      "result": "pass",
+      "evidence": "Captured setFeedback frame: {\"event\":\"setFeedback\",\"context\":\"PNV-CTX\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}",
+      "independent_rerun": "CV re-ran S6's harness via `node harness.js` from the harness directory; output matched S6's report 28/28; PNV frame captured identically."
+    }
+  ],
+  "prompt_named_verb_result": {
+    "id": "PNV.1",
+    "verb": "display",
+    "verb_source": "decisions/technical-discovery/sections-v2.json#/prompt_verb_analysis/chosen_verb",
+    "scenario": "Run the integrated .sdPlugin bundle's CodePathMac entrypoint as a child process with the four SDK CLI args (-port, -pluginUUID, -registerEvent, -info) pointed at a fake WebSocket host on 127.0.0.1. The fake host: (a) accepts the plugin's registerPlugin handshake, (b) sends a willAppear event for the wide-display action, (c) simulates the AppleScript data source by replacing the music_source module via a child-process shim that returns 'Bohemian Rhapsody\\tQueen' on stdout. Within 3 seconds of willAppear, capture every WebSocket frame the plugin sends.",
+    "expected_result": "At least one frame is a JSON message whose event field equals 'setFeedback' and whose payload contains both 'Bohemian Rhapsody' (in the 'title' field) and 'Queen' (in the 'artist' field), addressed to the willAppear'd action context.",
+    "environment": "production-fidelity (real plugin process spawned via run.sh -> /usr/bin/env node main.js, real vendored ws@8.20.1 library, fake SDK host bound to 127.0.0.1 on a free port using WebSocket.Server, AppleScript shimmed via MUSIC_SOURCE_FIXTURE env-var injected into the spawned child's environment — the only stub, unavoidable in a non-device verification environment)",
+    "production_fidelity_required": true,
+    "production_fidelity_achieved": true,
+    "result": "pass",
+    "evidence": {
+      "captured_frame": "{\"event\":\"setFeedback\",\"context\":\"PNV-CTX\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}",
+      "frame_address_context": "PNV-CTX (matches the willAppear'd context exactly)",
+      "title_match": "exact: 'Bohemian Rhapsody'",
+      "artist_match": "exact: 'Queen'",
+      "independent_rerun_log_line": "[PASS] PNV.1 - {\"event\":\"setFeedback\",\"context\":\"PNV-CTX\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}"
+    },
+    "interpretation": "The integrated plugin DISPLAYS the currently playing song and artist on the wide-display surface under production-fidelity rules. The setFeedback frame is the SDK-canonical paint operation for an Encoder-controller layout with the custom layouts/nowplaying.json which declares title and artist text items — by SDK contract, the host renders this payload's title and artist values into the wide-strip layout. The verb 'display' is therefore exercised end-to-end."
+  },
+  "edge_case_testing_review": {
+    "report_path": "output/builders/edge-case-testing/builder-s6-1/report.json",
+    "harness_path": "output/builders/edge-case-testing/builder-s6-1/harness.js",
+    "total_assertions": 28,
+    "passed": 28,
+    "failed": 0,
+    "skipped": 0,
+    "production_fidelity_confirmed": true,
+    "production_fidelity_evidence": "harness.js spawns /bin/sh against the bundle's plugin/run.sh — exercising the real CodePathMac shell entrypoint; requires the bundle's own vendored ws under plugin/node_modules/ws (line 26: `require(path.join(BUNDLE_DIR, 'plugin', 'node_modules', 'ws'))`); spawns a real WebSocket.Server on 127.0.0.1; the only stub is MUSIC_SOURCE_FIXTURE env-var (read by music_source.js's built-in test-affordance branch at line 47 of music_source.js) — which is the AppleScript boundary substitution explicitly permitted by PNV.1's scenario. No other plugin/ source is patched or imported by the harness.",
+    "verifier_coverage": {
+      "edge_case_testing_assertions_in_spec": ["AA.S1.2", "AA.S1.3", "AA.S1.4", "AA.S1.5", "AA.S2.1", "AA.S2.2", "AA.S2.3", "AA.S2.4", "AA.S3.1", "AA.S3.2", "AA.S3.3", "AA.S3.4", "AA.S4.1", "AA.S4.2", "AA.S4.3", "AA.S4.4", "AA.S4.5", "AA.S5.1", "AA.S5.2", "AA.S5.3", "AA.S5.4", "DCA.A5.1", "DCA.A5.2", "DCA.A6.1", "DCA.A7.1", "DCA.A13.1", "DCA.IP3.DISPLAY.1"],
+      "all_exercised": true,
+      "all_passed": true,
+      "plus_pnv": "PNV.1 also exercised by the same harness as the headline scenario"
+    },
+    "independent_rerun": {
+      "performed": true,
+      "method": "CV invoked `node harness.js` in the harness directory via the workspace bash tool; harness wrote a fresh report.json; output matched the existing report verbatim",
+      "result": "28/28 passed, identical to S6's recorded report"
+    }
+  },
+  "critic_final_sweep_review": {
+    "status": "clean per briefing; no findings to relitigate",
+    "spot_checks_by_cv": [
+      { "assertion_id": "DCA.RESTATE.1", "result": "pass", "evidence": "layout rect uses x=0 width=200 for both items spanning full-strip — declares full-bar dimensions, not narrow icon region" },
+      { "assertion_id": "DCA.A2.1", "result": "pass", "evidence": "manifest.Actions[0].Controllers === ['Encoder']" },
+      { "assertion_id": "DCA.A8.1", "result": "pass", "evidence": "both layout items declare 'text-overflow': 'ellipsis'; no marquee code" },
+      { "assertion_id": "DCA.A10.1", "result": "pass", "evidence": "folder exists; manifest.json parses; all manifest-referenced paths resolve (verified by AA.S1.3 in re-run)" },
+      { "assertion_id": "DCA.A11.1", "result": "pass", "evidence": "inspector.html has exactly 3 form inputs (pollIntervalMs, placeholder, showArtist)" },
+      { "assertion_id": "DCA.A12.1", "result": "pass", "evidence": "no image/pixmap/artwork in layout; no setImage in plugin source" },
+      { "assertion_id": "DCA.OOS.STREAMING.1", "result": "pass", "evidence": "grep for 'spotify' case-insensitive: 0 matches" },
+      { "assertion_id": "DCA.OOS.MOBILE.1", "result": "pass", "evidence": "grep for 'ios'/'iphone'/'ipad' case-insensitive: 0 matches" },
+      { "assertion_id": "DCA.OOS.TELEMETRY.1", "result": "pass", "evidence": "grep for non-localhost http/fetch: 0 matches" },
+      { "assertion_id": "DCA.IP1.MAC.1", "result": "pass", "evidence": "manifest.OS=[mac]; music_source.js spawns osascript" },
+      { "assertion_id": "DCA.IP2.TEXT.1", "result": "pass", "evidence": "layout items are all type 'text'" },
+      { "assertion_id": "AA.S2.5", "result": "pass (contract-shape)", "evidence": "sdk.js sendFeedback at sdk.js:56-60 sends exactly { title: string, artist: string } payload; main.js calls sendFeedback with the same shape" },
+      { "assertion_id": "AA.S6.1", "result": "pass", "evidence": "harness scenario manifest covers every edge_case_testing assertion id from sections-v2.json (cross-referenced; difference empty)" },
+      { "assertion_id": "AA.S6.3", "result": "pass", "evidence": "harness reads plugin/ files via fs.readFileSync for static-grep only; the only require() into plugin/ is the music_source.js in-process behavior test (which exercises the public exported getNowPlaying via MUSIC_SOURCE_FIXTURE — not a patch or shim); no monkey-patches of main.js or sdk.js" },
+      { "assertion_id": "AA.S6.4", "result": "pass", "evidence": "harness writes report.json with one record per assertion id, status in {passed, failed, skipped}" },
+      { "assertion_id": "MCA.TDIPA.1", "result": "pass", "evidence": "manifest.SDKVersion === 2" },
+      { "assertion_id": "MCA.TDIPA.2", "result": "pass", "evidence": "manifest.OS === [{Platform: 'mac', MinimumVersion: '11.0'}]" },
+      { "assertion_id": "MCA.TDIPA.3", "result": "pass", "evidence": "manifest.CodePathMac === 'plugin/run.sh'; file exists" },
+      { "assertion_id": "MCA.TDIPB.1", "result": "pass", "evidence": "manifest.Actions[0].Controllers === ['Encoder']" },
+      { "assertion_id": "MCA.TDIPB.2", "result": "pass", "evidence": "manifest.Actions[0].Encoder.layout === 'layouts/nowplaying.json'; file exists with id 'nowplaying-fullbar' and items array" },
+      { "assertion_id": "MCA.TDIPB.3", "result": "pass", "evidence": "sdk.js sendFeedback emits event='setFeedback'; no setImage path for now-playing payloads" },
+      { "assertion_id": "MCA.TDIPB.4", "result": "pass", "evidence": "layouts/nowplaying.json items has key=='title' and key=='artist'" },
+      { "assertion_id": "MCA.TDIPC.1", "result": "pass", "evidence": "run.sh: `exec /usr/bin/env node \"$(dirname \"$0\")/main.js\" \"$@\"`" },
+      { "assertion_id": "MCA.TDIPC.2", "result": "pass", "evidence": "plugin/node_modules/ws/package.json has name=='ws' (version 8.20.1)" },
+      { "assertion_id": "MCA.TDIPD.1", "result": "pass", "evidence": "music_source.js requires child_process and uses execFile with 'osascript'; parseOutput splits on tab and returns {title, artist} or null" },
+      { "assertion_id": "MCA.TDIPD.2", "result": "pass", "evidence": "music_source.js APPLESCRIPT string contains all four literals" },
+      { "assertion_id": "MCA.TDIPE.1", "result": "pass", "evidence": "main.js: const DEFAULT_POLL_MS = 2000" },
+      { "assertion_id": "MCA.TDIPF.1", "result": "pass", "evidence": "no occurrence of marquee/scrollOffset in main.js or sdk.js; truncation is layout-native" }
+    ]
+  },
+  "concerns": [],
+  "trivial_fixes_applied": [],
+  "summary": "All gates passed. The integrated artifact at output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/ honors every Discovery assumption, implements every IP default branch, omits every OOS item, and exercises every machine-checkable, edge_case_testing, cv_artifact_exercise, and prompt_named_verb assertion under production fidelity. PNV.1 (verb='display') passes with captured evidence. Verdict: pass."
+}

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "from_section": "section-3",
+  "to_section": "section-5",
+  "interface": {
+    "subscribe(listener)": {
+      "params": { "listener": "function(stateSnapshot) -> void" },
+      "returns": "function unsubscribe() -> void"
+    },
+    "getState()": {
+      "params": {},
+      "returns": "StateSnapshot  // see section-3--section-4 contract for full shape"
+    },
+    "getCurrentHintQuery()": {
+      "params": {},
+      "returns": "{ playerHandSnapshot: { cards, total, isSoft, isPair, canDouble, canSplit }, dealerUpcard: Card } | null  // null when phase != 'player_turn'",
+      "notes": "Convenience reader for hint-and-review. Returns the exact (playerHandSnapshot, dealerUpcard) tuple that strategy-table.recommendation() expects, derived from the active hand in the current state."
+    },
+    "getDecisionLog()": {
+      "params": {},
+      "returns": "Array<{ playerHandSnapshot, dealerUpcard, chosenAction: 'Hit'|'Stand'|'Double'|'Split', correctAction: 'Hit'|'Stand'|'Double'|'Split' }>",
+      "notes": "Available in 'resolved'/'review' phase. One entry per decision the player made during the hand. correctAction is already populated by the state machine via strategy-table. hint-and-review walks this to render review rows."
+    }
+  },
+  "notes": "hint-and-review consumes decision data from the state machine. It does NOT compute correctness itself (state machine already did, against strategy-table). It does call strategy-table directly only for the proactive Hint button, using getCurrentHintQuery() as the input source."
+}

@@ -1,0 +1,24 @@
+{
+  "section_id": "section-4",
+  "name": "dnd",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-10T00:00:11Z",
+  "verified_at": "2026-05-10T00:00:14Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-4",
+  "active_contracts": [
+    "contracts/original/state-model--dnd.json",
+    "contracts/original/ui-render--dnd.json",
+    "contracts/original/dnd--integration.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "dn-b1",
+      "description": "wireDnd via event delegation. moveCard for cross-list, reorderCard for same-list. drag-over class managed.",
+      "status": "verified",
+      "builder_id": "dn-b1",
+      "output_path": "output/builders/dnd/dn-b1/output.js",
+      "verification_notes": "S4.A1 cross-list -> moveCard; S4.A2 same-list -> reorderCard; S4.A3 drop outside list returns no-op (no mutation called); S4.A4 drag-over class added on dragenter, cleared on dragleave/drop/dragend."
+    }
+  ]
+}

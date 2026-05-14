@@ -1,0 +1,8 @@
+{
+  "builder_id": "ix-b1",
+  "section": "interactions",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": ["wireInteractions(rootEl, stateModel) -> {unwire}"],
+  "contracts_honored": ["state-model--interactions", "ui-render--interactions", "interactions--integration"]
+}

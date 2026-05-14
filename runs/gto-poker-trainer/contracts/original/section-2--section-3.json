@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-3",
+  "summary": "GTO Reference Dataset exposes a typed read API that Walkthrough Mode uses to enumerate the curated library, fetch a hand's spot data, fetch its GTO frequency mix, and resolve glossary concepts referenced from explanation text.",
+  "interface": {
+    "list_curated_hands": {
+      "name": "listCuratedHands",
+      "shape": "() => CuratedHandSummary[]",
+      "CuratedHandSummary_shape": "{ hand_id: string, title: string, lesson_tag: string, position: string, street: 'preflop'|'flop'|'turn'|'river' }",
+      "purpose": "Walkthrough renders the index from this list."
+    },
+    "get_curated_hand": {
+      "name": "getCuratedHand",
+      "shape": "(hand_id: string) => CuratedHandFull",
+      "CuratedHandFull_shape": "{ hand_id, title, lesson_tag, hero_position, hero_cards: [Card, Card], board: Card[], action_history: ActionEvent[], pot: number, hero_stack: number, available_actions: ActionOption[], gto_mix: { [action_name: string]: { frequency: number, sizing?: number } }, theory_explanation: { paragraphs: string[], concept_refs: string[] } }",
+      "purpose": "Walkthrough renders the spot from the structural fields, hides gto_mix and theory_explanation until commit, then reveals them."
+    },
+    "get_concept": {
+      "name": "getConcept",
+      "shape": "(concept_id: string) => { id: string, name: string, definition: string, related_hands: string[] }",
+      "purpose": "Walkthrough resolves concept_refs in theory_explanation to glossary entries."
+    },
+    "score_decision": {
+      "name": "scoreDecision",
+      "shape": "(hand_id: string, user_action: string, user_sizing?: number) => { score_label: 'matches GTO mix' | 'partial' | 'off-tree', deviation_score: number }",
+      "purpose": "Walkthrough calls this after user commits to compute the score it shows in the reveal panel and emits in DecisionResult."
+    }
+  },
+  "data_passed_not_logic": "Section-2 returns pure data structures. Walkthrough never mutates them and never authors content; section-2 never renders UI.",
+  "ownership": {
+    "section-2_owns": ["dataset content, glossary content, scoring algorithm against gto_mix"],
+    "section-3_owns": ["all walkthrough UI, decision capture, commit-gate enforcement"]
+  },
+  "test_seam": "Unit test: listCuratedHands().length >= 20; getCuratedHand(id) returns a fully-populated record for every id; scoreDecision returns 'matches GTO mix' for any action whose gto_mix frequency is > 0.5."
+}

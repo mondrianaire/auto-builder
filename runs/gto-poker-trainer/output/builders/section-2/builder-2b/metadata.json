@@ -1,0 +1,12 @@
+{
+  "section_id": "section-2",
+  "builder_id": "builder-2b",
+  "outputs": ["output.js"],
+  "exports": {
+    "global": "GTOData",
+    "members": ["HANDS", "GLOSSARY", "getHand", "listHands", "getGlossaryTerm", "listGlossary"]
+  },
+  "assertions_satisfied": ["S2.A2","S2.A3","S2.A4","DCA.7"],
+  "hand_count": 22,
+  "glossary_count": 16
+}

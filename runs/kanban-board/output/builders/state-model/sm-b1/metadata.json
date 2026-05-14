@@ -1,0 +1,30 @@
+{
+  "builder_id": "sm-b1",
+  "section": "state-model",
+  "status": "completed",
+  "started_at": "2026-05-10T00:00:02Z",
+  "completed_at": "2026-05-10T00:00:05Z",
+  "output_files": ["output.js"],
+  "exposes": [
+    "createStateModel(initialState) -> instance",
+    "instance.getState",
+    "instance.setState",
+    "instance.subscribe",
+    "instance.createList",
+    "instance.renameList",
+    "instance.deleteList",
+    "instance.createCard",
+    "instance.editCard",
+    "instance.deleteCard",
+    "instance.moveCard",
+    "instance.reorderCard",
+    "DEFAULT_SEED"
+  ],
+  "contracts_honored": [
+    "state-model--persistence",
+    "state-model--ui-render",
+    "state-model--dnd",
+    "state-model--interactions",
+    "state-model--integration"
+  ]
+}

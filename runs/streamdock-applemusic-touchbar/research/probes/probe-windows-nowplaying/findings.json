@@ -1,0 +1,160 @@
+{
+  "probe_id": "probe-windows-nowplaying",
+  "completed_at": "2026-05-13T00:30:00Z",
+  "researcher_mode": "escalation",
+  "budget_minutes_used": 5,
+  "framing_concern": null,
+  "background_confirmed": {
+    "smtc_is_canonical": "Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager (WinRT) is the canonical Windows surface for 'what is the current media session playing right now', exposed since Windows 10 1809. Apple Music for Windows (Microsoft Store preview) registers with SMTC like other media apps; community reports across 2023-2025 confirm it shows up as a session with Title/Artist populated.",
+    "powershell_winrt_bridge_is_zero_install": "PowerShell 5.1 ships in every supported Windows 10/11 build under C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe. WinRT types are reachable via the [<Type>,<Namespace>,ContentType=WindowsRuntime] syntax (Windows.Media.Control is one of the supported namespaces). Awaiting an IAsyncOperation requires a small AsTask shim or a 'while not completed sleep' loop; both are <40 lines of inline script.",
+    "child_process_pattern_is_unchanged": "From Node, child_process.execFile('powershell.exe', ['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-Command', script]) returns stdout/stderr identically to how execFile('osascript', [...]) did on the macOS branch. The C-S4-S5 contract is mechanism-agnostic at the integration boundary (it specifies tab-delimited two-field stdout, parsing, and resolve-to-null on any error)."
+  },
+  "options": [
+    {
+      "id": "opt-A",
+      "title": "Inline PowerShell + WinRT script invoked per poll via child_process",
+      "summary": "S5 rewrites music_source.js so that getNowPlaying() spawns powershell.exe with an inline -Command script that asks GlobalSystemMediaTransportControlsSessionManager for the current session, awaits its TryGetMediaPropertiesAsync(), and prints '<title>\\t<artist>' to stdout (empty stdout when there is no current session, when PlaybackStatus is not Playing, or when the call throws). Optionally filter by source AppUserModelId containing 'AppleInc.AppleMusicWin' to lock onto Apple Music specifically; the simpler default is to trust GetCurrentSession() (the OS-elected foreground session) and rely on the orchestrator's null-handling when Apple Music is not foreground.",
+      "mechanism_sketch": "execFile('powershell.exe', ['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-Command', PS_SCRIPT], {timeout: 1500, windowsHide: true}). PS_SCRIPT is a vendored string constant inside music_source.js that (1) loads the WinRT type via [Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager,Windows.Media.Control,ContentType=WindowsRuntime], (2) calls RequestAsync() and awaits via a small AsTask helper, (3) gets GetCurrentSession() (null -> exit), (4) gets PlaybackInfo.PlaybackStatus, exits if not 'Playing' (4 = Playing), (5) calls TryGetMediaPropertiesAsync() and prints Title + tab + Artist. All errors are swallowed by the script (try/catch -> exit 0 with empty stdout) so the Node side never sees a non-zero exit unless powershell.exe itself fails to launch.",
+      "pros": [
+        "Smallest possible blast radius: ONLY music_source.js changes (S5). The string constants 'osascript' and the AppleScript snippet are swapped for 'powershell.exe' and a PowerShell snippet; the function signature, the Promise discipline, the never-reject behavior, the tab-delimited parsing, and the resolve-to-null edge cases are all preserved exactly as the contract specifies.",
+        "Zero install footprint: PowerShell 5.1 + WinRT bindings ship in every Windows 10/11 build. Nothing to bundle, nothing to ship as a separate binary, no antivirus risk.",
+        "No new dependencies in package.json or node_modules — the vendored 'ws' library stays the only runtime dep.",
+        "S2 (layout/PI), S3 (SDK handshake), S4 (polling orchestrator), and S6 (harness) all remain byte-identical; the harness's child_process.execFile stub mechanism that S6 already uses for the osascript boundary works identically against the powershell.exe boundary (same stub shape, different command string).",
+        "Per-call latency (~300-500ms cold) is well under the 2000ms default poll interval; users will not notice."
+      ],
+      "cons": [
+        "Per-poll PowerShell cold start is wasteful — ~400ms CPU on each 2s tick. Not blocking but inelegant.",
+        "Inline PS scripts can be flagged by overly aggressive EDR/AV; mitigated by -NoProfile -NonInteractive -ExecutionPolicy Bypass and by keeping the script short and free of base64-encoded blobs.",
+        "PowerShell 5.1 WinRT projection has a known IAsyncOperation completion quirk; the AsTask shim or a 200ms polling loop on op.Status handles it. Adds ~15 lines to the inline script."
+      ],
+      "impact_per_section": {
+        "S1": "Manifest OS array flips from [{Platform:'mac'}] to [{Platform:'windows', MinimumVersion:'10'}]; CodePathMac becomes CodePathWin pointing to run.cmd (or plugin.exe wrapper). This is already mandated by ledger-diff-v2 and is independent of this probe's outcome.",
+        "S2": "Unaffected. Layout JSON, PI HTML, and the C-S2-S4 setFeedback payload shape are mechanism-agnostic.",
+        "S3": "Unaffected. SDK handshake, WebSocket events, and the C-S3-S4 internal API are mechanism-agnostic.",
+        "S4": "Unaffected. The polling orchestrator calls music_source.getNowPlaying() and trusts the C-S4-S5 contract; the contract is preserved.",
+        "S5": "Materially rewritten — the AppleScript string and 'osascript' command are replaced with a PowerShell+WinRT script and 'powershell.exe'. Function signature, never-reject discipline, and tab-delimited parsing are preserved. MCA.TDIPD.1/2 and AA.S5.4 (which require the literals 'application \"Music\"' / 'name of current track' etc.) must be replaced with Windows-side analogues that require literals like 'GlobalSystemMediaTransportControlsSessionManager', 'TryGetMediaPropertiesAsync', 'PlaybackStatus'.",
+        "S6": "Harness shim point shifts from intercepting child_process.execFile-with-'osascript' to intercepting child_process.execFile-with-'powershell.exe'. The shim mechanism (per-test stub returning stdout strings) is identical. AA.S6.3 (stub only the music-source command boundary) holds verbatim."
+      },
+      "bundle_size_delta_bytes": 0,
+      "new_install_steps": "none",
+      "confidence": "high"
+    },
+    {
+      "id": "opt-B",
+      "title": "Long-running PowerShell helper subscribing to SMTC events, printing on change",
+      "summary": "Spawn powershell.exe once at plugin startup with a script that subscribes to MediaPropertiesChanged + PlaybackInfoChanged on the session manager, prints '<title>\\t<artist>\\n' (or an empty line for no-session) on every change, and stays alive for the plugin's lifetime. S5's getNowPlaying() returns the most recent line read off the helper's stdout pipe. Optionally still polls a fallback every N seconds as a safety net.",
+      "mechanism_sketch": "child_process.spawn('powershell.exe', ['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File','helper.ps1'], {windowsHide:true}). A line-buffered stdout reader in music_source.js updates a 'lastSeen' state; getNowPlaying() returns Promise.resolve(lastSeen). On helper exit, lastSeen resets to null and the helper is respawned with backoff.",
+      "pros": [
+        "Lower latency on track changes (event-driven instead of 2s-poll bound).",
+        "Eliminates per-call PowerShell cold-start cost; CPU drops to near zero between events.",
+        "Already conceptually anticipated by ledger-diff-v2's A6 amendment ('event-driven is a tracked future enhancement')."
+      ],
+      "cons": [
+        "Materially expands blast radius into S4 and S5: S5 now owns process lifecycle (spawn/respawn/backoff), stdout line buffering, and shared state — none of which the C-S4-S5 contract anticipates. S4 may also need a startup hook to kick S5 (right now S4 just calls a stateless async function).",
+        "C-S4-S5 says 'spawn_mechanism: child_process.execFile or child_process.exec' — a spawn() with persistent stdout pipes is technically a different mechanism (the contract is amendable but the amendment is non-trivial).",
+        "Adds a real child process tied to the plugin's lifecycle; if it leaks (orphaned powershell.exe processes), it is a user-visible quality bug. A6's amendment explicitly says this is a future enhancement, not the v1 path.",
+        "S6 harness becomes more complex: must intercept the spawn boundary, drive stdin/stdout asynchronously, and assert on emitted lines over time (rather than per-call stdout strings). AA.S6.3 'stub injection touches only the osascript boundary' would need to become 'stub injection touches only the music-source process boundary' — a reasonable rephrasing but not a free change."
+      ],
+      "impact_per_section": {
+        "S1": "Same as opt-A (manifest OS flip, run.cmd entry).",
+        "S2": "Unaffected.",
+        "S3": "Unaffected at the SDK protocol layer, but S3 may need to expose a 'plugin shutdown' hook so S5 can terminate its child helper on plugin exit. Currently S3 has no such hook.",
+        "S4": "Slightly affected: orchestrator must start the helper on first willAppear and stop on last willDisappear (or accept the helper running for the plugin's full lifetime). Contract C-S4-S5 amendment required.",
+        "S5": "Fully rewritten: process lifecycle owner, stdout line buffer, restart-with-backoff, lastSeen state cache. Roughly 3-4x the LoC of opt-A.",
+        "S6": "Harness rewrites the music-source stub from 'stub one execFile call' to 'stub a long-running spawn'; assertions like AA.S5.1, AA.S5.2 need new scenarios.",
+        "contract_C-S4-S5": "Amended: spawn_mechanism field changes; semantics 'getNowPlaying returns lastSeen cached value' rather than 'spawns per call'."
+      },
+      "bundle_size_delta_bytes": "+~2KB (helper.ps1 file)",
+      "new_install_steps": "none",
+      "confidence": "high"
+    },
+    {
+      "id": "opt-C",
+      "title": "Bundle a precompiled nowplaying.exe (Rust windows-rs or self-contained .NET) inside the .sdPlugin folder",
+      "summary": "Author a tiny native CLI helper that uses GlobalSystemMediaTransportControlsSessionManager and prints '<title>\\t<artist>' on stdout (or empty stdout when no session). Build it once on the developer machine and vendor the resulting nowplaying.exe alongside music_source.js. S5 then execFiles the vendored .exe — fast cold-start, trivial parsing, same per-call contract as opt-A.",
+      "mechanism_sketch": "execFile(path.join(__dirname, 'nowplaying.exe'), [], {timeout:1000, windowsHide:true}). The .exe is a single-file Rust binary using the windows-rs crate (~1.5MB stripped) or a self-contained .NET single-file publish (~5-10MB).",
+      "pros": [
+        "Fastest per-poll cost (~20-50ms cold vs ~400ms for PowerShell). Future-proof if poll interval needs to drop to 500ms.",
+        "Most predictable output — no PowerShell quoting or projection quirks to debug.",
+        "Same call-site mechanism as opt-A; S5's Promise discipline preserved verbatim."
+      ],
+      "cons": [
+        "Bundle bloat (+1.5-10MB) and the bundle now ships a native binary. The .sdPlugin folder grows materially.",
+        "Unsigned native binaries from third parties are a known AV/SmartScreen false-positive surface; even when benign, the user may see a Windows Defender prompt on first run. Constraint 3 says 'no antivirus-triggering operations'.",
+        "Requires a Rust toolchain or .NET SDK on the developer/build machine. Adds a build step the Auto Builder pipeline did not previously need.",
+        "S6 verification harness becomes harder: AA.S5.4-equivalent (literals present in source) now applies to a binary blob; checking 'GlobalSystemMediaTransportControlsSessionManager' literal presence inside an .exe requires a string-scan rather than a JS source read, which the existing harness does not do. Either expand the harness (S6 surface change) or stub the .exe with a fake .exe in tests (drifts further from production fidelity).",
+        "Code-signing is the only durable mitigation for AV false-positives; that requires a cert the project does not have."
+      ],
+      "impact_per_section": {
+        "S1": "Manifest changes per ledger-diff-v2. Additionally, the .sdPlugin folder ships an extra binary asset — no manifest path needs to reference it explicitly (S5 spawns it via __dirname).",
+        "S2": "Unaffected.",
+        "S3": "Unaffected.",
+        "S4": "Unaffected.",
+        "S5": "Command string changes from 'osascript' to a path-resolved __dirname/nowplaying.exe. Function shape preserved.",
+        "S6": "AA.S5.4 (literal-presence in module source) is no longer a valid check shape for the data-acquisition mechanism; needs replacement assertion (e.g., 'nowplaying.exe exists in bundle' + 'invoking it on a mock-SMTC-fixtured machine prints tab-delimited title/artist'). Production fidelity argument gets harder — a real .exe at test time means either ship a test fixture .exe or stub the spawn entirely.",
+        "build_pipeline": "New: Rust/dotnet step to produce the binary, vendored into the bundle. Out-of-process to the Auto Builder run but a real new dependency."
+      },
+      "bundle_size_delta_bytes": "+1,500,000 to +10,000,000",
+      "new_install_steps": "none for end user; new build-side toolchain dependency",
+      "confidence": "high"
+    },
+    {
+      "id": "opt-D",
+      "title": "N-API native Node module (e.g., @nodert-win10-rs4/windows.media.control)",
+      "summary": "Add an npm package that projects WinRT into Node directly. getNowPlaying() becomes a normal in-process async call against GlobalSystemMediaTransportControlsSessionManager; no child process at all.",
+      "mechanism_sketch": "const { GlobalSystemMediaTransportControlsSessionManager } = require('@nodert-...'); async function getNowPlaying() { const mgr = await GlobalSystemMediaTransportControlsSessionManager.requestAsync(); const s = mgr.getCurrentSession(); if (!s) return null; const p = await s.tryGetMediaPropertiesAsync(); return {title:p.title, artist:p.artist}; }",
+      "pros": [
+        "Cleanest API surface; no shell-out, no stdout parsing.",
+        "Sub-10ms latency.",
+        "No PowerShell quoting edge cases."
+      ],
+      "cons": [
+        "Native modules are ABI-coupled to Node's exact major/minor version; the StreamDock host's Node runtime version is not under our control (and may vary across user machines). A wrong-ABI prebuilt binary either fails to load or requires node-gyp + Visual Studio Build Tools on the user's machine — both unacceptable per constraint 3 ('no driver install, no antivirus-triggering operations') and the zero-install-footprint goal.",
+        "@nodert-* packages target specific Windows SDK versions and have been unmaintained since ~2020; pinning a working trio (Node version × Windows SDK × package version) is fragile.",
+        "Bundle bloat: vendored native .node binary + transitive deps is comparable to or worse than opt-C.",
+        "C-S4-S5 internal_constraints explicitly says 'spawn_mechanism: child_process.execFile or child_process.exec' — eliminating the child process is a contract change.",
+        "S6 harness's 'stub the music-source command boundary' mechanism does not apply (no command boundary exists); the harness needs an in-process module mock instead, which is a different (and less production-fidelity) shim.",
+        "Discounted per Researcher heuristic ('discount heavyweight dependencies for simple needs')."
+      ],
+      "impact_per_section": {
+        "S1": "Manifest changes per ledger-diff-v2.",
+        "S2": "Unaffected.",
+        "S3": "Unaffected.",
+        "S4": "Unaffected at API call site.",
+        "S5": "Rewritten; no longer uses child_process.",
+        "S6": "Stub mechanism changes (in-process module mock instead of child_process command intercept). AA.S6.3 ('stub injection touches only the osascript boundary and the SDK WebSocket peer') is harder to honor verbatim — the boundary is no longer at the process edge.",
+        "contract_C-S4-S5": "internal_constraints.spawn_mechanism deleted; the contract becomes less prescriptive."
+      },
+      "bundle_size_delta_bytes": "+2,000,000 to +5,000,000 plus node_modules entries",
+      "new_install_steps": "potential node-gyp build on user machine if prebuilt ABI mismatch (constraint violation)",
+      "confidence": "high"
+    }
+  ],
+  "recommendation": {
+    "choice": "opt-A",
+    "rationale": "Opt-A is the unique option whose blast radius is contained entirely within S5's command-string and script-text constants. S2, S3, S4, and S6 — every section the briefing names in preserve_sections — remain byte-identical. The C-S4-S5 contract is preserved exactly: same signature, same Promise discipline, same never-reject behavior, same tab-delimited stdout parsing, same resolve-to-null edge cases; only the internal_constraints fields that name 'osascript' and the AppleScript literals need their Windows analogues. The harness stub mechanism at the child_process.execFile boundary works identically — only the command name and expected stdout fixtures change. Zero install footprint, zero new dependencies, zero antivirus risk. The ~400ms cold-start cost is a non-issue at a 2-second poll cadence and is well below the constraint-implied performance floor. Opt-B's event-driven design is materially better in latency but expands blast into S4 (lifecycle hook) and contract C-S4-S5 (spawn_mechanism amendment) — and ledger-diff-v2 already explicitly defers it to a future enhancement. Opt-C and opt-D add bundle weight, build-toolchain dependencies, or AV-surface risk for a problem (now-playing readout on a 2s poll) that does not need any of those.",
+    "preserves_sections_verbatim": ["S2", "S3", "S4", "S6"],
+    "minimal_changes_summary": {
+      "music_source.js": "Replace osascript invocation with powershell.exe invocation; replace AppleScript snippet with WinRT PowerShell snippet that prints tab-delimited title/artist to stdout. Function signature, Promise behavior, and parsing rules unchanged.",
+      "MCA.TDIPD.1": "Statement rephrased: 'spawns child_process with command powershell.exe; parses tab-delimited two-field stdout' (parsing/null behavior identical).",
+      "MCA.TDIPD.2": "Required literals replaced with Windows analogues: 'GlobalSystemMediaTransportControlsSessionManager', 'Windows.Media.Control', 'TryGetMediaPropertiesAsync' (or 'GetMediaPropertiesAsync'), 'PlaybackStatus'.",
+      "AA.S5.4": "Literal-presence assertion replaced with Windows analogues per above.",
+      "S6_harness": "Stub fixture key changes from 'osascript' to 'powershell.exe'; stdout fixture strings unchanged ('Bohemian Rhapsody\\tQueen', '')."
+    }
+  },
+  "open_subquestions": [
+    {
+      "id": "Q1",
+      "question": "Filter by Apple Music's AppUserModelId, or trust GetCurrentSession()?",
+      "default": "Trust GetCurrentSession(). If Apple Music is foreground, the OS will return its session. If a different app (Spotify, browser) is the foreground media session, the plugin will show that app's track — which arguably is the user's actual currently-playing music. If the product requirement is strictly 'show Apple Music or nothing', filter by AppUserModelId containing 'AppleInc.AppleMusicWin'. Recommend: trust GetCurrentSession() in v1; surface this as IP4 if the user wants Apple Music exclusivity.",
+      "blast_if_filtered": "5-line addition to the PowerShell snippet inside S5; no other section affected."
+    },
+    {
+      "id": "Q2",
+      "question": "PowerShell IAsyncOperation completion: AsTask shim vs Status-poll loop?",
+      "default": "Status-poll loop with 50ms sleep and 1000ms timeout — simpler, no Add-Type, no .NET interop. Both work; pick whichever ends up smaller in the final S5 source.",
+      "blast_if_changed": "Internal to S5's PowerShell string constant; no section impact."
+    }
+  ],
+  "framing_concern_check": "The briefing is correctly framed. It asks for the simplest Node-spawnable mechanism that preserves C-S4-S5 and minimizes blast into other sections; opt-A satisfies all of those constraints natively. The 'Known Background' already names SMTC + PowerShell as the canonical path; this probe ratifies it against the alternatives rather than discovering it."
+}

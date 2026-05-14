@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_section": "interactions",
+  "to_section": "integration",
+  "interface": {
+    "wireInteractions": {
+      "params": {
+        "rootEl": "HTMLElement",
+        "stateModel": "state-model instance (must expose createList, renameList, deleteList, createCard, editCard, deleteCard)"
+      },
+      "returns": "{ unwire: () => void }"
+    }
+  },
+  "notes": "integration calls wireInteractions once after mountRenderer. Uses event delegation."
+}

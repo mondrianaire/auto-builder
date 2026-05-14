@@ -1,0 +1,8 @@
+{
+  "section_id": "section-4",
+  "builder_id": "builder-4a",
+  "outputs": ["output.js"],
+  "exports": { "global": "Archetypes", "members": ["ARCHETYPES", "getArchetype", "listArchetypes"] },
+  "archetype_count": 8,
+  "assertions_satisfied": ["S4.A1","S4.A2","S4.A5","IP4.A1","DCA.8"]
+}

@@ -1,0 +1,41 @@
+{
+  "section_id": "S6",
+  "section_name": "edge-case-testing",
+  "builder_id": "builder-s6-v3",
+  "cycle": "v3-windows-rebuild",
+  "supersedes": "builder-s6-1",
+  "produced_at": "2026-05-13T01:05:00Z",
+  "files_produced": ["harness.js", "report.json"],
+  "harness_changes_from_v1": [
+    "Spawn mechanism: 'sh run.sh ...' -> 'node plugin/main.js ...' (simulates StreamDock host's bundled-Node CodePathWin execution model declared by manifest.Nodejs.Version='20').",
+    "Manifest shape check: required keys list updates from including CodePathMac to including CodePathWin + Nodejs; explicit AA.S1.2.no-mac check that CodePathMac is absent.",
+    "AA.S1.3: CodePathWin presence (instead of CodePathMac); also asserts the file's .js extension.",
+    "AA.S1.5: OS Platform check flips from 'mac' to 'windows'.",
+    "AA.S1.6: added — Nodejs.Version is a non-empty string and CodePathMac is absent (MCA.TDIPA.4 mirror).",
+    "AA.S5.3: spawn-command literal check flips from 'osascript' to 'powershell.exe'; additionally asserts 'osascript' is NOT present in music_source.js.",
+    "AA.S5.4 literal-presence check: list flips from {'application \"Music\"','player state','name of current track','artist of current track'} to {'GlobalSystemMediaTransportControlsSessionManager','Windows.Media.Control','TryGetMediaPropertiesAsync','PlaybackStatus'}.",
+    "Added explicit MCA assertion records: MCA.TDIPA.4 (Nodejs.Version), MCA.TDIPD.1 (powershell.exe spawn), MCA.TDIPD.2 (SMTC literals) — mirrors of AA assertions on the discovery side.",
+    "PNV.1 spawn updated to use Node-direct invocation matching the new manifest entry."
+  ],
+  "harness_preserves_verbatim": [
+    "Fixture key MUSIC_SOURCE_FIXTURE (env-var name unchanged from dev-002).",
+    "Fixture string 'Bohemian Rhapsody\\tQueen' (PNV.1 input).",
+    "Expected PNV.1 outbound: setFeedback frame to willAppear'd context with title='Bohemian Rhapsody' artist='Queen'.",
+    "Mock SDK WebSocket on 127.0.0.1 with random port.",
+    "Stub injection scope: limited to the music-source command boundary and the WebSocket peer (AA.S6.3).",
+    "Report.json schema and exit code semantics."
+  ],
+  "harness_results": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0
+  },
+  "assertions_satisfied": [
+    "AA.S6.1 (every edge_case_testing-verified assertion exercised)",
+    "AA.S6.2 (PNV.1 ran end-to-end against integrated bundle and passed)",
+    "AA.S6.3 (stub injection limited to powershell.exe boundary via MUSIC_SOURCE_FIXTURE + WebSocket peer)",
+    "AA.S6.4 (machine-readable report.json produced)"
+  ],
+  "sandbox_caveat": "powershell.exe is not present in the linux harness sandbox. MUSIC_SOURCE_FIXTURE env-var bypasses the real powershell.exe spawn so the harness verifies plugin response-logic + SDK message protocol against fixture data. The powershell.exe-to-SMTC boundary itself is verified structurally by AA.S5.4 / MCA.TDIPD.2 literal-presence checks on music_source.js. End-to-end real-Windows-host verification is delegated to the user's installation test on a Windows 10/11 machine with Apple Music for Windows running."
+}

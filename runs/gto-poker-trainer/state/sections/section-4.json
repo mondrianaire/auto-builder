@@ -1,0 +1,13 @@
+{
+  "section_id": "section-4",
+  "status": "verified",
+  "builders": ["builder-4a", "builder-4b"],
+  "verification": {
+    "S4.A1": "PASS - 8 archetypes (TAG, LAG, Nit, CallingStation, Maniac, Rock, Whale, NitReg).",
+    "S4.A2": "PASS - each archetype has id, display_name, preflop_frequencies (position-keyed), postflop_heuristics, contrast_with_gto.",
+    "S4.A3": "PASS - decide() seeds an internal RNG from stableHash(state) XOR seed; identical inputs -> identical RNG sequence -> identical outputs.",
+    "S4.A4": "PASS - decide() reads from profile but never assigns to it; ARCHETYPES are deepFrozen at module load.",
+    "S4.A5": "PASS - every archetype's contrast_with_gto contains paragraph breaks and is >300 characters."
+  },
+  "verified_at": "2026-05-10T00:50:00Z"
+}

@@ -1,0 +1,14 @@
+{
+  "builder_id": "builder-s1-1",
+  "section": "S1",
+  "produced": [
+    "manifest.json",
+    "icons/pluginIcon.png",
+    "icons/pluginIcon@2x.png",
+    "icons/actionIcon.png",
+    "icons/actionIcon@2x.png",
+    "icons/category.png",
+    "icons/category@2x.png"
+  ],
+  "notes": "Manifest follows SDK v2 schema, mac-only OS, single Encoder action. Icons are minimal valid PNGs (solid color) as placeholders, satisfying file-existence assertions. PropertyInspectorPath set to 'ui/inspector.html' per contract C-S1-S2 (see dev-001)."
+}

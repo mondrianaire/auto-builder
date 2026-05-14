@@ -1,0 +1,8 @@
+{
+  "section_id": "section-3",
+  "builder_id": "builder-3a",
+  "outputs": ["output.js"],
+  "registers_routes": ["walkthrough", "glossary"],
+  "emits_events": ["decision_result"],
+  "assertions_satisfied": ["S3.A1","S3.A2","S3.A3","S3.A4","S3.A5","IP3.A1","IP3.A2"]
+}

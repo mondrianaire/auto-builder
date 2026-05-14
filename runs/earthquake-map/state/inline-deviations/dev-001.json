@@ -1,0 +1,11 @@
+{
+  "id": "dev-001",
+  "ts": "2026-05-10T01:05:00Z",
+  "category": "implementation_path_chosen",
+  "summary": "Integrator writes to output/integration/, not output/final/.",
+  "context": "The integrator--section-4 contract describes the integrated artifact at output/final/index.html. The Coordinator briefing explicitly forbids writing to output/final/ (Orchestrator's responsibility) and directs Integrator output to output/integration/. Edge-case-testing in this run inspects the integration directory.",
+  "decision": "Honor the briefing's directory boundary. Write integrator output to output/integration/ with the layout the integrator--section-4 contract specifies (entry point, vendor/, modules at root, css at root). Orchestrator can later copy or symlink output/integration/ -> output/final/ at delivery time.",
+  "nested_equivalent": "Under nested mode, the Coordinator would dispatch the Integrator with the same directory boundary as part of the Integrator briefing, and the Integrator would write to output/integration/. No contract change is needed — output/final/ is the post-delivery location, and section-4 / CV test against it after Orchestrator copies it. This is a build-time vs delivery-time path distinction, not a contract amendment.",
+  "affects_product_code": false,
+  "affects_contract": false
+}

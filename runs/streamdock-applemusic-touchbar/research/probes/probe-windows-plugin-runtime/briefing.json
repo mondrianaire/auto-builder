@@ -1,0 +1,22 @@
+{
+  "probe_id": "probe-windows-plugin-runtime",
+  "phase": "escalation",
+  "dispatched_by": "orchestrator",
+  "question": "How does StreamDock VSD Craft software on Windows launch plugin entry points? Specifically: what does CodePathWin in manifest.json typically point to (a .exe directly, a .bat/.cmd wrapper that invokes node.exe, a .ps1, something else)? Can we keep our existing Node.js main.js and just change the entry to a .cmd wrapper that invokes node.exe? Does the host bundle a Node runtime, or must the user have Node installed system-wide?",
+  "context_pointers": [
+    "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\streamdock-applemusic-touchbar\\decisions\\technical-discovery\\sections-v2.json",
+    "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\streamdock-applemusic-touchbar\\output\\final\\com.autobuilder.applemusic-nowplaying.sdPlugin\\manifest.json",
+    "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\streamdock-applemusic-touchbar\\output\\final\\com.autobuilder.applemusic-nowplaying.sdPlugin\\plugin\\run.sh",
+    "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\streamdock-applemusic-touchbar\\output\\final\\com.autobuilder.applemusic-nowplaying.sdPlugin\\plugin\\main.js"
+  ],
+  "constraints": [
+    "Preserve the existing main.js + sdk.js + vendored ws (don't rewrite the plugin process in C#/Rust unless absolutely necessary).",
+    "User has VSD Craft installed at C:\\Program Files (x86)\\VSD Craft\\; plugin folder is C:\\Program Files (x86)\\VSD Craft\\plugins.",
+    "We don't know whether the user has Node.js installed system-wide. If they don't, we may need to bundle a portable Node or use a different runtime."
+  ],
+  "optimization_criterion": "blast_radius_minimization",
+  "preserve_sections": ["S2", "S3", "S4", "S6"],
+  "questioning_authority": true,
+  "budget_minutes": 5,
+  "max_options": 4
+}

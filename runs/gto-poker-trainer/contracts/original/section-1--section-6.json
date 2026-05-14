@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-6",
+  "summary": "App shell exposes the route container and the storage adapter to the Stats Pipeline and Dashboard.",
+  "interface": {
+    "route_registration": {
+      "name": "registerRoute",
+      "shape": "(routeId: string, mountFn: (container: HTMLElement) => void, unmountFn?: () => void) => void",
+      "purpose": "Stats Dashboard registers itself under routeId='stats'."
+    },
+    "storage_adapter": {
+      "name": "storage",
+      "shape": "{ get(key: string): any|null, set(key: string, value: any): void, clear(prefix?: string): void }",
+      "namespace_rule": "Stats persists totals under prefix 'gto-trainer/v1/stats/' with a schema_version field inside the payload to enable forward migration.",
+      "purpose": "Stats writes running totals via storage.set; reads on dashboard mount via storage.get."
+    },
+    "navigation": {
+      "name": "navigateHome",
+      "shape": "() => void",
+      "purpose": "Back-to-home from the dashboard."
+    }
+  },
+  "data_passed_not_logic": "Shell passes container, storage adapter, navigation callback. Shell does not compute any stat; section-6 does not implement storage backends.",
+  "ownership": {
+    "section-1_owns": ["registerRoute, storage adapter, navigateHome"],
+    "section-6_owns": ["all stats computation, persistence under its prefix, dashboard rendering"]
+  },
+  "test_seam": "Mount stats dashboard into a stub container with a stubbed storage adapter; assert dashboard reads default zero values when storage is empty and reads prior totals when storage is pre-populated."
+}

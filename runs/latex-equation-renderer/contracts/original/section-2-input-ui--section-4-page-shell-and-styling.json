@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "contract_id": "section-2-input-ui--section-4-page-shell-and-styling",
+  "producer": "section-2-input-ui",
+  "consumer": "section-4-page-shell-and-styling",
+  "summary": "The page shell reserves a container slot for the input UI; the input UI renders its textarea into that slot. The shell also provides a visible label that the textarea is associated with.",
+  "interface": {
+    "kind": "dom_slot",
+    "slot": {
+      "container_selector": "[data-slot='input-region'] (or documented #id such as #input-region)",
+      "ownership": "Shell owns the container element and surrounding layout/labels; input UI owns the textarea and any input-internal markup placed inside the container.",
+      "label_contract": "Shell provides a visible <label> (or heading) text identifying the input region. Input UI's textarea must be associated with that label via for/id pairing OR the input UI may carry its own aria-label. Either satisfies S2.A3."
+    },
+    "stable_attributes": {
+      "input_textarea": "The textarea exposes data-role='latex-input' (or a documented id) so other sections can locate it without coupling to layout."
+    }
+  },
+  "data_passed": [
+    "Output (shell -> input UI): a container DOM element reference where the textarea should be appended, OR a stable container selector.",
+    "No runtime data flows through this contract — it is a structural/DOM contract only."
+  ],
+  "non_goals": [
+    "Shell does not implement input event handling.",
+    "Input UI does not implement page-level layout outside its container."
+  ],
+  "open_questions_for_builders": []
+}

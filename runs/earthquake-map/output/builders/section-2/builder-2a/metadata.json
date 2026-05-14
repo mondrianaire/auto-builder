@@ -1,0 +1,28 @@
+{
+  "builder_id": "builder-2a",
+  "section_id": "section-2",
+  "task": "Implement map.js exposing mount(), magnitudeColor(), magnitudeRadius() against vendored Leaflet.",
+  "outputs": [
+    {
+      "path": "output/map.js",
+      "kind": "source",
+      "language": "javascript",
+      "exports": [
+        "window.EarthquakeMap.mount",
+        "window.EarthquakeMap.magnitudeColor",
+        "window.EarthquakeMap.magnitudeRadius"
+      ]
+    }
+  ],
+  "verifies": ["S2.A1", "S2.A2", "S2.A3", "S2.A4", "S2.A5", "TDIP1.A2", "TDIP3.A1", "TDIP3.A2"],
+  "verification_notes": [
+    "S2.A1: L.map() + L.tileLayer with OSM creates a visible interactive world map; pan/zoom enabled by default.",
+    "S2.A2: one L.circleMarker per event with finite lat/lon; markerCount returned.",
+    "S2.A3: magnitudeRadius is monotonic non-decreasing (3 -> 22 clamp); strictly increasing on the open interval (0, ~12).",
+    "S2.A4: magnitudeColor returns 5 distinct values across magnitude buckets — exceeds the >=3 requirement.",
+    "S2.A5: bindPopup with HTML containing place, magnitude, depth, and human-readable time.",
+    "TDIP1.A2: L.map / L.tileLayer / L.circleMarker all called.",
+    "TDIP3.A1/A2: monotonic radius and >=3 distinct color buckets confirmed."
+  ],
+  "completed_at": "2026-05-10T01:02:30Z"
+}

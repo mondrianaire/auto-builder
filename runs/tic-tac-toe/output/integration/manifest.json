@@ -1,0 +1,84 @@
+{
+  "completed_at": "2026-05-09T21:25:00Z",
+  "entry_point": "index.html",
+  "files": [
+    {
+      "path": "index.html",
+      "role": "page-shell",
+      "imports": ["ui-render.css", "rules-engine.js", "ai-opponent.js", "ui-render.js", "controller.js"]
+    },
+    {
+      "path": "ui-render.css",
+      "role": "stylesheet",
+      "imports": []
+    },
+    {
+      "path": "rules-engine.js",
+      "role": "rules-engine",
+      "imports": [],
+      "global_export": "window.RulesEngine"
+    },
+    {
+      "path": "ai-opponent.js",
+      "role": "ai-opponent",
+      "imports": ["window.RulesEngine"],
+      "global_export": "window.AIOpponent"
+    },
+    {
+      "path": "ui-render.js",
+      "role": "ui-render",
+      "imports": [],
+      "global_export": "window.UIRender"
+    },
+    {
+      "path": "controller.js",
+      "role": "controller",
+      "imports": ["window.RulesEngine", "window.AIOpponent", "window.UIRender"],
+      "global_export": "window.TTTController"
+    }
+  ],
+  "section_outputs_used": [
+    {
+      "section": "rules-engine",
+      "source": "output/builders/rules-engine/builder-rules-engine-b1/output.js",
+      "destination": "output/integration/rules-engine.js"
+    },
+    {
+      "section": "ai-opponent",
+      "source": "output/builders/ai-opponent/builder-ai-opponent-b1/output.js",
+      "destination": "output/integration/ai-opponent.js"
+    },
+    {
+      "section": "ui-render",
+      "source": "output/builders/ui-render/builder-ui-render-b1/output.js",
+      "destination": "output/integration/ui-render.js"
+    },
+    {
+      "section": "ui-render",
+      "source": "output/builders/ui-render/builder-ui-render-b2/output.css",
+      "destination": "output/integration/ui-render.css"
+    },
+    {
+      "section": "controller-and-shell",
+      "source": "output/builders/controller-and-shell/builder-controller-b1/controller.js",
+      "destination": "output/integration/controller.js"
+    },
+    {
+      "section": "controller-and-shell",
+      "source": "output/builders/controller-and-shell/builder-controller-b1/index.html",
+      "destination": "output/integration/index.html"
+    }
+  ],
+  "load_order": ["ui-render.css", "rules-engine.js", "ai-opponent.js", "ui-render.js", "controller.js"],
+  "glue_code_added": [],
+  "issues_resolved_during_integration": [],
+  "verification": {
+    "node_syntax_check": "all four JS files passed `node --check`",
+    "symbol_alignment": "controller.js consumes window.RulesEngine, window.AIOpponent, window.UIRender; each module sets the matching global in its IIFE wrapper. Names align across all modules.",
+    "load_order_alignment": "index.html script tags appear in the order specified by Coordinator (rules-engine -> ai-opponent -> ui-render -> controller); CSS link precedes scripts.",
+    "path_alignment": "index.html references ui-render.css and the four .js files by bare filename; integration directory layout uses identical bare filenames; no rewrites required.",
+    "node_smoke_test": "Loaded rules-engine + ai-opponent under node, applied 3 moves on a fresh board, confirmed legalMoves and checkOutcome return contract-shaped data, AI.chooseMove returned a legal blocking move on a near-win position.",
+    "byte_equivalence_with_tested_sandbox": "ai-opponent.js, rules-engine.js, ui-render.js, ui-render.css, controller.js, index.html all match the sandbox copies that the edge-case-testing builder ran 46/46 passing tests against (md5 verified for ai-opponent.js)."
+  },
+  "escalations": []
+}

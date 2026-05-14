@@ -1,0 +1,854 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:00:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Local-first browser app served from disk (single-page app, openable via file:// with vendored dependencies, no network required)",
+      "rationale": "The build prompt explicitly specifies a single-page browser-deliverable app with vendored deps. Browser delivery is canonical for trainers (the user references this style), avoids platform-specific install steps, gives us a stable rendering primitive (DOM/Canvas) and a stable persistence primitive (localStorage) that both downstream sections depend on. Reversibility at design time is high — sections are written so the storage layer is abstracted behind a small adapter, but switching to native is out of scope for v1 anyway.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "The integrated artifact is a single HTML file (or a directory whose entrypoint is a single index.html) that loads and runs without any HTTP server.",
+          "check_type": "behavior",
+          "target_module": "dist/index.html",
+          "target_symbol": "page_load_under_file_protocol",
+          "expected_value": "Opening the entrypoint via file:// in a fresh browser profile reaches an interactive home screen with no console errors caused by failed network requests.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "No <script src> or <link href> in the integrated artifact references an http(s) origin; all dependencies are vendored on disk relative to the entrypoint.",
+          "check_type": "absence",
+          "target_module": "dist/index.html",
+          "target_symbol": "external_origin_references",
+          "expected_value": "Zero external-origin references in the served HTML and zero outbound network requests during a complete walkthrough+table session.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch"
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "Persisted session stats use window.localStorage as the storage backend and survive a hard reload of the page.",
+          "check_type": "behavior",
+          "target_module": "persistence",
+          "target_symbol": "stats_store",
+          "expected_value": "Stats written during one session are present and unchanged after window.location.reload() in the same browser profile.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Embedded precomputed ranges/solutions only — GTO reference data is authored as static data shipped with the build; no live solver, no external solver call",
+      "rationale": "The build prompt explicitly specifies embedded GTO reference data with no live solver. Live solver integration would be an order-of-magnitude larger build, would require a network or WASM port, and is excluded by the file:// + vendored-deps constraint locked in IP1. Curated coverage (preflop ranges from canonical positions + a finite library of postflop spots with annotated frequencies) is sufficient for the user's stated practice goal.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "The build contains a static GTO reference dataset (preflop opening/3bet/4bet ranges keyed by position and a curated set of postflop spots) loaded synchronously at startup from bundled data.",
+          "check_type": "presence",
+          "target_module": "data/gto",
+          "target_symbol": "gto_reference_dataset",
+          "expected_value": "A module-level data structure exposes preflop ranges keyed by (position, action) for at least the 6 canonical 9-max positions (UTG, UTG+1, MP, LJ, HJ, CO, BTN, SB, BB) and postflop reference data for every hand in the curated library.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "The application performs no live solver call: there is no code path that constructs a game tree and runs CFR/equilibrium iteration at runtime, and no network call to an external solver.",
+          "check_type": "absence",
+          "target_module": "src",
+          "target_symbol": "live_solver",
+          "expected_value": "No symbol named solve/solver/cfr/equilibrium that performs iterative range computation; all GTO answers come from the embedded dataset.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch"
+        },
+        {
+          "id": "IP2.A3",
+          "statement": "The reference dataset is keyed at 100bb cash-game depth (per assumption A12) and the data layer exposes that depth as a constant.",
+          "check_type": "constant_value",
+          "target_module": "data/gto",
+          "target_symbol": "REFERENCE_STACK_BB",
+          "expected_value": "100",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Decision-then-reveal quiz — for each curated hand, the user is shown a spot, must commit to an action (and optionally a sizing), and the app then reveals the GTO frequency mix with explanation",
+      "rationale": "The build prompt explicitly names this interaction model. It produces a measurable training signal that feeds the GTO-deviation metric in the stats layer (cross-section dependency). Both branches were comparable in complexity, but quiz mode is what the prompt asked for and what the stats section needs to score against.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "Walkthrough mode requires the user to commit an action before the GTO answer is revealed; the answer panel is not visible (or is masked) until commit.",
+          "check_type": "behavior",
+          "target_module": "walkthrough",
+          "target_symbol": "decision_commit_gate",
+          "expected_value": "Loading any curated hand shows the spot and decision controls but no GTO answer text; clicking a decision control transitions to a revealed-answer state that includes the GTO frequency mix and an explanation.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].chosen_branch"
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "Each committed decision in walkthrough mode produces a scored result (correct vs GTO-mix / partially-correct / off-tree) recorded in a structured form.",
+          "check_type": "structural",
+          "target_module": "walkthrough",
+          "target_symbol": "DecisionResult",
+          "expected_value": "Object shape includes fields { hand_id, user_action, user_sizing?, gto_mix, score_label, deviation_score }.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].chosen_branch"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP4",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Static frequency tables per archetype with simple postflop heuristics — each archetype is a fixed action-frequency profile (preflop ranges + a small set of postflop bet/call/fold heuristics keyed by board texture and pot odds)",
+      "rationale": "Discovery's default and consistent with assumption A8. Adaptive agents would require ML training infrastructure that is explicitly out of scope. Static profiles are sufficient to make each archetype recognizable (TAG plays tight-aggressive, calling station never folds top pair, maniac three-bets too wide) and produce useful contrast with GTO that is itself instructive content for the user.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.A1",
+          "statement": "There is a roster of at least 6 distinct archetype profiles, each defined by an explicit frequency table (not a learned policy).",
+          "check_type": "presence",
+          "target_module": "agents/archetypes",
+          "target_symbol": "ARCHETYPES",
+          "expected_value": "At minimum: TAG, LAG, Nit, CallingStation, Maniac, Rock — each with declared preflop range frequencies and postflop heuristic parameters.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch"
+        },
+        {
+          "id": "IP4.A2",
+          "statement": "Archetype decisions are pure functions of (game_state, archetype_profile, rng_seed) — no persisted learning state across hands.",
+          "check_type": "behavior",
+          "target_module": "agents/archetypes",
+          "target_symbol": "decide",
+          "expected_value": "Calling decide(state, profile, seed) twice with identical inputs returns identical outputs; running 100 hands does not mutate any per-archetype field that affects subsequent decisions.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP5",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Single dashboard with summary stats + GTO-deviation score per session, persisted across sessions in localStorage; per-hand replay is out of scope for v1",
+      "rationale": "Discovery default and consistent with the prompt's 'tracks stats over sessions' phrasing. Per-hand replay is a substantial additional feature that Discovery placed adjacent to the OOS list and that the prompt did not name. Dashboard alone serves the stated goal. Reversible: a per-hand history could be layered on later because each hand already produces a structured result record (see IP3.A2).",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP5.A1",
+          "statement": "Stats dashboard displays at minimum: hands played, VPIP, PFR, 3-bet%, WTSD, W$SD, BB/100, and a GTO-deviation score, both for the current session and aggregated across all sessions.",
+          "check_type": "presence",
+          "target_module": "stats/dashboard",
+          "target_symbol": "DASHBOARD_METRICS",
+          "expected_value": "Eight named metrics rendered with numeric values for both current-session and all-time scopes.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].chosen_branch"
+        },
+        {
+          "id": "IP5.A2",
+          "statement": "Stats persist in localStorage under a versioned namespace key so a page reload restores prior totals without loss.",
+          "check_type": "behavior",
+          "target_module": "stats/persistence",
+          "target_symbol": "localStorage_namespace",
+          "expected_value": "After playing N hands, reloading the page and reading localStorage returns the same totals; the storage key includes a schema version field.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].chosen_branch"
+        }
+      ]
+    }
+  ],
+  "prompt_verb_analysis": {
+    "candidate_verbs": [
+      "train (i.e., GTO training — the umbrella verb in the project name)",
+      "walk through (the curated edge-case hand library)",
+      "play (a 9-handed cash table vs archetype agents with stats persisted across sessions)"
+    ],
+    "chosen_verb": "play (a full session of 9-handed cash vs archetype agents with stats persisted across sessions)",
+    "rationale": "The prompt names two top-level outcomes — walkthroughs and a fully functional 9-handed table with cross-session stats. Of the two, the table-play loop is the most load-bearing single verb: it integrates the most subsystems (deck/dealing, archetype agents, betting flow, hand evaluation, stats writer, persistence, GTO-deviation scoring) and its absence would most clearly mean the build failed. The walkthrough mode is itself meaningful but exercises a strict subset of the same subsystems (hand state + GTO data + decision capture). 'Train' is the umbrella but is too abstract to verify literally. 'Play a session and see the stats persist into a second session' is the chain that proves the integrated artifact actually does what was asked."
+  },
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.1",
+      "covers": "decisions/discovery/ledger-v1.json#restatement",
+      "statement": "The integrated artifact provides both top-level modes named in the restatement: a guided walkthrough of curated edge-case hands AND a 9-handed table populated by archetype agents with cross-session stats.",
+      "check_type": "presence",
+      "scenario": "From the home screen, the user can navigate into Walkthrough mode and complete at least one curated hand; separately, the user can navigate into Table mode and play at least one full hand to showdown or fold-out. Both modes are reachable and functional in the same artifact.",
+      "expected_result": "Both mode entrypoints exist on the home screen, both are reachable from a clean load, and each leads to a functional flow.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.2",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A1]",
+      "statement": "All gameplay is No-Limit Texas Hold'em — hand evaluation uses 5-of-7 selection from 2 hole + 5 community cards, and bet sizing is unconstrained up to stack (no fixed limit structure).",
+      "check_type": "behavior",
+      "scenario": "In Table mode, on a representative hand, observe that the user can bet any amount from min-raise up to all-in (no fixed limit), and that the dealt structure is 2 hole cards plus a flop/turn/river of community cards.",
+      "expected_result": "Bet input accepts any size between min and stack; community board reaches 5 cards on hands that go to showdown; hand-eval picks the best 5 from 7.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.3",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A2]",
+      "statement": "There is no auth, accounts, or login surface anywhere in the artifact.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen from a clean load and confirm no login form, no signup form, no account UI.",
+      "expected_result": "No authentication UI is present.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.4",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A3]",
+      "statement": "Persistence is local-only (localStorage); there is no remote write.",
+      "check_type": "absence",
+      "scenario": "During a full session of play, monitor outbound network requests; confirm zero requests fire to any origin.",
+      "expected_result": "Zero outbound network requests during play and stats reads/writes.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.5",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A4]",
+      "statement": "Table mode runs cash-game format: stacks do not auto-escalate, blinds remain fixed, and there is no tournament timer.",
+      "check_type": "absence",
+      "scenario": "Play 20+ hands at the 9-handed table and observe that blinds remain at the same denomination throughout and stacks reset/replenish per cash-game convention.",
+      "expected_result": "No blind-escalation event fires; no tournament UI element appears.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.6",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A5]",
+      "statement": "GTO answers come from embedded data, not live computation; the same spot returns the same reference answer deterministically.",
+      "check_type": "behavior",
+      "scenario": "Open the same curated hand twice in Walkthrough mode; the GTO frequency mix shown after decision is identical both times.",
+      "expected_result": "Identical reference output for identical input spot.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.7",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A6]",
+      "statement": "Curated hand library contains at least 20 hands, each annotated with the GTO edge-case lesson it teaches.",
+      "check_type": "presence",
+      "scenario": "Enumerate the curated hand index in Walkthrough mode and verify count and per-hand lesson annotation.",
+      "expected_result": "Library size >= 20; every entry has a non-empty lesson tag and explanation text.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.8",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7]",
+      "statement": "At least 6 distinct archetype profiles exist and at least 6 of them appear at the 9-handed table on a fresh session.",
+      "check_type": "presence",
+      "scenario": "Open Table mode on a fresh session, hover or inspect each non-hero seat, and read off the archetype label.",
+      "expected_result": "At least 6 distinct archetype labels present across 8 non-hero seats.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.9",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8]",
+      "statement": "Archetype agents are scripted/heuristic — same input state + same RNG seed yields identical decisions.",
+      "check_type": "behavior",
+      "scenario": "Run the agent decision function twice with identical (game_state, profile, seed) tuples.",
+      "expected_result": "Both calls return identical decisions.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.10",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A9]",
+      "statement": "Tracked session stats include hands played, VPIP, PFR, 3-bet%, WTSD, W$SD, BB/100, and a GTO-deviation metric.",
+      "check_type": "presence",
+      "scenario": "After playing several hands, navigate to the stats dashboard and verify all eight metrics are displayed with numeric values.",
+      "expected_result": "All eight named metrics render with numeric values.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.11",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A10]",
+      "statement": "Walkthrough mode is interactive (decision-then-reveal), not passive read-only.",
+      "check_type": "behavior",
+      "scenario": "Open a curated hand; verify that no GTO answer text is visible until a decision is committed; commit a decision; verify the answer panel then appears.",
+      "expected_result": "Two distinct UI states: pre-decision (answer hidden) and post-decision (answer revealed).",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.12",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A11]",
+      "statement": "The user occupies exactly one seat at the 9-handed table; the other 8 are archetype agents.",
+      "check_type": "structural",
+      "scenario": "Inspect Table mode initial state.",
+      "expected_result": "Exactly 9 seats; exactly 1 is labeled as Hero/User; the other 8 are archetype-controlled.",
+      "verifier": "cv_artifact_exercise"
+    },
+    {
+      "id": "DCA.13",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A12]",
+      "statement": "Reference depth is 100bb cash, exposed as a constant in the data layer.",
+      "check_type": "constant_value",
+      "scenario": "Read the REFERENCE_STACK_BB constant.",
+      "expected_result": "100",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.14",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[0]",
+      "statement": "Multiplayer / networked play with other humans is absent — there is no UI element exposing remote opponents and no socket/WebRTC connection.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen and observe no 'invite player', 'join room', 'lobby', or similar networking surface; confirm no WebSocket / WebRTC API usage in the bundle.",
+      "expected_result": "Zero multiplayer UI; zero remote-peer code paths.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.15",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[1]",
+      "statement": "Accounts, authentication, and cloud sync are absent.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen.",
+      "expected_result": "No login/signup/account-settings UI; no remote sync indicator.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.16",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[2]",
+      "statement": "Real-money play, deposits, or wagering integrations are absent.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen for deposit/withdraw/cashier surfaces.",
+      "expected_result": "Zero real-money UI; chip values are play-money only.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.17",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[3]",
+      "statement": "Only NLHE is supported — no game-variant selector for PLO, limit, or mixed games.",
+      "check_type": "absence",
+      "scenario": "Inspect mode-selection and table-creation surfaces for variant selectors.",
+      "expected_result": "No variant selector; only NLHE rules are implemented.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.18",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[4]",
+      "statement": "Tournament-specific features (ICM, blind escalation, bubble dynamics, payout structures) are absent in v1.",
+      "check_type": "absence",
+      "scenario": "Inspect Table mode for any tournament-only UI element.",
+      "expected_result": "No ICM display, no blind-level timer, no payout ladder.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.19",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[5]",
+      "statement": "No live-solver computation is invoked at runtime.",
+      "check_type": "absence",
+      "scenario": "Search the bundle and observed runtime behavior for solver iteration loops or external solver API calls.",
+      "expected_result": "Zero solver code paths; all GTO answers come from embedded data.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.20",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[6]",
+      "statement": "Hand-history import from external sites is absent.",
+      "check_type": "absence",
+      "scenario": "Inspect Walkthrough/library entry surfaces for any 'import hand history' control.",
+      "expected_result": "No import surface present.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.21",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[7]",
+      "statement": "The artifact is browser-deliverable, not a native mobile build; no mobile-only build artifacts.",
+      "check_type": "presence",
+      "scenario": "Confirm the deliverable is HTML/JS/CSS opening in a desktop browser via file://.",
+      "expected_result": "index.html-rooted SPA; no .apk/.ipa/.xcodeproj.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.22",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[8]",
+      "statement": "Coaching/community features (sharing, leaderboards, forums) are absent.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen.",
+      "expected_result": "No share, leaderboard, or forum surface.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.23",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[9]",
+      "statement": "User-authored archetypes/libraries are absent in v1 — archetype roster and curated library are read-only data.",
+      "check_type": "absence",
+      "scenario": "Inspect archetype and library surfaces for create/edit affordances.",
+      "expected_result": "No create/edit/save controls on archetype or library entries.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.24",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[10]",
+      "statement": "Adaptive/learning opponent AI is absent — agent profiles do not mutate based on play history.",
+      "check_type": "absence",
+      "scenario": "Run 100 hands and re-inspect each archetype's profile parameters.",
+      "expected_result": "Zero parameter drift in any profile across 100 hands.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.25",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP1].topic",
+      "statement": "The application delivery surface decision is reflected in the artifact: it is a local-first browser SPA openable via file:// (covered in detail by IP1.A1-A3).",
+      "check_type": "behavior",
+      "scenario": "Open dist/index.html via file:// in a fresh browser profile.",
+      "expected_result": "App reaches interactive home screen with no network failures.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.26",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP2].topic",
+      "statement": "GTO data source decision is reflected in the artifact: embedded reference data only (covered in detail by IP2.A1-A3).",
+      "check_type": "presence",
+      "scenario": "Inspect the build's data layer for the embedded dataset and absence of solver code.",
+      "expected_result": "Dataset present, no solver.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.27",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP3].topic",
+      "statement": "Walkthrough interaction model decision is reflected in the artifact: decision-then-reveal quiz (covered in detail by IP3.A1-A2).",
+      "check_type": "behavior",
+      "scenario": "Open a curated hand and verify the gate behavior.",
+      "expected_result": "Answer hidden until commit; revealed afterward.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.28",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP4].topic",
+      "statement": "Archetype agent fidelity decision is reflected in the artifact: static frequency tables + simple postflop heuristics (covered in detail by IP4.A1-A2).",
+      "check_type": "behavior",
+      "scenario": "Inspect agent decision determinism and roster.",
+      "expected_result": "Deterministic outputs; >= 6 distinct profiles.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "id": "DCA.29",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5].topic",
+      "statement": "Stats granularity decision is reflected in the artifact: single dashboard with summary stats + GTO-deviation, persisted across sessions (covered in detail by IP5.A1-A2).",
+      "check_type": "presence",
+      "scenario": "Open the dashboard after a session and after a reload.",
+      "expected_result": "Dashboard renders all metrics; values persist across reload.",
+      "verifier": "edge_case_testing"
+    }
+  ],
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "play (a 9-handed cash session vs archetype agents with stats persisted across sessions)",
+    "scenario": "Open the integrated artifact via file:// in a fresh browser profile (production fidelity: no HTTP server, no network). Clear localStorage. Navigate to Table mode. Play at least 10 complete hands at the 9-handed table — for each hand, take an action whenever it is the hero's turn (call/check, raise, or fold), allow the archetype agents to act on their turns, and let each hand resolve to showdown or fold-out. Open the stats dashboard and record the displayed values for hands played, VPIP, PFR, and BB/100. Reload the page (window.location.reload()) without clearing localStorage. Re-open the stats dashboard. Play 5 more complete hands. Re-open the stats dashboard.",
+    "expected_result": "After the first 10 hands, the dashboard shows hands_played >= 10 and the other named stats render with numeric values. After reload but before further play, the dashboard still shows hands_played >= 10 and the same prior totals (cross-session persistence). After 5 more hands, hands_played has increased by exactly 5 and per-session stats reflect the new hands. Throughout the entire scenario, zero outbound HTTP requests are made.",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "covers": "decisions/technical-discovery/sections-v1.json#prompt_verb_analysis.chosen_verb"
+  },
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "App Shell, Navigation, and Storage Adapter",
+      "charter": "Build the single-page browser shell that hosts the entire app: a top-level home screen with two clearly labeled entrypoints (Walkthrough mode, Table mode) plus a Stats Dashboard route. Provide the shared layout primitives (header, mode-switch, route container) and the storage adapter that wraps localStorage behind a small versioned API used by every other section. The artifact must open via file:// with all dependencies vendored on disk and zero network calls. This section also owns the boot sequence — loading the embedded GTO dataset and archetype roster before any mode renders.",
+      "acceptance": "Opening the entrypoint via file:// in a fresh browser reaches an interactive home screen with no console errors and no outbound network requests. The home screen exposes navigation into Walkthrough mode, Table mode, and Stats Dashboard. The storage adapter exposes get/set/clear keyed under a versioned namespace, persists across reloads, and is the only module other sections use to read or write localStorage.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "Opening the entrypoint via file:// in a fresh browser reaches an interactive home screen with no console errors and no outbound network requests.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: open dist/index.html via file:// in a fresh browser profile. Step 2: wait for boot to complete. Step 3: take a screenshot of the home screen. Step 4: read console messages. Step 5: read network request log.",
+          "expected_result": "Home screen is visible and interactive; console has zero errors; network log shows zero outbound requests.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "The home screen exposes navigation into Walkthrough mode, Table mode, and Stats Dashboard.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: load home. Step 2: locate three named entrypoints. Step 3: click each in turn and confirm the corresponding mode container mounts and the URL/route updates.",
+          "expected_result": "All three routes are reachable from the home screen and return correctly to home.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "The storage adapter exposes get/set/clear keyed under a versioned namespace.",
+          "check_type": "structural",
+          "scenario": "Inspect the storage adapter module's exports and the localStorage keys it writes.",
+          "expected_result": "Module exports get, set, and clear functions; every key it writes begins with a namespace prefix that includes a schema version segment (e.g., 'gto-trainer/v1/...').",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "persists across reloads",
+          "check_type": "behavior",
+          "scenario": "Step 1: call storage.set('test-key', {x:1}). Step 2: reload the page. Step 3: call storage.get('test-key').",
+          "expected_result": "Returns {x:1}.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "all dependencies vendored on disk and zero network calls",
+          "check_type": "absence",
+          "scenario": "Static-scan dist/ for http(s) origins in script/link/img/fetch references; runtime-monitor outbound requests during a complete session.",
+          "expected_result": "Zero http(s) references; zero outbound requests.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "The visual styling of mode interiors (each mode owns its own UI)",
+        "Any GTO content (lives in section-2)",
+        "Any agent logic (lives in section-4)"
+      ]
+    },
+    {
+      "id": "section-2",
+      "name": "GTO Reference Dataset and Theory Content",
+      "charter": "Author and embed the GTO reference dataset and the prose theory content that lives inside the artifact. This includes: preflop opening / 3-bet / 4-bet / call ranges for each of the 9-max positions at 100bb, a curated library of >= 20 postflop edge-case spots with full annotation (board, action history, GTO frequency mix per available action, sizing recommendations, and a 2-5 paragraph GTO-theory explanation per hand), and a structured glossary/concept layer (range construction, polarization vs merged ranges, MDF, alpha, blockers, equity realization, GTO vs exploitative tradeoffs) that walkthrough explanations and archetype-vs-GTO contrast text reference. All content is data, not computation. Expose a typed read API so other sections never touch raw files.",
+      "acceptance": "The dataset module exposes preflop ranges keyed by (position, action) for all 9 standard positions and reference data for every hand in the curated library. The curated library contains >= 20 hands, each with a non-empty lesson tag, a GTO frequency mix object, and a multi-paragraph theory explanation. The glossary/concept layer exposes >= 12 named GTO concepts with definitions reachable from walkthrough explanations. Querying the same spot twice returns identical reference output (deterministic, no live computation).",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "preflop ranges keyed by (position, action) for all 9 standard positions",
+          "check_type": "presence",
+          "scenario": "Enumerate preflop_ranges keys.",
+          "expected_result": "All 9 positions (UTG, UTG+1, MP, LJ, HJ, CO, BTN, SB, BB) are present, each with at least open-raise and facing-3bet entries.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "curated library contains >= 20 hands, each with a non-empty lesson tag, a GTO frequency mix object, and a multi-paragraph theory explanation",
+          "check_type": "structural",
+          "scenario": "Iterate the curated library and check each entry's shape.",
+          "expected_result": "Library length >= 20; for every entry: lesson_tag is a non-empty string, gto_mix is an object mapping action_name -> frequency in [0,1] summing to ~1, theory_explanation is a string with >= 2 paragraph breaks.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "glossary/concept layer exposes >= 12 named GTO concepts with definitions",
+          "check_type": "presence",
+          "scenario": "Enumerate the concept glossary.",
+          "expected_result": "At least 12 named concepts, each with a non-empty definition string.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "Querying the same spot twice returns identical reference output",
+          "check_type": "behavior",
+          "scenario": "Call the read API twice with the same hand_id; deep-compare outputs.",
+          "expected_result": "Outputs are deeply equal.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A5",
+          "from_acceptance_phrase": "All content is data, not computation",
+          "check_type": "absence",
+          "scenario": "Static-scan the dataset module for solver/CFR/equilibrium iteration code paths.",
+          "expected_result": "No iterative-solve symbols.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Walkthrough mode UI (section-3)",
+        "Table mode UI and gameplay (section-5)",
+        "Live solver computation"
+      ]
+    },
+    {
+      "id": "section-3",
+      "name": "Walkthrough Mode (decision-then-reveal quiz)",
+      "charter": "Build the curated-hand walkthrough UI: a hand index, a per-hand decision view that shows the spot (cards, board, action history, pot, stack), decision controls (action + sizing), a commit gate that hides the GTO answer until decision, and a reveal panel that shows the GTO frequency mix, the user's score vs the mix, and the multi-paragraph theory explanation tied to glossary concepts. Each committed decision produces a structured DecisionResult that flows into the stats layer. The walkthrough explanation is where the GTO-theory deep dive lives in-product — explanations must reference the glossary concepts authored in section-2.",
+      "acceptance": "From the home screen, the user can enter Walkthrough mode and see a hand index of all curated hands. Selecting a hand presents the spot with no GTO answer visible. Committing a decision transitions to a revealed-answer state showing the GTO frequency mix, a score label (matches GTO mix / partial / off-tree), and the theory explanation. The revealed view links to glossary concepts referenced in the explanation. Each committed decision emits a DecisionResult event consumed by the stats subsystem.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "From the home screen, the user can enter Walkthrough mode and see a hand index of all curated hands.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: load home. Step 2: click Walkthrough. Step 3: count entries in the hand index.",
+          "expected_result": "Walkthrough mounts; index shows entries equal to the curated library size (>= 20).",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "Selecting a hand presents the spot with no GTO answer visible.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: select any curated hand. Step 2: visually scan the page and DOM for any text that matches the GTO mix data.",
+          "expected_result": "No GTO frequency text or theory explanation is visible or in the DOM in a non-hidden state before commit.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "Committing a decision transitions to a revealed-answer state showing the GTO frequency mix, a score label, and the theory explanation.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: load a curated hand. Step 2: click an action control. Step 3: observe the revealed panel.",
+          "expected_result": "Reveal panel shows three pieces of content: a frequency mix display, a score label from {matches GTO mix, partial, off-tree}, and the theory explanation paragraphs.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "The revealed view links to glossary concepts referenced in the explanation.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: open a hand whose explanation references a glossary concept (e.g., MDF or polarization). Step 2: commit a decision. Step 3: hover/click the linked concept term in the explanation.",
+          "expected_result": "Linked term resolves to the glossary entry with that concept's definition.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "Each committed decision emits a DecisionResult event consumed by the stats subsystem.",
+          "check_type": "structural",
+          "scenario": "Inspect the walkthrough module's commit handler and the stats subsystem's intake.",
+          "expected_result": "On commit, a DecisionResult object with shape { hand_id, user_action, user_sizing?, gto_mix, score_label, deviation_score } is passed to the stats intake.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Authoring new hands (data lives in section-2)",
+        "Stats dashboard rendering (section-6)",
+        "Table mode play (section-5)"
+      ]
+    },
+    {
+      "id": "section-4",
+      "name": "Archetype Agent Roster and Decision Engine",
+      "charter": "Define the archetype roster (>= 6 profiles: TAG, LAG, Nit, CallingStation, Maniac, Rock at minimum) as static frequency tables (preflop ranges + postflop bet/call/fold heuristics keyed by board texture, pot odds, and prior action). Implement a pure decision function decide(game_state, profile, rng_seed) -> action that returns deterministic outputs for identical inputs and never mutates the profile. Expose a typed AgentDecision contract for the table mode to consume. Author per-archetype 'how this archetype contrasts with GTO' commentary text that the table mode and walkthrough mode can surface so the user learns by contrast.",
+      "acceptance": "The archetype roster contains >= 6 distinct profiles. Each profile is a static data structure with explicit frequency tables. The decide function is pure: identical (game_state, profile, rng_seed) inputs produce identical outputs and no profile field is ever mutated. Each archetype has a contrast-with-GTO commentary string of >= 1 paragraph that the table mode can surface on hover/click of the seat.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "The archetype roster contains >= 6 distinct profiles.",
+          "check_type": "presence",
+          "scenario": "Enumerate ARCHETYPES.",
+          "expected_result": "At least 6 entries with distinct names, including TAG, LAG, Nit, CallingStation, Maniac, Rock.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "Each profile is a static data structure with explicit frequency tables.",
+          "check_type": "structural",
+          "scenario": "Inspect each profile's shape.",
+          "expected_result": "Every profile has fields { name, preflop_frequencies, postflop_heuristics, contrast_with_gto } where preflop_frequencies maps (position, situation) -> frequency mix.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "The decide function is pure: identical inputs produce identical outputs.",
+          "check_type": "behavior",
+          "scenario": "Call decide(state, profile, seed) twice with deeply-equal inputs; compare outputs.",
+          "expected_result": "Outputs are deeply equal.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "no profile field is ever mutated",
+          "check_type": "behavior",
+          "scenario": "Snapshot a profile, run 100 decide() calls with varying state, snapshot again.",
+          "expected_result": "Snapshots are deeply equal.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A5",
+          "from_acceptance_phrase": "Each archetype has a contrast-with-GTO commentary string",
+          "check_type": "presence",
+          "scenario": "Iterate ARCHETYPES.",
+          "expected_result": "Every entry has a non-empty contrast_with_gto string with at least one paragraph break or >= 200 characters.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Adaptive learning (explicitly OOS in Discovery)",
+        "Table UI and dealing logic (section-5)",
+        "Stats writer (section-6)"
+      ]
+    },
+    {
+      "id": "section-5",
+      "name": "9-Handed Table Mode (gameplay engine + UI)",
+      "charter": "Build the 9-handed cash-game table: deck/shuffle/deal, blinds posting, hero seat (1 of 9) and 8 archetype seats, betting rounds (preflop, flop, turn, river), valid-action enforcement (min-raise, all-in, check/call/fold), pot accounting, side pots, hand evaluation (best-5-of-7), showdown resolution, and chip movement. The hero acts via UI controls; archetype seats call section-4's decide() on their turn. Surface each opponent's archetype label on the seat and expose hover/click access to that archetype's contrast-with-GTO commentary so the user learns by contrast during play. Cash-game format: blinds remain fixed, no escalation, no tournament UI. Each completed hand produces a HandResult that flows into the stats layer.",
+      "acceptance": "Entering Table mode shows a 9-seat table with the hero in one seat and 8 named archetype agents in the others. Hands deal correctly (2 hole cards, then flop/turn/river as betting permits), blinds post, betting rounds enforce valid actions, pots resolve correctly at showdown using best-5-of-7 evaluation, and chips move accordingly. Blind levels remain fixed across hands (cash format). On the hero's turn, the UI exposes fold/check/call/raise controls with valid sizing constraints. Each completed hand emits a HandResult to the stats subsystem. Each non-hero seat displays its archetype label and exposes the archetype's GTO-contrast commentary on hover or click.",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "Entering Table mode shows a 9-seat table with the hero in one seat and 8 named archetype agents in the others.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: load home. Step 2: click Table mode. Step 3: count seats and inspect labels.",
+          "expected_result": "9 seats; exactly 1 labeled Hero/User; 8 labeled with archetype names drawn from the roster.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "Hands deal correctly and pots resolve correctly at showdown using best-5-of-7 evaluation.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: play a hand to showdown where the hero holds a known winning 5-of-7 combination (e.g., flush vs two pair) and verify the pot awards to the hero. Step 2: play a second hand where the hero folds preflop and verify the pot awards to the last aggressor or remaining player.",
+          "expected_result": "Pot awarding follows NLHE rules in both scenarios.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "Blind levels remain fixed across hands (cash format).",
+          "check_type": "behavior",
+          "scenario": "Play 20+ hands and observe SB/BB displayed amounts each hand.",
+          "expected_result": "SB and BB amounts are unchanged across all hands; no level-up event fires.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A4",
+          "from_acceptance_phrase": "On the hero's turn, the UI exposes fold/check/call/raise controls with valid sizing constraints.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: wait until it is hero's turn preflop facing a raise. Step 2: inspect available actions. Step 3: attempt to raise below min-raise and above stack.",
+          "expected_result": "Fold/Call/Raise visible (Check disabled when facing a bet); raise input rejects below-min and above-stack values.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A5",
+          "from_acceptance_phrase": "Each completed hand emits a HandResult to the stats subsystem.",
+          "check_type": "structural",
+          "scenario": "Inspect the table-mode hand-completion handler and the stats subsystem intake.",
+          "expected_result": "A HandResult object is passed to stats with shape including hero_actions[], hero_won, pot_size, hero_pnl_bb, gto_deviations[].",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A6",
+          "from_acceptance_phrase": "Each non-hero seat displays its archetype label and exposes the archetype's GTO-contrast commentary on hover or click.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: enter Table mode. Step 2: hover or click a non-hero seat. Step 3: read the surfaced commentary.",
+          "expected_result": "Each non-hero seat has a visible archetype label; hover/click surfaces the contrast_with_gto commentary for that archetype.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        }
+      ],
+      "depends_on": ["section-1", "section-2", "section-4"],
+      "estimated_builders": 3,
+      "out_of_scope": [
+        "Tournament-format play",
+        "Multiplayer / networked seats",
+        "Per-hand replay UI (OOS per IP5 resolution)",
+        "Adaptive agent logic (section-4 owns static profiles)"
+      ]
+    },
+    {
+      "id": "section-6",
+      "name": "Stats Pipeline and Dashboard",
+      "charter": "Implement the stats writer that consumes HandResult events from Table mode and DecisionResult events from Walkthrough mode and updates running totals stored via section-1's storage adapter. Compute and render the dashboard metrics: hands played, VPIP, PFR, 3-bet%, WTSD, W$SD, BB/100, and a GTO-deviation score (aggregated from per-decision deviations). Provide both a current-session view and an all-time view. Stats must persist across page reloads and across distinct sessions.",
+      "acceptance": "From any mode, the user can navigate to the Stats Dashboard and see all eight named metrics rendered with numeric values for both current-session and all-time scopes. After playing N hands, reloading the page, and re-opening the dashboard, all-time totals are unchanged and the new session's session-scope counters reset. Every HandResult and DecisionResult emitted upstream causes the corresponding metric(s) to update.",
+      "acceptance_assertions": [
+        {
+          "id": "S6.A1",
+          "from_acceptance_phrase": "see all eight named metrics rendered with numeric values for both current-session and all-time scopes",
+          "check_type": "user_flow",
+          "scenario": "Step 1: play 5 table hands. Step 2: open the dashboard. Step 3: read off each metric in both scopes.",
+          "expected_result": "All eight metrics (hands played, VPIP, PFR, 3-bet%, WTSD, W$SD, BB/100, GTO-deviation) render with numeric values in both Session and All-Time columns.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        },
+        {
+          "id": "S6.A2",
+          "from_acceptance_phrase": "all-time totals are unchanged and the new session's session-scope counters reset",
+          "check_type": "user_flow",
+          "scenario": "Step 1: play hands until hands_played_alltime = X. Step 2: reload page. Step 3: open dashboard. Step 4: read both scopes.",
+          "expected_result": "All-time hands_played = X; session hands_played = 0 (new session); other metrics behave consistently.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        },
+        {
+          "id": "S6.A3",
+          "from_acceptance_phrase": "Every HandResult and DecisionResult emitted upstream causes the corresponding metric(s) to update.",
+          "check_type": "behavior",
+          "scenario": "Inject a synthetic HandResult and a synthetic DecisionResult; read dashboard metrics before and after.",
+          "expected_result": "Hands played increments by 1 on HandResult; GTO-deviation score adjusts when DecisionResult arrives with a non-zero deviation.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        },
+        {
+          "id": "S6.A4",
+          "from_acceptance_phrase": "Stats must persist across page reloads and across distinct sessions.",
+          "check_type": "behavior",
+          "scenario": "Step 1: play hands. Step 2: reload. Step 3: re-read dashboard.",
+          "expected_result": "All-time totals match pre-reload values exactly.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        }
+      ],
+      "depends_on": ["section-1", "section-3", "section-5"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Per-hand replay UI",
+        "Cloud sync / cross-device sync",
+        "Hand-history import"
+      ]
+    },
+    {
+      "id": "section-7",
+      "name": "Edge-Case Testing",
+      "charter": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment per CV charter. Run the integrated artifact opened via file:// in a fresh browser profile with cleared localStorage and verify each edge_case_testing assertion in sections 1-6, all DCA assertions tagged edge_case_testing, the IP-resolution assertions, and the prompt_named_verb_assertion (PNV.1). Capture screenshots, console logs, and network logs for each scenario. Specifically exercise: zero outbound network requests across full sessions, deterministic agent behavior, deterministic GTO reference, persistence across reload, no live-solver code paths, no tournament/multiplayer/auth/cashier/import surfaces, hand evaluation correctness on adversarial boards (flush vs straight, full house ties, split pots), and chip-conservation invariants across 100+ hands.",
+      "acceptance": "Every assertion in this sections file with verifier in {edge_case_testing, prompt_named_verb} and every DCA assertion tagged edge_case_testing has been exercised against the integrated artifact under production fidelity (file://, fresh profile, vendored deps), and a verification report records pass/fail with screenshot/log evidence per assertion. Any failure blocks acceptance until remediated.",
+      "acceptance_assertions": [
+        {
+          "id": "S7.A1",
+          "from_acceptance_phrase": "Every assertion with verifier edge_case_testing or prompt_named_verb has been exercised under production fidelity.",
+          "check_type": "user_flow",
+          "scenario": "Step 1: launch the integrated artifact via file://. Step 2: for each targeted assertion, execute its scenario and record the result. Step 3: aggregate results into a verification report.",
+          "expected_result": "Report contains an entry for every targeted assertion id; all entries marked PASS.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        },
+        {
+          "id": "S7.A2",
+          "from_acceptance_phrase": "verification report records pass/fail with screenshot/log evidence per assertion",
+          "check_type": "structural",
+          "scenario": "Inspect the verification report.",
+          "expected_result": "Each assertion entry includes assertion_id, scenario_run, pass/fail, and at least one screenshot or log artifact reference.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        },
+        {
+          "id": "S7.A3",
+          "from_acceptance_phrase": "chip-conservation invariants across 100+ hands",
+          "check_type": "behavior",
+          "scenario": "Sum total chips on the table at the start of a session and after 100 hands of play.",
+          "expected_result": "Total chips are unchanged (modulo rake if rake is implemented; if no rake, equality is exact).",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        },
+        {
+          "id": "S7.A4",
+          "from_acceptance_phrase": "hand evaluation correctness on adversarial boards",
+          "check_type": "behavior",
+          "scenario": "Construct synthetic 7-card combinations covering flush-over-straight, full-house-vs-quads, identical-rank ties (split pot), and wheel straights; feed each to the evaluator.",
+          "expected_result": "Evaluator returns the canonical NLHE ranking and split-pot detection in all cases.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Authoring new product behavior — this section only verifies",
+        "Fixing failures (those become amend tasks routed back to the owning section)"
+      ]
+    }
+  ]
+}

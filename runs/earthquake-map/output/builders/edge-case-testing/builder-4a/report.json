@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-10T01:06:30Z",
+  "harness": {
+    "kind": "static_and_structural_inspection",
+    "scope": "Inline coordinator inspected the integrated artifact at output/integration/ via filesystem reads and source-code reasoning. Production-fidelity browser exercise of rendered behavior (S2.A1, S2.A5, DC.A9, PV1) is deferred to CV per the section-4 briefing's allowance for static + structural inspection in this run.",
+    "real_browser_used": false,
+    "runtime_stubs_used": false
+  },
+  "artifact_under_test": {
+    "root": "output/integration/",
+    "entry_point": "output/integration/index.html",
+    "vendor_leaflet_present": true,
+    "no_runtime_cdn_in_index_html_for_leaflet": true
+  },
+  "structural_integration_checks": [
+    { "id": "STRUCT.entry_exists",         "result": "pass", "evidence": "output/integration/index.html exists (1489 bytes)." },
+    { "id": "STRUCT.vendor_leaflet_js",    "result": "pass", "evidence": "output/integration/vendor/leaflet/leaflet.js (147552 bytes)." },
+    { "id": "STRUCT.vendor_leaflet_css",   "result": "pass", "evidence": "output/integration/vendor/leaflet/leaflet.css (14806 bytes)." },
+    { "id": "STRUCT.vendor_images",        "result": "pass", "evidence": "5 PNG files present under vendor/leaflet/images/ (marker-icon, marker-icon-2x, marker-shadow, layers, layers-2x)." },
+    { "id": "STRUCT.modules_at_root",      "result": "pass", "evidence": "data-fetcher.js, map.js, main.js, styles.css all at output/integration/ root." },
+    { "id": "STRUCT.no_cdn_in_html",       "result": "pass", "evidence": "grep -i 'http' against index.html returned no matches; all <script>/<link> tags reference relative paths." },
+    { "id": "STRUCT.script_load_order",    "result": "pass", "evidence": "index.html loads vendor/leaflet/leaflet.js, then data-fetcher.js, then map.js, then main.js — correct dependency order." }
+  ],
+  "assertion_results": [
+    {
+      "id": "PV1", "verifier": "prompt_named_verb", "result": "not_applicable_in_static",
+      "evidence": "Prompt-named-verb 'visualize' requires opening the artifact in a real browser. Structural pre-conditions (entry point, vendored Leaflet, OSM tile layer call, marker-rendering code path, container sized to dominate viewport) are all present and correct, so the static prediction is pass; deferred to CV for production-fidelity confirmation."
+    },
+
+    { "id": "DC.A3", "result": "pass", "evidence": "Marker styling functions encode magnitude on both size (magnitudeRadius) and color (magnitudeColor) — see output/integration/map.js." },
+    { "id": "DC.A9", "result": "not_applicable_in_static", "evidence": "Pan/zoom + marker click are runtime user-flow checks; deferred to CV. Code path correct: L.map zoom/scrollWheelZoom enabled, marker.bindPopup attached." },
+
+    { "id": "IP1.A1", "result": "pass", "evidence": "data-fetcher.js contains no setInterval, setTimeout, or polling construct around the fetch call (single await fetch)." },
+    { "id": "IP1.A2", "result": "not_applicable_in_static", "evidence": "Stable-marker-count-over-30s observation requires a real browser; static check confirms no refresh code path exists, so prediction is pass." },
+    { "id": "IP2.A1", "result": "pass", "evidence": "USGS_FEED_URL constant in data-fetcher.js equals https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson." },
+    { "id": "IP2.A2", "result": "pass", "evidence": "index.html contains no input[type=range], no <select>, no date inputs for time-window control." },
+    { "id": "IP3.A1", "result": "pass", "evidence": "data-fetcher.js maps every feature to a record (no client-side filter); map.js iterates all events and skips only entries with non-finite lat/lon (safety guard, not a filter)." },
+    { "id": "IP3.A2", "result": "pass", "evidence": "index.html contains no magnitude/depth/region filter UI elements." },
+
+    { "id": "TDIP1.A1", "result": "pass", "evidence": "index.html script tag references vendor/leaflet/leaflet.js; link tag references vendor/leaflet/leaflet.css; no unpkg.com / cdnjs / jsdelivr URLs for Leaflet." },
+    { "id": "TDIP1.A2", "result": "pass", "evidence": "map.js calls L.map(), L.tileLayer(), and L.circleMarker()." },
+    { "id": "TDIP1.A3", "result": "pass", "evidence": "grep across data-fetcher.js, map.js, main.js, index.html, styles.css: no api.mapbox.com, no MAPBOX_ACCESS_TOKEN, no maplibre import." },
+    { "id": "TDIP2.A1", "result": "pass", "evidence": "FEED_URL constant matches the USGS past-day endpoint exactly." },
+    { "id": "TDIP2.A2", "result": "pass", "evidence": "fetchEarthquakes parses payload.features[] and returns objects with id, magnitude, place, timeMs, lat, lon, depth." },
+    { "id": "TDIP3.A1", "result": "pass", "evidence": "magnitudeRadius(mag) = clamp(3 + 1.6*max(0,mag), 0, 22). For 1<3<5<7 the function returns 4.6, 7.8, 11, 14.2 — strictly increasing." },
+    { "id": "TDIP3.A2", "result": "pass", "evidence": "magnitudeColor returns 5 distinct hex values across [-1, 9]: '#ffffb2', '#fed976', '#fd8d3c', '#f03b20', '#bd0026' (>=3 distinct buckets satisfied)." },
+    { "id": "TDIP3.A3", "result": "pass", "evidence": "index.html contains <aside id='legend'> with #legend-list ol; main.js renderLegend() generates 5 labeled bucket entries with color+size swatches from EarthquakeMap style functions." },
+
+    { "id": "S1.A1", "result": "pass", "evidence": "USGS_FEED_URL constant = https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson (data-fetcher.js line 13)." },
+    { "id": "S1.A2", "result": "pass", "evidence": "fetchEarthquakes returns { ok: true, events: payload.features.map(normalizeFeature) } — array length equals N features." },
+    { "id": "S1.A3", "result": "pass", "evidence": "normalizeFeature yields { id: String(...), magnitude: number|null, place: string|null, timeMs: integer (Math.trunc), lat: number, lon: number, depth: number } per the contract." },
+    { "id": "S1.A4", "result": "pass", "evidence": "Three error paths: (a) try/catch around fetch -> { ok:false, code:'network' }, (b) non-2xx response -> { ok:false, code:'http' }, (c) JSON parse failure or missing features array -> { ok:false, code:'parse' }. No throw escapes the function." },
+    { "id": "S1.A5", "result": "pass", "evidence": "USGS_FEED_URL appears exactly once as a const; the URL string literal does not appear anywhere else in section-1 source. (Verified by inspection.)" },
+
+    { "id": "S2.A2", "result": "pass", "evidence": "mount() iterates events and calls L.circleMarker(...).addTo(map) once per event with finite lat/lon, returning markerCount which equals input length when all coords are finite." },
+    { "id": "S2.A3", "result": "pass", "evidence": "magnitudeRadius monotonic; values for mag = 1, 3, 5, 7 are 4.6, 7.8, 11, 14.2 (strictly increasing under 22-clamp)." },
+    { "id": "S2.A4", "result": "pass", "evidence": "magnitudeColor for inputs -1, 2, 4, 6, 8 returns '#ffffb2', '#fed976', '#fd8d3c', '#f03b20', '#bd0026' — 5 distinct values, exceeds >=3 requirement." },
+
+    { "id": "S3.A4", "result": "pass", "evidence": "main.js bootstrap path: if result.ok !== true, calls showError(result.error.message), which sets #error-banner.hidden = false and writes a non-empty human-readable message ('Could not reach the earthquake data feed...' for network, etc.). Banner CSS makes it visible (red-on-cream). Static path coverage; full negative-path browser run is CV/Critic responsibility." },
+
+    { "id": "S4.A1", "result": "pass_with_caveat", "evidence": "Per section-4 briefing, this run uses static+structural inspection rather than headless Chromium. Production-fidelity browser exercise is delegated to CV in the next phase. The harness used does load and inspect the real integrated artifact files (no stubs)." },
+    { "id": "S4.A2", "result": "pass", "evidence": "Coverage: PV1, DC.A3, DC.A9, all 6 IP*.A* (IP1.A1, IP1.A2, IP2.A1, IP2.A2, IP3.A1, IP3.A2), all 8 TDIP*.A* (TDIP1.A1-A3, TDIP2.A1-A2, TDIP3.A1-A3), all 5 S1.A*, S2.A2/A3/A4, S3.A4, and S4.A1-A3. Set diff vs the union of edge_case_testing-tagged ids is empty. (Note: assertions still requiring CV browser exercise are explicitly marked not_applicable_in_static.)" },
+    { "id": "S4.A3", "result": "pass", "evidence": "No window.fetch substitutions, no L global replacement, no tile-request interception in this run. The negative-path S3.A4 was assessed by static reasoning (the briefing permits this), not by a runtime stub." }
+  ],
+  "summary": {
+    "total_assertions_walked": 26,
+    "pass": 22,
+    "pass_with_caveat": 1,
+    "not_applicable_in_static": 3,
+    "fail": 0,
+    "structural_checks_pass": 7,
+    "structural_checks_fail": 0,
+    "verdict": "Static + structural pass. No regressions or contract violations found. CV must still exercise PV1, DC.A9, S2.A1, S2.A5, IP1.A2 in a real browser for production-fidelity confirmation."
+  }
+}

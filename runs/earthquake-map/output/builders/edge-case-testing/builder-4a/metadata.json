@@ -1,0 +1,15 @@
+{
+  "builder_id": "builder-4a",
+  "section_id": "section-4",
+  "task": "Walk every verifier: edge_case_testing assertion plus structural integration checks; report pass/fail per id.",
+  "outputs": [
+    { "path": "output/report.json", "kind": "report", "language": "json" }
+  ],
+  "verifies": ["S4.A1", "S4.A2", "S4.A3"],
+  "verification_notes": [
+    "Report covers PV1, DC.A3/A9, all IP/TDIP assertions, S1.A1-A5, S2.A2-A4, S3.A4, S4.A1-A3.",
+    "Real-browser exercise is delegated to CV per the section-4 briefing's static+structural allowance for this run.",
+    "No runtime stubs used; harness reads the real integrated artifact from output/integration/."
+  ],
+  "completed_at": "2026-05-10T01:06:30Z"
+}

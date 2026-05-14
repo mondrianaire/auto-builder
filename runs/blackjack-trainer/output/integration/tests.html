@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blackjack Trainer — Test Harness</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .harness { max-width: 1000px; margin: 1rem auto; padding: 1rem; color: #f5f7fa; }
+    .harness-results { background: #222; padding: 1rem; border-radius: 6px; }
+    .harness-results pre { white-space: pre-wrap; word-break: break-word; }
+    .pass { color: #51cf66; }
+    .fail { color: #ff6b6b; }
+    .summary { font-size: 1.2rem; margin-bottom: 1rem; }
+    .app-mount { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="harness">
+    <h1>Blackjack Trainer — Test Harness</h1>
+    <p>Drives real user flows against the integrated artifact. Each test exercises the live state machine + DOM, then asserts.</p>
+    <div id="harness-summary" class="summary"></div>
+    <div id="harness-results" class="harness-results"><pre id="harness-log"></pre></div>
+    <h2>App under test (kept live)</h2>
+    <div id="app" class="app-mount"></div>
+  </div>
+  <script type="module" src="tests.js"></script>
+</body>
+</html>

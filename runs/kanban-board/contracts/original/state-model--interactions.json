@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "from_section": "state-model",
+  "to_section": "interactions",
+  "interface": {
+    "createList": {
+      "params": { "name": "string (non-empty after trim)" },
+      "returns": "string | null — id of new list, or null if name invalid."
+    },
+    "renameList": {
+      "params": { "listId": "string", "name": "string (non-empty after trim)" },
+      "returns": "boolean"
+    },
+    "deleteList": {
+      "params": { "listId": "string" },
+      "returns": "boolean"
+    },
+    "createCard": {
+      "params": { "listId": "string", "title": "string (non-empty after trim)" },
+      "returns": "string | null — id of new card, or null if invalid."
+    },
+    "editCard": {
+      "params": { "cardId": "string", "title": "string (non-empty after trim)" },
+      "returns": "boolean"
+    },
+    "deleteCard": {
+      "params": { "cardId": "string" },
+      "returns": "boolean"
+    }
+  },
+  "notes": "interactions performs client-side validation (reject empty/whitespace) before calling these. State-model also validates defensively. createCard does NOT accept a description parameter (per IP1)."
+}

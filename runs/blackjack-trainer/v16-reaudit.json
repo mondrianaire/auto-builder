@@ -1,0 +1,81 @@
+{
+  "run_name": "blackjack-trainer",
+  "audit_at": "2026-05-10T07:00:00Z",
+  "audit_under_architecture_version": "v1.6",
+  "original_verdict": "pass",
+  "original_verdict_at": "2026-05-09T01:18:00Z",
+  "original_verdict_path": "runs/blackjack-trainer/output/verification/report.json",
+  "amendments_applied_since_original": ["v1.5", "v1.6"],
+  "gates_re_evaluated": [
+    {
+      "gate": "build_complete_handoff",
+      "introduced_in": "v1.2",
+      "result": "pass",
+      "rationale": "state/coordinator/build-complete.json exists. Handoff signal correctly written."
+    },
+    {
+      "gate": "machine_checkable_assertions_per_ip_lock",
+      "introduced_in": "v1.2",
+      "result": "needs_inspection",
+      "rationale": "TD's sections file should be checked for machine_checkable_assertions[] on each inflection_resolution. If absent, fail; if present, pass. Likely present given run-report sophistication, but unverified by this audit pass."
+    },
+    {
+      "gate": "acceptance_assertions_per_section",
+      "introduced_in": "v1.3",
+      "result": "needs_inspection",
+      "rationale": "Each section's acceptance phrases should derive at least one acceptance_assertion. Likely present given the depth of the verification report; unverified."
+    },
+    {
+      "gate": "cv_artifact_exercise_pass",
+      "introduced_in": "v1.3",
+      "result": "needs_inspection",
+      "rationale": "Verification report exists but does not document an artifact-exercise pass under cv_artifact_exercise. Static inspection fields ('source grep across...') dominate. May or may not have done DOM-loaded exercise; absence of a cv-runner script (unlike kanban-board which has one) suggests static-only."
+    },
+    {
+      "gate": "cv_artifact_exercise_production_fidelity",
+      "introduced_in": "v1.5",
+      "result": "fail_likely",
+      "rationale": "If the run did do artifact-exercise (uncertain), it would have been pre-v1.5 and likely used jsdom with stubbed runtime deps. The trainer uses ES modules and likely has no CDN deps (unlike latex), so the substitution risk is lower — but the verification still didn't run under explicit production fidelity per v1.5 wording."
+    },
+    {
+      "gate": "prompt_named_verb_assertion",
+      "introduced_in": "v1.5",
+      "result": "fail",
+      "rationale": "No PNV in the verification report. The prompt's named verb 'train me on blackjack' (or whatever the literal verb was) was not asserted end-to-end."
+    },
+    {
+      "gate": "historian_build_summary_and_decision_index",
+      "introduced_in": "v1.6",
+      "result": "needs_inspection",
+      "rationale": "history/log.jsonl exists; build-summary.md and decision-index.json existence is unverified by this audit pass."
+    },
+    {
+      "gate": "prompt_verb_analysis",
+      "introduced_in": "v1.6",
+      "result": "fail",
+      "rationale": "Absent — the v1.6 schema field didn't exist when this run was built."
+    }
+  ],
+  "reclassified_verdict": "fail",
+  "fail_count": 2,
+  "fail_likely_count": 1,
+  "needs_inspection_count": 4,
+  "pass_count": 1,
+  "incidental_observations": [
+    "This run was more sophisticated than the original blackjack run — has build-complete.json, full verification report with assumption checks, populated final/. It's closer to passing v1.6 than blackjack is.",
+    "The two definite failures are PNV and prompt_verb_analysis, both v1.5/v1.6 gates that postdate this run. The 'needs_inspection' items might pass; a more thorough audit pass would resolve them.",
+    "If the trainer artifact actually trains the user on blackjack correctly (which the run-report claims it does), the failures here are documentation/structure, not behavior."
+  ],
+  "recovery_options": [
+    {
+      "type": "patch_artifact",
+      "description": "Add prompt_verb_analysis to TD's sections file, derive PNV ('open page, deal a hand, observe strategy table highlights the basic-strategy correct action'), run CV artifact-exercise under v1.5 production fidelity (file:// load, real KaTeX-equivalent if any deps), produce missing Historian artifacts. Estimated effort: 2-3 dispatches."
+    },
+    {
+      "type": "rebuild_under_v1.6",
+      "description": "Discard and re-run. Cleaner if the patches above touch many files."
+    }
+  ],
+  "recommendation": "patch_artifact_after_full_inspection",
+  "recommendation_rationale": "This run is borderline. Two definite gate failures (PNV, prompt_verb_analysis) are documentation-side and easy to add. Four 'needs_inspection' gates may pass on closer review. If a full inspection pass confirms the four are passing, only the two definites need patching, which is cheap. If multiple of the four also fail, rebuild becomes preferable. Recommend: do a 30-minute thorough inspection of the four uncertain gates first, then choose patch vs rebuild based on the count."
+}

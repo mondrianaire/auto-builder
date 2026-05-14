@@ -1,0 +1,19 @@
+{"ts":"2026-05-10T01:00:00Z","actor":"coordinator","action":"boot","detail":"Inline-mode coordinator booted; read briefing, ledger, sections, contracts."}
+{"ts":"2026-05-10T01:00:01Z","actor":"coordinator","action":"build_dag","detail":"DAG written with 5 nodes (4 sections + 1 integrator pseudo-node), 3 waves."}
+{"ts":"2026-05-10T01:00:02Z","actor":"coordinator","action":"plan_wave","wave":1,"sections":["section-1","section-2","section-3"]}
+{"ts":"2026-05-10T01:01:00Z","actor":"coordinator","action":"dispatch_inline","section":"section-1","builders":["builder-1a"]}
+{"ts":"2026-05-10T01:01:30Z","actor":"coordinator","action":"section_verified","section":"section-1"}
+{"ts":"2026-05-10T01:02:00Z","actor":"coordinator","action":"dispatch_inline","section":"section-2","builders":["builder-2a","builder-2-vendor"]}
+{"ts":"2026-05-10T01:03:00Z","actor":"coordinator","action":"section_verified","section":"section-2","detail":"Leaflet 1.9.4 vendored: leaflet.js (147552B), leaflet.css (14806B), 5 PNG assets."}
+{"ts":"2026-05-10T01:04:00Z","actor":"coordinator","action":"dispatch_inline","section":"section-3","builders":["builder-3a"]}
+{"ts":"2026-05-10T01:04:30Z","actor":"coordinator","action":"section_verified","section":"section-3"}
+{"ts":"2026-05-10T01:05:00Z","actor":"coordinator","action":"deviation_logged","id":"dev-001","category":"implementation_path_chosen"}
+{"ts":"2026-05-10T01:05:30Z","actor":"coordinator","action":"deviation_logged","id":"dev-002","category":"implementation_path_chosen"}
+{"ts":"2026-05-10T01:05:35Z","actor":"coordinator","action":"plan_wave","wave":2,"sections":["integrator"]}
+{"ts":"2026-05-10T01:05:40Z","actor":"coordinator","action":"dispatch_inline","section":"integrator"}
+{"ts":"2026-05-10T01:05:45Z","actor":"coordinator","action":"integrator_verified","detail":"output/integration/ assembled with 12 files; manifest.json written; no CDN refs in HTML."}
+{"ts":"2026-05-10T01:05:50Z","actor":"coordinator","action":"plan_wave","wave":3,"sections":["section-4"]}
+{"ts":"2026-05-10T01:06:00Z","actor":"coordinator","action":"dispatch_inline","section":"section-4","builders":["builder-4a"]}
+{"ts":"2026-05-10T01:06:30Z","actor":"coordinator","action":"section_verified","section":"section-4","detail":"22 pass + 1 pass_with_caveat + 3 deferred-to-CV + 0 fail."}
+{"ts":"2026-05-10T01:07:00Z","actor":"coordinator","action":"historian_artifacts_written","detail":"history/log.jsonl + build-summary.md + decision-index.json."}
+{"ts":"2026-05-10T01:07:30Z","actor":"coordinator","action":"build_complete","detail":"state/coordinator/build-complete.json written; awaiting Orchestrator next steps."}

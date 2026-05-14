@@ -1,0 +1,104 @@
+{
+  "generated_at": "2026-05-10T04:22:45.097Z",
+  "total": 16,
+  "passed": 16,
+  "failed": 0,
+  "results": [
+    {
+      "assertion_id": "S1.A2",
+      "statement": "getState returns BoardState shape",
+      "passed": true,
+      "info": "shape verified on default seed"
+    },
+    {
+      "assertion_id": "S1.A3",
+      "statement": "subscribe fires on mutation",
+      "passed": true,
+      "info": "calls=1"
+    },
+    {
+      "assertion_id": "S1.A4",
+      "statement": "invalid inputs rejected, valid produce delta",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S1.A6",
+      "statement": "moveCard moves card across lists",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S1.A7",
+      "statement": "reorderCard reorders within list",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S1.A8",
+      "statement": "ids unique across 100 lists + 100 cards",
+      "passed": true,
+      "info": "total=200"
+    },
+    {
+      "assertion_id": "S2.A1",
+      "statement": "load returns null on absent or corrupt",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S2.A5",
+      "statement": "corrupt JSON does not throw",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S2.A2",
+      "statement": "save serializes state under STORAGE_KEY",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S2.A3",
+      "statement": "clear removes the key",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S3.A1",
+      "statement": "columns and cards rendered in order",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S3.A2",
+      "statement": "cards have draggable=true and data ids",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S3.A4",
+      "statement": "empty board still shows add-list affordance",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S4.A3",
+      "statement": "drop outside any drop zone is a no-op",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S4.A4",
+      "statement": "drag-over class lifecycle",
+      "passed": true,
+      "info": ""
+    },
+    {
+      "assertion_id": "S5.A7",
+      "statement": "empty/whitespace titles rejected client-side",
+      "passed": true,
+      "info": ""
+    }
+  ]
+}

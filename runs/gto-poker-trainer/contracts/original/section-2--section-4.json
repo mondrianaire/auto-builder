@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-4",
+  "summary": "GTO Reference Dataset exposes preflop ranges and concept names that Archetype profiles reference when authors write contrast_with_gto commentary; section-4 also reads the glossary so commentary can name the same concepts walkthrough uses.",
+  "interface": {
+    "get_preflop_range": {
+      "name": "getPreflopRange",
+      "shape": "(position: string, situation: string) => { [hand_class: string]: { action: string, frequency: number, sizing?: number } }",
+      "purpose": "Archetype authors can reference GTO ranges by position when writing contrast_with_gto strings (e.g., 'GTO opens 18% from UTG; the calling station's range is closer to 35% any-suited-broadway').",
+      "note": "This is a read-time reference for content authoring and may also be used by section-4 if a profile wants to express deviations as 'GTO-range plus delta'."
+    },
+    "list_concepts": {
+      "name": "listConcepts",
+      "shape": "() => Concept[]",
+      "Concept_shape": "{ id, name, definition, related_hands: string[] }",
+      "purpose": "Allows contrast_with_gto strings to reference the same concept ids that walkthrough resolves."
+    }
+  },
+  "data_passed_not_logic": "Section-2 returns data; section-4 returns data (the static profile structures). Neither calls into the other at runtime decide() time except via these read APIs.",
+  "ownership": {
+    "section-2_owns": ["preflop range data and glossary"],
+    "section-4_owns": ["archetype profiles and contrast_with_gto authoring"]
+  },
+  "test_seam": "Unit test: every concept_id referenced in any archetype's contrast_with_gto can be resolved via listConcepts(); every position used in profile preflop_frequencies has a corresponding GTO range available via getPreflopRange."
+}

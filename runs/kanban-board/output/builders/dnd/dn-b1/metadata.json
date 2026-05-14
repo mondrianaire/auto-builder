@@ -1,0 +1,8 @@
+{
+  "builder_id": "dn-b1",
+  "section": "dnd",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": ["wireDnd(rootEl, stateModel) -> {unwire}"],
+  "contracts_honored": ["state-model--dnd", "ui-render--dnd", "dnd--integration"]
+}

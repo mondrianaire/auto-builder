@@ -1,0 +1,9 @@
+{
+  "section_id": "section-7",
+  "builder_id": "edge-tests",
+  "outputs": ["output.html", "report.json"],
+  "harness_kind": "Two harnesses: (1) browser-loadable output.html that runs the same checks live in a browser; (2) headless node-runner that produced report.json against the integrated artifact.",
+  "totals": { "PASS": 34, "FAIL": 0, "SKIP": 3 },
+  "skip_rationale": "PNV.1, IP1.A1, DCA.25 require opening index.html in an actual browser, playing hands, reloading, etc. Code-inspection covers the underlying invariants; full prompt_named_verb run requires a human or browser-automation pass.",
+  "production_fidelity": "Headless run reads files from output/integration/ relative paths; matches what file:// would load."
+}

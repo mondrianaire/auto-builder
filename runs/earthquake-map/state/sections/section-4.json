@@ -1,0 +1,12 @@
+{
+  "section_id": "section-4",
+  "name": "Edge-Case Testing (production-fidelity)",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[3]",
+  "started_at": "2026-05-10T01:06:00Z",
+  "verified_at": "2026-05-10T01:06:30Z",
+  "builders": [
+    { "id": "builder-4a", "task": "Walk every verifier: edge_case_testing assertion plus structural integration checks; report pass/fail per id." }
+  ]
+}

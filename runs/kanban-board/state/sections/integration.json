@@ -1,0 +1,26 @@
+{
+  "section_id": "section-6",
+  "name": "integration",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-10T00:00:15Z",
+  "verified_at": "2026-05-10T00:00:18Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-6",
+  "active_contracts": [
+    "contracts/original/state-model--integration.json",
+    "contracts/original/persistence--integration.json",
+    "contracts/original/ui-render--integration.json",
+    "contracts/original/dnd--integration.json",
+    "contracts/original/interactions--integration.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "in-b1",
+      "description": "Self-contained web app: index.html + 6 JS files + styles.css.",
+      "status": "verified",
+      "builder_id": "in-b1",
+      "output_path": "output/integration/",
+      "verification_notes": "S6.A1 boots in browser without console errors. S6.A2 first-load seed = To Do/Doing/Done with no cards (DEFAULT_SEED). S6.A3 reload restores via Persistence.load. S6.A4 no Save button anywhere. S6.A5 autosave subscribes to every mutation."
+    }
+  ]
+}

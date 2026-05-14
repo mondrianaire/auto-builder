@@ -1,0 +1,510 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:00:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Title-only cards (simplest)",
+      "rationale": "Title-only is the canonical minimal kanban card model, has well-known training-data precedent, identical implementation complexity vs title+description (both store JSON objects), introduces no new dependencies, and is trivially reversible by extending the card schema with an optional description field later. Honors the simplest-within-reason principle from the ledger and matches A3 (title minimum). Storing cards as objects (not bare strings) keeps the schema forward-compatible per A3's what_breaks_if_wrong note.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "Cards are stored as objects with at least an id and a title field; description and other metadata fields are absent in v1.",
+          "check_type": "structural",
+          "target_module": "state-model",
+          "target_symbol": "Card",
+          "expected_value": {
+            "required_keys": ["id", "title"],
+            "forbidden_keys": ["description", "dueDate", "labels", "assignee", "attachments", "comments", "checklist"]
+          }
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "createCard accepts only a title (string) and a target listId; it does not accept a description parameter.",
+          "check_type": "behavior",
+          "target_module": "state-model",
+          "target_symbol": "createCard",
+          "expected_value": {
+            "accepted_params": ["listId", "title"],
+            "rejected_params": ["description"]
+          }
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "The rendered card DOM element shows the title text and does not render a description element, modal trigger, or expand affordance.",
+          "check_type": "absence",
+          "target_module": "ui-render",
+          "target_symbol": "card DOM element",
+          "expected_value": {
+            "absent_selectors": [".card-description", ".card-detail-modal-trigger", ".card-expand"]
+          }
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Lists are fixed in their creation order; only cards are draggable",
+      "rationale": "The prompt names DnD in the context of cards. Card-only DnD is the canonical kanban interaction in training data, has lower implementation complexity (one drag type, one drop-target type), introduces no new dependencies, and is trivially reversible by adding a list-level drag handle later. Avoids drop-zone conflict cases between card-drag and list-drag. Matches IP2 default.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "List header DOM elements do not have draggable=true and do not register dragstart handlers.",
+          "check_type": "absence",
+          "target_module": "dnd",
+          "target_symbol": "list header element",
+          "expected_value": {
+            "absent_attributes": ["draggable=true on list root or list header"]
+          }
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "The state-model exposes no reorderList mutation; list order is determined by creation order only.",
+          "check_type": "absence",
+          "target_module": "state-model",
+          "target_symbol": "reorderList",
+          "expected_value": {
+            "exported": false
+          }
+        },
+        {
+          "id": "IP2.A3",
+          "statement": "Card DOM elements have draggable=true.",
+          "check_type": "presence",
+          "target_module": "ui-render",
+          "target_symbol": "card DOM element",
+          "expected_value": {
+            "attribute": "draggable",
+            "value": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "state-model",
+      "charter": "Define the pure-JavaScript data model for the kanban board (board, lists, cards) and provide reducer-style mutation functions that return new state without touching the DOM. Includes id generation, validation, and a subscribe/notify mechanism so other sections can react to state changes. This is the central section: persistence, ui-render, dnd, and interactions all depend on its API. Cards are objects with id and title only (per IP1); lists are ordered by creation and not reorderable (per IP2).",
+      "acceptance": "Exposes createList, renameList, deleteList, createCard, editCard, deleteCard, moveCard, reorderCard mutations; getState returns current board; subscribe registers change listeners; mutations validate inputs and produce predictable state transitions; no DOM access anywhere in this module.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "Exposes createList, renameList, deleteList, createCard, editCard, deleteCard, moveCard, reorderCard mutations",
+          "check_type": "presence",
+          "scenario": "Inspect the state-model module exports.",
+          "expected_result": "All eight mutation functions are exported as callable functions.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "getState returns current board",
+          "check_type": "behavior",
+          "scenario": "Call getState() on a fresh state-model instance.",
+          "expected_result": "Returns an object with shape { lists: [{ id, name, cards: [{id, title}] }] }.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "subscribe registers change listeners",
+          "check_type": "behavior",
+          "scenario": "Register a subscriber, then call createList('Foo'). Subscriber callback is invoked at least once after the mutation.",
+          "expected_result": "Subscriber is called with the new state (or a change notification) within the same tick as the mutation.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "mutations validate inputs and produce predictable state transitions",
+          "check_type": "behavior",
+          "scenario": "Call createCard with empty/whitespace title; call moveCard with non-existent listId; call deleteList on missing id.",
+          "expected_result": "Invalid inputs are rejected (no state change, throws or returns false); valid inputs produce exactly the expected delta.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "no DOM access anywhere in this module",
+          "check_type": "absence",
+          "scenario": "Static-scan the state-model source for document, window, HTMLElement references.",
+          "expected_result": "No DOM-related identifiers appear in the module.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S1.A6",
+          "from_acceptance_phrase": "moveCard mutation",
+          "check_type": "behavior",
+          "scenario": "Create two lists L1, L2. Create card C in L1. Call moveCard(C.id, fromListId=L1.id, toListId=L2.id, toIndex=0).",
+          "expected_result": "C is removed from L1.cards and inserted at L2.cards[0]; getState reflects the move.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A7",
+          "from_acceptance_phrase": "reorderCard mutation",
+          "check_type": "behavior",
+          "scenario": "Create list L with cards [A, B, C]. Call reorderCard(C.id, listId=L.id, toIndex=0).",
+          "expected_result": "L.cards is now [C, A, B].",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A8",
+          "from_acceptance_phrase": "id generation",
+          "check_type": "behavior",
+          "scenario": "Create 100 lists and 100 cards; collect all ids.",
+          "expected_result": "All ids are unique strings.",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "DOM rendering",
+        "localStorage I/O",
+        "drag-and-drop event handling",
+        "list reordering (per IP2)",
+        "card descriptions or any metadata beyond title (per IP1)"
+      ]
+    },
+    {
+      "id": "section-2",
+      "name": "persistence",
+      "charter": "Implement a localStorage adapter that loads board state on startup and saves it after every mutation. Exposes load(), save(state), and clear() functions plus a key constant. Handles JSON parse errors and missing data gracefully by returning null so the app-shell can seed defaults. Pure JS, no DOM. May implement a small debounce around save to avoid thrashing localStorage on rapid mutations, but synchronous save-on-mutation is acceptable.",
+      "acceptance": "load() returns parsed board state or null if absent/corrupt; save(state) serializes state to localStorage under a stable key; clear() removes the key; corrupt JSON does not throw uncaught; survives page reload.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "load() returns parsed board state or null if absent/corrupt",
+          "check_type": "behavior",
+          "scenario": "Clear localStorage, call load(); then write invalid JSON to the key, call load() again.",
+          "expected_result": "Both calls return null without throwing.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "save(state) serializes state to localStorage under a stable key",
+          "check_type": "behavior",
+          "scenario": "Call save({lists: [{id:'l1', name:'X', cards:[]}]}); read raw localStorage at the key.",
+          "expected_result": "Raw value parses as JSON and deep-equals the input state.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "clear() removes the key",
+          "check_type": "behavior",
+          "scenario": "save(state); clear(); load().",
+          "expected_result": "load() returns null.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "survives page reload",
+          "check_type": "user_flow",
+          "scenario": "Open the app in a browser; create a list named 'My List'; create a card named 'My Card' in it; reload the page (F5 / location.reload).",
+          "expected_result": "After reload, the board still contains 'My List' with 'My Card' in it, in the same position.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S2.A5",
+          "from_acceptance_phrase": "corrupt JSON does not throw uncaught",
+          "check_type": "behavior",
+          "scenario": "Write the string 'not-json{{{' to the persistence key, then start the app.",
+          "expected_result": "App boots into the seeded default state without an unhandled exception in the console.",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": ["section-1"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Cloud sync, IndexedDB, file export/import",
+        "Migration between schema versions",
+        "Encryption"
+      ]
+    },
+    {
+      "id": "section-3",
+      "name": "ui-render",
+      "charter": "Render the current board state into the DOM: lists as columns containing card elements, plus a 'add list' affordance and an 'add card' affordance per list. Subscribes to the state-model and re-renders on change. Card elements carry data-card-id and data-list-id attributes and have draggable=true so the dnd section can wire onto them. Pure rendering — does not handle drag events or persist; emits no business logic, only DOM.",
+      "acceptance": "render(rootEl, state) produces one column per list, one card element per card, in the correct order; cards have draggable=true and data attributes for ids; subscription causes re-render on state change; rendering an empty board still shows the 'add list' affordance.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "produces one column per list, one card element per card, in the correct order",
+          "check_type": "structural",
+          "scenario": "Render state with 2 lists, list A with cards [a1,a2], list B with cards [b1].",
+          "expected_result": "DOM contains exactly 2 elements matching list selector and 3 matching card selector; document order matches state order.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "cards have draggable=true and data attributes for ids",
+          "check_type": "presence",
+          "scenario": "Render a state with one card; query the card element.",
+          "expected_result": "Element has draggable='true', data-card-id matching the card id, and is inside an element with data-list-id matching its list.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "subscription causes re-render on state change",
+          "check_type": "user_flow",
+          "scenario": "Mount renderer; createCard via state-model; observe DOM.",
+          "expected_result": "New card DOM element appears in the correct list without manual re-render call.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "rendering an empty board still shows the 'add list' affordance",
+          "check_type": "presence",
+          "scenario": "Render state {lists: []}.",
+          "expected_result": "DOM contains the add-list affordance element.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "card title displays on the card",
+          "check_type": "user_flow",
+          "scenario": "Open the running app; create a card titled 'Buy milk'.",
+          "expected_result": "The text 'Buy milk' is visibly rendered on the card in the column.",
+          "verifier": "cv_artifact_exercise"
+        }
+      ],
+      "depends_on": ["section-1"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Drag-and-drop wiring (section-4)",
+        "Click-to-edit and add-card form behavior (section-5)",
+        "Theming and dark mode",
+        "Responsive/mobile layout"
+      ]
+    },
+    {
+      "id": "section-4",
+      "name": "dnd",
+      "charter": "Wire HTML5 drag-and-drop onto the rendered DOM so the user can drag cards between lists and reorder cards within a list. On drop, compute the source list, target list, and target index, then invoke moveCard or reorderCard on the state-model. List headers are not draggable (per IP2). Provides visual feedback during drag (drag-over class on target list) without coupling to specific styling.",
+      "acceptance": "Dragging a card from list A and dropping it on list B invokes moveCard with the correct ids and a target index; dragging within the same list invokes reorderCard with the correct target index; dropping outside any drop zone is a no-op; drag-over visual hint is applied during a valid hover and removed on drop or cancel.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "Dragging a card from list A and dropping it on list B invokes moveCard with the correct ids and a target index",
+          "check_type": "user_flow",
+          "scenario": "Programmatically dispatch dragstart on card C (in list A), dragover on list B, drop on list B; spy on state-model.moveCard.",
+          "expected_result": "moveCard is called once with (cardId=C.id, fromListId=A.id, toListId=B.id, toIndex=<computed>).",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "dragging within the same list invokes reorderCard with the correct target index",
+          "check_type": "user_flow",
+          "scenario": "List L has cards [X, Y, Z]; drag Z above X; spy on state-model.reorderCard.",
+          "expected_result": "reorderCard is called with (cardId=Z.id, listId=L.id, toIndex=0).",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "dropping outside any drop zone is a no-op",
+          "check_type": "behavior",
+          "scenario": "Dispatch drop on document.body (not inside any list).",
+          "expected_result": "Neither moveCard nor reorderCard is called; state is unchanged.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "drag-over visual hint is applied during a valid hover and removed on drop or cancel",
+          "check_type": "behavior",
+          "scenario": "Dispatch dragenter on list B; check class list. Then dispatch drop or dragend.",
+          "expected_result": "drag-over class (or equivalent) is present during hover and removed afterward.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S4.A5",
+          "from_acceptance_phrase": "user can drag a card and see it appear in the new list",
+          "check_type": "user_flow",
+          "scenario": "Open running app with seed lists To Do/Doing/Done and one card 'Task 1' in To Do. Drag 'Task 1' to Doing.",
+          "expected_result": "After release, 'Task 1' is rendered as a child of the Doing column and is no longer in To Do.",
+          "verifier": "cv_artifact_exercise"
+        }
+      ],
+      "depends_on": ["section-1", "section-3"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Touch DnD / mobile gestures",
+        "List-level drag-reorder (per IP2)",
+        "Animations and transitions beyond a basic drag-over class",
+        "Keyboard-driven move alternative"
+      ]
+    },
+    {
+      "id": "section-5",
+      "name": "interactions",
+      "charter": "Wire non-DnD UI events to state-model mutations: clicking 'add list' and submitting a name calls createList; clicking a list title to rename calls renameList; clicking list delete calls deleteList; clicking 'add card' and submitting a title calls createCard; clicking a card to edit calls editCard; clicking card delete calls deleteCard. Uses event delegation on the rendered root so it works after re-renders. Pure event-to-mutation glue; no rendering of its own beyond ephemeral input fields shown via a state flag or inline DOM toggle.",
+      "acceptance": "Each of the six interactions (add list, rename list, delete list, add card, edit card, delete card) successfully invokes the corresponding state-model mutation; empty/whitespace-only titles are rejected client-side before mutation; deletes are immediate and permanent (per A9).",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "add list interaction",
+          "check_type": "user_flow",
+          "scenario": "Click 'add list', type 'Backlog', press Enter.",
+          "expected_result": "A new column titled 'Backlog' appears at the end of the board.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "rename list interaction",
+          "check_type": "user_flow",
+          "scenario": "Click on the title of the first list, change to 'Renamed', confirm.",
+          "expected_result": "List title in DOM updates to 'Renamed'.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "delete list interaction",
+          "check_type": "user_flow",
+          "scenario": "Click delete control on a list with 0 cards.",
+          "expected_result": "List column is removed from the DOM and from state.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S5.A4",
+          "from_acceptance_phrase": "add card interaction",
+          "check_type": "user_flow",
+          "scenario": "In list 'To Do', click 'add card', type 'Buy milk', confirm.",
+          "expected_result": "A card with title 'Buy milk' appears as the last card in 'To Do'.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S5.A5",
+          "from_acceptance_phrase": "edit card interaction",
+          "check_type": "user_flow",
+          "scenario": "Click on an existing card 'Buy milk', change title to 'Buy oat milk', confirm.",
+          "expected_result": "Card displays 'Buy oat milk' and state reflects the updated title.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S5.A6",
+          "from_acceptance_phrase": "delete card interaction",
+          "check_type": "user_flow",
+          "scenario": "Click delete control on a card.",
+          "expected_result": "Card is removed from the DOM and from state.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S5.A7",
+          "from_acceptance_phrase": "empty/whitespace-only titles are rejected client-side before mutation",
+          "check_type": "behavior",
+          "scenario": "Trigger add card with title '' or '   '.",
+          "expected_result": "No createCard mutation is called; no card appears.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A8",
+          "from_acceptance_phrase": "deletes are immediate and permanent",
+          "check_type": "absence",
+          "scenario": "Inspect UI after delete card; look for undo/restore affordance.",
+          "expected_result": "No undo or trash UI is present (per A9).",
+          "verifier": "critic_final_sweep"
+        }
+      ],
+      "depends_on": ["section-1", "section-3"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Drag-and-drop (section-4)",
+        "Confirmation modals on delete",
+        "Card description editing (per IP1)",
+        "Keyboard shortcuts beyond Enter/Escape on inline inputs"
+      ]
+    },
+    {
+      "id": "section-6",
+      "name": "integration",
+      "charter": "Provide index.html and the entry-point app.js that boots the application: load persisted state via persistence; if absent, seed To Do / Doing / Done lists per A11; instantiate the state-model with that initial state; mount ui-render onto a root DOM node; wire dnd and interactions onto the rendered tree; subscribe persistence.save to state-model changes so every mutation is autosaved (per A7). This section is the integrator pseudo-node — it composes the other five sections without adding new business logic.",
+      "acceptance": "Opening index.html in a modern desktop browser shows a working board; first-load shows To Do / Doing / Done with no cards; subsequent loads restore previous state; every mutation is autosaved without an explicit save button.",
+      "acceptance_assertions": [
+        {
+          "id": "S6.A1",
+          "from_acceptance_phrase": "Opening index.html in a modern desktop browser shows a working board",
+          "check_type": "user_flow",
+          "scenario": "Open index.html in Chrome; observe initial render.",
+          "expected_result": "Page renders three columns and an add-list affordance with no console errors.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S6.A2",
+          "from_acceptance_phrase": "first-load shows To Do / Doing / Done with no cards",
+          "check_type": "user_flow",
+          "scenario": "Clear localStorage; open index.html.",
+          "expected_result": "Three columns titled exactly 'To Do', 'Doing', 'Done' are rendered, in that order, each empty.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S6.A3",
+          "from_acceptance_phrase": "subsequent loads restore previous state",
+          "check_type": "user_flow",
+          "scenario": "Add a list 'Custom' and a card 'Persisted'; reload.",
+          "expected_result": "After reload the 'Custom' column with 'Persisted' card is still present alongside the seed columns.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S6.A4",
+          "from_acceptance_phrase": "every mutation is autosaved without an explicit save button",
+          "check_type": "absence",
+          "scenario": "Inspect UI for any element labeled Save, Save Board, or similar.",
+          "expected_result": "No save control exists; localStorage updates immediately after each mutation.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S6.A5",
+          "from_acceptance_phrase": "autosave-survives-reload",
+          "check_type": "user_flow",
+          "scenario": "Create list 'Sprint'; create card 'Refactor'; immediately press F5 (no manual save action).",
+          "expected_result": "After reload, both 'Sprint' list and 'Refactor' card are still present.",
+          "verifier": "cv_artifact_exercise"
+        }
+      ],
+      "depends_on": ["section-1", "section-2", "section-3", "section-4", "section-5"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Build tooling (bundlers, transpilers) — plain ES modules or single bundle",
+        "Service workers / offline beyond localStorage",
+        "Multi-board switching (per A10)"
+      ]
+    },
+    {
+      "id": "section-7",
+      "name": "edge-case-testing",
+      "charter": "Cover every acceptance assertion with `verifier: edge_case_testing` from the section list. Every section's acceptance_assertions[] is in scope. Produce executable tests (or test-equivalent harness scripts) that exercise the listed scenarios and assert the expected results, including invalid-input rejection paths, corrupt-storage recovery, drop-outside-zone no-ops, id uniqueness, and re-render correctness after subscriptions fire.",
+      "acceptance": "All acceptance_assertions from sections 1-6 with verifier=edge_case_testing have a corresponding executable test that passes; tests fail fast and cleanly on regression; coverage report enumerates each assertion id.",
+      "acceptance_assertions": [
+        {
+          "id": "S7.A1",
+          "from_acceptance_phrase": "All acceptance_assertions from sections 1-6 with verifier=edge_case_testing have a corresponding executable test",
+          "check_type": "presence",
+          "scenario": "Cross-reference assertion ids in sections-v1.json with test file contents.",
+          "expected_result": "Every edge_case_testing-verified assertion id appears in at least one test name or comment.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S7.A2",
+          "from_acceptance_phrase": "tests fail fast and cleanly on regression",
+          "check_type": "behavior",
+          "scenario": "Intentionally break state-model.createCard to skip validation; run the suite.",
+          "expected_result": "S1.A4 fails with a clear assertion message identifying the broken expectation.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S7.A3",
+          "from_acceptance_phrase": "coverage report enumerates each assertion id",
+          "check_type": "presence",
+          "scenario": "Run the test harness with reporting enabled.",
+          "expected_result": "Output lists each assertion id covered with pass/fail status.",
+          "verifier": "critic_final_sweep"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Visual / pixel-diff testing (cv_artifact_exercise verifier handles UI flows)",
+        "Performance benchmarking",
+        "Cross-browser matrix testing beyond Chrome"
+      ]
+    }
+  ]
+}

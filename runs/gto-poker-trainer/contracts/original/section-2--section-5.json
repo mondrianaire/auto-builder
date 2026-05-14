@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-5",
+  "summary": "GTO Reference Dataset exposes the read API that Table mode uses to compute per-decision deviation scores for hero actions during live play.",
+  "interface": {
+    "get_preflop_range": {
+      "name": "getPreflopRange",
+      "shape": "(position: string, situation: string) => { [hand_class: string]: { action: string, frequency: number, sizing?: number } }",
+      "purpose": "Given hero's position and the action situation (e.g., 'open' / 'facing 3bet from CO'), the table mode looks up the GTO mix for hero's hand class and compares against hero's actual action."
+    },
+    "get_postflop_reference": {
+      "name": "getPostflopReference",
+      "shape": "(spot_descriptor: SpotDescriptor) => { gto_mix: { [action: string]: { frequency: number, sizing?: number } } } | null",
+      "SpotDescriptor_shape": "{ position: string, board_texture: string, prior_action_summary: string, hero_hand_class: string }",
+      "purpose": "For postflop spots that match a curated reference shape, returns a GTO mix; returns null for spots outside the curated coverage (in which case table mode does not score deviation for that decision and records reason='no_reference')."
+    },
+    "score_action": {
+      "name": "scoreAction",
+      "shape": "(reference_mix: object, user_action: string, user_sizing?: number) => { score_label: string, deviation_score: number }",
+      "purpose": "Same scoring algorithm walkthrough uses, exposed for table mode to score live play."
+    }
+  },
+  "data_passed_not_logic": "Table mode passes spot descriptors and actions; section-2 returns mix references and scores. Section-2 does not know about the table; table does not author GTO data.",
+  "ownership": {
+    "section-2_owns": ["GTO data, scoring algorithm, coverage decision (when null is returned)"],
+    "section-5_owns": ["constructing SpotDescriptor from live game state, deciding when to call score_action"]
+  },
+  "test_seam": "Unit test: for every preflop position, getPreflopRange returns non-empty mix; for at least one postflop SpotDescriptor that matches the curated coverage, getPostflopReference returns non-null; for an unsupported descriptor, returns null."
+}

@@ -1,0 +1,395 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:00:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "topic": "Input model: single equation field vs. multi-equation editor",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Single textarea + single rendered output",
+      "rationale": "Rubric satisfied: (1) canonical pattern (single editor + single preview is the standard demo for KaTeX/MathJax/Overleaf-style mini-tools); (2) single-equation is materially simpler than list management, but adding multi later is additive layout work — both are well-trodden; (3) no new deps either way; (4) reversible: a single field can be wrapped in a list without disrupting the renderer contract. The ledger default is the named-goal floor.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "The page contains exactly one LaTeX source input element.",
+          "check_type": "structural",
+          "target_module": "index.html",
+          "target_symbol": "textarea[data-role='latex-input'], #latex-input",
+          "expected_value": "count == 1"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "The page contains exactly one rendered-output container.",
+          "check_type": "structural",
+          "target_module": "index.html",
+          "target_symbol": "[data-role='latex-output'], #latex-output",
+          "expected_value": "count == 1"
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "There is no list/repeater UI for managing multiple equations.",
+          "check_type": "absence",
+          "target_module": "index.html",
+          "target_symbol": "elements with class/data-role indicating equation-list, equations, items, add-equation, etc.",
+          "expected_value": "no such elements present"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "topic": "Export / copy capability",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Render-only (view in app, no export)",
+      "rationale": "Rubric satisfied: (1) the literal prompt verb is 'render', and the no-export branch is canonical for a viewer/preview tool; (2) implementation complexity is lower without export, but both branches are well-known patterns; (3) no new deps for render-only — export buttons could be added later using the renderer's existing DOM/SVG output; (4) trivially reversible: adding an export button does not alter the input/render contract.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "No export, download, copy-to-clipboard, or save controls are present in the UI.",
+          "check_type": "absence",
+          "target_module": "index.html",
+          "target_symbol": "buttons/links whose visible text or data-role matches /export|download|copy|save|share/i",
+          "expected_value": "no such elements present"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "The application does not invoke clipboard or file-download APIs.",
+          "check_type": "absence",
+          "target_module": "app.js (or equivalent script entrypoint)",
+          "target_symbol": "navigator.clipboard, Blob+URL.createObjectURL+download attribute usage, document.execCommand('copy')",
+          "expected_value": "no references to these APIs"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "topic": "Quick-insert helpers (symbol palette, snippets, examples)",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Plain text input only",
+      "rationale": "Rubric satisfied: (1) plain-textarea is the canonical baseline; (2) palette adds substantial UX/iconography work versus none, but both patterns are well-known — the simpler branch is implementation-cheaper; (3) no new deps; (4) reversible: a palette can be inserted above or beside the textarea later without changing the input contract.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "No symbol/template palette, snippet menu, or example-picker UI is present.",
+          "check_type": "absence",
+          "target_module": "index.html",
+          "target_symbol": "elements with class/data-role/id matching /palette|symbols|snippets|templates|examples-list/i",
+          "expected_value": "no such elements present"
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "The input element is a plain textarea (not a custom contenteditable rich editor).",
+          "check_type": "structural",
+          "target_module": "index.html",
+          "target_symbol": "the latex-input element",
+          "expected_value": "tag is <textarea>"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP4",
+      "topic": "Math-rendering library choice (KaTeX vs MathJax)",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "KaTeX (loaded via CDN)",
+      "rationale": "Rubric satisfied: (1) both libraries are canonical and well-documented in training data; (2) implementation complexity is similar at the integration surface (load script + call render function), with KaTeX being slightly simpler because it renders synchronously and has no preprocessing pipeline; (3) the dep is external either way (CDN script tag) — KaTeX adds no incremental dependency cost vs. MathJax; (4) reversible: the renderer is encapsulated in one module behind a render(latex, target) contract, so swapping engines later is local. Choosing KaTeX because it is materially smaller/faster for math-mode-only use and has a synchronous, throws-on-error API that maps cleanly to the live-preview + error-surfacing requirements; MathJax's broader package coverage is unneeded for the math-mode-only scope locked by A7.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.A1",
+          "statement": "The page loads KaTeX from a CDN.",
+          "check_type": "presence",
+          "target_module": "index.html",
+          "target_symbol": "<script src=...> and/or <link href=...> tags whose URL contains 'katex'",
+          "expected_value": "at least one script tag and one stylesheet referencing katex are present"
+        },
+        {
+          "id": "IP4.A2",
+          "statement": "The page does not load MathJax.",
+          "check_type": "absence",
+          "target_module": "index.html",
+          "target_symbol": "any <script> tag whose URL contains 'mathjax'",
+          "expected_value": "no such tag present"
+        },
+        {
+          "id": "IP4.A3",
+          "statement": "The renderer module calls KaTeX's rendering API.",
+          "check_type": "presence",
+          "target_module": "renderer.js (or equivalent)",
+          "target_symbol": "katex.render or katex.renderToString",
+          "expected_value": "at least one call site exists"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-1-renderer-core",
+      "name": "Renderer Core",
+      "charter": "Own the LaTeX-to-DOM rendering function. Encapsulate KaTeX so the rest of the app talks to a single render(latex, targetEl) entry point and receives a structured success/error result. Keep the surface small enough that swapping engines later requires changes only inside this module. Do not own DOM layout, styling, or input wiring.",
+      "acceptance": "Exposes a single render function that takes a LaTeX string and a target element, populates the target with rendered math on success, and returns a structured error (with message) on failure without throwing past the boundary. KaTeX is loaded from a CDN and used in math/display mode.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "Exposes a single render function that takes a LaTeX string and a target element",
+          "check_type": "presence",
+          "scenario": "Inspect the renderer module's exported surface.",
+          "expected_result": "Exactly one public render entry point with signature (latex: string, target: HTMLElement) -> {ok: true} | {ok: false, message: string}.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "populates the target with rendered math on success",
+          "check_type": "behavior",
+          "scenario": "Call render with a valid LaTeX string such as 'x^2 + y^2 = z^2' and an empty target div.",
+          "expected_result": "After the call, target contains KaTeX-generated DOM (presence of .katex class) and is non-empty.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "returns a structured error (with message) on failure without throwing past the boundary",
+          "check_type": "behavior",
+          "scenario": "Call render with malformed LaTeX such as '\\frac{1}{' and a target div, wrapped in a try/catch.",
+          "expected_result": "No exception escapes; the return value is {ok: false, message: <non-empty string>}.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "KaTeX is loaded from a CDN",
+          "check_type": "presence",
+          "scenario": "Inspect the HTML for KaTeX script and stylesheet tags pointing at a CDN URL.",
+          "expected_result": "Both a <script> and a <link rel='stylesheet'> referencing a KaTeX CDN URL are present.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "used in math/display mode",
+          "check_type": "behavior",
+          "scenario": "Render a non-trivial expression and inspect the output DOM.",
+          "expected_result": "Output contains a KaTeX display-mode container (e.g., .katex-display) rather than inline-only output.",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Page layout and CSS",
+        "Input event wiring",
+        "Error message styling",
+        "Multi-equation list management"
+      ]
+    },
+    {
+      "id": "section-2-input-ui",
+      "name": "Input UI",
+      "charter": "Own the LaTeX source input element and its change-event stream. Provide a single textarea where the user types LaTeX, and emit the current input string on every change so downstream consumers can re-render. Do not own rendering, output display, or layout beyond the input element itself.",
+      "acceptance": "A single textarea is present for LaTeX source. The current input value is observable to downstream consumers via a documented mechanism (event or callback) that fires on every user edit. The input is keyboard-accessible and labeled.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "A single textarea is present for LaTeX source",
+          "check_type": "structural",
+          "scenario": "Load the page and query for textarea elements with the latex-input role.",
+          "expected_result": "Exactly one textarea element with data-role='latex-input' (or equivalent identified id) exists.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "The current input value is observable to downstream consumers via a documented mechanism (event or callback) that fires on every user edit",
+          "check_type": "behavior",
+          "scenario": "Subscribe to the documented change mechanism, then simulate user typing 'a^2' character-by-character into the textarea.",
+          "expected_result": "The subscriber receives a notification for each character with the cumulative current value ('a', 'a^', 'a^2').",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "The input is keyboard-accessible and labeled",
+          "check_type": "structural",
+          "scenario": "Inspect the textarea's accessibility attributes.",
+          "expected_result": "The textarea is reachable via Tab and has either an associated <label for=...> or an aria-label/aria-labelledby attribute with non-empty text.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "user types LaTeX, and emit the current input string on every change",
+          "check_type": "user_flow",
+          "scenario": "Open the page in a browser. Click the textarea. Type the string 'x+y'. Observe that for each keystroke, the input element's value matches what was typed and the change mechanism has fired the matching number of times.",
+          "expected_result": "Three keystrokes produce three change notifications and a final textarea value of 'x+y'.",
+          "verifier": "cv_artifact_exercise"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Rendering",
+        "Symbol palettes / snippets / examples",
+        "Multi-equation lists",
+        "Persistence or autosave"
+      ]
+    },
+    {
+      "id": "section-3-output-and-errors",
+      "name": "Output Panel and Error Surfacing",
+      "charter": "Own the visible output region where rendered math appears, and the visible region where parse/render errors are surfaced to the user. Wire the input change stream to the renderer and route the renderer's structured result into either the success container or the error container. Do not own the renderer internals or the input element.",
+      "acceptance": "An output container shows live-rendered math whenever the input is valid LaTeX. When the renderer returns an error result, the output area is cleared (or visually marked as stale) and the error message is displayed in a clearly distinguished error region. Updates happen as the user types, with no manual button press required.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "An output container shows live-rendered math whenever the input is valid LaTeX",
+          "check_type": "user_flow",
+          "scenario": "Open the page. Type 'a+b' into the textarea. Observe the output panel.",
+          "expected_result": "Within ~100ms of typing, the output panel contains visibly rendered math (a + b typeset by KaTeX) without any button click.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "When the renderer returns an error result ... the error message is displayed in a clearly distinguished error region",
+          "check_type": "user_flow",
+          "scenario": "Open the page. Type '\\frac{1}{' into the textarea. Observe the error region.",
+          "expected_result": "An error region becomes visible containing a non-empty error message; the region is visually distinct from the success output (e.g., distinct color/border/role='alert').",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "the output area is cleared (or visually marked as stale)",
+          "check_type": "behavior",
+          "scenario": "Render a valid expression, then change the input to malformed LaTeX.",
+          "expected_result": "The success output container is either emptied or has a stale-state class/attribute applied; it does not continue to display the previous valid render as if current.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "Updates happen as the user types, with no manual button press required",
+          "check_type": "absence",
+          "scenario": "Inspect the page for any 'render', 'compile', 'go', or submit button wired to trigger rendering.",
+          "expected_result": "No such button exists; rendering is driven by input change events only.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "the error message is displayed in a clearly distinguished error region",
+          "check_type": "structural",
+          "scenario": "Inspect the DOM for the error region's identity.",
+          "expected_result": "A dedicated element with data-role='latex-error' (or equivalent) exists, separate from the output container, and is hidden when there is no error.",
+          "verifier": "critic_final_sweep"
+        }
+      ],
+      "depends_on": ["section-1-renderer-core", "section-2-input-ui"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Renderer internals / engine choice",
+        "Input element ownership",
+        "Page-level visual styling beyond what's needed to distinguish error from success"
+      ]
+    },
+    {
+      "id": "section-4-page-shell-and-styling",
+      "name": "Page Shell and Styling",
+      "charter": "Own the top-level page document, layout, and visual styling that hosts the input and output regions. Provide a desktop-first two-region layout (input on one side or above, output on the other), a readable typographic baseline, and the global stylesheet that ensures the rendered math and error region read clearly. Do not own component internals (input behavior, render logic, error logic) — only the shell that contains them.",
+      "acceptance": "An index.html shell exists with a clear title, a labeled input region, and a labeled output region arranged in a desktop-friendly layout. Global CSS is applied so that the rendered math and the error region are visually legible and visually distinct from each other and from the input. The page loads with no console errors on a clean browser.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "An index.html shell exists with a clear title",
+          "check_type": "structural",
+          "scenario": "Load index.html and inspect <title> and visible heading.",
+          "expected_result": "The <title> tag is non-empty and a top-level heading element is present with non-empty text identifying the tool.",
+          "verifier": "critic_final_sweep"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "a labeled input region, and a labeled output region arranged in a desktop-friendly layout",
+          "check_type": "user_flow",
+          "scenario": "Open the page in a desktop-width viewport (>= 1024px). Visually scan for the input area and the output area.",
+          "expected_result": "Both regions are visible without scrolling, each has a visible label/heading, and they are laid out side-by-side or stacked with clear separation rather than overlapping or stacked without distinction.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "Global CSS is applied so that the rendered math and the error region are visually legible and visually distinct from each other and from the input",
+          "check_type": "user_flow",
+          "scenario": "Open the page. Type valid LaTeX, then malformed LaTeX. Visually compare the input, output, and error regions.",
+          "expected_result": "The three regions have distinct visual treatment (different background, border, or color) and the rendered math has comfortable size/contrast for reading.",
+          "verifier": "cv_artifact_exercise"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "The page loads with no console errors on a clean browser",
+          "check_type": "behavior",
+          "scenario": "Load index.html in a fresh browser session and observe the developer console.",
+          "expected_result": "No error-level console messages are emitted during initial load.",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": ["section-2-input-ui", "section-3-output-and-errors"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Mobile-specific layouts (desktop-first per ledger A5)",
+        "Theme switching / dark mode",
+        "Renderer or input behavior",
+        "Symbol palettes or any extra UI affordances"
+      ]
+    },
+    {
+      "id": "section-5-edge-case-testing",
+      "name": "Edge Case Testing",
+      "charter": "Cover every acceptance assertion with verifier: edge_case_testing from the section list. Exercise the integrated artifact against the boundary cases of LaTeX input (empty input, whitespace-only, very long input, valid math, malformed math, math with escape characters) and verify the renderer/output/error contract holds for each. Confirm the page loads cleanly and that the change-stream-to-render-to-display pipeline behaves correctly across these inputs.",
+      "acceptance": "All acceptance assertions in this sections file with verifier 'edge_case_testing' are exercised against the integrated artifact and pass. Empty input produces no error and an empty (or placeholder) output region. Whitespace-only input is treated equivalently to empty. Malformed input produces a non-empty error message and clears/marks-stale the success output. Valid input produces visible KaTeX-rendered DOM. The page produces no console errors on initial load.",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "All acceptance assertions in this sections file with verifier 'edge_case_testing' are exercised against the integrated artifact and pass",
+          "check_type": "behavior",
+          "scenario": "Iterate every acceptance_assertion in sections-v1.json whose verifier is 'edge_case_testing' (including IP machine_checkable_assertions where applicable) and exercise each against the integrated index.html.",
+          "expected_result": "Every such assertion passes; any failure is reported with the offending assertion id.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "Empty input produces no error and an empty (or placeholder) output region",
+          "check_type": "behavior",
+          "scenario": "Set the textarea value to '' and trigger the change mechanism.",
+          "expected_result": "The error region is hidden/empty and the output region is empty or shows a documented placeholder state.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "Whitespace-only input is treated equivalently to empty",
+          "check_type": "behavior",
+          "scenario": "Set the textarea value to '   \\n\\t  ' and trigger the change mechanism.",
+          "expected_result": "Same observable state as empty input: error region hidden/empty, output region empty or placeholder.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A4",
+          "from_acceptance_phrase": "Malformed input produces a non-empty error message and clears/marks-stale the success output",
+          "check_type": "behavior",
+          "scenario": "Set the textarea value to '\\frac{1}{' (unclosed brace) and trigger the change mechanism.",
+          "expected_result": "Error region becomes visible with a non-empty message; success output is empty or stale-marked.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A5",
+          "from_acceptance_phrase": "Valid input produces visible KaTeX-rendered DOM",
+          "check_type": "behavior",
+          "scenario": "Set the textarea value to '\\sum_{i=1}^{n} i^2 = \\frac{n(n+1)(2n+1)}{6}' and trigger the change mechanism.",
+          "expected_result": "Output region contains an element with class 'katex' (or 'katex-display') and the error region is hidden/empty.",
+          "verifier": "edge_case_testing"
+        },
+        {
+          "id": "S5.A6",
+          "from_acceptance_phrase": "The page produces no console errors on initial load",
+          "check_type": "behavior",
+          "scenario": "Open the integrated index.html in a clean browser context and capture console output during load and first idle.",
+          "expected_result": "Zero error-level console messages.",
+          "verifier": "edge_case_testing"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Authoring new acceptance criteria not derivable from existing assertions",
+        "Performance benchmarking",
+        "Cross-browser matrix testing beyond a single modern desktop browser"
+      ]
+    }
+  ]
+}

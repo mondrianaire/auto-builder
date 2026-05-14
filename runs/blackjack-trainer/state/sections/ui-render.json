@@ -1,0 +1,21 @@
+{
+  "section_id": "section-4",
+  "section_name": "ui-render",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "started_at": "2026-05-09T00:56:02Z",
+  "verified_at": "2026-05-09T01:01:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-4",
+  "active_contracts": [
+    "contracts/original/section-3--section-4.json",
+    "contracts/original/section-4--section-5.json",
+    "contracts/original/section-4--section-6.json"
+  ],
+  "sub_goals": [
+    { "id": "4a", "description": "mountUI + render", "status": "verified", "builder_id": "builder-4a", "output_path": "output/builders/ui-render/builder-4a/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_notes": "All 5 acceptance assertions verified. CRITICAL S4.A3: Deal button enabled when phase ∈ {betting, resolved, review}. No `phase!=='betting'` short-circuit. Confirmed by source grep — no negative phase guards on btn-deal anywhere.",
+  "rationale": "S4.A3 fix is code-level explicit and load-bearing for the build's headline user_flow."
+}

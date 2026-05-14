@@ -1,0 +1,7 @@
+{
+  "builder_id": "builder-s5-1",
+  "section": "S5",
+  "produced": ["music_source.js"],
+  "exports": ["getNowPlaying", "APPLESCRIPT"],
+  "notes": "Implements C-S4-S5. AppleScript contains all four required literals. MUSIC_SOURCE_FIXTURE env-var bypass added per dev-002 for harness."
+}

@@ -1,0 +1,198 @@
+{
+  "version": 2,
+  "diff_against": "ledger-v1.json",
+  "created_at": "2026-05-13T00:00:00Z",
+  "mode": "amendment",
+  "trigger": {
+    "type": "user_environment_evidence",
+    "summary": "User installed delivered plugin into C:\\Program Files (x86)\\VSD Craft\\plugins on Windows; plugin did not appear in side panel. User is demonstrably on Windows (Windows path separators throughout the agent system prompt; AppData\\Roaming; Program Files (x86); VSD Craft install path is the Windows-side StreamDock software). IP1's macOS-only resolution is invalidated. User has explicitly chosen Windows-only rebuild (drop macOS branch entirely).",
+    "evidence": [
+      {
+        "signal": "host_os_path_separators",
+        "observed": "C:\\Users\\mondr\\..., AppData\\Roaming, C:\\Program Files (x86)\\",
+        "implies": "Host OS is Windows, not macOS"
+      },
+      {
+        "signal": "vsd_craft_install_attempt",
+        "observed": "User dropped the .sdPlugin bundle into C:\\Program Files (x86)\\VSD Craft\\plugins; side panel did not show the plugin",
+        "implies": "VSD Craft on Windows did not recognise/load a manifest declaring OS:[mac] only"
+      },
+      {
+        "signal": "user_explicit_resolution_choice",
+        "observed": "User chose 'Windows-only rebuild' (drop macOS branch entirely) when surfaced",
+        "implies": "Cross-platform and macOS-only branches are now both out of scope for this rebuild"
+      }
+    ]
+  },
+  "meta_check_summary": {
+    "scope": "Applies primarily to the A4/A3/IP1 host-OS change. A10's install-path update inherits the same verdict.",
+    "questions": {
+      "a_user_can_do": {
+        "answer": "no",
+        "reasoning": "Same verb: see song + artist on the touch bar when something is playing in Apple Music on the same machine. The user-facing outcome is identical."
+      },
+      "b_context_needed": {
+        "answer": "yes",
+        "reasoning": "Windows-side runtime and dependencies differ materially. Apple Music on Windows is the Microsoft Store preview app; the data-acquisition surface is Windows SMTC (GlobalSystemMediaTransportControlsSessionManager via WinRT) reached through a PowerShell/.NET/WinRT helper, not AppleScript via osascript. The user must have Apple Music for Windows installed (Microsoft Store) and may need to have it running to get an active SMTC session."
+      },
+      "c_success_criteria": {
+        "answer": "no",
+        "reasoning": "Same observable success: title + artist rendered full-width on the touch bar, refreshes on track change, neutral placeholder when nothing is playing."
+      },
+      "d_maintenance_burden": {
+        "answer": "yes",
+        "reasoning": "Different platform conventions: Windows entry script (.cmd/.bat or .exe) not .sh, no chmod +x step, install path is C:\\Program Files (x86)\\VSD Craft\\plugins not the macOS StreamDock library, SMTC subscription lifecycle vs AppleScript polling, Apple Music for Windows is a preview app whose SMTC surface is less mature and more fragile than macOS osascript, manifest OS array becomes [windows] instead of [mac]."
+      }
+    },
+    "verdict": "goal-affecting (two 'yes' answers among b and d). Route to TD impact analysis. User-surfacing step already completed pre-dispatch.",
+    "user_surfacing_state": "Pre-committed: user explicitly chose Windows-only rebuild before this dispatch was opened."
+  },
+  "amendments": [
+    {
+      "id": "A3",
+      "kind": "assumption_amended",
+      "field": "assumption + rationale + what_breaks_if_wrong",
+      "old_text": {
+        "assumption": "Source of 'now playing' data is the local Apple Music desktop application on the same machine the StreamDock software runs on.",
+        "rationale": "Explicit in prompt ('Apple Music Desktop Application').",
+        "what_breaks_if_wrong": "If the user expected a web/streaming/remote source, the integration path is entirely different."
+      },
+      "new_text": {
+        "assumption": "Source of 'now playing' data is the local Apple Music for Windows (Microsoft Store preview) application running on the same Windows machine as the VSD Craft software. The data-acquisition mechanism is Windows SMTC (Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager via WinRT), invoked from the plugin process through a PowerShell helper (the lowest-friction WinRT bridge that ships with Windows 10/11 out of the box).",
+        "rationale": "Explicit in prompt ('Apple Music Desktop Application') combined with the user's demonstrated host OS (Windows) and explicit Windows-only rebuild choice. Apple Music on Windows exposes its playback state via SMTC like other media apps; PowerShell can reach WinRT without an extra toolchain, keeping the dependency surface at zero new installs.",
+        "what_breaks_if_wrong": "If Apple Music for Windows does not publish a usable SMTC session (e.g., older preview build, app not running, or session filtered out), the plugin will read no track data and the bar will sit on the neutral placeholder. If PowerShell+WinRT is unavailable (very old Windows, locked-down environment), the helper path fails entirely and a different bridge is needed."
+      },
+      "rationale_for_change": "User is on Windows. Apple Music desktop on Windows is the Microsoft Store preview app; AppleScript/osascript does not exist on Windows. SMTC is the canonical local-machine 'what is playing right now' surface on Windows.",
+      "confidence": "high"
+    },
+    {
+      "id": "A4",
+      "kind": "assumption_amended",
+      "field": "assumption + confidence + rationale + what_breaks_if_wrong",
+      "old_text": {
+        "assumption": "Target host OS for the desktop side is macOS.",
+        "confidence": "medium",
+        "rationale": "Apple Music is the standalone desktop app on macOS; on Windows it ships as a preview/app-store app with materially different automation surface. Defaulting to macOS as the simplest, native case for 'Apple Music Desktop Application'.",
+        "what_breaks_if_wrong": "If user wants Windows, the data-acquisition method (AppleScript/MediaRemote) does not apply and a different mechanism is needed; logged separately as IP1."
+      },
+      "new_text": {
+        "assumption": "Target host OS for the desktop side is Windows (Windows 10 or Windows 11, x64). VSD Craft (the StreamDock software for Windows) is installed at C:\\Program Files (x86)\\VSD Craft and reads plugins from C:\\Program Files (x86)\\VSD Craft\\plugins.",
+        "confidence": "high",
+        "rationale": "Direct evidence from the user's environment: every agent system prompt path uses Windows separators (C:\\Users\\mondr\\..., AppData\\Roaming, C:\\Program Files (x86)\\). User attempted install of the prior macOS-only deliverable at C:\\Program Files (x86)\\VSD Craft\\plugins. User has explicitly chosen Windows-only rebuild.",
+        "what_breaks_if_wrong": "Not applicable in the same way as v1 — this is now ground truth from user evidence rather than a defaulted choice. The remaining risk is sub-version (Windows 10 vs 11, x64 vs ARM) but both are addressed by the same SMTC/PowerShell bridge."
+      },
+      "rationale_for_change": "Direct invalidation. IP1's macOS default was contradicted by the host-OS evidence visible in the execution context from the start; the user has now explicitly chosen Windows-only.",
+      "confidence": "high"
+    },
+    {
+      "id": "A6",
+      "kind": "rationale_amended",
+      "field": "rationale + what_breaks_if_wrong",
+      "old_text": {
+        "rationale": "Simplest-within-reason for a local 'now playing' readout; prompt is silent on latency/freshness.",
+        "what_breaks_if_wrong": "User notices visible lag between actual track change and bar update; mitigated by a short interval."
+      },
+      "new_text": {
+        "rationale": "Simplest-within-reason for a local 'now playing' readout; prompt is silent on latency/freshness. On Windows, SMTC also supports event-driven subscriptions (MediaPropertiesChanged, PlaybackInfoChanged) which would lower latency, but a short polling loop against the SMTC helper is materially simpler to ship and remains within the 'simplest-within-reason' default. Event-driven is a tracked future enhancement.",
+        "what_breaks_if_wrong": "User notices visible lag between actual track change and bar update; mitigated by a short interval. If SMTC event subscriptions are later preferred, the orchestrator's polling timer is the only piece that changes."
+      },
+      "rationale_for_change": "Polling is still acceptable, but the natural Windows mechanism (SMTC) is event-capable; the rationale should reflect that this is a deliberate simplification rather than the only option. Assumption itself unchanged.",
+      "confidence": "medium"
+    },
+    {
+      "id": "A10",
+      "kind": "assumption_amended",
+      "field": "assumption + rationale + what_breaks_if_wrong",
+      "old_text": {
+        "assumption": "Deliverable is a runnable/installable plugin folder bundle (the `.streamDockPlugin` directory) that the user can drop into the StreamDock software's plugin directory or double-click to install.",
+        "rationale": "Execution notes state the deliverable must be the actual plugin folder, runnable or at least installable.",
+        "what_breaks_if_wrong": "If user expected source-only or a different packaging, they cannot install it."
+      },
+      "new_text": {
+        "assumption": "Deliverable is a runnable/installable plugin folder bundle (the `.sdPlugin` directory, matching the Stream Deck-compatible naming the VSD Craft Windows software accepts) that the user drops into C:\\Program Files (x86)\\VSD Craft\\plugins. The bundle entry point is a Windows-launchable script (.cmd/.bat invoking node, or an .exe), not a POSIX shell script.",
+        "rationale": "Execution notes state the deliverable must be the actual plugin folder, runnable or at least installable, AND the user's install attempt evidence shows VSD Craft on Windows looks for plugins under that exact path. A .sh entry point with a chmod-set executable bit will not work on Windows.",
+        "what_breaks_if_wrong": "Wrong bundle layout, wrong manifest OS array, or a POSIX-only entry script means VSD Craft on Windows will silently skip the plugin and it will not appear in the side panel — which is exactly the symptom that triggered this amendment."
+      },
+      "rationale_for_change": "Install path is now grounded by direct user evidence. The macOS-style .streamDockPlugin name and .sh entry point are wrong for Windows; the Windows bundle convention and entry script must replace them.",
+      "confidence": "high"
+    },
+    {
+      "id": "IP1",
+      "kind": "inflection_point_resolved",
+      "field": "default_branch + status",
+      "old_text": {
+        "id": "IP1",
+        "topic": "Host OS for Apple Music data source",
+        "choices": [
+          "macOS only — use AppleScript or MediaRemote/MusicKit-style local query to fetch current track from the Music app",
+          "Windows only — use the Apple Music preview app on Windows, which requires a different (and less mature) mechanism such as Windows SMTC / UI automation",
+          "Cross-platform — implement both"
+        ],
+        "default_branch": "macOS only",
+        "importance": "high",
+        "why_inflection": "Cascade depth and option asymmetry: the data-acquisition layer, the language/runtime helpers, and the install/packaging notes all change with OS. Picking the simpler, native case (macOS) keeps the build coherent; the prompt does not name an OS but Apple Music's flagship desktop client is macOS."
+      },
+      "new_text": {
+        "id": "IP1",
+        "topic": "Host OS for Apple Music data source",
+        "choices": [
+          "macOS only — use AppleScript or MediaRemote/MusicKit-style local query to fetch current track from the Music app",
+          "Windows only — use the Apple Music preview app on Windows, which requires a different (and less mature) mechanism such as Windows SMTC / UI automation",
+          "Cross-platform — implement both"
+        ],
+        "resolved_branch": "Windows only",
+        "resolution_source": "user_explicit_choice",
+        "resolution_evidence": "User is demonstrably on Windows (path separators, AppData\\Roaming, Program Files (x86) install location). User explicitly chose 'Windows-only rebuild — drop macOS branch entirely' when the IP was surfaced post-failure.",
+        "importance": "high",
+        "why_inflection": "Cascade depth and option asymmetry: the data-acquisition layer, the language/runtime helpers, and the install/packaging notes all change with OS. The original macOS default was evidence-contradicted from the start and has now been formally resolved to Windows by user choice."
+      },
+      "rationale_for_change": "Direct invalidation of the v1 default branch; user explicit resolution.",
+      "confidence": "high"
+    }
+  ],
+  "out_of_scope_amendments": [
+    {
+      "kind": "oos_added",
+      "items": [
+        "macOS as a host OS — the macOS Apple Music data path (AppleScript/osascript, MediaRemote) is dropped from this rebuild per user choice; Windows-only.",
+        "Cross-platform single-bundle build (one .sdPlugin that runs on both macOS and Windows) — explicitly out of scope per user's 'drop macOS branch entirely' choice."
+      ]
+    },
+    {
+      "kind": "oos_unchanged_but_clarified",
+      "items": [
+        "Mobile / iOS / Apple Music on iPhone or iPad as a data source — still OOS, unchanged.",
+        "Streaming sources other than the local Apple Music desktop app — still OOS, unchanged."
+      ]
+    }
+  ],
+  "inherited_unchanged": [
+    "A1 — StreamDock VSD N4 Pro + Stream Deck-compatible SDK shape: SDK shape is host-OS-agnostic at manifest+protocol level.",
+    "A2 — single Touchbar action spanning the full bar: unchanged.",
+    "A5 — display song title + artist, refresh on track change: unchanged.",
+    "A7 — neutral placeholder when nothing is playing: unchanged.",
+    "A8 — truncate/scroll long strings: unchanged.",
+    "A9 — single-user, single-machine, local-only: unchanged.",
+    "A11 — minimal property inspector: unchanged.",
+    "A12 — no album art in initial build: unchanged.",
+    "A13 — display-only interactivity (no tap behavior or trivial play/pause): unchanged.",
+    "IP2 — text-only vs text+album-art: resolution unchanged (text-only).",
+    "IP3 — display-only vs interactive: resolution unchanged (display-only)."
+  ],
+  "downstream_impact_pointers": {
+    "route_to": "technical-discovery (impact-analysis mode)",
+    "expected_affected_artifacts": [
+      "decisions/technical-discovery/sections-v{N+1}.json — S5 (music-source) is materially rewritten; S1 (manifest OS array + bundle entry script), S3 (run script + child_process invocation) need amendments; S2/S4/S6 expected unchanged except for environmental fixtures and Windows-side install-path PNV.",
+      "contracts/* — C-S4-S5 surface should be preserved (string fixture in/out), but the music-source implementation interface changes from osascript-spawn to powershell-spawn.",
+      "manifest.json OS array: [{platform: 'windows', minimum_version: '10'}] replacing [{platform: 'mac', ...}].",
+      "Bundle entry: run.cmd (or plugin.exe) replacing run.sh; chmod step removed.",
+      "PNV scenario fixture: existing MUSIC_SOURCE_FIXTURE env-var shim still applies (mechanism-agnostic at the integration boundary), but the new prompt_environment_assertion (per v1.9 candidate amendment 4) should additionally assert manifest OS:[windows] + entry-script-is-windows-launchable + bundle path is droppable into C:\\Program Files (x86)\\VSD Craft\\plugins."
+    ],
+    "user_re_surfacing_required": false,
+    "user_re_surfacing_rationale": "User has explicitly pre-committed to Windows-only rebuild. No further inflection points are introduced by this diff; the resolution is mechanical from here."
+  },
+  "audit": {
+    "principle_e_grounding": "This amendment ratifies the host-OS decision against the strongest available evidence (user's actual environment + explicit user choice), per the proposed Principle E (Decision Grounding) in root-cause-analysis.md. The v1 ledger's macOS default was evidence-contradicted at Discovery time; v2 corrects it from the demonstrated source.",
+    "severity_assessment": "Not Sev 4 — resolution is unambiguous and user-confirmed. Routed to TD impact analysis."
+  }
+}

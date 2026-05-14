@@ -1,0 +1,278 @@
+{
+  "version": 3,
+  "created_at": "2026-05-13T00:45:00Z",
+  "project_name": "streamdock-applemusic-touchbar",
+  "based_on_sections": "decisions/technical-discovery/sections-v2.json",
+  "based_on_ledger_diff": "decisions/discovery/ledger-diff-v2.json",
+  "supersedes_for_impact": null,
+  "trigger": {
+    "type": "discovery_amendment",
+    "discovery_diff": "decisions/discovery/ledger-diff-v2.json",
+    "research_findings": [
+      "research/probes/probe-windows-nowplaying/findings.json",
+      "research/probes/probe-windows-plugin-runtime/findings.json"
+    ],
+    "summary": "Discovery v2 flipped IP1 from macOS to Windows-only on user evidence + explicit choice. Two Researcher probes returned: (a) probe-windows-nowplaying recommends opt-A — inline PowerShell + WinRT SMTC via child_process.execFile, preserving the C-S4-S5 contract verbatim and confining the rewrite to S5; (b) probe-windows-plugin-runtime recommends opt-A — declare `Nodejs.Version` in manifest and point CodePathWin directly at plugin/main.js (host's bundled Node runs the .js), avoiding a .bat wrapper and avoiding vendored node.exe. Both probes converge on the same blast-radius-minimizing answer: only S1 (manifest) and S5 (music source) change; S2/S3/S4/S6 are byte-identical except for harness fixture-key renames."
+  },
+  "chosen_option": {
+    "music_source_mechanism": {
+      "option_id": "opt-A (from probe-windows-nowplaying)",
+      "summary": "Inline PowerShell + WinRT SMTC invoked per poll via child_process.execFile('powershell.exe', [...]). Function signature, Promise discipline, never-reject behavior, and tab-delimited stdout parsing are preserved exactly per C-S4-S5.",
+      "rationale": "Smallest blast radius of the four options. S2/S3/S4/S6 remain byte-identical. C-S4-S5 contract is preserved at the integration boundary (only internal_constraints.spawn_mechanism literal and applescript_must_contain literals change). Zero install footprint — PowerShell 5.1 + WinRT ship in every Windows 10/11. No new node_modules entries. No bundle bloat. The ~400ms PS cold start is well below the 2000ms poll interval."
+    },
+    "plugin_runtime_mechanism": {
+      "option_id": "opt-A (from probe-windows-plugin-runtime)",
+      "summary": "Declare `Nodejs: { Version: '20' }` in manifest. Set `CodePathWin: 'plugin/main.js'` pointing the host's bundled Node runtime directly at the JS entry. No .bat wrapper, no vendored node.exe.",
+      "rationale": "MiraboxSpace/StreamDock-Plugin-SDK mirrors the Elgato Stream Deck manifest schema; when `Nodejs.Version` is declared, the host runs CodePathWin as a Node script using its bundled runtime. No new files, no wrappers, no bundled binaries, no system-Node requirement. Honors S2/S3/S4/S6 preservation. Manifest-only change."
+    }
+  },
+  "section_delta_plan": {
+    "S1": {
+      "id": "S1",
+      "name": "plugin-bundle-skeleton",
+      "classification": "salvageable",
+      "rationale": "Manifest schema changes are confined to (a) OS array entries, (b) CodePath fields, (c) a new Nodejs object, (d) Description text. Bundle layout (folder name, layouts/, ui/, plugin/) is identical. The `run.sh` artifact is removed for cleanliness per dispatch instructions (macOS branch dropped). Estimated rework: ~15% of the section — manifest edits + asset cleanup, no structural changes.",
+      "amendments_required": [
+        "Manifest OS array: replace `[{Platform:'mac', MinimumVersion:'11.0'}]` with `[{Platform:'windows', MinimumVersion:'10'}]`.",
+        "Manifest: add `Nodejs: { Version: '20' }` top-level field.",
+        "Manifest: add `CodePathWin: 'plugin/main.js'` (direct .js, no wrapper).",
+        "Manifest: remove `CodePathMac` field (macOS branch dropped per user choice).",
+        "Manifest: update Description text to mention Windows + Apple Music for Windows.",
+        "Bundle file removals: delete `plugin/run.sh` (macOS-only artifact).",
+        "Acceptance prose: replace 'macOS-only' language with 'Windows-only'.",
+        "AA.S1.5: change from asserting `Platform == 'mac'` to `Platform == 'windows'`.",
+        "Drop AA references to CodePathMac existence; add new AA for CodePathWin existence."
+      ],
+      "preserve_verbatim": [
+        "Reverse-DNS folder name `com.autobuilder.applemusic-nowplaying.sdPlugin`.",
+        "SDKVersion: 2.",
+        "Actions[0].Controllers: ['Encoder'].",
+        "Encoder.layout path.",
+        "PropertyInspectorPath.",
+        "Placeholder icon files.",
+        "AA.S1.1 (folder presence), AA.S1.2 (manifest parses + required keys — key set adapts), AA.S1.3 (referenced paths resolve), AA.S1.4 (Controllers:['Encoder'])."
+      ],
+      "assertions_amended_count": 3,
+      "assertions_added_count": 1,
+      "assertions_removed_count": 0
+    },
+    "S2": {
+      "id": "S2",
+      "name": "touchbar-layout-and-property-inspector",
+      "classification": "unaffected",
+      "rationale": "Layout JSON (title + artist text items, SDK-native truncation) and Property Inspector HTML are mechanism-agnostic. setFeedback payload shape `{title, artist}` per C-S2-S4 is preserved. No prose, no acceptance, no assertions change. The PI's `pollIntervalMs`, `placeholder`, `showArtist` settings remain meaningful on Windows.",
+      "amendments_required": [],
+      "assertions_amended_count": 0,
+      "assertions_added_count": 0,
+      "assertions_removed_count": 0
+    },
+    "S3": {
+      "id": "S3",
+      "name": "sdk-handshake-and-event-loop",
+      "classification": "unaffected",
+      "rationale": "Stream Deck SDK WebSocket handshake is OS-agnostic (TCP socket on 127.0.0.1, JSON frames). Vendored `ws` package is pure JavaScript and works on Windows under the host's bundled Node. CLI argument parsing for -port/-pluginUUID/-registerEvent/-info is unchanged.",
+      "amendments_required": [],
+      "assertions_amended_count": 0,
+      "assertions_added_count": 0,
+      "assertions_removed_count": 0
+    },
+    "S4": {
+      "id": "S4",
+      "name": "polling-orchestrator-and-paint",
+      "classification": "unaffected",
+      "rationale": "main.js calls `music_source.getNowPlaying()` against the C-S4-S5 contract — which is preserved verbatim by opt-A. The orchestrator does not care that the helper now spawns powershell.exe instead of osascript; it only sees `Promise<{title, artist} | null>`. This was deliberate upstream design (mechanism-agnostic contract at the integration boundary) and is explicitly confirmed by the Researcher findings.",
+      "amendments_required": [],
+      "assertions_amended_count": 0,
+      "assertions_added_count": 0,
+      "assertions_removed_count": 0
+    },
+    "S5": {
+      "id": "S5",
+      "name_old": "music-source-applescript",
+      "name_new": "music-source-smtc",
+      "classification": "stop_and_scrap_and_replace",
+      "rationale": "Implementation is materially rewritten — the entire mechanism (osascript + AppleScript) is replaced with (powershell.exe + inline PowerShell WinRT SMTC script). The conflicting assumption that prompted scrap-vs-salvage is A3/A4 from ledger-v1 — those have been amended in ledger-diff-v2. Per the salvage heuristic 'conflicting assumption carry → scrap', S5's AppleScript-specific logic is scrapped. HOWEVER, the section.id remains 'S5' to preserve the depends_on graph, and the C-S4-S5 contract surface is preserved verbatim (signature, Promise discipline, tab-delimited parsing, resolve-to-null edge cases). Only the section name, charter prose, acceptance prose, AA literals, and module body are replaced.",
+      "amendments_required": [
+        "Section name: rename from `music-source-applescript` to `music-source-smtc`.",
+        "Charter rewrite: replace 'AppleScript via osascript' language with 'PowerShell via powershell.exe invoking WinRT GlobalSystemMediaTransportControlsSessionManager'.",
+        "Acceptance rewrite: literal-presence list changes from {'application \"Music\"', 'player state', 'name of current track', 'artist of current track'} to {'GlobalSystemMediaTransportControlsSessionManager', 'Windows.Media.Control', 'TryGetMediaPropertiesAsync', 'PlaybackStatus'}.",
+        "Module body (plugin/music_source.js): rewrite to execFile('powershell.exe', ['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-Command', PS_SCRIPT], {timeout:1500, windowsHide:true}) with the inline PowerShell snippet that calls GlobalSystemMediaTransportControlsSessionManager.RequestAsync, GetCurrentSession, GetPlaybackInfo, and TryGetMediaPropertiesAsync, prints '<title>\\t<artist>' to stdout (empty stdout for any non-Playing state or error).",
+        "Preserve MUSIC_SOURCE_FIXTURE env-var test affordance from dev-002 (mechanism-agnostic harness shim).",
+        "AA.S5.1 (happy path): scenario stub command renames from 'osascript' to 'powershell.exe'; stdout fixture string unchanged ('Bohemian Rhapsody\\tQueen').",
+        "AA.S5.2 (idle/error returns null): unchanged at semantic level; scenario rewords 'osascript' references.",
+        "AA.S5.3 (spawn mechanism + never-throws): change 'osascript' literal to 'powershell.exe' literal.",
+        "AA.S5.4 (required literals): replace AppleScript literal list with the SMTC literal list above.",
+        "Out_of_scope item: rename 'MediaRemote, nowplaying-cli, or any non-osascript path' to 'Long-running PowerShell helper subscribing to SMTC events (opt-B from probe-windows-nowplaying; future enhancement per A6 amendment); any non-PowerShell+WinRT path including native nowplaying.exe and N-API @nodert-* packages'."
+      ],
+      "preserve_verbatim": [
+        "Section id (`S5`).",
+        "depends_on (`[]`).",
+        "estimated_builders (1).",
+        "C-S4-S5 contract surface: signature `getNowPlaying() => Promise<{title,artist}|null>`, never-reject, tab-delimited stdout parsing, resolve-to-null on any error.",
+        "MUSIC_SOURCE_FIXTURE env-var shim semantics."
+      ],
+      "assertions_amended_count": 4,
+      "assertions_added_count": 0,
+      "assertions_removed_count": 0
+    },
+    "S6": {
+      "id": "S6",
+      "name": "edge-case-testing",
+      "classification": "salvageable",
+      "rationale": "Harness mechanism is preserved verbatim — production-fidelity spawn of the integrated bundle's entry against a mock SDK WebSocket on 127.0.0.1, with the music-source command boundary stubbed per test. The stub mechanism still hooks `child_process.execFile`; only the command-name fixture key changes from 'osascript' to 'powershell.exe'. The MUSIC_SOURCE_FIXTURE env-var shim from dev-002 continues to work without modification.",
+      "amendments_required": [
+        "AA.S6.3 acceptance prose: rename 'osascript boundary' to 'powershell.exe boundary' (or, more durably, 'music-source command boundary').",
+        "Harness scenario fixture keys: rename osascript-keyed stub entries to powershell.exe-keyed entries; stdout fixture strings unchanged.",
+        "Harness literal-presence assertion target for the data-acquisition mechanism shifts from AppleScript literals to SMTC literals (delegated through AA.S5.4 amendment)."
+      ],
+      "preserve_verbatim": [
+        "AA.S6.1 (every edge_case_testing assertion exercised).",
+        "AA.S6.2 (PNV scenario passes end-to-end).",
+        "AA.S6.4 (machine-readable report shape).",
+        "Stub injection scope (touches only the music-source command boundary and the SDK WebSocket peer).",
+        "PNV scenario stdout fixture 'Bohemian Rhapsody\\tQueen'."
+      ],
+      "assertions_amended_count": 1,
+      "assertions_added_count": 0,
+      "assertions_removed_count": 0
+    }
+  },
+  "td_ip_resolutions_amended": [
+    {
+      "ip_id": "TD-IP-A",
+      "field": "default_branch + rationale + downstream MCA expected values",
+      "old_branch": "Stream Deck SDK v2 manifest, mac-only OS, CodePathMac shell entry",
+      "new_branch": "Stream Deck SDK v2 manifest, Windows-only OS, CodePathWin pointing directly at plugin/main.js, Nodejs.Version: '20' declared so the host's bundled Node runs the .js without a wrapper",
+      "rationale_amendment": "Ledger-diff-v2 resolved IP1 to Windows-only. Probe-windows-plugin-runtime confirmed that the StreamDock host (MiraboxSpace VSD Craft, Elgato-SDK-clone) bundles its own Node runtime when manifest declares `Nodejs.Version`; CodePathWin can point directly at .js, no .bat wrapper required. This is opt-A from that probe and is the unambiguous minimum-blast-radius answer.",
+      "mca_expected_value_updates": [
+        "MCA.TDIPA.2 (OS array): expected_value updates from `[{Platform: 'mac', MinimumVersion: '11.0'}]` to `[{Platform: 'windows', MinimumVersion: '10'}]`.",
+        "MCA.TDIPA.3 (CodePath presence): target updates from manifest.CodePathMac to manifest.CodePathWin; expected_value reworded to 'non-empty string pointing to a .js file present in the .sdPlugin folder (typically plugin/main.js)'.",
+        "NEW MCA.TDIPA.4 (Nodejs field): asserts manifest.Nodejs.Version is a non-empty string (target value '20').",
+        "MCA.TDIPA.1 (SDKVersion: 2): unchanged."
+      ]
+    },
+    {
+      "ip_id": "TD-IP-D",
+      "field": "status",
+      "status": "superseded",
+      "superseded_by": "TD-IP-G",
+      "rationale": "TD-IP-D (AppleScript surface for Music.app) is rendered moot by ledger-diff-v2's IP1 → Windows-only resolution. AppleScript does not exist on Windows. Marked superseded; not deleted from the record."
+    }
+  ],
+  "td_ip_resolutions_added": [
+    {
+      "ip_id": "TD-IP-G",
+      "source": "td",
+      "topic": "Windows now-playing mechanism (replacement for TD-IP-D)",
+      "td_introduction_rationale": "Ledger-diff-v2 resolved IP1 to Windows-only. The data-acquisition mechanism on Windows is a real choice with materially different blast radii; dispatched a Researcher probe rather than quick-reasoning it.",
+      "choices": [
+        "Inline PowerShell + WinRT SMTC invoked per poll via child_process.execFile (opt-A)",
+        "Long-running PowerShell helper subscribing to SMTC events, printing on change (opt-B)",
+        "Bundled precompiled nowplaying.exe (Rust windows-rs or self-contained .NET) (opt-C)",
+        "N-API native Node module (e.g., @nodert-win10-rs4/windows.media.control) (opt-D)"
+      ],
+      "chosen_branch": "PowerShell+WinRT SMTC via execFile child process (opt-A)",
+      "resolved_via": "research",
+      "research_findings_ref": "research/probes/probe-windows-nowplaying/findings.json",
+      "importance": "high",
+      "rationale": "Per the probe's recommendation: opt-A's blast radius is contained entirely within S5's command-string and script-text constants; S2/S3/S4/S6 remain byte-identical; the C-S4-S5 contract surface is preserved exactly. Zero install footprint (PowerShell 5.1 + WinRT ship in every Windows 10/11). Zero new dependencies. The ~400ms PowerShell cold-start is well below the 2000ms poll cadence. Opt-B expands blast into S4 and C-S4-S5 (deferred to future enhancement per A6 amendment). Opt-C adds 1.5-10MB bundle bloat and AV-surface risk. Opt-D introduces Node ABI fragility unacceptable per the no-driver/no-AV-trigger constraint."
+    }
+  ],
+  "contract_amendments": [
+    {
+      "contract_id": "C-S4-S5",
+      "action": "preserved",
+      "rationale": "The interface signature `getNowPlaying() => Promise<{title,artist}|null>` was deliberately mechanism-agnostic at the integration boundary. The Researcher findings confirm this was good upstream design. NO amendment to the contract file is required for the public surface. The `internal_constraints.spawn_mechanism` literal ('osascript') and `internal_constraints.applescript_must_contain` literals are documentation of the implementation choice, not part of the inter-section surface — they migrate to the section's AA.S5.4 and AA.S5.3 assertions where they belong.",
+      "optional_amendment": "Author a C-S4-S5-v2.json under contracts/amendments/ ONLY to record the implementation-rationale change (osascript→powershell.exe internal_constraints rename). This is non-load-bearing and skipped under dispatch authority."
+    },
+    {
+      "contract_id": "C-S1-S3",
+      "action": "preserved-with-implementation-note",
+      "rationale": "The contract's load-bearing constraint is 'the SDK's four CLI args must reach the Node process verbatim' and 'main.js is a Node module that parses process.argv'. Both still hold. The `manifest_code_path_mac` value 'plugin/run.sh' and the `run_sh_contract` are no longer the active entry path (CodePathWin → plugin/main.js, via the host's bundled Node runtime). The `main_js_contract` and `vendored_ws` clauses are preserved verbatim. The `node_runtime_assumption` shifts from 'macOS-installed Node >=18' to 'StreamDock host's bundled Node >=20 via Nodejs.Version declaration'.",
+      "optional_amendment": "Author a C-S1-S3-v2.json under contracts/amendments/ to record the entry-path rename and the bundled-Node assumption. This is non-load-bearing for the integration boundary (main.js itself is unchanged); skipped under dispatch authority unless Coordinator requests it."
+    },
+    {
+      "contract_id": "C-S1-S2",
+      "action": "unaffected",
+      "rationale": "Layout JSON and PI HTML path declarations are mechanism-agnostic."
+    },
+    {
+      "contract_id": "C-S2-S4",
+      "action": "unaffected",
+      "rationale": "setFeedback payload shape `{title, artist}` is unchanged."
+    },
+    {
+      "contract_id": "C-S3-S4",
+      "action": "unaffected",
+      "rationale": "Internal API (registerWillAppearHandler, sendFeedback, etc.) is OS-agnostic."
+    },
+    {
+      "contract_id": "C-S2-S3",
+      "action": "unaffected",
+      "rationale": "PI setSettings message shape is unchanged."
+    }
+  ],
+  "prompt_named_verb_assertion_amendments": {
+    "id": "PNV.1",
+    "verb_unchanged": "display",
+    "scenario_amendment": "Replace the osascript shim language with a powershell.exe shim language. Specifically: the harness intercepts child_process.execFile-with-'powershell.exe' (instead of -with-'osascript') and returns stdout='Bohemian Rhapsody\\tQueen'. The CodePathWin (instead of CodePathMac) entrypoint runs as a Node script under the host's bundled Node runtime per the new manifest's Nodejs declaration. All other PNV semantics are preserved verbatim: real SDK handshake, real layout JSON, real plugin process, only the SMTC shell-out and the device renderer are mocked.",
+    "expected_result_unchanged": "At least one frame is a JSON message whose event field equals 'setFeedback' and whose payload contains both 'Bohemian Rhapsody' (title) and 'Queen' (artist), addressed to the willAppear'd action context. Proves DISPLAY under production-fidelity rules.",
+    "production_fidelity_required": true
+  },
+  "prompt_verb_analysis_amendments": {
+    "chosen_verb_unchanged": "display",
+    "rationale_unchanged": "'display' remains the only verb in the prompt that names something the plugin itself does. The verifier scenario's mechanism changes (powershell.exe instead of osascript) but the verb-as-verifiable-success-criterion is unchanged: title + artist must appear on the wide-display surface."
+  },
+  "out_of_scope_propagation": [
+    "Add to S5's out_of_scope: 'macOS host / AppleScript / osascript / MediaRemote / nowplaying-cli paths' (entailed by ledger-diff-v2 OOS additions).",
+    "Add to S5's out_of_scope: 'Long-running PowerShell SMTC-event-subscription helper (opt-B, future enhancement per A6 amendment)'.",
+    "Add to S5's out_of_scope: 'Native compiled helper (nowplaying.exe) and N-API native Node modules (@nodert-*)' — discounted per Researcher heuristic.",
+    "Add to S1's out_of_scope: 'CodePathMac / run.sh / chmod +x packaging steps (macOS branch dropped per user choice)'.",
+    "Add to S1's out_of_scope: '.bat / .cmd / .exe wrapper scripts (unneeded because manifest declares Nodejs.Version)'."
+  ],
+  "salvage_audit": {
+    "heuristic_applied": "Per dispatch charter: <50% rework → salvage; conflicting assumption carry → scrap; when in doubt → scrap.",
+    "S1": "Salvage. Estimated rework ~15% (manifest field edits, one asset removal, no structural change). Folder layout, SDKVersion, Encoder declaration, layout path, PI path, placeholder icons all preserved.",
+    "S2": "Unaffected. 0% rework.",
+    "S3": "Unaffected. 0% rework.",
+    "S4": "Unaffected. 0% rework. C-S4-S5 preservation makes this section mechanism-independent.",
+    "S5": "Scrap-and-replace. The conflicting assumption A3/A4 (mac-only AppleScript surface) is what S5 was built against; per heuristic, scrap. Implementation file rewritten end-to-end. Section id preserved (graph stability); section name renamed to music-source-smtc.",
+    "S6": "Salvage. Estimated rework ~5% (one acceptance-prose rename, fixture key rename). Stub mechanism, harness architecture, scenario-manifest discipline all preserved."
+  },
+  "history": {
+    "log_entry_to_append": {
+      "ts": "2026-05-13T00:45:00Z",
+      "actor": "technical-discovery",
+      "action": "wrote_impact_analysis_v3_and_amended_sections_v3",
+      "artifact": "decisions/technical-discovery/impact-analysis-v3.json + decisions/technical-discovery/sections-v3.json",
+      "rationale": "Impact-analysis mode dispatch for ledger-diff-v2 (IP1 → Windows-only). Two Researcher probes both recommended opt-A. Classified S1 salvageable (manifest edits + run.sh removal), S2/S3/S4 unaffected, S5 stop_and_scrap_and_replace (renamed to music-source-smtc), S6 salvageable (fixture-key rename). C-S4-S5 contract surface preserved verbatim — confirmed mechanism-agnostic at the integration boundary, which was deliberate upstream design ratified by the Researcher findings. C-S1-S3 contract gets implementation-note shift (Nodejs.Version + CodePathWin → main.js direct) but its load-bearing constraints (four CLI args reach Node process; main.js parses argv) are unchanged. Authorized dual role per dispatch: produced both impact-analysis-v3.json and sections-v3.json since scope is small and well-bounded. Added TD-IP-G (Windows now-playing mechanism, resolved via research to PowerShell+WinRT SMTC); marked TD-IP-D superseded; amended TD-IP-A manifest schema (mac→windows, +Nodejs, CodePathMac→CodePathWin). Updated MCA.TDIPA.2/3 expected values; added new MCA.TDIPA.4 for Nodejs field; amended MCA.TDIPD.1/2 + AA.S5.* literals from AppleScript to SMTC. PNV verb 'display' unchanged; PNV scenario fixture key renamed to powershell.exe."
+    }
+  },
+  "summary": {
+    "chosen_options": {
+      "music_source_mechanism": "opt-A (PowerShell + WinRT SMTC via child_process.execFile)",
+      "plugin_runtime_mechanism": "opt-A (Nodejs.Version + CodePathWin → plugin/main.js)"
+    },
+    "sections_classified": {
+      "S1": "salvageable",
+      "S2": "unaffected",
+      "S3": "unaffected",
+      "S4": "unaffected",
+      "S5": "stop_and_scrap_and_replace",
+      "S6": "salvageable"
+    },
+    "assertions_amended_count": 8,
+    "assertions_added_count": 1,
+    "assertions_removed_count": 0,
+    "contracts_amended_count": 0,
+    "contracts_with_optional_implementation_note": 2,
+    "td_ips_added": 1,
+    "td_ips_amended": 1,
+    "td_ips_superseded": 1,
+    "prompt_named_verb_unchanged": true,
+    "prompt_named_verb_scenario_amended": true,
+    "contract_surface_preservation_confirmed": true,
+    "harness_rerun_required": true,
+    "harness_rerun_rationale": "Although the C-S4-S5 surface is preserved, S5 implementation is rewritten and S1 manifest fields change. Harness must rerun end-to-end against the rebuilt bundle; existing 28-assertion suite executes with renamed fixture keys plus the new MCA.TDIPA.4."
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "builder_id": "builder-s4-1",
+  "section": "S4",
+  "produced": ["main.js"],
+  "exports": ["DEFAULT_POLL_MS"],
+  "notes": "DEFAULT_POLL_MS=2000. No marquee/scrollOffset code anywhere. Per-context polling map with intervalHandle. Settings change restarts the interval if cadence differs."
+}

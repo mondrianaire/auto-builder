@@ -1,0 +1,190 @@
+{
+  "completed_at": "2026-05-09T21:30:00Z",
+  "verdict": "pass",
+  "checked_against_ledger": "decisions/discovery/ledger-v1.json (v1, no amendments) plus decisions/technical-discovery/sections-v1.json",
+  "artifact_under_test": "output/integration/",
+  "evidence_sources": [
+    "output/integration/index.html",
+    "output/integration/rules-engine.js",
+    "output/integration/ai-opponent.js",
+    "output/integration/ui-render.js",
+    "output/integration/ui-render.css",
+    "output/integration/controller.js",
+    "output/integration/manifest.json",
+    "output/builders/edge-case-testing/builder-edge-b1/test-report.json"
+  ],
+  "assumption_checks": [
+    {
+      "id": "A1",
+      "assumption": "Single self-contained page; no routing/navigation/screens.",
+      "status": "pass",
+      "evidence": "index.html is one HTML file with a single <main id=\"app\"></main> region; no anchor links, no history.pushState, no hash routing, no navigation elements anywhere in controller.js or ui-render.js."
+    },
+    {
+      "id": "A2",
+      "assumption": "Classic 3x3 grid with X/O markers, standard win conditions, draw on full board.",
+      "status": "pass",
+      "evidence": "rules-engine.js _BOARD_SIZE=9, _WINNING_LINES contains exactly the 8 canonical lines (3 rows, 3 cols, 2 diagonals); checkOutcome returns 'win' on three-in-a-row, 'draw' on full board, else 'in_progress'. ui-render.css grid-template-columns/rows is repeat(3, 96px). Test report confirms all 8 winning lines for both X and O plus draw detection (17 cases pass)."
+    },
+    {
+      "id": "A3",
+      "assumption": "Exactly one human + one computer; no online or local two-human mode.",
+      "status": "pass",
+      "evidence": "controller.js declares HUMAN='X' and COMPUTER='O' as fixed constants; only one cell-click handler bound; no networking primitives present (grep for fetch/XMLHttpRequest/WebSocket returned no matches); no second human input path exists."
+    },
+    {
+      "id": "A4",
+      "assumption": "Human plays as X and moves first; computer plays as O.",
+      "status": "pass",
+      "evidence": "rules-engine.createBoard() returns currentPlayer='X'. controller.js HUMAN='X', COMPUTER='O'. _handleHumanClick guards 'state.currentPlayer !== HUMAN' so the very first click belongs to X (human) on a fresh board."
+    },
+    {
+      "id": "A5",
+      "assumption": "Move input by clicking/tapping an empty cell.",
+      "status": "pass",
+      "evidence": "ui-render.js mounts <button> elements per cell with addEventListener('click', ...); cell handler invokes _cellHandler(idx). No keyboard-only or voice input layer is required, and click is the wired interaction."
+    },
+    {
+      "id": "A6",
+      "assumption": "Player can start a new game without page reload.",
+      "status": "pass",
+      "evidence": "ui-render.js mounts a <button class=\"ttt-restart\"> labelled 'Restart'; controller.js wires UI.onRestart(_handleRestart) -> _resetGame() which calls RE.createBoard() and re-renders. No page navigation/reload involved."
+    },
+    {
+      "id": "A7",
+      "assumption": "End-state announced visibly before/with restart.",
+      "status": "pass",
+      "evidence": "controller.js _statusFor returns 'You win!', 'Computer wins!', or 'Draw' on terminal outcomes. ui-render.js renders that into .ttt-status (role='status', aria-live='polite'). Winning line is highlighted via .ttt-cell--win class. Restart button is always visible."
+    },
+    {
+      "id": "A8",
+      "assumption": "Entirely client-side: no backend, no persistence, no accounts.",
+      "status": "pass",
+      "evidence": "Grep across output/integration/ for fetch|XMLHttpRequest|WebSocket|localStorage|sessionStorage|indexedDB|navigator.sendBeacon|cookie returned zero matches. Grep for http://|https://|gtag|analytics|telemetry returned only the 'no analytics' code comment in controller.js. index.html loads only relative-path local files. Manifest confirms files served as-is with no build step."
+    },
+    {
+      "id": "A9",
+      "assumption": "Only current game's state is tracked; no scoreboard across games.",
+      "status": "pass",
+      "evidence": "controller.js holds a single `state` and `lastOutcome`; _resetGame() simply replaces state with a fresh createBoard(). No counter variables, no DOM nodes for wins/losses/draws tally, no rendering of scores."
+    },
+    {
+      "id": "A10",
+      "assumption": "Desktop browser by default; mobile responsiveness not required.",
+      "status": "pass",
+      "evidence": "ui-render.css uses fixed 96px cells in a centered flex container; grep for '@media' returned no matches, so no responsive breakpoints — consistent with 'mobile not required'. Page is usable on a typical desktop viewport (board ~ 320px square + status + button)."
+    },
+    {
+      "id": "A11",
+      "assumption": "Turn indicator shown during play.",
+      "status": "pass",
+      "evidence": "controller.js _statusFor produces 'Your turn', 'Computer’s turn', or 'Computer thinking...' for in-progress states. ui-render.js renders this into the visible .ttt-status element. During the AI delay window (350 ms), status reads 'Computer thinking...' and the board is disabled."
+    },
+    {
+      "id": "A12",
+      "assumption": "Once a cell is played it cannot be overwritten or undone.",
+      "status": "pass",
+      "evidence": "rules-engine.applyMove throws CELL_OCCUPIED if state.board[index] !== null. controller.js _handleHumanClick has explicit guards (board[cellIndex] !== null returns early; lastOutcome.status !== 'in_progress' returns early). ui-render.js sets disabled=true on filled cells. Grep for 'undo|redo|history|replay' returned only the 'restart handler' substring match in a comment — no functional undo present."
+    }
+  ],
+  "out_of_scope_checks": [
+    {
+      "item": "Online/networked multiplayer",
+      "status": "pass",
+      "evidence": "No fetch/XHR/WebSocket; no remote endpoints; controller wires only a single local human player."
+    },
+    {
+      "item": "Local pass-and-play two-human mode",
+      "status": "pass",
+      "evidence": "controller.js hard-codes COMPUTER='O' and routes O moves through AIOpponent.chooseMove + setTimeout, never through user input."
+    },
+    {
+      "item": "User accounts, login, or profiles",
+      "status": "pass",
+      "evidence": "Grep for login|signin|signup|register|account|auth returned no matches across integration files."
+    },
+    {
+      "item": "Persistent score history across sessions or devices",
+      "status": "pass",
+      "evidence": "No storage APIs (localStorage/sessionStorage/indexedDB/cookies) referenced anywhere; controller state is in-memory only."
+    },
+    {
+      "item": "Difficulty selector / multiple AI difficulty levels",
+      "status": "pass",
+      "evidence": "Grep for difficulty|easy|hard|medium|level returned no matches. ai-opponent.js exports a single chooseMove with one fixed heuristic ladder."
+    },
+    {
+      "item": "Choice of symbol or who goes first",
+      "status": "pass",
+      "evidence": "HUMAN/COMPUTER constants are fixed in controller.js; createBoard always sets currentPlayer='X'; no UI offers symbol/first-move selection."
+    },
+    {
+      "item": "Undo / move history / replay",
+      "status": "pass",
+      "evidence": "No move-stack, no revert UI, no replay control. Restart resets to a fresh board only."
+    },
+    {
+      "item": "Sound effects and background music",
+      "status": "pass",
+      "evidence": "Grep for Audio|new Audio|.mp3|.wav|.ogg returned no matches."
+    },
+    {
+      "item": "Animations beyond simple state transitions",
+      "status": "pass",
+      "evidence": "Grep for @keyframes|animation: returned no matches. ui-render.css uses only CSS transition properties for hover background-color, box-shadow, and a 80ms scale on :active — these are simple state transitions, explicitly allowed by the spec."
+    },
+    {
+      "item": "Variants of tic-tac-toe (4x4, ultimate, misere, gravity, etc.)",
+      "status": "pass",
+      "evidence": "BOARD_SIZE is hard-coded 9; WINNING_LINES is the 8 canonical 3-in-a-row lines; renderer grid is 3x3. No alternate rule logic is present."
+    },
+    {
+      "item": "Mobile-first responsive design and touch-specific tuning",
+      "status": "pass",
+      "evidence": "No @media queries, no flexible cell sizing, no touch-event handlers. Layout targets desktop with fixed 96px cells, consistent with the ledger's desktop default."
+    },
+    {
+      "item": "Internationalization / multiple languages",
+      "status": "pass",
+      "evidence": "Grep for i18n|translate|locale|language returned no matches. All visible strings are inline English."
+    },
+    {
+      "item": "Accessibility beyond baseline semantics",
+      "status": "pass",
+      "evidence": "Renderer adds baseline ARIA only: role='grid'/'gridcell'/'status', aria-live='polite' on status, aria-label on cells. No formal WCAG audit committed — matches 'baseline semantics, no formal audit' scope. Out-of-scope item is honored (and the baseline floor is intentionally provided)."
+    },
+    {
+      "item": "Analytics, telemetry, or any external network calls",
+      "status": "pass",
+      "evidence": "Grep for analytics|telemetry|gtag|track returned only an internal 'no analytics' comment in controller.js. No external URLs, no beacons, no network primitives."
+    },
+    {
+      "item": "Backend, database, or server-side logic of any kind",
+      "status": "pass",
+      "evidence": "Pure static asset bundle (index.html + 4 .js + 1 .css) opening from file://. No server requirement; manifest confirms no build step."
+    }
+  ],
+  "inflection_point_checks": [
+    {
+      "id": "I1",
+      "topic": "Computer opponent strength",
+      "chosen_branch": "Beatable heuristic (take immediate win, else block immediate loss, else center, then corners, then edges)",
+      "status": "pass",
+      "evidence": "ai-opponent.js implements the exact ladder: (1) _findWinningMove for aiSymbol, (2) _findWinningMove for opponent (block), (3) CENTER cell 4, (4) CORNERS [0,2,6,8] first-encountered, (5) EDGES [1,3,5,7] first-encountered. No minimax, no alphabeta. Test report confirms win-take in row/col/diag, block-loss in row/col/diag, center preference, corner-when-center-taken, edge fallback, and win-priority-beats-block (12 AI heuristic cases pass)."
+    },
+    {
+      "id": "I2",
+      "topic": "Visual style / presentation",
+      "chosen_branch": "Minimal but tidy: clear grid, system fonts, hover state on empty cells, highlighted winning line, visible turn indicator, visible outcome message, labeled restart button.",
+      "status": "pass",
+      "evidence": "ui-render.css uses native system font stack (-apple-system, BlinkMacSystemFont, Segoe UI, ...). 3x3 CSS grid with 96px cells, visible borders/box-shadow. Hover rule .ttt-root:not(.ttt-root--disabled) .ttt-cell--empty:hover lights up empty cells only. .ttt-cell--win paints winning line with --ttt-win-bg and inset border. Status div is rendered above the board; Restart button is rendered below. No custom typography, no @keyframes animations, no elaborate motion design — polish items remain out-of-scope as specified."
+    }
+  ],
+  "edge_case_testing_review": {
+    "report_path": "output/builders/edge-case-testing/builder-edge-b1/test-report.json",
+    "pass_count": 46,
+    "fail_count": 0,
+    "coverage_summary": "All 8 winning lines for X (8) and O (8); draw detection (1); illegal-move handling (4); pure-function/legalMoves invariants (3); AI heuristic ladder including win-take, block-loss, center, corner, edge, priority ordering, immutability, near-full board (12); ui-render mount/render/win-class/click/restart (5); index.html load order + no external URLs (1); controller composition + AI delay + defensive ignore (2); no-network/no-persistence grep (1); integrated turn-flow simulation (1); restart resets state (1). Direct mapping to assumption set is solid: A2 covered by win/draw cases, A8 by the explicit no-network grep test, A12 by illegal-click rejection, I1 by 12 AI cases, I2 by ui-render visual class assertions."
+  },
+  "summary": "Verdict: pass. All 12 assumption checks pass with concrete file evidence. All 15 out-of-scope items confirmed absent (verified via grep for forbidden patterns and structural inspection). Both inflection points implemented per the locked branches: I1 is a beatable heuristic ladder (win/block/center/corner/edge) with no minimax; I2 is minimal-but-tidy with system fonts, clean grid, hover, win-line highlight, turn indicator, outcome message, and a clearly labelled restart button. The edge-case testing report shows 46/46 cases passing across rules, AI, renderer, controller, and integration layers. No defects, no spec violations, no concerns. The integrated artifact at output/integration/ is the same byte-equivalent code that the testing builder verified, per the integrator's manifest verification entry."
+}

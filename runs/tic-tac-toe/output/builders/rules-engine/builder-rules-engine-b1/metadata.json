@@ -1,0 +1,34 @@
+{
+  "builder_id": "builder-rules-engine-b1",
+  "section_id": "rules-engine",
+  "status": "completed",
+  "completed_at": "2026-05-09T00:10:30Z",
+  "outputs": [
+    {
+      "path": "output/builders/rules-engine/builder-rules-engine-b1/output.js",
+      "filename_for_integration": "rules-engine.js",
+      "type": "javascript",
+      "loading_convention": "Vanilla <script> tag exposes window.RulesEngine; also CommonJS-friendly via module.exports when present (used by edge-case-testing's node sandbox)."
+    }
+  ],
+  "exposed_symbols": {
+    "global_namespace": "window.RulesEngine",
+    "methods": ["createBoard", "applyMove", "checkOutcome", "legalMoves"],
+    "helpers": ["_cloneState"],
+    "constants": ["_WINNING_LINES", "_BOARD_SIZE"]
+  },
+  "error_contract": {
+    "shape": "applyMove throws Error with .code in {'OUT_OF_RANGE','CELL_OCCUPIED','WRONG_PLAYER','INVALID_PLAYER'}",
+    "controller_guidance": "Controller should wrap applyMove in try/catch on user clicks (defense in depth) or pre-check via legalMoves. The renderer's filled/disabled gating already prevents most illegal-click paths."
+  },
+  "contract_compliance": {
+    "rules-engine--ai-opponent.json": "matches: createBoard/applyMove/checkOutcome/legalMoves shapes verified against contract spec",
+    "rules-engine--controller-and-shell.json": "matches: same module surface used by both consumers"
+  },
+  "notes": [
+    "Pure functions: applyMove uses cloneBoard so input state is not mutated.",
+    "WINNING_LINES covers all 8 lines (3 rows, 3 cols, 2 diagonals).",
+    "legalMoves returns ascending order, satisfying the deterministic-order requirement.",
+    "Indexing is row-major: 0,1,2 top row; 3,4,5 middle; 6,7,8 bottom."
+  ]
+}

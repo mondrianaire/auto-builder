@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_section": "ui-render",
+  "to_section": "integration",
+  "interface": {
+    "mountRenderer": {
+      "params": {
+        "rootEl": "HTMLElement",
+        "stateModel": "state-model instance (must expose getState and subscribe)"
+      },
+      "returns": "{ unmount: () => void } — disposes subscription."
+    }
+  },
+  "notes": "integration provides the root DOM node (e.g., #app) and the state-model instance. mountRenderer performs an initial render and subscribes for re-renders."
+}

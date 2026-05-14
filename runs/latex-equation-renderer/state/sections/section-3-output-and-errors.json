@@ -1,0 +1,20 @@
+{
+  "section_id": "section-3-output-and-errors",
+  "status": "verified",
+  "wave": 2,
+  "started_at": "2026-05-10T00:06:30Z",
+  "verified_at": "2026-05-10T00:07:15Z",
+  "overseer_decomposition": {
+    "builders": [
+      {
+        "id": "b1-wiring",
+        "subgoal": "Wire input change stream to renderer to output/error regions; route success/failure correctly.",
+        "outputs": ["app.js"],
+        "satisfies": ["S3.A3", "S3.A4"],
+        "verified": true
+      }
+    ]
+  },
+  "verification_summary": "app.js subscribes to onLatexChange, calls renderer.render, routes ok=true to output region, ok=false to error region (with stale marker on output). No button. S3.A1, S3.A2 are exercised by user-flow tests; S3.A5 is satisfied by the dedicated [data-role='latex-error'] region in the shell.",
+  "inline_deviations": []
+}

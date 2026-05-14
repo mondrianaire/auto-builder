@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "from_section": "ai-opponent",
+  "to_section": "controller-and-shell",
+  "interface": {
+    "exposed_module": "ai-opponent",
+    "data_shapes": {
+      "GameState": "Same shape as defined by rules-engine; ai-opponent does not redefine it.",
+      "Player": "'X' | 'O'"
+    },
+    "methods": {
+      "chooseMove": {
+        "signature": "(state: GameState, aiSymbol: Player) -> number",
+        "description": "Given a non-terminal GameState and the AI's symbol, returns a legal cell index (0..8) selected by the heuristic ladder: (1) immediate win, (2) block immediate loss, (3) center, (4) corner, (5) edge.",
+        "preconditions": "state.currentPlayer must equal aiSymbol; checkOutcome(state).status must equal 'in_progress'. Behavior is undefined if preconditions are violated.",
+        "postconditions": "Returned index is in legalMoves(state)."
+      }
+    },
+    "guarantees": [
+      "Synchronous: chooseMove returns immediately; the controller decides any perceptual delay.",
+      "Pure with respect to its inputs: no DOM access, no network, no module-global mutable state aside from optional RNG seed.",
+      "Does not call applyMove on the controller's live state; it clones state internally for hypothetical evaluation."
+    ]
+  },
+  "notes": "Controller calls chooseMove only after detecting that it is the AI's turn and that the game is in-progress. Controller is responsible for the visible delay between human move and AI move so the AI's play is perceptible."
+}

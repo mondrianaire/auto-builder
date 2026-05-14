@@ -1,0 +1,122 @@
+{
+  "completed_at": "2026-05-10T04:30:00Z",
+  "verdict": "pass",
+  "checked_against_ledger": "decisions/discovery/ledger-v1.json",
+  "assumption_checks": [
+    {
+      "id": "A1",
+      "assumption": "Web app, runs entirely in the browser, no backend service.",
+      "verified": true,
+      "evidence": "grep across output/integration/ for fetch(, axios, XMLHttpRequest, WebSocket returns 0 hits; index.html loads only local <script src> files; no network code anywhere."
+    },
+    {
+      "id": "A2",
+      "assumption": "Multiple lists, user-editable: add, rename, remove.",
+      "verified": true,
+      "evidence": "state-model.js exposes createList, renameList, deleteList; interactions.js wires data-action='add-list', click-on-list-title rename, and data-action='delete-list'; cv-runner scenarios f, g, h all pass."
+    },
+    {
+      "id": "A3",
+      "assumption": "Cards have at minimum a text title; users can create, edit, delete.",
+      "verified": true,
+      "evidence": "state-model.js exposes createCard, editCard, deleteCard. Card object shape is {id, title} only (matches IP1.A1). interactions.js wires add-card form, click-card to edit, and delete-card button. cv-runner scenarios b, e plus S5.A4-A6 contracts honored."
+    },
+    {
+      "id": "A4",
+      "assumption": "DnD covers between-lists and within-list reordering.",
+      "verified": true,
+      "evidence": "dnd.js wireDnd handles both: same-list drop calls reorderCard, cross-list drop calls moveCard (lines 121-125). cv-runner scenarios c (cross-list) and d (same-list reorder contract) both pass."
+    },
+    {
+      "id": "A5",
+      "assumption": "localStorage persistence, scoped to origin.",
+      "verified": true,
+      "evidence": "persistence.js uses localStorage exclusively under STORAGE_KEY='kanban-board:v1'; load/save/clear all delegate to localStorage. No IndexedDB, no cookies, no remote sync."
+    },
+    {
+      "id": "A6",
+      "assumption": "Single-user, no auth.",
+      "verified": true,
+      "evidence": "grep for login/signup/auth/password/userId returns no matches in code; no User entity in state-model; no auth UI in ui-render."
+    },
+    {
+      "id": "A7",
+      "assumption": "Autosave on every state mutation; no Save button.",
+      "verified": true,
+      "evidence": "app.js line 28-30: stateModel.subscribe(state => Persistence.save(state)); state-model notify() fires after every mutation. cv-runner scenarios e, f, g, h all confirm localStorage updated immediately. No Save button anywhere in ui-render."
+    },
+    {
+      "id": "A8",
+      "assumption": "Desktop-first; no touch DnD library.",
+      "verified": true,
+      "evidence": "dnd.js uses only HTML5 dragstart/dragover/dragenter/dragleave/drop/dragend events; no TouchEvent, no Sortable.js, no Hammer.js, no third-party DnD lib referenced anywhere."
+    },
+    {
+      "id": "A9",
+      "assumption": "No undo/redo, history, or trash; deletes are immediate and permanent.",
+      "verified": true,
+      "evidence": "grep for undo/redo/archive/trash returns no matches in user-facing code; deleteCard and deleteList immediately splice from state; no undo UI rendered."
+    },
+    {
+      "id": "A10",
+      "assumption": "Single board; no multi-board switching.",
+      "verified": true,
+      "evidence": "State shape is {lists: [...]} at root, not boards-keyed; STORAGE_KEY is a single string, not parameterized; no board-switcher UI in ui-render.js."
+    },
+    {
+      "id": "A11",
+      "assumption": "First-load seed of To Do / Doing / Done.",
+      "verified": true,
+      "evidence": "state-model.js buildDefaultSeed() creates exactly [{name:'To Do'}, {name:'Doing'}, {name:'Done'}] with empty cards. createStateModel(null) uses this seed. cv-runner scenario a confirms titles render as ['To Do','Doing','Done'] with 0 cards."
+    }
+  ],
+  "out_of_scope_checks": [
+    { "item": "User accounts, authentication, login, or signup", "verified_absent": true, "evidence": "no auth/login/signup/password identifiers in code" },
+    { "item": "Backend server, database, or API", "verified_absent": true, "evidence": "no fetch/axios/XHR/WebSocket; index.html script tags are local only" },
+    { "item": "Multi-user collaboration, sharing boards, or real-time sync", "verified_absent": true, "evidence": "no socket/sync code; single localStorage key" },
+    { "item": "Cloud sync or cross-device persistence", "verified_absent": true, "evidence": "persistence.js delegates only to localStorage" },
+    { "item": "Multiple boards / workspace switching", "verified_absent": true, "evidence": "state shape is single {lists:[]}; no board switcher UI" },
+    { "item": "Card metadata beyond a title", "verified_absent": true, "evidence": "card schema is {id, title} only; no description/dueDate/labels/etc. fields anywhere (matches IP1.A1)" },
+    { "item": "Search, filter, or sort across cards", "verified_absent": true, "evidence": "no search/filter/sort UI in ui-render; no corresponding state-model APIs" },
+    { "item": "Undo/redo, archive, or trash", "verified_absent": true, "evidence": "no undo/redo/archive/trash code; deletes splice immediately" },
+    { "item": "Import/export of board data", "verified_absent": true, "evidence": "no export/import buttons or APIs" },
+    { "item": "Mobile-optimized layout or touch DnD", "verified_absent": true, "evidence": "no TouchEvent handling; no Sortable/Hammer libs; HTML5 dragstart only" },
+    { "item": "Theming, dark mode toggle, custom styling", "verified_absent": true, "evidence": "no theme switcher; styles.css is a single static stylesheet" },
+    { "item": "Keyboard-only navigation beyond browser defaults", "verified_absent": true, "evidence": "only Enter/Escape handled on inline inputs (per section-5 acceptance); no global shortcut map" },
+    { "item": "Notifications, reminders, due-date alerts", "verified_absent": true, "evidence": "no Notification API usage; no due-date field in card schema" },
+    { "item": "Analytics or activity history", "verified_absent": true, "evidence": "no analytics SDK; no activity log emitted" }
+  ],
+  "inflection_point_checks": [
+    {
+      "id": "IP1",
+      "default_branch_honored": true,
+      "branch": "Title-only cards",
+      "evidence": "Card object shape in state-model.js (lines 33-37, 135) is exactly {id, title}; createCard signature is (listId, title) with no description parameter; ui-render.js renders only .card-title span — no .card-description, no detail-modal trigger, no expand affordance."
+    },
+    {
+      "id": "IP2",
+      "default_branch_honored": true,
+      "branch": "Lists fixed in creation order; only cards draggable",
+      "evidence": "ui-render.js renderList does NOT set draggable on the list element or list-header; no dragstart handler is wired for lists; state-model exposes no reorderList mutation (grep confirms only the comment 'Per IP2: there is no reorderList' on line 9). Card elements have draggable='true' (line 49)."
+    }
+  ],
+  "artifact_exercise_results": [
+    { "scenario": "a. first-load seed", "passed": true, "detail": "rendered ['To Do','Doing','Done'] with 0 cards and add-list affordance" },
+    { "scenario": "b. add card persists across reload", "passed": true, "detail": "card 'My Card' still in 'To Do' after simulated reload (localStorage replayed into fresh DOM)" },
+    { "scenario": "c. dnd between lists changes state", "passed": true, "detail": "cA moved L1 -> L2 via dragstart/dragenter/dragover/drop event sequence; state and DOM reflect move" },
+    { "scenario": "d. reorder within list", "passed": true, "detail": "Same-list drop dispatches reorderCard with correct (cardId='B', listId='L'); moveCard not called. Direct reorderCard(B,L,0) yields order [B,A]. (jsdom layout limitation requires verifying the wired-up contract rather than the y-coordinate index calculation.)" },
+    { "scenario": "e. delete card", "passed": true, "detail": "click on .card-delete removes card from DOM and from localStorage" },
+    { "scenario": "f. rename list", "passed": true, "detail": "click on list-title -> inline-edit -> Enter; new name renders and persists" },
+    { "scenario": "g. add list (rightmost + persisted)", "passed": true, "detail": "click add-list -> 'Backlog' -> Enter; new column appears as rightmost and persists" },
+    { "scenario": "h. delete list with cards", "passed": true, "detail": "click delete-list with confirm stubbed true; list and cards removed from DOM and localStorage" }
+  ],
+  "edge_case_testing_summary": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "source": "output/builders/edge-case-testing/ec-b1/report.json",
+    "rerun_confirmed": true,
+    "rerun_note": "Re-executed test-runner.js during CV pass; output identical: 16 PASS / 0 FAIL covering S1.A2-A8, S2.A1-A5, S3.A1/A2/A4, S4.A3/A4, S5.A7."
+  },
+  "summary": "PASS. The integrated kanban-board artifact in output/integration/ honors all 11 ledger assumptions, all 14 out-of-scope items remain absent, and both inflection points (IP1 title-only cards, IP2 fixed list order) follow their default branches. All 16 edge-case-testing assertions still pass on rerun. All 8 CV artifact-exercise scenarios pass against a real jsdom-loaded build of the actual deployed code (state-model + persistence + ui-render + dnd + interactions wired together). One scenario (d. reorder within list) verifies the wired contract and underlying state-model behavior rather than the pixel-level drop-index calculation, because jsdom does not perform CSS layout — but the same-list-drop -> reorderCard wiring path and the reorderCard outcome are both directly exercised. No Sev 0 fixes required. Artifact is ready for delivery."
+}

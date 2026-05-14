@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "contract_id": "section-1-renderer-core--section-3-output-and-errors",
+  "producer": "section-1-renderer-core",
+  "consumer": "section-3-output-and-errors",
+  "summary": "The renderer module exposes a single render function that the output/error wiring calls with the current LaTeX string and a target DOM element.",
+  "interface": {
+    "kind": "module_function",
+    "module_specifier_examples": ["./renderer.js", "window.renderer", "renderer (UMD-style global)"],
+    "function": {
+      "name": "render",
+      "signature": "render(latex: string, target: HTMLElement) -> RenderResult",
+      "parameters": [
+        {
+          "name": "latex",
+          "type": "string",
+          "constraints": "May be empty, whitespace-only, valid math LaTeX, or invalid LaTeX. Producer must accept all of these without throwing past the boundary.",
+          "examples": ["", "   ", "x^2 + y^2", "\\frac{1}{2}", "\\frac{1}{"]
+        },
+        {
+          "name": "target",
+          "type": "HTMLElement",
+          "constraints": "A DOM element provided by the consumer. Producer treats it as the destination for rendered DOM and may replace its contents."
+        }
+      ],
+      "return": {
+        "type": "RenderResult",
+        "shape": {
+          "ok": "boolean",
+          "message": "string (present and non-empty when ok === false; absent or empty when ok === true)"
+        },
+        "side_effects_on_success": "When ok === true: target's children are replaced with KaTeX-rendered DOM (containing a .katex or .katex-display element).",
+        "side_effects_on_failure": "When ok === false: target's children are NOT modified by the renderer. The consumer is responsible for clearing the success container and showing the message in the error region."
+      },
+      "exception_contract": "render must NOT throw to the caller. Any internal exception from KaTeX is caught and converted to {ok: false, message: <string>}."
+    }
+  },
+  "data_passed": [
+    "Input: a LaTeX source string (raw, unsanitized) — the consumer passes the textarea value verbatim.",
+    "Input: a target HTMLElement reference — the consumer passes a stable element.",
+    "Output: a RenderResult value object — pure data, no functions or DOM references."
+  ],
+  "non_goals": [
+    "The renderer does not subscribe to input events.",
+    "The renderer does not own or style the error region.",
+    "The renderer does not decide WHERE to display errors — only that it returns one."
+  ],
+  "open_questions_for_builders": [
+    "Empty/whitespace input handling: the consumer is responsible for short-circuiting before calling render, OR render itself returns ok:true with no DOM changes for empty input. Builders should pick one and document it; the consumer-side assertions in S5.A2/A3 hold either way."
+  ]
+}

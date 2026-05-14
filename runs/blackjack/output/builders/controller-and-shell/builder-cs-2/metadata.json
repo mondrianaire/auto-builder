@@ -1,0 +1,13 @@
+{
+  "builder_id": "builder-cs-2",
+  "section": "controller-and-shell",
+  "started_at": "2026-05-09T00:13:25Z",
+  "completed_at": "2026-05-09T00:13:35Z",
+  "output": {
+    "path": "output/builders/controller-and-shell/builder-cs-2/output.html",
+    "target_filename": "index.html"
+  },
+  "script_load_order": ["rules-engine.js", "bankroll.js", "ui-render.js", "controller.js"],
+  "stylesheet": "styles.css",
+  "notes": "Minimal HTML5; only inline JS is the DOMContentLoaded bootstrapping call to Controller.init."
+}

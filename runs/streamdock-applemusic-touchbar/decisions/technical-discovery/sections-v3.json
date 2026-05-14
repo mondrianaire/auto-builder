@@ -1,0 +1,1065 @@
+{
+  "version": 3,
+  "created_at": "2026-05-13T00:45:00Z",
+  "project_name": "streamdock-applemusic-touchbar",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "based_on_ledger_diff": "decisions/discovery/ledger-diff-v2.json",
+  "supersedes": "decisions/technical-discovery/sections-v2.json",
+  "amendment_scope": "Windows pivot per ledger-diff-v2 (IP1 → Windows-only, user explicit choice). Two Researcher probes (probe-windows-nowplaying, probe-windows-plugin-runtime) both recommended opt-A. Section changes: S1 salvageable (manifest OS array flip mac→windows, +Nodejs:{Version:'20'}, +CodePathWin:'plugin/main.js', drop CodePathMac, remove plugin/run.sh, Description text updated); S5 stop_and_scrap_and_replace (renamed music-source-applescript → music-source-smtc; module body and acceptance literals rewritten to PowerShell + WinRT SMTC); S6 salvageable (fixture key rename osascript→powershell.exe); S2/S3/S4 byte-identical. C-S4-S5 contract surface PRESERVED verbatim (mechanism-agnostic by upstream design). Carries forward all sections-v2 covers arrays.",
+  "prompt_verb_analysis": {
+    "prompt_text": "Build a plugin for the StreamDock VSD N4 Pro that uses its Touchbar Mode to display the currently playing song and artist from the Apple Music Desktop Application, occupying the full length of the touch bar.",
+    "candidate_verbs": [
+      {
+        "verb": "display",
+        "rationale": "Names the operation the plugin performs on the touch bar. The artifact (.sdPlugin folder), when installed and the action placed on the touchbar surface, must visibly display the currently playing track. Exercisable as a pass/fail success criterion: did the title + artist appear on the wide strip?"
+      },
+      {
+        "verb": "use",
+        "rationale": "Refers to the plugin's relationship with Touchbar Mode (it 'uses' that mode). Structural — covered by manifest assertions on Controllers/Encoder declarations. Not a runtime exercise verb."
+      },
+      {
+        "verb": "play",
+        "rationale": "Appears only as 'currently playing' — a modifier on the data being displayed, not an action the plugin takes. Apple Music plays; the plugin reads. Not load-bearing."
+      }
+    ],
+    "chosen_verb": "display",
+    "chosen_rationale": "'display' is the only verb in the prompt that names something the plugin itself does, and it is the verifiable success criterion: the integrated artifact, when run, must cause the song title and artist to appear on the StreamDock touchbar surface (or, under our verification constraint, on the equivalent mock WebSocket host that receives the setFeedback payload). The verb is unchanged by the Windows pivot; only the verifier scenario's mechanism (powershell.exe instead of osascript) is updated."
+  },
+  "td_introduced_inflection_points": [
+    {
+      "id": "TD-IP-A",
+      "source": "td",
+      "topic": "Plugin bundle format and manifest schema",
+      "td_introduction_rationale": "Discovery's A1 named the SDK family ('Stream Deck-compatible, .streamDockPlugin folder, manifest.json') but did not lock the manifest schema, SDKVersion integer, CodePath strategy, or the OS declaration. These are load-bearing for installability.",
+      "choices": [
+        "Stream Deck SDK v2 manifest (SDKVersion: 2), .sdPlugin folder named in reverse-DNS, Windows-only OS array, CodePathWin pointing directly at plugin/main.js, Nodejs.Version: '20' declared so host's bundled Node runs the .js without a wrapper",
+        "Stream Deck SDK v1 manifest (legacy)",
+        "Bespoke StreamDock-only manifest"
+      ],
+      "default_branch": "Stream Deck SDK v2 manifest, Windows-only OS, CodePathWin → plugin/main.js with Nodejs.Version: '20'",
+      "resolution": "quick_reasoning_amended_by_research",
+      "rubric_check": {
+        "well_known": true,
+        "similar_complexity": true,
+        "no_new_deps": true,
+        "easily_reversible": true
+      },
+      "rationale": "Stream Deck v2 manifest is the canonical shape that StreamDock plugins follow (MiraboxSpace/StreamDock-Plugin-SDK mirrors Elgato's manifest format). Windows-only OS per ledger-diff-v2 (IP1 user resolution). Nodejs.Version: '20' declaration causes the StreamDock host to run CodePathWin as a Node script using its own bundled runtime — confirmed by probe-windows-plugin-runtime opt-A. No .bat wrapper, no vendored node.exe, no system-Node requirement. Manifest-only change."
+    },
+    {
+      "id": "TD-IP-B",
+      "source": "td",
+      "topic": "Touchbar/wide-display action declaration mechanism",
+      "td_introduction_rationale": "Discovery A2 named 'Touchbar (wide-display) action' but did not specify the SDK construct. The choice between Encoder/touchscreen Controller, a built-in layout vs custom layout, and the paint API (setImage vs setFeedback) is load-bearing for the plugin actually filling the strip.",
+      "choices": [
+        "Controllers: ['Encoder'] + custom layout JSON with two text items (title bold, artist regular) + setFeedback for updates",
+        "Controllers: ['Encoder'] + built-in layout $X1 (icon + one line) + setFeedback",
+        "Controllers: ['Keypad'] + setImage with a pre-rendered PNG of the bar"
+      ],
+      "default_branch": "Controllers: ['Encoder'] + custom layout + setFeedback",
+      "resolution": "quick_reasoning",
+      "rubric_check": {
+        "well_known": true,
+        "similar_complexity": true,
+        "no_new_deps": true,
+        "easily_reversible": true
+      },
+      "rationale": "The Encoder controller is how Stream Deck SDK exposes the wide touch strip / touchscreen surface; setFeedback with a custom 2-text-item layout is the canonical pattern for a multi-line readout. Built-in $X1 only supports one text line, which can't satisfy 'song AND artist' simultaneously per A5. PNG-via-setImage is the keypad path, not the wide-display path, and would not span the bar."
+    },
+    {
+      "id": "TD-IP-C",
+      "source": "td",
+      "topic": "Plugin process runtime language",
+      "td_introduction_rationale": "Discovery didn't name a runtime; this is load-bearing because the WebSocket client, the data-source invocation, and the install footprint all flip with the choice.",
+      "choices": [
+        "Node.js (>=20), run via host's bundled Node runtime triggered by manifest Nodejs.Version declaration; 'ws' library vendored under node_modules/ for the WebSocket transport",
+        "Compiled native binary (Rust, .NET, etc.)",
+        "HTML+JS in a renderer (no separate process)"
+      ],
+      "default_branch": "Node.js >=20 with vendored 'ws', launched via Nodejs.Version manifest declaration",
+      "resolution": "quick_reasoning",
+      "rubric_check": {
+        "well_known": true,
+        "similar_complexity": false,
+        "no_new_deps": false,
+        "easily_reversible": true
+      },
+      "rationale": "Quick-reasoning rubric fails on 'similar complexity' and 'no new deps' (Node + ws vs native binary differ materially). However, the canonical StreamDock/Stream Deck plugin pattern is Node.js with vendored ws, and the StreamDock host (VSD Craft) bundles its own Node runtime, so declaring `Nodejs.Version: '20'` in the manifest makes the plugin self-contained without any user-side Node install. The alternatives (native binary requires a Rust/.NET toolchain; HTML-only loses the ability to spawn child processes for the SMTC helper) are clearly worse. Locked: Node.js with vendored ws and Nodejs.Version manifest declaration."
+    },
+    {
+      "id": "TD-IP-D",
+      "source": "td",
+      "topic": "AppleScript surface for Music.app now-playing fields (SUPERSEDED)",
+      "status": "superseded",
+      "superseded_by": "TD-IP-G",
+      "superseded_reason": "Ledger-diff-v2 resolved IP1 to Windows-only; AppleScript does not exist on Windows. This TD-IP is retained in the record for traceability but no longer drives the build.",
+      "td_introduction_rationale_old": "IP1's macOS branch needed a concrete query mechanism; AppleScript vs MediaRemote vs nowplaying-cli was a real choice with different dep footprints.",
+      "choices_old": [
+        "AppleScript invoked via osascript -e (no extra deps; built into macOS) with tab-delimited two-field output",
+        "MediaRemote private framework via a small Swift helper",
+        "nowplaying-cli third-party binary bundled"
+      ],
+      "default_branch_old": "AppleScript via osascript"
+    },
+    {
+      "id": "TD-IP-E",
+      "source": "td",
+      "topic": "Polling interval default",
+      "td_introduction_rationale": "Discovery A6 specified '~1-3s' as a range, not a value. Locking the default is load-bearing for assertions and PI defaults.",
+      "choices": ["2 seconds", "1 second", "3 seconds"],
+      "default_branch": "2 seconds",
+      "resolution": "quick_reasoning",
+      "rubric_check": {
+        "well_known": true,
+        "similar_complexity": true,
+        "no_new_deps": true,
+        "easily_reversible": true
+      },
+      "rationale": "Midpoint of the A6 range; perceptibly responsive without flogging the SMTC helper (~400ms PowerShell cold-start per poll is well under 2000ms). Exposed via property inspector so user can change. Per A6 amendment, SMTC event subscriptions are a tracked future enhancement."
+    },
+    {
+      "id": "TD-IP-F",
+      "source": "td",
+      "topic": "Truncation behavior for overlong title/artist (A8 resolution)",
+      "td_introduction_rationale": "A8 named truncate-vs-scroll as a default-choice; locking simplifies the section design.",
+      "choices": [
+        "Truncate with ellipsis at the layout text-item level (SDK-native, free)",
+        "Marquee-scroll the text in plugin code by re-sending setFeedback frames"
+      ],
+      "default_branch": "Truncate with ellipsis",
+      "resolution": "quick_reasoning",
+      "rubric_check": {
+        "well_known": true,
+        "similar_complexity": true,
+        "no_new_deps": true,
+        "easily_reversible": true
+      },
+      "rationale": "Truncation is what the layout text-item does automatically; scrolling adds tick state and re-paint pressure. Simplest-within-reason."
+    },
+    {
+      "id": "TD-IP-G",
+      "source": "td",
+      "topic": "Windows now-playing mechanism (replacement for superseded TD-IP-D)",
+      "td_introduction_rationale": "Ledger-diff-v2 resolved IP1 to Windows-only. The data-acquisition mechanism on Windows is a real choice with materially different blast radii; dispatched a Researcher probe rather than quick-reasoning it.",
+      "choices": [
+        "Inline PowerShell + WinRT SMTC invoked per poll via child_process.execFile (opt-A)",
+        "Long-running PowerShell helper subscribing to SMTC events, printing on change (opt-B)",
+        "Bundled precompiled nowplaying.exe (Rust windows-rs or self-contained .NET) (opt-C)",
+        "N-API native Node module (e.g., @nodert-win10-rs4/windows.media.control) (opt-D)"
+      ],
+      "chosen_branch": "PowerShell+WinRT SMTC via execFile child process (opt-A)",
+      "resolved_via": "research",
+      "research_findings_ref": "research/probes/probe-windows-nowplaying/findings.json",
+      "importance": "high",
+      "rationale": "Opt-A's blast radius is contained entirely within S5's command-string and script-text constants; S2/S3/S4/S6 remain byte-identical; the C-S4-S5 contract surface is preserved exactly. Zero install footprint (PowerShell 5.1 + WinRT ship in every Windows 10/11). Zero new dependencies. The ~400ms PowerShell cold-start is well below the 2000ms poll cadence. Opt-B expands blast into S4 and C-S4-S5 (deferred to future enhancement per A6 amendment). Opt-C adds 1.5-10MB bundle bloat and AV-surface risk. Opt-D introduces Node ABI fragility unacceptable per the no-driver/no-AV-trigger constraint."
+    }
+  ],
+  "discovery_ip_resolutions": [
+    {
+      "ip_id": "IP1",
+      "resolution": "Windows only",
+      "resolution_method": "user_explicit_choice_via_ledger_diff_v2",
+      "rationale": "Per ledger-diff-v2: user is demonstrably on Windows (path separators, AppData\\Roaming, C:\\Program Files (x86)\\VSD Craft install location). User explicitly chose 'Windows-only rebuild — drop macOS branch entirely' when the IP was surfaced post-failure. Locks the host OS for the plugin bundle to Windows-only and unblocks PowerShell+WinRT SMTC as the data-source mechanism (TD-IP-G)."
+    },
+    {
+      "ip_id": "IP2",
+      "resolution": "Text-only (song + artist)",
+      "resolution_method": "discovery_default_accepted",
+      "rationale": "Discovery default. Album art is OOS for v1; the layout reserves no image slot for now to keep the manifest and feedback payload minimal."
+    },
+    {
+      "ip_id": "IP3",
+      "resolution": "Display-only (touch tap is a no-op; dial rotation, if applicable, is ignored)",
+      "resolution_method": "discovery_default_accepted",
+      "rationale": "Discovery default. The plugin process subscribes to but does nothing on touch/dial events."
+    }
+  ],
+  "machine_checkable_assertions": [
+    {
+      "id": "MCA.TDIPA.1",
+      "statement": "manifest.json declares SDKVersion: 2",
+      "check_type": "constant_value",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json#/SDKVersion",
+      "expected_value": 2,
+      "covers": [
+        "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/0/default_branch",
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/0",
+        "decisions/discovery/ledger-v1.json#/out_of_scope/8"
+      ]
+    },
+    {
+      "id": "MCA.TDIPA.2",
+      "statement": "manifest.json OS array contains exactly one entry whose Platform is 'windows'",
+      "check_type": "structural",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json#/OS",
+      "expected_value": "[{Platform: 'windows', MinimumVersion: '10'}]",
+      "covers": [
+        "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/0/default_branch",
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/0",
+        "decisions/discovery/ledger-diff-v2.json#/amendments/1",
+        "decisions/discovery/ledger-diff-v2.json#/amendments/4"
+      ]
+    },
+    {
+      "id": "MCA.TDIPA.3",
+      "statement": "manifest.json declares CodePathWin (not CodePath or CodePathMac) referencing a JavaScript file that exists in the bundle",
+      "check_type": "presence",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json#/CodePathWin",
+      "expected_value": "non-empty string pointing to a .js file present in the .sdPlugin folder (typically plugin/main.js)",
+      "covers": [
+        "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/0/default_branch",
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/0",
+        "decisions/discovery/ledger-diff-v2.json#/amendments/3"
+      ]
+    },
+    {
+      "id": "MCA.TDIPA.4",
+      "statement": "manifest.json declares a Nodejs object with a Version field, instructing the StreamDock host to run CodePathWin as a Node script using its bundled runtime",
+      "check_type": "structural",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json#/Nodejs",
+      "expected_value": "{Version: '20'} (non-empty string Version field; '20' is the chosen value)",
+      "covers": [
+        "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/0/default_branch",
+        "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/2/default_branch",
+        "research/probes/probe-windows-plugin-runtime/findings.json#/recommendation"
+      ]
+    },
+    {
+      "id": "MCA.TDIPB.1",
+      "statement": "The single action declares Controllers: ['Encoder']",
+      "check_type": "constant_value",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json#/Actions/0/Controllers",
+      "expected_value": ["Encoder"],
+      "covers": "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/1/default_branch"
+    },
+    {
+      "id": "MCA.TDIPB.2",
+      "statement": "The action's Encoder.layout points to a custom layout JSON file present in the bundle",
+      "check_type": "presence",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json#/Actions/0/Encoder/layout",
+      "expected_value": "non-empty string path to a layout JSON file that exists in the bundle",
+      "covers": "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/1/default_branch"
+    },
+    {
+      "id": "MCA.TDIPB.3",
+      "statement": "The plugin process emits exactly setFeedback events (not setImage) when sending now-playing payloads",
+      "check_type": "behavior",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/main.js",
+      "expected_value": "WebSocket send payloads whose event field equals 'setFeedback' for paint operations",
+      "covers": "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/1/default_branch"
+    },
+    {
+      "id": "MCA.TDIPB.4",
+      "statement": "Custom layout JSON declares two text items with ids 'title' and 'artist'",
+      "check_type": "structural",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/layouts/nowplaying.json#/items",
+      "expected_value": "array containing at least two items where one has key=='title' and another has key=='artist'",
+      "covers": "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/1/default_branch"
+    },
+    {
+      "id": "MCA.TDIPC.1",
+      "statement": "The plugin bundle contains a vendored 'ws' package under node_modules/",
+      "check_type": "presence",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/node_modules/ws/package.json",
+      "expected_value": "file exists and its name field equals 'ws'",
+      "covers": "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/2/default_branch"
+    },
+    {
+      "id": "MCA.TDIPD.1",
+      "statement": "The music-source module spawns child_process with 'powershell.exe' (not osascript) and parses tab-delimited two-field stdout, returning {title, artist} or null per the C-S4-S5 contract",
+      "check_type": "behavior",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/music_source.js",
+      "expected_value": "module spawns child_process exec/execFile with command 'powershell.exe' and a -Command argument carrying the inline WinRT SMTC script; on non-empty stdout, splits on tab and returns {title, artist}; on empty stdout returns null",
+      "covers": [
+        "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/6/chosen_branch",
+        "decisions/discovery/ledger-diff-v2.json#/amendments/0",
+        "decisions/technical-discovery/sections-v3.json#/sections/4/out_of_scope/2",
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/2"
+      ]
+    },
+    {
+      "id": "MCA.TDIPD.2",
+      "statement": "The PowerShell script text inside music_source.js contains references to 'GlobalSystemMediaTransportControlsSessionManager', 'Windows.Media.Control', 'TryGetMediaPropertiesAsync', and 'PlaybackStatus'",
+      "check_type": "presence",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/music_source.js",
+      "expected_value": "source string includes all four literal substrings",
+      "covers": [
+        "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/6/chosen_branch",
+        "decisions/discovery/ledger-diff-v2.json#/amendments/0",
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/2"
+      ]
+    },
+    {
+      "id": "MCA.TDIPE.1",
+      "statement": "Default poll interval is 2000 ms",
+      "check_type": "constant_value",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/main.js#DEFAULT_POLL_MS",
+      "expected_value": 2000,
+      "covers": "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/4/default_branch"
+    },
+    {
+      "id": "MCA.TDIPF.1",
+      "statement": "Custom layout text items use SDK-native truncation (no marquee logic in plugin source)",
+      "check_type": "absence",
+      "target": "plugin_bundle/com.autobuilder.applemusic-nowplaying.sdPlugin/plugin/main.js",
+      "expected_value": "no occurrence of 'marquee', 'scrollOffset', or a setInterval that re-sends setFeedback faster than DEFAULT_POLL_MS for the purpose of scrolling text",
+      "covers": "decisions/technical-discovery/sections-v3.json#/td_introduced_inflection_points/5/default_branch"
+    }
+  ],
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.RESTATE.1",
+      "from_discovery_field": "restatement",
+      "from_discovery_phrase": "occupying the full length of the touch bar",
+      "check_type": "structural",
+      "scenario": "Inspect rendered layout dimensions or the layout JSON's declared region against the wide-strip dimension",
+      "expected_result": "Layout declares full-bar dimensions (or uses the SDK's wide-strip surface flag) — i.e., does not declare a narrow icon-region width",
+      "verifier": "critic_final_sweep",
+      "covers": "decisions/discovery/ledger-v1.json#/restatement"
+    },
+    {
+      "id": "DCA.A2.1",
+      "from_discovery_field": "assumption_ledger/A2",
+      "from_discovery_phrase": "configured to span the full touch bar length",
+      "check_type": "structural",
+      "scenario": "Action declaration in manifest has Encoder controller with a custom full-width layout, not a Keypad controller",
+      "expected_result": "manifest.Actions[0].Controllers === ['Encoder']",
+      "verifier": "critic_final_sweep",
+      "covers": "decisions/discovery/ledger-v1.json#/assumption_ledger/1"
+    },
+    {
+      "id": "DCA.A5.1",
+      "from_discovery_field": "assumption_ledger/A5",
+      "from_discovery_phrase": "Display shows two pieces of text: song title and artist name",
+      "check_type": "presence",
+      "scenario": "Layout JSON contains both 'title' and 'artist' items, and the integrator's setFeedback payload provides values for both",
+      "expected_result": "Both fields are present and non-empty when something is playing",
+      "verifier": "edge_case_testing",
+      "covers": [
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/4",
+        "decisions/discovery/ledger-v1.json#/out_of_scope/1"
+      ]
+    },
+    {
+      "id": "DCA.A5.2",
+      "from_discovery_field": "assumption_ledger/A5",
+      "from_discovery_phrase": "refreshes when the track changes",
+      "check_type": "behavior",
+      "scenario": "Mock the music_source.js module to return {title:'A', artist:'X'} on first poll then {title:'B', artist:'Y'} on second poll; observe WebSocket send stream",
+      "expected_result": "Two setFeedback events emitted, the second carries title='B' artist='Y'",
+      "verifier": "edge_case_testing",
+      "covers": "decisions/discovery/ledger-v1.json#/assumption_ledger/4"
+    },
+    {
+      "id": "DCA.A6.1",
+      "from_discovery_field": "assumption_ledger/A6",
+      "from_discovery_phrase": "Polling-based update model (small, fixed interval)",
+      "check_type": "behavior",
+      "scenario": "Trace the plugin's data-source call cadence over a 6-second mock run",
+      "expected_result": "music_source.js is invoked on a recurring interval matching the configured pollIntervalMs (default 2000)",
+      "verifier": "edge_case_testing",
+      "covers": "decisions/discovery/ledger-v1.json#/assumption_ledger/5"
+    },
+    {
+      "id": "DCA.A7.1",
+      "from_discovery_field": "assumption_ledger/A7",
+      "from_discovery_phrase": "When nothing is playing, the bar shows a neutral placeholder",
+      "check_type": "behavior",
+      "scenario": "Mock music_source.js to return null (Music paused/stopped/not running, or SMTC session absent); observe setFeedback payload",
+      "expected_result": "setFeedback emits title='Apple Music' (or the configured placeholder), artist='' — not stale data and not blank-everywhere",
+      "verifier": "edge_case_testing",
+      "covers": "decisions/discovery/ledger-v1.json#/assumption_ledger/6"
+    },
+    {
+      "id": "DCA.A8.1",
+      "from_discovery_field": "assumption_ledger/A8",
+      "from_discovery_phrase": "Long titles/artists scroll or are truncated with ellipsis",
+      "check_type": "presence",
+      "scenario": "Inspect the layout JSON's text items for truncation declaration",
+      "expected_result": "Each text item declares truncation/ellipsis behavior; given TD-IP-F lock, no marquee code is present",
+      "verifier": "critic_final_sweep",
+      "covers": "decisions/discovery/ledger-v1.json#/assumption_ledger/7"
+    },
+    {
+      "id": "DCA.A10.1",
+      "from_discovery_field": "assumption_ledger/A10",
+      "from_discovery_phrase": "Deliverable is a runnable/installable plugin folder bundle",
+      "check_type": "structural",
+      "scenario": "Verify final artifact path exists at runs/.../artifacts/com.autobuilder.applemusic-nowplaying.sdPlugin/ and contains manifest.json + plugin entrypoint + layouts/. Bundle is droppable into C:\\Program Files (x86)\\VSD Craft\\plugins per ledger-diff-v2 A10 amendment.",
+      "expected_result": "Folder exists with all required files; manifest.json parses as valid JSON; manifest's CodePathWin resolves to an existing .js file in plugin/.",
+      "verifier": "critic_final_sweep",
+      "covers": [
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/9",
+        "decisions/discovery/ledger-diff-v2.json#/amendments/3"
+      ]
+    },
+    {
+      "id": "DCA.A11.1",
+      "from_discovery_field": "assumption_ledger/A11",
+      "from_discovery_phrase": "Property inspector is minimal",
+      "check_type": "structural",
+      "scenario": "Inspect PropertyInspectorPath file for the count of user-facing controls",
+      "expected_result": "PI HTML contains at most 3 input controls (poll interval, show-artist toggle, placeholder text — or fewer)",
+      "verifier": "critic_final_sweep",
+      "covers": [
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/10",
+        "decisions/discovery/ledger-v1.json#/out_of_scope/7"
+      ]
+    },
+    {
+      "id": "DCA.A12.1",
+      "from_discovery_field": "assumption_ledger/A12",
+      "from_discovery_phrase": "No album art rendering in the initial build",
+      "check_type": "absence",
+      "scenario": "Inspect layout JSON and plugin source for image/art rendering paths",
+      "expected_result": "No 'pixmap', 'image', or 'artwork' item in the layout; no setImage call carrying album art data",
+      "verifier": "critic_final_sweep",
+      "covers": [
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/11",
+        "decisions/discovery/ledger-v1.json#/out_of_scope/2",
+        "decisions/technical-discovery/sections-v3.json#/sections/4/out_of_scope/3"
+      ]
+    },
+    {
+      "id": "DCA.A13.1",
+      "from_discovery_field": "assumption_ledger/A13",
+      "from_discovery_phrase": "Touching/tapping the touch bar performs no action",
+      "check_type": "behavior",
+      "scenario": "Mock WebSocket sends a touchTap event to the plugin process; observe outbound events",
+      "expected_result": "Plugin emits no setFeedback, setImage, or other action-effect event in response to the touchTap (logMessage is allowed)",
+      "verifier": "edge_case_testing",
+      "covers": [
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/12",
+        "decisions/discovery/ledger-v1.json#/out_of_scope/3"
+      ]
+    },
+    {
+      "id": "DCA.OOS.STREAMING.1",
+      "from_discovery_field": "out_of_scope/0",
+      "from_discovery_phrase": "Streaming sources other than the local Apple Music desktop app",
+      "check_type": "absence",
+      "scenario": "Inspect plugin source for references to Spotify, web players, or non-Music data sources",
+      "expected_result": "No imports or shell calls to Spotify CLI, spotifyd, web APIs, or any non-Music data path",
+      "verifier": "critic_final_sweep",
+      "covers": "decisions/discovery/ledger-v1.json#/out_of_scope/0"
+    },
+    {
+      "id": "DCA.OOS.MOBILE.1",
+      "from_discovery_field": "out_of_scope/5",
+      "from_discovery_phrase": "Mobile / iOS / Apple Music on iPhone or iPad as a data source",
+      "check_type": "absence",
+      "scenario": "Inspect plugin source and manifest for any references to iOS, iPhone, iPad, or remote-device pairing",
+      "expected_result": "No such references; data source is strictly the local Apple Music for Windows session via SMTC",
+      "verifier": "critic_final_sweep",
+      "covers": "decisions/discovery/ledger-v1.json#/out_of_scope/5"
+    },
+    {
+      "id": "DCA.OOS.TELEMETRY.1",
+      "from_discovery_field": "out_of_scope/6",
+      "from_discovery_phrase": "analytics/telemetry",
+      "check_type": "absence",
+      "scenario": "Inspect plugin source for outbound network calls beyond the localhost SDK WebSocket",
+      "expected_result": "No fetch/https/http to any non-127.0.0.1 destination",
+      "verifier": "critic_final_sweep",
+      "covers": [
+        "decisions/discovery/ledger-v1.json#/out_of_scope/6",
+        "decisions/discovery/ledger-v1.json#/assumption_ledger/8",
+        "decisions/discovery/ledger-v1.json#/out_of_scope/4"
+      ]
+    },
+    {
+      "id": "DCA.IP1.WIN.1",
+      "from_discovery_field": "inflection_points/IP1",
+      "from_discovery_phrase": "Windows only — use the Apple Music preview app on Windows, which requires a different mechanism such as Windows SMTC",
+      "check_type": "presence",
+      "scenario": "Verify resolution is captured and reflected in manifest OS + data-source mechanism",
+      "expected_result": "manifest OS is windows-only AND music_source.js uses powershell.exe invoking WinRT SMTC (GlobalSystemMediaTransportControlsSessionManager)",
+      "verifier": "critic_final_sweep",
+      "covers": [
+        "decisions/discovery/ledger-v1.json#/inflection_points/0",
+        "decisions/discovery/ledger-diff-v2.json#/amendments/4"
+      ]
+    },
+    {
+      "id": "DCA.IP2.TEXT.1",
+      "from_discovery_field": "inflection_points/IP2",
+      "from_discovery_phrase": "Text-only (song + artist)",
+      "check_type": "absence",
+      "scenario": "Verify layout has no image/artwork item",
+      "expected_result": "Layout JSON contains only text items",
+      "verifier": "critic_final_sweep",
+      "covers": "decisions/discovery/ledger-v1.json#/inflection_points/1"
+    },
+    {
+      "id": "DCA.IP3.DISPLAY.1",
+      "from_discovery_field": "inflection_points/IP3",
+      "from_discovery_phrase": "Display-only (no tap behavior)",
+      "check_type": "behavior",
+      "scenario": "Same as DCA.A13.1 — touchTap mock returns no action-effect event",
+      "expected_result": "Plugin treats touchTap as a no-op",
+      "verifier": "edge_case_testing",
+      "covers": "decisions/discovery/ledger-v1.json#/inflection_points/2"
+    }
+  ],
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "display",
+    "scenario": "Run the integrated .sdPlugin bundle's CodePathWin entrypoint (plugin/main.js, executed via the StreamDock host's bundled Node runtime per manifest.Nodejs.Version) as a child process with the four SDK CLI args (-port, -pluginUUID, -registerEvent, -info) pointed at a fake WebSocket host on 127.0.0.1. The fake host: (a) accepts the plugin's registerPlugin handshake, (b) sends a willAppear event for the wide-display action, (c) simulates the Apple Music for Windows SMTC data source by replacing the music_source module's child-process invocation via a per-test execFile shim that intercepts the 'powershell.exe' command and returns 'Bohemian Rhapsody\\tQueen' on stdout. Within 3 seconds of willAppear, capture every WebSocket frame the plugin sends.",
+    "expected_result": "At least one frame is a JSON message whose event field equals 'setFeedback' and whose payload contains both the string 'Bohemian Rhapsody' (in the 'title' field) and the string 'Queen' (in the 'artist' field), addressed to the willAppear'd action context. This proves the plugin DISPLAYS the currently playing song and artist on the wide-display surface under production-fidelity rules (real SDK handshake, real layout JSON, real plugin process, real Node-bundled runtime invocation — only the powershell.exe SMTC shell-out and the device renderer are mocked, both of which are unavoidable in a non-hardware verification environment per the briefing's verification constraint).",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "covers": [
+      "decisions/discovery/ledger-v1.json#/restatement",
+      "decisions/technical-discovery/sections-v3.json#/prompt_verb_analysis/chosen_verb"
+    ]
+  },
+  "sections": [
+    {
+      "id": "S1",
+      "name": "plugin-bundle-skeleton",
+      "charter": "Define the on-disk shape of the deliverable: the .sdPlugin folder name, the manifest.json with all required SDK-v2 keys (Name, Version, Author, Description mentioning Windows + Apple Music for Windows, Icon, Category, CategoryIcon, OS array with Windows entry [{Platform:'windows', MinimumVersion:'10'}], SDKVersion 2, Software.MinimumVersion, Nodejs object with Version:'20' so the StreamDock host runs CodePathWin as a Node script via its bundled runtime, CodePathWin pointing directly at plugin/main.js (no .bat/.cmd wrapper, no vendored node.exe), Actions array with the single Touchbar action declaration including Controllers:['Encoder'] and a reference to a custom Encoder layout), and the placeholder files referenced by manifest paths (Icon PNG, CategoryIcon PNG). The single action's UUID, Name, Tooltip, States, and PropertyInspectorPath are settled here so downstream sections have a stable contract to populate. The macOS branch is dropped per ledger-diff-v2 user choice: CodePathMac is NOT declared and plugin/run.sh is NOT shipped.",
+      "acceptance": "The plugin folder exists at the canonical reverse-DNS name. manifest.json parses as JSON and contains all SDK-v2 required keys with values consistent with the Windows-only, single-Encoder-action, Apple-Music-for-Windows-now-playing intent. All file paths referenced from manifest (CodePathWin, Icon, CategoryIcon, Encoder.layout, Actions[0].PropertyInspectorPath, Actions[0].States[0].Image) resolve to files that exist in the bundle. The action declares Controllers: ['Encoder']. The manifest declares Nodejs.Version so the StreamDock host runs the .js entry under its bundled Node runtime. The bundle is droppable into C:\\Program Files (x86)\\VSD Craft\\plugins.",
+      "acceptance_assertions": [
+        {
+          "id": "AA.S1.1",
+          "from_acceptance_phrase": "The plugin folder exists at the canonical reverse-DNS name",
+          "check_type": "presence",
+          "scenario": "Inspect artifact output directory",
+          "expected_result": "A folder named 'com.autobuilder.applemusic-nowplaying.sdPlugin' exists",
+          "verifier": "critic_final_sweep",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/0/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/charter"
+          ]
+        },
+        {
+          "id": "AA.S1.2",
+          "from_acceptance_phrase": "manifest.json parses as JSON and contains all SDK-v2 required keys",
+          "check_type": "structural",
+          "scenario": "JSON.parse(manifest.json) then check key set",
+          "expected_result": "Parse succeeds; keys include Name, Version, Author, Description, Icon, Category, CategoryIcon, OS, SDKVersion, Software, CodePathWin, Nodejs, Actions",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/0/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/charter",
+            "contracts/original/C-S1-S2-manifest-references.json#/notes",
+            "contracts/original/C-S1-S3-codepath-entry.json#/notes"
+          ]
+        },
+        {
+          "id": "AA.S1.3",
+          "from_acceptance_phrase": "All file paths referenced from manifest resolve to files that exist",
+          "check_type": "presence",
+          "scenario": "For each path-valued field in manifest, check that joining the .sdPlugin folder with the path yields an existing file",
+          "expected_result": "All referenced files exist (CodePathWin (.js extension), Icon (with .png or .svg extension), CategoryIcon, Encoder.layout, PropertyInspectorPath, States[0].Image). CodePathMac is NOT declared.",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/0/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/charter",
+            "contracts/original/C-S1-S2-manifest-references.json#/interface",
+            "contracts/original/C-S1-S3-codepath-entry.json#/interface"
+          ]
+        },
+        {
+          "id": "AA.S1.4",
+          "from_acceptance_phrase": "The action declares Controllers: ['Encoder']",
+          "check_type": "constant_value",
+          "scenario": "Read manifest.Actions[0].Controllers",
+          "expected_result": "Equals exactly ['Encoder']",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/0/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/charter"
+          ]
+        },
+        {
+          "id": "AA.S1.5",
+          "from_acceptance_phrase": "Windows-only",
+          "check_type": "structural",
+          "scenario": "Read manifest.OS array",
+          "expected_result": "Length 1, Platform == 'windows', MinimumVersion set (e.g., '10')",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/0/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/charter",
+            "decisions/discovery/ledger-diff-v2.json#/amendments/1",
+            "decisions/discovery/ledger-diff-v2.json#/amendments/4"
+          ]
+        },
+        {
+          "id": "AA.S1.6",
+          "from_acceptance_phrase": "The manifest declares Nodejs.Version so the StreamDock host runs the .js entry under its bundled Node runtime",
+          "check_type": "structural",
+          "scenario": "Read manifest.Nodejs and manifest.CodePathWin",
+          "expected_result": "manifest.Nodejs == {Version: '20'} (string-valued Version field present and non-empty); manifest.CodePathWin is a string ending in '.js' that resolves to an existing file in the bundle (typically 'plugin/main.js'); manifest.CodePathMac is absent.",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/0/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/charter",
+            "research/probes/probe-windows-plugin-runtime/findings.json#/recommendation"
+          ]
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Wiring up the WebSocket handshake (S3)",
+        "Implementing the polling/data flow (S4)",
+        "Property inspector UI logic (S2)",
+        "Layout rendering / setFeedback payload shape (S2)",
+        "CodePathMac / run.sh / chmod +x packaging steps (macOS branch dropped per user choice in ledger-diff-v2)",
+        ".bat / .cmd / .exe wrapper scripts (unneeded because manifest declares Nodejs.Version, so host's bundled Node runs the .js directly)",
+        "Vendored portable node.exe (not required when Nodejs.Version is declared)"
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "touchbar-layout-and-property-inspector",
+      "charter": "Author the custom Encoder layout JSON that the manifest references (two text items: 'title' large/bold and 'artist' smaller/regular, both full-bar width with SDK-native truncation), and the minimal Property Inspector HTML (one input for poll interval in ms with default 2000, one optional input for placeholder text with default 'Apple Music', one optional toggle for show-artist with default true). Define the exact JSON shape of the setFeedback payload that paints this layout. This section produces an artifact contract that S3 and S4 will both consume.",
+      "acceptance": "The layout JSON file declares two items keyed 'title' and 'artist' with text-item types and SDK-native truncation. The PI HTML loads in a plain browser without errors and emits sendToPlugin/setSettings messages of a documented shape when the user changes a field. The setFeedback payload shape is documented (in a contract) as an object with exactly the keys 'title' and 'artist', both string-valued.",
+      "acceptance_assertions": [
+        {
+          "id": "AA.S2.1",
+          "from_acceptance_phrase": "The layout JSON file declares two items keyed 'title' and 'artist'",
+          "check_type": "structural",
+          "scenario": "Parse layouts/nowplaying.json and inspect items array",
+          "expected_result": "items[] contains exactly two text items with key=='title' and key=='artist' (any additional items must be non-text decorative items only)",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/1/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/charter",
+            "decisions/technical-discovery/sections-v3.json#/sections/2/out_of_scope/2",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/out_of_scope/2"
+          ]
+        },
+        {
+          "id": "AA.S2.2",
+          "from_acceptance_phrase": "with text-item types and SDK-native truncation",
+          "check_type": "presence",
+          "scenario": "For each of the title and artist items, verify type=='text' and that a truncation-mode field is set",
+          "expected_result": "Both items declare text type and an SDK-native truncation/ellipsis mode (no marquee/scroll logic anywhere in the plugin source)",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/1/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/charter"
+          ]
+        },
+        {
+          "id": "AA.S2.3",
+          "from_acceptance_phrase": "The PI HTML loads in a plain browser without errors",
+          "check_type": "behavior",
+          "scenario": "Open PropertyInspectorPath in headless Chromium / equivalent and check the console for errors during initial render",
+          "expected_result": "No console errors; root element present; form controls render",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/1/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/charter",
+            "decisions/discovery/ledger-v1.json#/out_of_scope/9",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/out_of_scope/2",
+            "decisions/technical-discovery/sections-v3.json#/sections/4/out_of_scope/1"
+          ]
+        },
+        {
+          "id": "AA.S2.4",
+          "from_acceptance_phrase": "emits sendToPlugin/setSettings messages of a documented shape",
+          "check_type": "behavior",
+          "scenario": "Mount the PI in a stub host that exposes the SDK's $SD.api.setSettings and observe what is sent when the user changes the poll-interval input",
+          "expected_result": "setSettings called with a JSON object containing the key 'pollIntervalMs' set to the user's input as a number",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/1/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/charter",
+            "contracts/original/C-S2-S3-pi-settings.json#/interface",
+            "contracts/original/C-S2-S3-pi-settings.json#/notes"
+          ]
+        },
+        {
+          "id": "AA.S2.5",
+          "from_acceptance_phrase": "The setFeedback payload shape is documented as an object with exactly the keys 'title' and 'artist', both string-valued",
+          "check_type": "structural",
+          "scenario": "Read the contract file C-S2-S4-feedback.json and verify it constrains the payload shape",
+          "expected_result": "Contract specifies {title: string, artist: string} as the payload schema",
+          "verifier": "critic_final_sweep",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/1/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/charter",
+            "contracts/original/C-S2-S4-feedback-payload.json#/interface",
+            "contracts/original/C-S2-S4-feedback-payload.json#/notes",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/out_of_scope/3"
+          ]
+        }
+      ],
+      "depends_on": ["S1"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Actually emitting setFeedback at runtime (S4)",
+        "WebSocket connection wiring (S3)",
+        "PowerShell + WinRT SMTC invocation (S5)"
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "sdk-handshake-and-event-loop",
+      "charter": "Implement the Stream Deck SDK plugin-side runtime: parse the four CLI args (-port, -pluginUUID, -registerEvent, -info), open a WebSocket to ws://127.0.0.1:<port>, send the registerPlugin event with the uuid, register handlers for willAppear / willDisappear / didReceiveSettings / touchTap / dialRotate / dialDown / dialUp, and expose a small per-context state map plus a send() helper that wraps setFeedback, setTitle, logMessage, and setSettings outbound events with the correct schema. This section owns the entire SDK-protocol surface and exposes a small API (registerWillAppearHandler, registerWillDisappearHandler, registerSettingsHandler, sendFeedback(context, payload), log(msg)) to S4. Runs under the StreamDock host's bundled Node runtime (Node >=20) via the manifest's Nodejs.Version declaration; uses vendored 'ws' for the WebSocket transport.",
+      "acceptance": "When launched with valid SDK CLI args against a mock WebSocket host, the plugin process connects, sends a registerPlugin frame with the correct event name and uuid, and is willing to receive events. willAppear adds the context to an in-memory map; willDisappear removes it. touchTap, dialRotate, dialDown, dialUp are accepted without crash and produce no action-effect outbound events (per IP3). The exposed sendFeedback(context, payload) helper sends a JSON message with event='setFeedback', the correct context, and the supplied payload.",
+      "acceptance_assertions": [
+        {
+          "id": "AA.S3.1",
+          "from_acceptance_phrase": "the plugin process connects, sends a registerPlugin frame with the correct event name and uuid",
+          "check_type": "behavior",
+          "scenario": "Spawn the plugin with -port=<mock>, -pluginUUID=ABC, -registerEvent=registerPlugin, -info='{}' and observe the first frame received by the mock host",
+          "expected_result": "First frame parses as JSON and equals {event:'registerPlugin', uuid:'ABC'}",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/2/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/2/charter",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/out_of_scope/0",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/out_of_scope/1",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/out_of_scope/1"
+          ]
+        },
+        {
+          "id": "AA.S3.2",
+          "from_acceptance_phrase": "willAppear adds the context to an in-memory map; willDisappear removes it",
+          "check_type": "behavior",
+          "scenario": "Send willAppear with context='C1' then send willDisappear with context='C1'; inspect the plugin's in-memory context registry via a test-only hook or via observation of subsequent sendFeedback calls",
+          "expected_result": "After willAppear, sendFeedback to C1 is willing to send; after willDisappear, sendFeedback to C1 either no-ops or logs a warning and does not throw",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/2/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/2/charter"
+          ]
+        },
+        {
+          "id": "AA.S3.3",
+          "from_acceptance_phrase": "touchTap, dialRotate, dialDown, dialUp are accepted without crash and produce no action-effect outbound events",
+          "check_type": "behavior",
+          "scenario": "After willAppear, send each of touchTap, dialRotate, dialDown, dialUp; observe outbound frames",
+          "expected_result": "No setFeedback, setImage, setTitle, openUrl, or setState frames emitted in response to any of these; logMessage frames are allowed",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/2/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/2/charter"
+          ]
+        },
+        {
+          "id": "AA.S3.4",
+          "from_acceptance_phrase": "sendFeedback(context, payload) helper sends a JSON message with event='setFeedback', the correct context, and the supplied payload",
+          "check_type": "behavior",
+          "scenario": "Call sendFeedback('C1', {title:'t', artist:'a'}) and observe outbound frame",
+          "expected_result": "Outbound frame parses to {event:'setFeedback', context:'C1', payload:{title:'t', artist:'a'}}",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/2/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/2/charter",
+            "contracts/original/C-S3-S4-internal-api.json#/interface",
+            "contracts/original/C-S3-S4-internal-api.json#/notes",
+            "contracts/original/C-S2-S4-feedback-payload.json#/interface"
+          ]
+        }
+      ],
+      "depends_on": ["S1"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Polling / data source (S5)",
+        "Wiring polled data to setFeedback (S4)",
+        "Layout JSON (S2)"
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "polling-orchestrator-and-paint",
+      "charter": "Implement the orchestration loop that, for each currently appearing action context, periodically asks the music-source module (S5) for the current track and translates the result into a setFeedback payload sent via S3's sendFeedback helper. When data returns null (nothing playing, no SMTC session, or Apple Music for Windows not foreground/running), use the configured placeholder for the title and an empty string for artist. Respect per-context settings: pollIntervalMs (default 2000), placeholder (default 'Apple Music'), showArtist (default true). Run the loop only while at least one context is appearing. This section is mechanism-agnostic with respect to the music-source — it trusts the C-S4-S5 contract.",
+      "acceptance": "When at least one context is appearing and the music-source module returns {title:'X', artist:'Y'}, S3's sendFeedback is called with {title:'X', artist:'Y'} for that context within one poll interval. When the music-source returns null, sendFeedback is called with {title: placeholder, artist: ''}. The loop stops invoking the music-source when no contexts are appearing. Settings changes via didReceiveSettings update the cadence and placeholder for that context on the next tick.",
+      "acceptance_assertions": [
+        {
+          "id": "AA.S4.1",
+          "from_acceptance_phrase": "When the music-source returns {title:'X', artist:'Y'}, S3's sendFeedback is called with {title:'X', artist:'Y'}",
+          "check_type": "behavior",
+          "scenario": "Inject a fake music-source returning {title:'X', artist:'Y'}; mount one context via willAppear; observe sendFeedback invocations within one poll interval",
+          "expected_result": "sendFeedback called with {title:'X', artist:'Y'} for that context",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/3/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/charter",
+            "contracts/original/C-S4-S5-music-source.json#/interface",
+            "contracts/original/C-S4-S5-music-source.json#/notes",
+            "decisions/technical-discovery/sections-v3.json#/sections/0/out_of_scope/1",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/out_of_scope/0",
+            "decisions/technical-discovery/sections-v3.json#/sections/2/out_of_scope/1",
+            "decisions/technical-discovery/sections-v3.json#/sections/4/out_of_scope/0"
+          ]
+        },
+        {
+          "id": "AA.S4.2",
+          "from_acceptance_phrase": "When the music-source returns null, sendFeedback is called with {title: placeholder, artist: ''}",
+          "check_type": "behavior",
+          "scenario": "Inject a fake music-source returning null; mount one context with default settings; observe sendFeedback",
+          "expected_result": "sendFeedback called with {title:'Apple Music', artist:''}",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/3/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/charter",
+            "contracts/original/C-S4-S5-music-source.json#/interface"
+          ]
+        },
+        {
+          "id": "AA.S4.3",
+          "from_acceptance_phrase": "The loop stops invoking the music-source when no contexts are appearing",
+          "check_type": "behavior",
+          "scenario": "Mount one context, then send willDisappear for it; trace music-source invocations for 5 seconds afterward",
+          "expected_result": "Zero invocations of music-source after the last willDisappear",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/3/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/charter"
+          ]
+        },
+        {
+          "id": "AA.S4.4",
+          "from_acceptance_phrase": "Settings changes via didReceiveSettings update the cadence and placeholder for that context on the next tick",
+          "check_type": "behavior",
+          "scenario": "Mount one context with default pollIntervalMs=2000; send didReceiveSettings with pollIntervalMs=500; measure subsequent poll cadence",
+          "expected_result": "Poll cadence converges on ~500ms within one tick; placeholder change reflected in the next null-state sendFeedback",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/3/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/charter"
+          ]
+        },
+        {
+          "id": "AA.S4.5",
+          "from_acceptance_phrase": "showArtist (default true)",
+          "check_type": "behavior",
+          "scenario": "With showArtist=false in settings, music-source returns {title:'X', artist:'Y'}; observe sendFeedback",
+          "expected_result": "sendFeedback payload's artist field is empty string",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/3/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/charter"
+          ]
+        }
+      ],
+      "depends_on": ["S2", "S3", "S5"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Implementation of the music-source itself (S5)",
+        "WebSocket transport (S3)",
+        "Layout authoring (S2)"
+      ]
+    },
+    {
+      "id": "S5",
+      "name": "music-source-smtc",
+      "previous_name": "music-source-applescript",
+      "rename_rationale": "Renamed from music-source-applescript per ledger-diff-v2 (IP1 → Windows-only) and probe-windows-nowplaying recommendation (opt-A: PowerShell+WinRT SMTC). The section.id 'S5' is preserved to keep the depends_on graph stable.",
+      "charter": "Implement a small Node module that spawns powershell.exe with an inline WinRT script that queries the Windows SMTC (Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager) for the current media session, awaits TryGetMediaPropertiesAsync(), and prints '<title>\\t<artist>' to stdout (empty stdout when there is no current session, when PlaybackStatus is not Playing, or when any error occurs — the script swallows errors via try/catch and exits 0 with empty stdout). The module exposes a single async function getNowPlaying() that resolves to {title: string, artist: string} when something is playing or null when nothing is playing, no SMTC session exists, the helper exits non-zero, or any unexpected error. The PowerShell script and the parsing logic live entirely inside this module so S4 has no knowledge of the data-acquisition mechanism. The MUSIC_SOURCE_FIXTURE env-var test affordance from dev-002 is preserved (mechanism-agnostic harness shim).",
+      "implementation_sketch": {
+        "spawn_call": "child_process.execFile('powershell.exe', ['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-Command', PS_SCRIPT], {timeout: 1500, windowsHide: true})",
+        "ps_script_outline": "Loads Windows.Media.Control WinRT types via [<Type>,Windows.Media.Control,ContentType=WindowsRuntime]; awaits GlobalSystemMediaTransportControlsSessionManager.RequestAsync via an AsTask shim (or a Status-poll loop with 50ms sleeps and 1000ms timeout — both viable per the probe's Q2); calls GetCurrentSession() (exit 0 if null); reads PlaybackInfo.PlaybackStatus, exits if not Playing; calls TryGetMediaPropertiesAsync (exit 0 if null); prints Title + tab + Artist. All errors swallowed by try/catch -> exit 0 with empty stdout.",
+        "output_format": "stdout = '<title>\\t<artist>\\n' or empty.",
+        "parser": "On non-empty stdout, split on first tab and return {title, artist}. On empty stdout, return null. On non-zero exit code or spawn exception, return null. Never reject.",
+        "fixture_shim": "If process.env.MUSIC_SOURCE_FIXTURE is set, parse it as the canonical 'title\\tartist' string (or empty) and skip the powershell.exe spawn entirely. Identical semantics to dev-002's macOS shim."
+      },
+      "acceptance": "Calling getNowPlaying() on a Windows system where Apple Music for Windows is playing a known track returns {title, artist} equal to that track's name and artist. Calling it when Apple Music is paused, stopped, not running, or when no SMTC session exists returns null. The module spawns powershell.exe via child_process and never throws (errors resolve to null). The PowerShell source string contains the literals 'GlobalSystemMediaTransportControlsSessionManager', 'Windows.Media.Control', 'TryGetMediaPropertiesAsync', and 'PlaybackStatus'.",
+      "acceptance_assertions": [
+        {
+          "id": "AA.S5.1",
+          "from_acceptance_phrase": "Calling getNowPlaying() on a Windows system where Apple Music for Windows is playing a known track returns {title, artist}",
+          "check_type": "behavior",
+          "scenario": "Replace child_process.execFile with a stub keyed on command 'powershell.exe' that returns stdout='Bohemian Rhapsody\\tQueen'; call getNowPlaying()",
+          "expected_result": "Resolves to {title:'Bohemian Rhapsody', artist:'Queen'}",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/4/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/4/charter",
+            "contracts/original/C-S4-S5-music-source.json#/interface",
+            "contracts/original/C-S4-S5-music-source.json#/notes",
+            "decisions/technical-discovery/sections-v3.json#/sections/1/out_of_scope/2",
+            "decisions/technical-discovery/sections-v3.json#/sections/2/out_of_scope/0",
+            "decisions/technical-discovery/sections-v3.json#/sections/3/out_of_scope/0"
+          ]
+        },
+        {
+          "id": "AA.S5.2",
+          "from_acceptance_phrase": "Calling it when Apple Music is paused, stopped, not running, or when no SMTC session exists returns null",
+          "check_type": "behavior",
+          "scenario": "Stub the powershell.exe execFile call with stdout='' (empty); call getNowPlaying(). Then stub a non-zero exit code; call getNowPlaying() again. Then stub a synchronous spawn-time throw; call getNowPlaying() again.",
+          "expected_result": "All three calls resolve to null; no exception thrown",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/4/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/4/charter"
+          ]
+        },
+        {
+          "id": "AA.S5.3",
+          "from_acceptance_phrase": "The module spawns powershell.exe via child_process and never throws",
+          "check_type": "behavior",
+          "scenario": "Inspect module source for child_process.execFile or .exec with 'powershell.exe' as the command; also test by stubbing child_process to throw synchronously",
+          "expected_result": "Module calls child_process with 'powershell.exe' (not 'osascript'); even when the spawn itself throws, getNowPlaying() resolves to null instead of rejecting",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/4/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/4/charter"
+          ]
+        },
+        {
+          "id": "AA.S5.4",
+          "from_acceptance_phrase": "The PowerShell source string contains the literals",
+          "check_type": "presence",
+          "scenario": "Read the module source and check for the four literal substrings",
+          "expected_result": "All four literals present in the embedded PowerShell script string: 'GlobalSystemMediaTransportControlsSessionManager', 'Windows.Media.Control', 'TryGetMediaPropertiesAsync', 'PlaybackStatus'",
+          "verifier": "edge_case_testing",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/4/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/4/charter"
+          ]
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Polling cadence (S4 owns the loop)",
+        "Property inspector / settings (S2)",
+        "Long-running PowerShell helper subscribing to SMTC events (opt-B from probe-windows-nowplaying; future enhancement per A6 amendment in ledger-diff-v2)",
+        "Native compiled helper (nowplaying.exe via Rust windows-rs or .NET single-file publish; opt-C) — discounted per Researcher heuristic for bundle bloat and AV-surface risk",
+        "N-API native Node modules (e.g., @nodert-* WinRT projections; opt-D) — discounted for Node-ABI fragility",
+        "macOS / AppleScript / osascript / MediaRemote / nowplaying-cli paths (dropped per ledger-diff-v2 user choice)",
+        "Album art extraction (A12 / IP2 OOS)"
+      ]
+    },
+    {
+      "id": "S6",
+      "name": "edge-case-testing",
+      "charter": "Stand up a production-fidelity verification harness that drives the integrated .sdPlugin bundle through every assertion whose verifier is 'edge_case_testing' or 'prompt_named_verb'. The harness spawns a real Node child process against the real CodePathWin entrypoint (plugin/main.js) using the StreamDock host's bundled Node runtime convention (or the system-equivalent Node >=20 in CI), with the real four-arg SDK CLI, hosts a mock SDK WebSocket on 127.0.0.1, and either lets S5 invoke powershell.exe on the real Windows system OR replaces only the powershell.exe shell-out via a per-test stub (without modifying S5's source — by intercepting child_process.execFile in a sub-process wrapper, or by using the MUSIC_SOURCE_FIXTURE env-var shim from dev-002). The harness emits a JUnit-style pass/fail report and runs the PNV assertion as the headline scenario.",
+      "acceptance": "Every assertion in this sections file whose verifier is 'edge_case_testing' is exercised by at least one harness scenario. The PNV scenario runs end-to-end against the real integrated bundle and passes. Stub injection touches only the music-source command boundary (the powershell.exe shell-out) and the SDK WebSocket peer; everything else — manifest, plugin process code, layout JSON, dependency tree — is the real artifact. The harness produces a machine-readable report listing each assertion id and its pass/fail status.",
+      "acceptance_assertions": [
+        {
+          "id": "AA.S6.1",
+          "from_acceptance_phrase": "Every assertion whose verifier is 'edge_case_testing' is exercised",
+          "check_type": "structural",
+          "scenario": "Cross-reference the harness's scenario manifest against the list of edge_case_testing-verified assertions in sections-v3.json",
+          "expected_result": "Set difference is empty: every edge_case_testing assertion id appears in the harness scenario manifest",
+          "verifier": "critic_final_sweep",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/5/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/5/charter"
+          ]
+        },
+        {
+          "id": "AA.S6.2",
+          "from_acceptance_phrase": "The PNV scenario runs end-to-end against the real integrated bundle and passes",
+          "check_type": "user_flow",
+          "scenario": "Run PNV.1 verbatim against the integrated bundle; capture WebSocket frames",
+          "expected_result": "PNV.1 expected_result is satisfied",
+          "verifier": "cv_artifact_exercise",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/5/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/5/charter",
+            "decisions/technical-discovery/sections-v3.json#/sections/5/out_of_scope/1"
+          ]
+        },
+        {
+          "id": "AA.S6.3",
+          "from_acceptance_phrase": "Stub injection touches only the music-source command boundary and the SDK WebSocket peer",
+          "check_type": "absence",
+          "scenario": "Inspect harness source for any imports of, monkey-patches against, or shims of files in plugin/ other than the powershell.exe execFile shim (and/or the MUSIC_SOURCE_FIXTURE env-var shim) and the WebSocket peer host",
+          "expected_result": "No such imports/patches",
+          "verifier": "critic_final_sweep",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/5/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/5/charter",
+            "decisions/technical-discovery/sections-v3.json#/sections/5/out_of_scope/0"
+          ]
+        },
+        {
+          "id": "AA.S6.4",
+          "from_acceptance_phrase": "The harness produces a machine-readable report listing each assertion id and its pass/fail status",
+          "check_type": "presence",
+          "scenario": "Run the harness; check the produced report file",
+          "expected_result": "JSON or JUnit XML file exists, contains one record per assertion id, each with status in {passed, failed}",
+          "verifier": "critic_final_sweep",
+          "covers": [
+            "decisions/technical-discovery/sections-v3.json#/sections/5/acceptance",
+            "decisions/technical-discovery/sections-v3.json#/sections/5/charter"
+          ]
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Implementing the plugin itself (S1-S5)",
+        "Hardware-on-device verification (requires real StreamDock unit; explicitly out per briefing's verification constraint)"
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "id": "C-S1-S2",
+      "between": ["S1", "S2"],
+      "topic": "Where the layout JSON and PI HTML live + how the manifest references them",
+      "file": "contracts/original/C-S1-S2-manifest-references.json",
+      "status": "unchanged"
+    },
+    {
+      "id": "C-S1-S3",
+      "between": ["S1", "S3"],
+      "topic": "CodePathWin entrypoint + how the plugin process is launched under the StreamDock host's bundled Node runtime",
+      "file": "contracts/original/C-S1-S3-codepath-entry.json",
+      "status": "preserved-with-implementation-note",
+      "implementation_note": "The contract's load-bearing constraints (SDK's four CLI args reach the Node process verbatim; main.js parses argv) are unchanged. The macOS-specific fields (manifest_code_path_mac='plugin/run.sh', run_sh_contract, chmod 0755) are inactive in the Windows pivot: CodePathWin → plugin/main.js is invoked directly by the host's bundled Node runtime via manifest.Nodejs.Version declaration. node_runtime_assumption shifts from 'macOS-installed Node >=18' to 'StreamDock host's bundled Node >=20 via Nodejs.Version=20 declaration'. main_js_contract and vendored_ws clauses preserved verbatim. Recording this as an implementation-rationale note rather than authoring a contracts/amendments/C-S1-S3-v2.json since no inter-section interface field changes (main.js's CLI arg parsing and registerPlugin behavior is the integration boundary, both unchanged)."
+    },
+    {
+      "id": "C-S2-S4",
+      "between": ["S2", "S4"],
+      "topic": "setFeedback payload shape that paints the touchbar layout",
+      "file": "contracts/original/C-S2-S4-feedback-payload.json",
+      "status": "unchanged"
+    },
+    {
+      "id": "C-S3-S4",
+      "between": ["S3", "S4"],
+      "topic": "Plugin-internal API: how S4 listens to context lifecycle and sends feedback",
+      "file": "contracts/original/C-S3-S4-internal-api.json",
+      "status": "unchanged"
+    },
+    {
+      "id": "C-S4-S5",
+      "between": ["S4", "S5"],
+      "topic": "music-source module interface: getNowPlaying() return shape",
+      "file": "contracts/original/C-S4-S5-music-source.json",
+      "status": "preserved",
+      "preservation_note": "The contract's public surface — signature `getNowPlaying() => Promise<{title,artist}|null>`, never-reject, tab-delimited stdout parsing, resolve-to-null on any error — was deliberately mechanism-agnostic at the integration boundary. The Researcher findings (probe-windows-nowplaying) confirm this was good upstream design. NO amendment to the contract file is required for the public surface. The `internal_constraints.spawn_mechanism` literal ('osascript') and `internal_constraints.applescript_must_contain` literals are documentation of the implementation choice, not part of the inter-section surface; they migrate to AA.S5.3 and AA.S5.4 (now asserting 'powershell.exe' and the SMTC literal list)."
+    },
+    {
+      "id": "C-S2-S3",
+      "between": ["S2", "S3"],
+      "topic": "Property inspector outbound messages that S3 must accept and forward as didReceiveSettings",
+      "file": "contracts/original/C-S2-S3-pi-settings.json",
+      "status": "unchanged"
+    }
+  ],
+  "amendment_audit": {
+    "covers_arrays_carried_forward_from_v2": true,
+    "covers_arrays_extended_for_v3_pointers": "Where assertions reference sections-v2.json#/... pointers, they have been rebased to sections-v3.json#/... in this file. Where assertions previously covered sections-v1 pointers (carried forward through v2), they are similarly rebased to sections-v3 unless they explicitly cite the v1 source ledger (e.g., 'decisions/discovery/ledger-v1.json#/...' is preserved verbatim because the ledger is still v1; the diff lives in ledger-diff-v2.json).",
+    "section_ids_preserved_for_dag_stability": ["S1", "S2", "S3", "S4", "S5", "S6"],
+    "section_names_changed": [
+      {"id": "S5", "old": "music-source-applescript", "new": "music-source-smtc"}
+    ],
+    "section_classifications_per_dispatch_charter": {
+      "S1": "salvageable",
+      "S2": "unaffected",
+      "S3": "unaffected",
+      "S4": "unaffected",
+      "S5": "stop_and_scrap_and_replace",
+      "S6": "salvageable"
+    },
+    "assertions_amended_total": 8,
+    "assertions_added_total": 1,
+    "assertions_removed_total": 0,
+    "contract_surface_preservation_confirmed": true,
+    "contracts_amended_total": 0,
+    "contracts_with_implementation_note_only": ["C-S1-S3"]
+  }
+}

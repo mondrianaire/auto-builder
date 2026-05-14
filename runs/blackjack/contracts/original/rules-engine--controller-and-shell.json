@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "from_section": "rules-engine",
+  "to_section": "controller-and-shell",
+  "interface": {
+    "global_name": "window.RulesEngine",
+    "script_filename": "rules-engine.js",
+    "data_shapes": {
+      "Card": {
+        "rank": "string — one of 'A','2','3','4','5','6','7','8','9','10','J','Q','K'",
+        "suit": "string — one of 'hearts','diamonds','clubs','spades'",
+        "faceUp": "boolean — true if visible to player; dealer hole card is faceUp:false until reveal"
+      },
+      "Hand": {
+        "cards": "Card[]",
+        "bet": "number — the chip wager attached to this hand (set by controller, carried for split/double accounting)",
+        "isDoubled": "boolean",
+        "isSplit": "boolean",
+        "isFromSplitAces": "boolean",
+        "isStood": "boolean",
+        "isBust": "boolean",
+        "isBlackjack": "boolean — only true on initial 2-card 21, never after split"
+      },
+      "RoundState": {
+        "deck": "Card[] — internal, opaque to controller",
+        "dealerHand": "Hand",
+        "playerHands": "Hand[] — length 1 normally, 2 after split",
+        "activeHandIndex": "number — which player hand is currently being acted on",
+        "phase": "string — one of 'betting','playerTurn','dealerTurn','resolved'"
+      },
+      "Outcome": {
+        "handIndex": "number",
+        "result": "string — one of 'blackjack','win','push','loss'",
+        "playerTotal": "number",
+        "dealerTotal": "number"
+      }
+    },
+    "methods": {
+      "createInitialState": {
+        "params": {},
+        "returns": "RoundState — fresh shoe, empty hands, phase='betting'"
+      },
+      "dealInitial": {
+        "params": { "state": "RoundState", "bet": "number" },
+        "returns": "RoundState — two cards each to player and dealer, dealer's second card faceUp:false, phase='playerTurn' (or 'resolved' if either side has blackjack)"
+      },
+      "legalActions": {
+        "params": { "state": "RoundState", "bankroll": "number" },
+        "returns": "string[] — subset of ['hit','stand','double','split'] valid for state.playerHands[state.activeHandIndex] given current bankroll for double/split affordability"
+      },
+      "applyAction": {
+        "params": { "state": "RoundState", "action": "string" },
+        "returns": "RoundState — mutated copy with action applied; advances activeHandIndex if hand stands/busts/doubles; sets phase='dealerTurn' when all player hands are done"
+      },
+      "playDealer": {
+        "params": { "state": "RoundState" },
+        "returns": "RoundState — dealer plays out per stand-on-all-17 rule, hole card revealed, phase='resolved'"
+      },
+      "resolveOutcomes": {
+        "params": { "state": "RoundState" },
+        "returns": "Outcome[] — one entry per player hand, in order"
+      },
+      "handTotal": {
+        "params": { "hand": "Hand" },
+        "returns": "{ total: number, isSoft: boolean }"
+      }
+    }
+  },
+  "notes": "RulesEngine is pure: no DOM, no chip math beyond carrying the bet number on Hand for accounting purposes (Bankroll computes payouts from the Outcome list). The controller is responsible for calling Bankroll.placeBet before dealInitial and Bankroll.resolve once per Outcome after resolveOutcomes. Hand.bet is informational so the controller can map outcomes back to wagers for split/double scenarios."
+}

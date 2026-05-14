@@ -1,0 +1,36 @@
+{
+  "builder_id": "builder-ui-render-b1",
+  "section_id": "ui-render",
+  "status": "completed",
+  "completed_at": "2026-05-09T00:10:35Z",
+  "outputs": [
+    {
+      "path": "output/builders/ui-render/builder-ui-render-b1/output.js",
+      "filename_for_integration": "ui-render.js",
+      "type": "javascript",
+      "loading_convention": "Vanilla <script> tag exposes window.UIRender. CommonJS-compatible for headless tests with jsdom (not required by contract; provided as belt-and-braces)."
+    }
+  ],
+  "exposed_symbols": {
+    "global_namespace": "window.UIRender",
+    "methods": ["mount", "render", "onCellClick", "onRestart"],
+    "helpers": ["_unmountForTesting"]
+  },
+  "dom_contract": {
+    "root_class": ".ttt-root (adds .ttt-root--disabled when disabled=true)",
+    "board_class": ".ttt-board (3x3 CSS grid, holds 9 .ttt-cell buttons)",
+    "cell_classes": [".ttt-cell", ".ttt-cell--empty", ".ttt-cell--filled", ".ttt-cell--x", ".ttt-cell--o", ".ttt-cell--win"],
+    "status_class": ".ttt-status (aria-live polite)",
+    "restart_class": ".ttt-restart",
+    "default_mount_target": "#app, falling back to document.body"
+  },
+  "contract_compliance": {
+    "ui-render--controller-and-shell.json": "matches: render/onCellClick/onRestart/mount signatures and ViewModel shape"
+  },
+  "notes": [
+    "Renderer holds no game state and does not import rules-engine or ai-opponent.",
+    "Last-registration-wins for handlers (per contract minimum).",
+    "Cell click handler defensively checks disabled state to handle browsers where pointer-events:none is unreliable.",
+    "Filled cells always have button.disabled=true so keyboard navigation cannot fire stale clicks."
+  ]
+}

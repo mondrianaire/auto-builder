@@ -1,0 +1,11 @@
+{
+  "section_id": "section-2",
+  "builder_id": "builder-2a",
+  "outputs": ["output.js"],
+  "exports": {
+    "global": "GTOData",
+    "members": ["REFERENCE_STACK_BB", "POSITIONS", "PREFLOP_RANGES", "getPreflopMix", "listPositions"]
+  },
+  "assertions_satisfied": ["S2.A1","S2.A5","IP2.A1","IP2.A2","IP2.A3","DCA.13"],
+  "data_only": true
+}

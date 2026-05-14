@@ -1,0 +1,176 @@
+{
+  "ran_at": "2026-05-14T01:04:18.657Z",
+  "cycle": "v3-windows-rebuild",
+  "sandbox_note": "powershell.exe is not present in the linux harness sandbox. The MUSIC_SOURCE_FIXTURE env-var (preserved from dev-002) bypasses the real powershell.exe spawn so the harness verifies plugin response-logic and the SDK message protocol. The powershell.exe-to-SMTC boundary itself is structurally asserted by AA.S5.4 / MCA.TDIPD.2 literal-presence checks on music_source.js. Real-Windows-host verification is delegated to the user installation step.",
+  "total": 33,
+  "passed": 33,
+  "failed": 0,
+  "skipped": 0,
+  "results": [
+    {
+      "id": "AA.S1.2",
+      "status": "passed",
+      "detail": "all SDK-v2 keys present (incl. CodePathWin + Nodejs)"
+    },
+    {
+      "id": "AA.S1.2.no-mac",
+      "status": "passed",
+      "detail": "CodePathMac correctly absent"
+    },
+    {
+      "id": "AA.S1.3",
+      "status": "passed",
+      "detail": "all paths resolve; CodePathWin is .js"
+    },
+    {
+      "id": "AA.S1.4",
+      "status": "passed",
+      "detail": "Controllers=[\"Encoder\"]"
+    },
+    {
+      "id": "AA.S1.5",
+      "status": "passed",
+      "detail": "OS=[{\"Platform\":\"windows\",\"MinimumVersion\":\"10\"}]"
+    },
+    {
+      "id": "AA.S1.6",
+      "status": "passed",
+      "detail": "Nodejs={\"Version\":\"20\"} ; CodePathWin=plugin/main.js ; CodePathMac-absent=true"
+    },
+    {
+      "id": "MCA.TDIPA.4",
+      "status": "passed",
+      "detail": "Nodejs.Version=20"
+    },
+    {
+      "id": "AA.S2.1",
+      "status": "passed",
+      "detail": "title+artist text items present"
+    },
+    {
+      "id": "AA.S2.2",
+      "status": "passed",
+      "detail": "both items declare text-overflow"
+    },
+    {
+      "id": "AA.S2.3",
+      "status": "passed",
+      "detail": "doctype + closing </html> present"
+    },
+    {
+      "id": "AA.S2.4",
+      "status": "passed",
+      "detail": "emits setSettings=true, has pollIntervalMs=true"
+    },
+    {
+      "id": "AA.S5.4",
+      "status": "passed",
+      "detail": "all 4 SMTC literals present"
+    },
+    {
+      "id": "MCA.TDIPD.2",
+      "status": "passed",
+      "detail": "all 4 SMTC literals present"
+    },
+    {
+      "id": "AA.S5.1",
+      "status": "passed",
+      "detail": "{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}"
+    },
+    {
+      "id": "AA.S5.2",
+      "status": "passed",
+      "detail": "empty -> null; no-tab -> null"
+    },
+    {
+      "id": "AA.S5.3",
+      "status": "passed",
+      "detail": "uses child_process+powershell.exe: true, no-osascript: true, sync-throw: false"
+    },
+    {
+      "id": "MCA.TDIPD.1",
+      "status": "passed",
+      "detail": "powershell.exe spawn + tab-delimited parsing confirmed"
+    },
+    {
+      "id": "AA.S3.1",
+      "status": "passed",
+      "detail": "{\"event\":\"registerPlugin\",\"uuid\":\"ABC\"}"
+    },
+    {
+      "id": "AA.S3.2",
+      "status": "passed",
+      "detail": "setFeedback count=2 (should be 1-3)"
+    },
+    {
+      "id": "AA.S3.3",
+      "status": "passed",
+      "detail": "action-effect frames after input events=1 (immediate paint allowed)"
+    },
+    {
+      "id": "AA.S3.4",
+      "status": "passed",
+      "detail": "{\"event\":\"setFeedback\",\"context\":\"CX\",\"payload\":{\"title\":\"t\",\"artist\":\"a\"}}"
+    },
+    {
+      "id": "AA.S4.1",
+      "status": "passed",
+      "detail": "{\"event\":\"setFeedback\",\"context\":\"C1\",\"payload\":{\"title\":\"X\",\"artist\":\"Y\"}}"
+    },
+    {
+      "id": "AA.S4.2",
+      "status": "passed",
+      "detail": "{\"event\":\"setFeedback\",\"context\":\"C1\",\"payload\":{\"title\":\"Apple Music\",\"artist\":\"\"}}"
+    },
+    {
+      "id": "AA.S4.3",
+      "status": "passed",
+      "detail": "total setFeedback=2"
+    },
+    {
+      "id": "AA.S4.4",
+      "status": "passed",
+      "detail": "feedback count=5 (should be >=3 with 300ms cadence over ~1.2s)"
+    },
+    {
+      "id": "AA.S4.5",
+      "status": "passed",
+      "detail": "{\"event\":\"setFeedback\",\"context\":\"C1\",\"payload\":{\"title\":\"X\",\"artist\":\"\"}}"
+    },
+    {
+      "id": "DCA.A5.1",
+      "status": "passed",
+      "detail": "{\"event\":\"setFeedback\",\"context\":\"C1\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}"
+    },
+    {
+      "id": "DCA.A5.2",
+      "status": "passed",
+      "detail": "frame1={\"event\":\"setFeedback\",\"context\":\"C1\",\"payload\":{\"title\":\"A\",\"artist\":\"X\"}}; frame2={\"event\":\"setFeedback\",\"context\":\"C1\",\"payload\":{\"title\":\"B\",\"artist\":\"Y\"}}"
+    },
+    {
+      "id": "DCA.A6.1",
+      "status": "passed",
+      "detail": "feedback count=5 over 2.2s @ 500ms (expect 4-5)"
+    },
+    {
+      "id": "DCA.A7.1",
+      "status": "passed",
+      "detail": "{\"event\":\"setFeedback\",\"context\":\"C1\",\"payload\":{\"title\":\"Apple Music\",\"artist\":\"\"}}"
+    },
+    {
+      "id": "DCA.A13.1",
+      "status": "passed",
+      "detail": "action-effect frames=1"
+    },
+    {
+      "id": "DCA.IP3.DISPLAY.1",
+      "status": "passed",
+      "detail": "same scenario; action-effect frames=1"
+    },
+    {
+      "id": "PNV.1",
+      "status": "passed",
+      "detail": "{\"event\":\"setFeedback\",\"context\":\"PNV-CTX\",\"payload\":{\"title\":\"Bohemian Rhapsody\",\"artist\":\"Queen\"}}"
+    }
+  ]
+}

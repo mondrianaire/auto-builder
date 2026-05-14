@@ -1,0 +1,20 @@
+{
+  "section_id": "section-1",
+  "section_name": "rules-engine",
+  "status": "verified",
+  "owner": "overseer-rules-engine",
+  "started_at": "2026-05-09T00:11:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-1",
+  "active_contracts": [
+    "contracts/original/rules-engine--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "rg-sg-1",
+      "description": "Implement RulesEngine module: deck construction (6-deck shoe), shuffle, deal, hand evaluation with soft-ace, legalActions, applyAction, playDealer (S17), resolveOutcomes, handTotal. Pure JS, no DOM.",
+      "status": "verified",
+      "builder_id": "builder-rg-1",
+      "output_path": "output/builders/rules-engine/builder-rg-1/output.js"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "from_section": "rules-engine",
+  "to_section": "controller-and-shell",
+  "interface": {
+    "exposed_module": "rules-engine",
+    "data_shapes": "Same Cell / Player / Board / GameState / Outcome shapes as defined in rules-engine--ai-opponent.json. The controller imports the same module; shapes are not duplicated.",
+    "methods_used": [
+      {
+        "name": "createBoard",
+        "usage": "Called on initial page load and on Restart to produce a fresh GameState."
+      },
+      {
+        "name": "applyMove",
+        "usage": "Called after each human click and each AI move. Controller passes (state, index, currentPlayer) and receives a new state to render."
+      },
+      {
+        "name": "checkOutcome",
+        "usage": "Called after every applyMove to determine whether to continue, declare a winner, or declare a draw."
+      },
+      {
+        "name": "legalMoves",
+        "usage": "Optional — controller may consult to short-circuit illegal-click handling, but is not required to (applyMove's error contract is sufficient)."
+      }
+    ],
+    "guarantees": [
+      "Module is loadable in a vanilla browser context with no build step.",
+      "Module exposes a stable named export surface (window-global or ES-module export — Builder must document which and the controller adopts the same loading convention)."
+    ]
+  },
+  "notes": "Controller treats rules-engine as the single source of truth. It must not maintain its own duplicate board representation; it should hold the GameState returned by rules-engine and pass it to ui-render via a view-model adapter."
+}

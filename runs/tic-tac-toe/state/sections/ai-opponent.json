@@ -1,0 +1,25 @@
+{
+  "section_id": "ai-opponent",
+  "section_name": "AI Opponent",
+  "status": "verified",
+  "owner": "overseer:ai-opponent (inline)",
+  "started_at": "2026-05-09T00:10:51Z",
+  "verified_at": "2026-05-09T00:11:10Z",
+  "verification_notes": "Sandboxed in node with rules-engine: confirmed (1) immediate-win take, (2) immediate-loss block, (3) center preference on empty, (4) corner fallback when center taken, (5) win-priority beats block-priority, (6) input not mutated, (7) returned index always in legalMoves(state).",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[1]",
+  "active_contracts": [
+    "contracts/original/rules-engine--ai-opponent.json",
+    "contracts/original/ai-opponent--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "ai-opponent.b1",
+      "description": "Implement ai-opponent.js exposing chooseMove(state, aiSymbol). Heuristic ladder: win, block, center, corner, edge. Uses RulesEngine.legalMoves/applyMove/checkOutcome only; never reimplements win logic.",
+      "status": "verified",
+      "builder_id": "builder-ai-opponent-b1",
+      "output_path": "output/builders/ai-opponent/builder-ai-opponent-b1/output.js"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": []
+}

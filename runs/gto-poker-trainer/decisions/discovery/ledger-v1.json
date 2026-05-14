@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "created_at": "2026-05-10T00:00:00Z",
+  "project_name": "gto-poker-trainer",
+  "restatement": "A Texas Hold'em GTO training application for a semi-professional player who struggles to practice pure GTO play. Contains at least two modes: (1) a guided walkthrough of a curated hand library showcasing GTO edge cases, and (2) a fully functional 9-handed table populated with classic poker player archetypes that records per-session statistics across sessions.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "Game variant is No-Limit Texas Hold'em exclusively.",
+      "confidence": "high",
+      "rationale": "Prompt explicitly states the user specializes in Texas Hold'em.",
+      "what_breaks_if_wrong": "Hand library, archetype betting profiles, and equity/EV math would need to be re-templated for a different variant."
+    },
+    {
+      "id": "A2",
+      "assumption": "The application is a single-user local tool — no auth, no accounts, no multiplayer.",
+      "confidence": "high",
+      "rationale": "Prompt describes one user (a semi-pro) practicing alone; nothing implies sharing, login, or other humans at the table.",
+      "what_breaks_if_wrong": "Adding accounts/sync later requires retrofitting persistence and identity; local-first design still works as a baseline."
+    },
+    {
+      "id": "A3",
+      "assumption": "Persistence is required only for cross-session stats and user progress; data is stored locally.",
+      "confidence": "high",
+      "rationale": "'Tracks stats over sessions' explicitly requires persistence; A2 keeps it local.",
+      "what_breaks_if_wrong": "If the user expects cloud sync or device portability, local-only storage would need migration."
+    },
+    {
+      "id": "A4",
+      "assumption": "Cash game format (deep stacks, no blind escalation) is the default for the 9-handed table mode.",
+      "confidence": "medium",
+      "rationale": "Cash is the canonical context for studying GTO; tournament ICM adjustments would diverge from pure GTO study, which the user explicitly wants to practice.",
+      "what_breaks_if_wrong": "Tournament-specific stats (ICM EV, bubble dynamics) and blind structure UI would be missing."
+    },
+    {
+      "id": "A5",
+      "assumption": "GTO reference data is precomputed/embedded (canonical ranges, frequencies, sample solver outputs) rather than computed live by an integrated solver.",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason: a live solver is an order-of-magnitude larger build; the user's stated need is practice, which precomputed reference data supports adequately.",
+      "what_breaks_if_wrong": "User asking 'what does the solver say on this exact spot' for arbitrary spots beyond the curated library would not be answerable."
+    },
+    {
+      "id": "A6",
+      "assumption": "Curated hand library is a fixed, curated set authored as part of the build (rough order: 20-50 hands), each annotated with the GTO edge-case lesson it teaches.",
+      "confidence": "medium",
+      "rationale": "Prompt says 'curated selection' — implies finite, hand-picked. Magnitude unspecified; tens-of-hands is simplest-within-reason for a meaningful training arc.",
+      "what_breaks_if_wrong": "If user expects hundreds of hands or user-importable hand histories, library tooling would need to expand."
+    },
+    {
+      "id": "A7",
+      "assumption": "Archetype set is a small fixed roster of canonical poker personas (e.g., TAG, LAG, nit, calling station, maniac, rock) — roughly 6-9 distinct profiles.",
+      "confidence": "medium",
+      "rationale": "Prompt says 'sampling of classic archetypes' — implies a curated, recognizable set, not exhaustive. Enough to fill a 9-seat table with variety.",
+      "what_breaks_if_wrong": "If user wants user-defined archetypes or a deeper behavioral model, the archetype engine would need to be extensible."
+    },
+    {
+      "id": "A8",
+      "assumption": "Archetype opponents are scripted/heuristic agents driven by fixed action frequencies, not ML-trained or self-improving bots.",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason: heuristic profiles are sufficient to represent 'classic archetypes' and don't require training infrastructure.",
+      "what_breaks_if_wrong": "Opponents will be predictable across long play; if the user wants adaptive opponents, the agent layer must be replaced."
+    },
+    {
+      "id": "A9",
+      "assumption": "Session statistics tracked are the standard poker tracking subset: hands played, VPIP, PFR, 3-bet%, WTSD, W$SD, BB/100, plus a GTO-deviation metric comparing user actions against the reference range.",
+      "confidence": "medium",
+      "rationale": "These are the canonical stats a semi-pro already thinks in; GTO-deviation directly serves the stated training goal.",
+      "what_breaks_if_wrong": "If the user wants positional or street-by-street breakdowns by default, the stats panel scope expands."
+    },
+    {
+      "id": "A10",
+      "assumption": "The walkthrough mode is interactive: the user is shown a spot, asked to make a decision, and the app reveals the GTO answer with explanation — not a passive read-only walkthrough.",
+      "confidence": "medium",
+      "rationale": "'Training' framing implies active practice; passive reading would not address the 'struggling to practice' problem.",
+      "what_breaks_if_wrong": "If the user wanted lecture-style content only, the interaction layer is overbuilt."
+    },
+    {
+      "id": "A11",
+      "assumption": "Single-player application — the user always occupies one seat at the 9-handed table, the other 8 are archetype agents.",
+      "confidence": "high",
+      "rationale": "Follows directly from A2 (single user) and the natural reading of 'a fully functional 9-person table' in a training app.",
+      "what_breaks_if_wrong": "Multi-human play would require networking and is explicitly out of scope."
+    },
+    {
+      "id": "A12",
+      "assumption": "GTO reference is no-limit cash 100bb starting stack as the canonical reference depth.",
+      "confidence": "medium",
+      "rationale": "100bb is the universal reference for published GTO solutions and matches A4's cash-game default.",
+      "what_breaks_if_wrong": "Short-stack or deep-stack GTO study (where ranges shift materially) would not be served."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Application delivery surface",
+      "choices": [
+        "Local desktop app (e.g., installable native or Electron-style)",
+        "Local-first browser app served from disk / served locally"
+      ],
+      "default_branch": "Local-first browser app",
+      "importance": "high",
+      "why_inflection": "Forks the entire stack: rendering, persistence layer, packaging, and update story. Reversibility is low once UI primitives are chosen. Prompt is silent; semi-pros commonly use both desktop and browser-based trainers."
+    },
+    {
+      "id": "IP2",
+      "topic": "GTO data source",
+      "choices": [
+        "Embedded precomputed ranges/solutions only (no live solving)",
+        "Integration with an external solver or solver-output format for arbitrary spots"
+      ],
+      "default_branch": "Embedded precomputed ranges/solutions only",
+      "importance": "high",
+      "why_inflection": "Cascades into hand-library scope, walkthrough authoring tooling, and table-mode feedback fidelity. Embedded-only is far smaller; solver integration is a much larger build. Reversibility is medium (data layer can be swapped if abstracted)."
+    },
+    {
+      "id": "IP3",
+      "topic": "Walkthrough mode interaction model",
+      "choices": [
+        "Decision-then-reveal quiz (user picks an action, app scores it vs GTO)",
+        "Annotated replay with clickable nodes (user explores branches without being scored)"
+      ],
+      "default_branch": "Decision-then-reveal quiz",
+      "importance": "medium",
+      "why_inflection": "Different UX surfaces and different content authoring. Quiz mode produces a measurable training signal; replay mode is more reference-tool flavored. The user's stated goal ('practice') leans quiz."
+    },
+    {
+      "id": "IP4",
+      "topic": "Archetype agent fidelity",
+      "choices": [
+        "Static frequency tables per archetype (preflop ranges + simple postflop heuristics)",
+        "State-aware archetype agents that adjust to stack depth, position, and prior action"
+      ],
+      "default_branch": "Static frequency tables with simple postflop heuristics",
+      "importance": "medium",
+      "why_inflection": "Determines how realistic the table feels and how much engineering goes into the agent layer. Reversibility is medium — the agent interface can stay stable while the brain swaps."
+    },
+    {
+      "id": "IP5",
+      "topic": "Stats granularity and visualization",
+      "choices": [
+        "Single dashboard with summary stats + GTO-deviation score per session",
+        "Full hand-history viewer with per-hand replay and per-decision deviation logging"
+      ],
+      "default_branch": "Single dashboard with summary stats + GTO-deviation score",
+      "importance": "medium",
+      "why_inflection": "Hand-history replay is its own substantial feature; dashboard-only is much smaller and still serves the 'tracks stats over sessions' requirement."
+    }
+  ],
+  "out_of_scope": [
+    "Multiplayer / networked play with other humans",
+    "User accounts, authentication, cloud sync",
+    "Real-money play, deposits, or any wagering integrations",
+    "Variants other than No-Limit Texas Hold'em (PLO, mixed games, limit, etc.)",
+    "Tournament-specific features (ICM, blind escalation, bubble dynamics, payout structures) at v1",
+    "Live solver computation for arbitrary user-supplied spots",
+    "Importing external hand histories from PokerStars / GGPoker / other sites",
+    "Mobile-first or native mobile builds",
+    "Coaching/community features (sharing hands, leaderboards, forums)",
+    "User-authored custom archetypes or custom hand libraries at v1",
+    "Adaptive/learning opponent AI"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "section_id": "S4",
+  "name": "polling-orchestrator-and-paint",
+  "status": "verified",
+  "dispatched_at": "2026-05-13T00:04:00Z",
+  "verified_at": "2026-05-13T00:05:00Z",
+  "dispatch_mode": "inline",
+  "builders": [
+    {"builder_id": "builder-s4-1", "status": "verified"}
+  ],
+  "verification": {
+    "AA.S4.1": {"status": "passed", "note": "Live: with MUSIC_SOURCE_FIXTURE='X\\tY' and willAppear context C1, captured {event:'setFeedback', context:'C1', payload:{title:'X', artist:'Y'}}."},
+    "AA.S4.2": {"status": "passed", "note": "Live: with empty fixture, captured {title:'Apple Music', artist:''}."},
+    "AA.S4.3": {"status": "passed", "note": "Live: after willDisappear, feedback frames stop within one interval."},
+    "AA.S4.4": {"status": "passed", "note": "Live: changing pollIntervalMs from 2000 to 300 produced 5 feedback frames within 1.5s (vs <=1 at 2000ms)."},
+    "AA.S4.5": {"status": "passed", "note": "Live: showArtist=false with fixture 'X\\tY' produced payload {title:'X', artist:''}."}
+  }
+}

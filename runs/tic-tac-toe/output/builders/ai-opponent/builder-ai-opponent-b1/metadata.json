@@ -1,0 +1,27 @@
+{
+  "builder_id": "builder-ai-opponent-b1",
+  "section_id": "ai-opponent",
+  "status": "completed",
+  "completed_at": "2026-05-09T00:11:05Z",
+  "outputs": [
+    {
+      "path": "output/builders/ai-opponent/builder-ai-opponent-b1/output.js",
+      "filename_for_integration": "ai-opponent.js",
+      "type": "javascript",
+      "loading_convention": "Vanilla <script> tag (after rules-engine.js) exposes window.AIOpponent. CommonJS-friendly for tests; the require() path resolves rules-engine relative to the builder directory layout so node tests work."
+    }
+  ],
+  "exposed_symbols": {
+    "global_namespace": "window.AIOpponent",
+    "methods": ["chooseMove"],
+    "helpers": ["_findWinningMove"]
+  },
+  "depends_on_runtime": ["window.RulesEngine"],
+  "loading_order": "rules-engine.js MUST be loaded before ai-opponent.js (see controller-and-shell index.html ordering).",
+  "contract_compliance": {
+    "ai-opponent--controller-and-shell.json": "matches: chooseMove(state, aiSymbol) -> number; never mutates input state (constructs hypotheticals).",
+    "rules-engine--ai-opponent.json": "consumes: legalMoves, applyMove, checkOutcome; does not duplicate win-line logic."
+  },
+  "heuristic_priority": ["win", "block", "center(4)", "corners(0,2,6,8)", "edges(1,3,5,7)"],
+  "tie_break": "deterministic first-encountered in ascending index order"
+}

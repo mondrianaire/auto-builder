@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "from_section": "section-5",
+  "to_section": "section-6",
+  "summary": "Table mode emits a HandResult event for every completed hand; the stats subsystem consumes it to update table-scope counters (hands played, VPIP, PFR, 3-bet%, WTSD, W$SD, BB/100, GTO-deviation).",
+  "interface": {
+    "hand_result_event": {
+      "name": "stats.recordHandResult",
+      "shape": "(result: HandResult) => void",
+      "HandResult_shape": "{ hand_id: string, mode: 'table', timestamp: number, hero_position: string, hero_voluntarily_put_money_in_pot: boolean, hero_preflop_raised: boolean, hero_3bet: boolean, hero_went_to_showdown: boolean, hero_won_at_showdown: boolean | null, pot_size_chips: number, hero_pnl_bb: number, gto_deviations: { street: string, action: string, deviation_score: number, reason?: string }[] }",
+      "purpose": "Table calls this on every hand resolution (showdown, fold-out, or hero-folds-preflop). Stats increments hands_played, updates VPIP/PFR/3bet%/WTSD/W$SD using the boolean fields, accumulates BB/100 from hero_pnl_bb, and aggregates gto_deviations into the GTO-deviation score."
+    }
+  },
+  "data_passed_not_logic": "Table passes a structured result; stats does not call back. Booleans are pre-computed by table (it knows the hand's flow); stats just aggregates.",
+  "ownership": {
+    "section-5_owns": ["constructing HandResult, deriving the booleans correctly per NLHE definitions"],
+    "section-6_owns": ["aggregation formulas, persistence, dashboard rendering"]
+  },
+  "test_seam": "Unit test: emit a series of synthetic HandResult records covering each boolean combination; assert stats counters update per the canonical formulas (e.g., VPIP = hands_with_vpip / hands_played)."
+}

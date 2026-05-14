@@ -1,0 +1,39 @@
+{
+  "cycle": "v3-windows-rebuild",
+  "signaled_at": "2026-05-13T01:10:00Z",
+  "supersedes_v1_signaled_at": "2026-05-13T00:07:30Z",
+  "all_sections_verified": true,
+  "integrator_verified": true,
+  "edge_case_testing_executed": true,
+  "ready_for_final_verification": true,
+  "next_steps_required": [
+    "critic_final_sweep",
+    "convergence_verifier",
+    "delivery_to_final_directory (attempt physical removal of plugin/run.sh vestige)",
+    "run_report (note Windows pivot + harness sandbox caveat)"
+  ],
+  "summary": "v3 Windows-pivot rebuild complete. S2/S3/S4 unaffected. S1 manifest amended (OS->windows, +Nodejs.Version='20', +CodePathWin='plugin/main.js', -CodePathMac, Description updated). S5 scrapped and replaced (music-source-applescript -> music-source-smtc; AppleScript+osascript -> PowerShell+WinRT SMTC via execFile('powershell.exe', [...]), C-S4-S5 surface and dev-002 MUSIC_SOURCE_FIXTURE shim preserved verbatim). S6 harness amended (spawn 'sh run.sh' -> 'node plugin/main.js' matching Windows host CodePathWin+Nodejs.Version execution; AA.S5.4 literals shifted to SMTC list; added explicit MCA.TDIPA.4 / MCA.TDIPD.1 / MCA.TDIPD.2 records and AA.S1.6 + AA.S1.2.no-mac). run.sh reduced to inert vestige (could not physically delete in cowork sandbox; dev-005). Harness ran 33/33 assertions passed including PNV.1.",
+  "verified_sections": ["S1", "S2", "S3", "S4", "S5", "S6"],
+  "section_v3_actions": {
+    "S1": "salvageable_amended (builder-s1-v3)",
+    "S2": "unaffected (builder-s2-1 carried forward)",
+    "S3": "unaffected (builder-s3-1 carried forward)",
+    "S4": "unaffected (builder-s4-1 carried forward)",
+    "S5": "stop_and_scrap_and_replace (builder-s5-v3; section renamed music-source-smtc)",
+    "S6": "salvageable_amended (builder-s6-v3)"
+  },
+  "deliverable_path": "output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/",
+  "integration_manifest": "output/integration/manifest.json",
+  "harness_report": "output/builders/edge-case-testing/builder-s6-v3/report.json",
+  "harness_results": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0
+  },
+  "inline_deviations": ["dev-001", "dev-002", "dev-003", "dev-004", "dev-005"],
+  "harness_sandbox_caveat": "powershell.exe is not present in the linux harness sandbox. MUSIC_SOURCE_FIXTURE env-var (dev-002, preserved verbatim) bypasses the real powershell.exe spawn so the harness verifies plugin response-logic + SDK message protocol against fixture data. The powershell.exe-to-SMTC boundary itself is structurally asserted by AA.S5.4 / MCA.TDIPD.2 literal-presence checks on music_source.js. Real-Windows-host end-to-end verification is delegated to the user's installation test on Windows 10/11 with Apple Music for Windows playing.",
+  "vestiges": [
+    "plugin/run.sh: reduced to inert comment-only content; not referenced by manifest. Could not be physically deleted in cowork sandbox (dev-005); flagged for removal in final-delivery step."
+  ]
+}

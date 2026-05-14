@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "from_section": "section-3",
+  "to_section": "section-6",
+  "summary": "Walkthrough mode emits a DecisionResult event for every committed decision; the stats subsystem consumes it to update walkthrough-scope counters and the GTO-deviation score.",
+  "interface": {
+    "decision_result_event": {
+      "name": "stats.recordDecisionResult",
+      "shape": "(result: DecisionResult) => void",
+      "DecisionResult_shape": "{ hand_id: string, mode: 'walkthrough', user_action: string, user_sizing: number | null, gto_mix: { [action: string]: { frequency: number, sizing?: number } }, score_label: 'matches GTO mix' | 'partial' | 'off-tree', deviation_score: number, timestamp: number }",
+      "purpose": "Walkthrough calls this in its commit handler. Stats updates running counters (walkthrough hands answered, deviation score aggregate) and persists via storage."
+    }
+  },
+  "data_passed_not_logic": "Walkthrough passes a structured event payload; stats does not call back into walkthrough.",
+  "ownership": {
+    "section-3_owns": ["constructing DecisionResult and emitting it"],
+    "section-6_owns": ["intake, aggregation, persistence, dashboard rendering"]
+  },
+  "test_seam": "Unit test: emit a synthetic DecisionResult; read the stats counters via the dashboard read API; assert that walkthrough_decisions counter incremented and deviation_score aggregate updated."
+}

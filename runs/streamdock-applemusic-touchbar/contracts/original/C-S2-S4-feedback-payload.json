@@ -1,0 +1,34 @@
+{
+  "contract_id": "C-S2-S4",
+  "between": ["S2", "S4"],
+  "topic": "setFeedback payload shape that paints the touchbar layout",
+  "direction": "S2 defines the layout's text-item keys; S4 sends setFeedback payloads whose keys exactly match",
+  "data_passed_not_logic": true,
+  "schema": {
+    "feedback_payload": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Song title to render in the upper/larger text region of the touch bar. When nothing is playing, set to the placeholder string from settings (default 'Apple Music'). Truncation is handled by the SDK layout, not by S4.",
+          "max_length_enforced_by": "SDK layout truncation; no truncation in plugin source"
+        },
+        "artist": {
+          "type": "string",
+          "description": "Artist name to render in the lower/smaller text region. When nothing is playing or showArtist=false, set to empty string ''. Empty string causes the layout to render an empty line, which is the intended placeholder behavior.",
+          "max_length_enforced_by": "SDK layout truncation"
+        }
+      },
+      "required": ["title", "artist"],
+      "additional_properties_allowed": false
+    },
+    "example_when_playing": {"title": "Bohemian Rhapsody", "artist": "Queen"},
+    "example_when_idle": {"title": "Apple Music", "artist": ""}
+  },
+  "ws_frame_template": {
+    "event": "setFeedback",
+    "context": "<the context string from the willAppear event for this action instance>",
+    "payload": "<feedback_payload as above>"
+  },
+  "verification": "Mock WebSocket host asserts: any inbound frame with event=='setFeedback' has a payload object with exactly the keys 'title' and 'artist', both strings. Layout JSON's items[] contains text items with key=='title' and key=='artist' so the SDK can match payload keys to layout items."
+}

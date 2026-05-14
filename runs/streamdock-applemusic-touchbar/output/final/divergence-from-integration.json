@@ -1,0 +1,38 @@
+{
+  "created_at": "2026-05-13T00:15:00Z",
+  "updated_at": "2026-05-13T01:30:00Z",
+  "supersedes_integration_at": "2026-05-13T00:50:00Z (v3 integrator output)",
+  "reason": "integrator_metadata_excluded + v3_windows_rebuild_supersession",
+  "trigger": {
+    "type": "structural_exclusion_plus_user_environment_pivot",
+    "evidence_pointer": "output/integration/manifest.json + root-cause-analysis.md + state/coordinator/build-complete-v3.json",
+    "summary": "Two distinct divergences from output/integration/ are recorded here. (1) Structural: the Integrator's own assembly-record file (output/integration/manifest.json) is metadata about how the bundle was assembled and is not part of the deliverable .sdPlugin folder, so it is excluded from output/final/. (2) v3-specific: the v3-windows-rebuild cycle's output/integration/ files are the basis for output/final/ — output/final/ does NOT contain the v1 macOS files (those were overwritten in place when the sandbox filesystem disallowed directory removal at delivery time). Specifically: manifest.json was overwritten in output/final/ with the v3 Windows manifest via the Write tool (which has different permissions than the bash rm path). music_source.js was overwritten in output/final/ with the v3 Windows SMTC backend. plugin/run.sh was overwritten in output/final/ with a deprecation-marker comment (could not be physically deleted in the sandbox; remains as an unreferenced vestige that the StreamDock host ignores since the manifest's CodePathWin points directly to plugin/main.js and CodePathMac is absent)."
+  },
+  "added_files": [],
+  "modified_files": [
+    {
+      "path": "manifest.json",
+      "lines_changed": "replaced — OS array mac->windows; CodePathMac removed; CodePathWin added; Nodejs.Version added; Description updated",
+      "diff_summary": "Windows-only manifest per v3 Coordinator output, matches output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/manifest.json byte-for-byte after delivery overwrite."
+    },
+    {
+      "path": "plugin/music_source.js",
+      "lines_changed": "fully replaced",
+      "diff_summary": "AppleScript backend replaced with Windows SMTC backend (powershell.exe + WinRT) per impact-analysis-v3 and Researcher findings probe-windows-nowplaying opt-A. Contract C-S4-S5 surface preserved verbatim; MUSIC_SOURCE_FIXTURE shim preserved."
+    },
+    {
+      "path": "plugin/run.sh",
+      "lines_changed": "fully replaced with deprecation-marker comment",
+      "diff_summary": "macOS branch dropped per ledger-diff-v2 / user's Windows-only rebuild choice. File could not be physically removed from the sandbox filesystem (dev-005 environment limitation); replaced with a comment-only marker that is unreferenced by the manifest. The StreamDock VSD Craft host loads via the manifest's CodePathWin pointing at plugin/main.js — run.sh is never invoked on Windows."
+    }
+  ],
+  "removed_files": [
+    {
+      "path": "manifest.json (the Integrator's own record at output/integration/manifest.json, NOT the plugin's manifest)",
+      "rationale": "Integrator's assembly-record file; not part of the .sdPlugin deliverable."
+    }
+  ],
+  "approved_by_role": "orchestrator",
+  "rationale": "Deliverable is the .sdPlugin folder with v3 Windows manifest, Windows SMTC music source, and vestigial-but-unreferenced run.sh. Bit-for-bit equivalent (modulo run.sh comment content) with output/integration/com.autobuilder.applemusic-nowplaying.sdPlugin/. Verified by CV v3 (verdict: pass). The Integrator's own writer-record manifest stays under output/integration/ as required by its writer role.",
+  "filesystem_caveat": "The output/final/ directory contents were created from the v1 build cycle with restrictive sandbox permissions that prevented rm -rf at v3 delivery time. The Write tool (Windows-side path access) successfully overwrote individual files in place, achieving the same effective end state. This is a sandbox environment artifact, not a runtime concern — the bundle on the user's filesystem will be normal-permissioned."
+}

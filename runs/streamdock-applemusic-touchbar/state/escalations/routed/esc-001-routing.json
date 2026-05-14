@@ -1,0 +1,10 @@
+{
+  "escalation_id": "esc-001",
+  "routed_at": "2026-05-13T00:15:00Z",
+  "classified_severity": "2b",
+  "routing_decision": "Route to TD writer in impact-analysis mode to amend assertion metadata in decisions/technical-discovery/sections-v1.json. Resolution is purely metadata (extend covers fields on existing acceptance_assertions to also point at the six section charter fields, or add charter-specific assertion entries). No section CODE changes required.",
+  "dispatched_to": "td_impact_analysis",
+  "rationale": "Type is closest to contract_semantics (covers-graph semantics under v1.7 Principle C). Multiple alternative resolutions plausibly exist (extend existing covers, add new assertions, or accept-with-rationale), and the change spans across all six section assertion clusters — exceeds a two-section data-shape negotiation, so not Sev 2a. No assumption_violated reference and no Discovery prose amendment needed, so not Sev 3. Resolution path is well-defined per specific context (pure TD-writer territory), so Researcher dispatch is not required.",
+  "research_dispatched": false,
+  "expected_resolution_path": "TD writer in impact-analysis mode evaluates which existing acceptance_assertions semantically cover each section charter and extends their covers arrays accordingly; if no existing assertion fits cleanly, adds a minimal charter-coverage assertion. Critic re-runs prose_coverage on charter targets."
+}

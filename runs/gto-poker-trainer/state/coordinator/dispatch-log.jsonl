@@ -1,0 +1,18 @@
+{"ts":"2026-05-10T00:05:00Z","event":"build_start","dispatch_mode":"inline","section_count":7}
+{"ts":"2026-05-10T00:05:01Z","event":"dag_written","path":"state/coordinator/dag.json"}
+{"ts":"2026-05-10T00:05:02Z","event":"wave_start","wave":1,"sections":["section-1","section-2"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:10:00Z","event":"section_verified","section":"section-1","builders":["builder-1a"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:25:00Z","event":"section_verified","section":"section-2","builders":["builder-2a","builder-2b"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:25:30Z","event":"wave_start","wave":2,"sections":["section-3","section-4"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:35:00Z","event":"section_verified","section":"section-3","builders":["builder-3a"],"dispatch_mode":"inline","note":"deviation dev-001 logged"}
+{"ts":"2026-05-10T00:50:00Z","event":"section_verified","section":"section-4","builders":["builder-4a","builder-4b"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T00:50:30Z","event":"wave_start","wave":3,"sections":["section-5"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T01:10:00Z","event":"section_verified","section":"section-5","builders":["builder-5a","builder-5b","builder-5c"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T01:10:30Z","event":"wave_start","wave":4,"sections":["section-6"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T01:20:00Z","event":"section_verified","section":"section-6","builders":["builder-6a"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T01:20:30Z","event":"integrator_start","dispatch_mode":"inline"}
+{"ts":"2026-05-10T01:25:00Z","event":"integrator_complete","entry":"output/integration/index.html","files":12,"node_smoke_test":"PASS","dispatch_mode":"inline","note":"deviation dev-002 (sev-0 fix) logged during smoke test"}
+{"ts":"2026-05-10T01:25:30Z","event":"wave_start","wave":6,"sections":["section-7"],"dispatch_mode":"inline"}
+{"ts":"2026-05-10T01:30:00Z","event":"section_verified","section":"section-7","builders":["edge-tests"],"dispatch_mode":"inline","totals":{"PASS":34,"FAIL":0,"SKIP":3},"note":"deviations dev-003 and dev-004 logged"}
+{"ts":"2026-05-10T01:34:00Z","event":"audit_checks_complete","dispatch_mode":"inline","flags_appended":6}
+{"ts":"2026-05-10T01:35:00Z","event":"build_complete","dispatch_mode":"inline","status":"verified"}

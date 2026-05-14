@@ -1,0 +1,13 @@
+{
+  "section_id": "section-2",
+  "status": "verified",
+  "builders": ["builder-2a", "builder-2b"],
+  "verification": {
+    "S2.A1": "PASS - PREFLOP_RANGES contains all 9 positions (UTG, UTG1, MP, LJ, HJ, CO, BTN, SB, BB), each with open and threebet_vs_open buckets.",
+    "S2.A2": "PASS - HANDS array has 22 entries; each has lesson title, gto_mix object summing ~1, multi-paragraph theory_explanation (3-6 paragraphs each), and concept_tags.",
+    "S2.A3": "PASS - GLOSSARY array has 16 entries: range, equity, ev, mes, polarization, linearity, condensed, mdf, pot_odds, implied_odds, blockers, frequency_manipulation, equity_realization, exploitative, gto_baseline, spr.",
+    "S2.A4": "PASS - getHand(id) returns a reference to a frozen-at-load static object; identical input returns identical output.",
+    "S2.A5": "PASS - no solver/CFR/equilibrium iteration symbols in either output.js."
+  },
+  "verified_at": "2026-05-10T00:25:00Z"
+}

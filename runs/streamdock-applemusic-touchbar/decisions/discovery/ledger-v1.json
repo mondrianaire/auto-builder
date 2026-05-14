@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "created_at": "2026-05-13T00:00:00Z",
+  "project_name": "streamdock-applemusic-touchbar",
+  "restatement": "A StreamDock VSD N4 Pro plugin that uses the device's Touchbar Mode (the contiguous wide-display strip) to show the currently playing song and artist from the Apple Music desktop application, occupying the full length of the touch bar.",
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "Target hardware is the MiraboxSpace StreamDock VSD N4 Pro and the plugin is built against the StreamDock plugin SDK (Stream Deck-compatible: .streamDockPlugin folder, manifest.json, HTML/JS property inspector, JS plugin process, local WebSocket transport).",
+      "confidence": "high",
+      "rationale": "Explicit in prompt; this is the only platform named and matches the documented SDK shape for this device.",
+      "what_breaks_if_wrong": "Wrong SDK shape means the plugin won't install or load on the device."
+    },
+    {
+      "id": "A2",
+      "assumption": "The plugin exposes one action whose action type is the Touchbar (wide-display) action, configured to span the full touch bar length.",
+      "confidence": "high",
+      "rationale": "Prompt explicitly requires Touchbar Mode and full-length display.",
+      "what_breaks_if_wrong": "If declared as a single-key action instead, the plugin will render in a 1-key tile and not occupy the bar."
+    },
+    {
+      "id": "A3",
+      "assumption": "Source of 'now playing' data is the local Apple Music desktop application on the same machine the StreamDock software runs on.",
+      "confidence": "high",
+      "rationale": "Explicit in prompt ('Apple Music Desktop Application').",
+      "what_breaks_if_wrong": "If the user expected a web/streaming/remote source, the integration path is entirely different."
+    },
+    {
+      "id": "A4",
+      "assumption": "Target host OS for the desktop side is macOS.",
+      "confidence": "medium",
+      "rationale": "Apple Music is the standalone desktop app on macOS; on Windows it ships as a preview/app-store app with materially different automation surface. Defaulting to macOS as the simplest, native case for 'Apple Music Desktop Application'.",
+      "what_breaks_if_wrong": "If user wants Windows, the data-acquisition method (AppleScript/MediaRemote) does not apply and a different mechanism is needed; logged separately as IP1."
+    },
+    {
+      "id": "A5",
+      "assumption": "Display shows two pieces of text: song title and artist name, on the touch bar simultaneously (e.g., title prominent, artist secondary), and refreshes when the track changes.",
+      "confidence": "high",
+      "rationale": "Explicit in prompt ('currently playing song and artist').",
+      "what_breaks_if_wrong": "Missing either field, or stale text, would fail the named goal."
+    },
+    {
+      "id": "A6",
+      "assumption": "Polling-based update model (small, fixed interval, e.g., ~1-3s) is acceptable; no event-driven subscription required.",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason for a local 'now playing' readout; prompt is silent on latency/freshness.",
+      "what_breaks_if_wrong": "User notices visible lag between actual track change and bar update; mitigated by a short interval."
+    },
+    {
+      "id": "A7",
+      "assumption": "When nothing is playing (paused or stopped), the bar shows a neutral placeholder (e.g., 'Apple Music' or blank) rather than going dark or showing stale data.",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason default for an always-on display surface.",
+      "what_breaks_if_wrong": "User confusion about whether plugin is alive vs. nothing playing; low-risk."
+    },
+    {
+      "id": "A8",
+      "assumption": "Long titles/artists scroll or are truncated with ellipsis so the layout is always full-width and never overflows.",
+      "confidence": "medium",
+      "rationale": "Necessary affordance for a fixed-width display; simplest default is truncate-with-ellipsis, scrolling is a nicer variant.",
+      "what_breaks_if_wrong": "Either truncation hides info the user wants, or scrolling adds complexity that wasn't required."
+    },
+    {
+      "id": "A9",
+      "assumption": "Single-user, single-machine, local-only. No accounts, no cloud sync, no auth, no telemetry, no persisted state across runs beyond what the SDK gives for free.",
+      "confidence": "high",
+      "rationale": "Prompt implies none of these; defaults per charter heuristics.",
+      "what_breaks_if_wrong": "Only matters if user later wants multi-device or remote; not in scope."
+    },
+    {
+      "id": "A10",
+      "assumption": "Deliverable is a runnable/installable plugin folder bundle (the `.streamDockPlugin` directory) that the user can drop into the StreamDock software's plugin directory or double-click to install.",
+      "confidence": "high",
+      "rationale": "Execution notes state the deliverable must be the actual plugin folder, runnable or at least installable.",
+      "what_breaks_if_wrong": "If user expected source-only or a different packaging, they cannot install it."
+    },
+    {
+      "id": "A11",
+      "assumption": "Property inspector is minimal — at most a couple of user-facing settings (e.g., polling interval, scroll-vs-truncate, optional show/hide artist), or possibly none.",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason; the action's job is fixed by the prompt.",
+      "what_breaks_if_wrong": "User wants more configurability; easy to extend later."
+    },
+    {
+      "id": "A12",
+      "assumption": "No album art rendering in the initial build — text-only (song + artist).",
+      "confidence": "medium",
+      "rationale": "Prompt names song and artist only. Album art requires extracting image data from Apple Music, which is materially more work and unstated.",
+      "what_breaks_if_wrong": "User wanted art alongside text; logged as IP2."
+    },
+    {
+      "id": "A13",
+      "assumption": "Touching/tapping the touch bar performs no action (or, at most, a benign default such as play/pause). The primary purpose is display.",
+      "confidence": "medium",
+      "rationale": "Prompt frames the feature as 'display' the song/artist; interaction is silent. Simplest default: no-op or trivial play/pause toggle.",
+      "what_breaks_if_wrong": "User expected richer controls (next/prev/scrub); easy to add later, logged as IP3."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Host OS for Apple Music data source",
+      "choices": [
+        "macOS only — use AppleScript or MediaRemote/MusicKit-style local query to fetch current track from the Music app",
+        "Windows only — use the Apple Music preview app on Windows, which requires a different (and less mature) mechanism such as Windows SMTC / UI automation",
+        "Cross-platform — implement both"
+      ],
+      "default_branch": "macOS only",
+      "importance": "high",
+      "why_inflection": "Cascade depth and option asymmetry: the data-acquisition layer, the language/runtime helpers, and the install/packaging notes all change with OS. Picking the simpler, native case (macOS) keeps the build coherent; the prompt does not name an OS but Apple Music's flagship desktop client is macOS."
+    },
+    {
+      "id": "IP2",
+      "topic": "Album art on the touch bar",
+      "choices": [
+        "Text-only (song + artist) — what the prompt literally names",
+        "Text + album art rendered onto the touch bar background"
+      ],
+      "default_branch": "Text-only",
+      "importance": "medium",
+      "why_inflection": "UX surface and option asymmetry: adding art requires fetching image data from Apple Music plus drawing/compositing logic; omitting it preserves the prompt's literal scope. Reversible: art can be added in a follow-up."
+    },
+    {
+      "id": "IP3",
+      "topic": "Interactivity on the touch bar",
+      "choices": [
+        "Display-only (no tap behavior, or a single benign play/pause)",
+        "Interactive (play/pause + skip + previous mapped along the bar)"
+      ],
+      "default_branch": "Display-only",
+      "importance": "low",
+      "why_inflection": "Reversibility is high (easy to add later) and the prompt frames the feature as 'display'. Worth recording because it's an obvious extension the user may have implicitly wanted."
+    }
+  ],
+  "out_of_scope": [
+    "Streaming sources other than the local Apple Music desktop app (Spotify, web players, etc.)",
+    "Lyrics display, queue display, or playback history",
+    "Album art rendering (see IP2)",
+    "Rich playback controls — skip, previous, scrub, like/dislike (see IP3)",
+    "Multi-user, account, cloud sync, or remote control of another machine's Apple Music",
+    "Mobile / iOS / Apple Music on iPhone or iPad as a data source",
+    "Persistent history of played tracks, scrobbling, or analytics/telemetry",
+    "Theming/skinning system or user-customizable typography beyond minimal property-inspector settings",
+    "Support for other StreamDock hardware models beyond the VSD N4 Pro touch bar",
+    "Localization / i18n of the plugin UI"
+  ]
+}

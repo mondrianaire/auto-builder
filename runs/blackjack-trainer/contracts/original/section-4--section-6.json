@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "from_section": "section-4",
+  "to_section": "section-6",
+  "interface": {
+    "mountUI(rootElement, stateMachine)": {
+      "params": {
+        "rootElement": "HTMLElement  // the page container that ui-render will render into",
+        "stateMachine": "{ subscribe, getState, dispatch }  // the section-3 instance"
+      },
+      "returns": "{ unmount: () -> void }  // optional cleanup",
+      "notes": "App-shell calls mountUI once at boot, passing the page root and the state-machine instance. ui-render subscribes to the state machine internally and wires action button clicks back through stateMachine.dispatch(). After mountUI returns, the DOM contains all required surfaces (dealer hand, player hand, action buttons, hint button, deal/next button, review panel container) per section-4 acceptance assertions."
+    },
+    "DOM contract: stable selectors": {
+      "btn-deal": "Deal/Next button (one element; relabels per phase)",
+      "btn-hit": "Hit button",
+      "btn-stand": "Stand button",
+      "btn-double": "Double button",
+      "btn-split": "Split button",
+      "btn-hint": "Hint button",
+      "dealer-hand": "dealer hand container",
+      "player-hand": "player hand container (parent of split sub-hands when present)",
+      "hint-display": "hint output container",
+      "review-panel": "review panel container",
+      "notes": "These selectors are also the DOM contract for section-4 -> section-5. App-shell does not depend on the inner structure, only on the existence of the root mount point and the contract that mountUI fully populates the page."
+    }
+  },
+  "notes": "Pure data passing: state machine instance in, DOM in. ui-render contains all the rendering logic; app-shell contains no card-rendering or button-state logic."
+}

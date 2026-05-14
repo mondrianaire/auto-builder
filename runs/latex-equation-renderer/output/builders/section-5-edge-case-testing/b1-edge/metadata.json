@@ -1,0 +1,26 @@
+{
+  "builder_id": "b1-edge",
+  "section": "section-5-edge-case-testing",
+  "outputs": ["harness.js", "report.json"],
+  "verifier_environment": {
+    "runtime": "Node 22 + jsdom + katex (npm) at /tmp/latex-test",
+    "approach": "Load output/integration/index.html into JSDOM, evaluate renderer.js + input.js + app.js inside the window, hoist window.document/window/HTMLElement to globals so the KaTeX Node module reaches the same DOM, then exercise every assertion."
+  },
+  "results_summary": {
+    "total": 22,
+    "passed": 22,
+    "failed": 0
+  },
+  "covered_assertions": [
+    "S1.A2", "S1.A3", "S1.A5",
+    "S2.A2",
+    "S3.A3",
+    "S4.A4",
+    "S5.A1", "S5.A2", "S5.A3", "S5.A4", "S5.A5", "S5.A6",
+    "IP1.A1", "IP1.A2", "IP1.A3",
+    "IP2.A1", "IP2.A2",
+    "IP3.A1", "IP3.A2",
+    "IP4.A1", "IP4.A2", "IP4.A3"
+  ],
+  "verified": true
+}

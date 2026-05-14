@@ -1,0 +1,52 @@
+{
+  "builder_id": "builder-edge-b1",
+  "section_id": "edge-case-testing",
+  "status": "completed",
+  "completed_at": "2026-05-09T21:20:53Z",
+  "outputs": [
+    {
+      "path": "output/builders/edge-case-testing/builder-edge-b1/run-tests.js",
+      "type": "javascript",
+      "purpose": "Standalone node test harness. Run with: node run-tests.js"
+    },
+    {
+      "path": "output/builders/edge-case-testing/builder-edge-b1/test-report.json",
+      "type": "json",
+      "purpose": "Machine-readable per-case results"
+    },
+    {
+      "path": "output/builders/edge-case-testing/builder-edge-b1/test-report.md",
+      "type": "markdown",
+      "purpose": "Human-readable per-case results"
+    },
+    {
+      "path": "output/builders/edge-case-testing/builder-edge-b1/sandbox/",
+      "type": "directory",
+      "purpose": "Staged copy of the assembled bundle (rules-engine.js, ai-opponent.js, ui-render.js, ui-render.css, controller.js, index.html) used as the test target. Note: the canonical bundle lives in each section's builder output dir; the Integrator should source from those, not from sandbox/."
+    }
+  ],
+  "result": {
+    "passed": 46,
+    "failed": 0,
+    "total": 46
+  },
+  "coverage": {
+    "all_8_winning_lines_both_symbols": "16/16",
+    "draw_detection": "1/1",
+    "illegal_input_handling": "5/5 (CELL_OCCUPIED, OUT_OF_RANGE, WRONG_PLAYER, immutability, ascending+empty legalMoves)",
+    "ai_win_take": "3/3 (row, column, diagonal)",
+    "ai_block_loss": "3/3 (row, column, diagonal)",
+    "ai_priority_ladder": "5/5 (center, corner-fallback, edge-fallback, win-beats-block, immutability + legal-on-near-full)",
+    "ui_render_logical": "5/5 (mount, filled state + disabled, winning line, click guards, restart handler)",
+    "controller_static": "3/3 (composition, defensive guards, no extra DOM ops)",
+    "page_shell_static": "1/1 (load order + no external URLs)",
+    "no_network_no_persistence": "1/1",
+    "integrated_simulation": "1/1",
+    "restart_resets_state": "1/1"
+  },
+  "notes": [
+    "All component-level acceptance criteria from sections-v1.json are exercised. The remaining acceptance item -- 'page works opened directly via file://' -- requires a real browser. Static inspection confirms no external URLs, no build step, and a self-contained <script>+<link> shell, which is necessary and sufficient for file:// loading. The Integrator's smoke run (or the user opening index.html) is the final live confirmation.",
+    "Two corrections were made during testing: (1) ai-opponent.js was extended to also resolve RulesEngine via './rules-engine.js' so the staged sandbox bundle works in node tests as well as in the browser, and (2) the diagonal-block test board was corrected (the original had O already on the diagonal, blocking X's threat preemptively).",
+    "No defects found in the final bundle."
+  ]
+}

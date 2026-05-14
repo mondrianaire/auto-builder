@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "completed_at": "2026-05-10T01:35:00Z",
+  "dispatch_mode": "inline",
+  "build_status": "verified",
+  "section_status": {
+    "section-1": "verified",
+    "section-2": "verified",
+    "section-3": "verified",
+    "section-4": "verified",
+    "section-5": "verified",
+    "section-6": "verified",
+    "section-7": "verified"
+  },
+  "deliverable": {
+    "entry_point": "output/integration/index.html",
+    "open_via": "file://",
+    "manifest": "output/integration/manifest.json",
+    "file_count": 12,
+    "globals": ["AppShell","GTOData","Archetypes","AgentEngine","HandEval","TableEngine","Stats"]
+  },
+  "edge_test_summary": {
+    "totals": { "PASS": 34, "FAIL": 0, "SKIP": 3 },
+    "skip_reason": "Browser-execution-only assertions (IP1.A1, DCA.25, PNV.1) — code-inspection coverage documented in report.json.",
+    "report": "output/builders/edge-case-testing/edge-tests/report.json"
+  },
+  "inline_deviations": [
+    "dev-001 — section-3: collapsed 2 estimated builders into 1.",
+    "dev-002 — section-2 sev-0 fix: quoted 'raise_3.5' object key.",
+    "dev-003 — section-7: sharpened absence-check regex patterns.",
+    "dev-004 — section-7: replaced incorrect split-pot test fixture."
+  ],
+  "production_fidelity": {
+    "no_http_server_required": true,
+    "vendored_only": true,
+    "external_origin_references": 0,
+    "smoke_tested_in_node": true,
+    "chip_conservation_100_hands": true
+  }
+}

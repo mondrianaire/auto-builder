@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "from_section": "betting-and-bankroll",
+  "to_section": "controller-and-shell",
+  "interface": {
+    "global_name": "window.Bankroll",
+    "script_filename": "bankroll.js",
+    "constants": {
+      "STARTING_POOL": 1000,
+      "MIN_BET": 5,
+      "MAX_BET": "unbounded — capped only by current bankroll"
+    },
+    "data_shapes": {
+      "BankrollState": {
+        "balance": "number — current chip count",
+        "committedBets": "number — sum of bets placed but not yet resolved (covers split second-hand bet and double extra wager)"
+      }
+    },
+    "methods": {
+      "init": {
+        "params": {},
+        "returns": "BankrollState — balance=1000, committedBets=0"
+      },
+      "getBalance": {
+        "params": {},
+        "returns": "number — current available balance (excludes committedBets)"
+      },
+      "getTotalChips": {
+        "params": {},
+        "returns": "number — balance + committedBets, used for end-of-game display"
+      },
+      "canBet": {
+        "params": { "amount": "number" },
+        "returns": "boolean — true iff amount >= MIN_BET and amount <= getBalance()"
+      },
+      "placeBet": {
+        "params": { "amount": "number" },
+        "returns": "boolean — true if accepted; deducts amount from balance, adds to committedBets; false if invalid"
+      },
+      "canAffordDouble": {
+        "params": { "currentHandBet": "number" },
+        "returns": "boolean — whether balance >= currentHandBet (the additional wager for double)"
+      },
+      "canAffordSplit": {
+        "params": { "currentHandBet": "number" },
+        "returns": "boolean — whether balance >= currentHandBet (the additional wager for the second split hand)"
+      },
+      "addToBet": {
+        "params": { "amount": "number" },
+        "returns": "boolean — for double or split's second-hand wager; deducts from balance, adds to committedBets"
+      },
+      "resolve": {
+        "params": { "betAmount": "number", "result": "string" },
+        "returns": "number — payout returned to balance: 'blackjack' returns betAmount * 2.5 (1.5x winnings + original), 'win' returns betAmount * 2, 'push' returns betAmount, 'loss' returns 0; the function also reduces committedBets by betAmount"
+      },
+      "canPlay": {
+        "params": {},
+        "returns": "boolean — true iff balance >= MIN_BET (otherwise game-over state)"
+      },
+      "reset": {
+        "params": {},
+        "returns": "BankrollState — balance=STARTING_POOL, committedBets=0"
+      }
+    }
+  },
+  "notes": "Bankroll is pure: no DOM, no rules logic. The controller is the only caller. For split: controller calls placeBet(b) at deal time, then addToBet(b) when the player splits, so committedBets becomes 2b. For double: controller calls addToBet(b) when the player doubles, so committedBets becomes 2b for that hand. After dealer plays out, controller calls resolve once per Outcome with that hand's bet amount and result string."
+}

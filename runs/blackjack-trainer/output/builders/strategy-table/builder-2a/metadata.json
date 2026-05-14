@@ -1,0 +1,27 @@
+{
+  "builder_id": "builder-2a",
+  "task_id": "2a",
+  "section_id": "section-2",
+  "started_at": "2026-05-09T00:45:02Z",
+  "completed_at": "2026-05-09T00:50:30Z",
+  "status": "completed",
+  "output_files": ["output.js"],
+  "exposes": [
+    { "symbol": "recommendation", "type": "function", "matches_contract": "contracts/original/section-2--section-3.json#recommendation; contracts/original/section-2--section-5.json#recommendation" }
+  ],
+  "notes": "S17+DAS+no-surrender chart. Hard table covers totals 5-21 (17 rows). Soft table covers A,2 through A,9 (8 rows). Pair table covers 2,2 through T,T plus A,A (10 rows). Each row x dealer 2-A column = a symbol in {H, S, D, Ds, SP}. Symbol resolution: D->Double if canDouble else Hit; Ds->Double if canDouble else Stand. Pair branch fires only when isPair AND canSplit (so resplit-suppressed hands fall through to total-based lookup). Strategy table is the SOURCE OF TRUTH for trainer correctness.",
+  "self_test_results": {
+    "spotcheck_hard16_v_10": "Hit (HARD[11][8]='H')",
+    "spotcheck_pair88_v_10": "Split (PAIRS[6][8]='SP')",
+    "spotcheck_softA7_v_9": "Hit (SOFT[5][7]='H')",
+    "spotcheck_pairAA_v_2": "Split (PAIRS[9][0]='SP')",
+    "spotcheck_pairAA_v_A": "Split (PAIRS[9][9]='SP')",
+    "spotcheck_hard11_v_5": "Double (HARD[6][3]='D' with canDouble=true)",
+    "spotcheck_hard20_v_A": "Stand (HARD[15][9]='S')",
+    "spotcheck_softA8_v_6_S17": "Stand (SOFT[6][4]='S' — S17 stands soft 19)",
+    "spotcheck_softA7_v_3_S17": "Double (Ds with canDouble) (SOFT[5][1]='Ds')",
+    "spotcheck_softA7_v_2_S17": "Stand (SOFT[5][0]='S')",
+    "spotcheck_pair55_v_5": "Double (PAIRS[3][3]='D' — treat 5,5 as hard 10)",
+    "spotcheck_pair55_v_10": "Hit (PAIRS[3][8]='H')"
+  }
+}

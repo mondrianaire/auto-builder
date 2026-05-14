@@ -1,0 +1,29 @@
+{
+  "builder_id": "builder-rg-1",
+  "section": "rules-engine",
+  "started_at": "2026-05-09T00:11:00Z",
+  "completed_at": "2026-05-09T00:11:30Z",
+  "output": {
+    "path": "output/builders/rules-engine/builder-rg-1/output.js",
+    "target_filename": "rules-engine.js",
+    "global_attached": "window.RulesEngine"
+  },
+  "contract_compliance": {
+    "createInitialState": "implemented",
+    "dealInitial": "implemented",
+    "legalActions": "implemented",
+    "applyAction": "implemented",
+    "playDealer": "implemented",
+    "resolveOutcomes": "implemented",
+    "handTotal": "implemented"
+  },
+  "rules_decisions": {
+    "shoe_size": 6,
+    "dealer_rule": "S17 (stand on all 17 including soft 17)",
+    "blackjack_after_split": false,
+    "split_aces_one_card_only": true,
+    "resplit": "disallowed (IP2 lock)",
+    "double_after_split": "allowed if first 2 cards of split hand and bankroll permits"
+  },
+  "notes": "Pure module, no DOM. Returns Outcome[] with handIndex, result, playerTotal, dealerTotal as per contract. cardValue treats 10/J/Q/K as 10 for pair-split detection (consistent with casino rules: any two ten-valued cards may be split)."
+}

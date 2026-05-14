@@ -1,0 +1,9 @@
+{
+  "builder_id": "builder-s2-1",
+  "section": "S2",
+  "produced": [
+    "layouts/nowplaying.json",
+    "ui/inspector.html"
+  ],
+  "notes": "Layout declares two text items keyed 'title' and 'artist' with text-overflow: ellipsis (SDK-native truncation). PI has 3 controls (pollIntervalMs, placeholder, showArtist). PI emits {pollIntervalMs, placeholder, showArtist} via setSettings on change."
+}

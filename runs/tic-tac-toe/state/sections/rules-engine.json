@@ -1,0 +1,25 @@
+{
+  "section_id": "rules-engine",
+  "section_name": "Rules Engine",
+  "status": "verified",
+  "owner": "overseer:rules-engine (inline)",
+  "started_at": "2026-05-09T00:10:05Z",
+  "verified_at": "2026-05-09T00:10:45Z",
+  "verification_notes": "Builder output sandboxed in node: createBoard, applyMove (incl. all three illegal-move codes), checkOutcome on all 8 winning lines + draw + in_progress, legalMoves ascending order all confirmed. Input-immutability checked.",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[0]",
+  "active_contracts": [
+    "contracts/original/rules-engine--ai-opponent.json",
+    "contracts/original/rules-engine--controller-and-shell.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "rules-engine.b1",
+      "description": "Implement pure rules-engine.js exposing createBoard, applyMove, checkOutcome, legalMoves matching both contract files. ES-module style with window-global fallback so a vanilla <script> tag works.",
+      "status": "verified",
+      "builder_id": "builder-rules-engine-b1",
+      "output_path": "output/builders/rules-engine/builder-rules-engine-b1/output.js"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": []
+}

@@ -1,0 +1,12 @@
+{
+  "section_id": "section-1",
+  "name": "Earthquake Data Fetcher",
+  "status": "verified",
+  "owner": "coordinator-inline",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[0]",
+  "started_at": "2026-05-10T01:01:00Z",
+  "verified_at": "2026-05-10T01:01:30Z",
+  "builders": [
+    { "id": "builder-1a", "task": "Implement fetchEarthquakes() with USGS feed URL constant, error handling, normalized record shape." }
+  ]
+}
