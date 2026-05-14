@@ -1,0 +1,31 @@
+# Auto-detect text files; normalize to LF in the repo, restore native line endings on checkout.
+* text=auto
+
+# Explicit text files (force consistent handling even if heuristic is unsure)
+*.md text
+*.txt text
+*.json text
+*.jsonl text
+*.html text
+*.css text
+*.js text
+*.mjs text
+*.cjs text
+*.svg text
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# Binary files — never normalize
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.pdf binary
