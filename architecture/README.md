@@ -62,7 +62,7 @@ To run a build:
 
 - Not a software framework. Nothing imports anything. The "agents" are sub-Claudes dispatched via the Cowork Agent tool.
 - Not exhaustive. Schemas show required fields; agents may add more. Charters describe load-bearing process; agents use judgment within boundaries.
-- Currently v1.9. Expect further revisions as more builds surface new patterns.
+- Currently v1.10 (operational amendment over v1.9's principles). Expect further revisions as more builds surface new patterns.
 
 ## Version History
 
@@ -98,6 +98,8 @@ To run a build:
   **Schemas** updated in `file_schemas.md`: new fields on ledger-v1, new schemas for `decisions/discovery/demotion-v{N}.json` and `decisions/editor/review-v{N}.json`, `source` field added to every assertion type, `citations[].verbatim_excerpt` required on Researcher findings, `production_fidelity_environment.components[]` per-component tagging required on CV reports, `first_contact_results[]` and `principle_h_skips[]` added to CV report schema.
 
   **Validation strategy:** v1.9 was implemented in response to the StreamDock retrospective specifically because the same prompt can be re-run verbatim as an A/B test of the architecture's defenses (per `feedback_autobuilder_ab_testing_strategy.md`). The build's failure modes (proper-noun loss, OS-platform misread, fake-SDK fidelity gap, first-contact gate missing) are the specific failure modes v1.9 was designed to structurally prevent. The architecture's success on the re-run is the measurement of whether the principles can be enforced as written.
+
+- **v1.10** — operational amendment: git commit cadence added to the Orchestrator charter. Builds are no longer a single undifferentiated artifact-snapshot at delivery; each build now lands as a sequence of five scoped commits at natural phase boundaries (C1 discovery+td complete / C2 editor pass / C3 build complete / C4 verification complete / C5 delivery + `delivery/{slug}` tag), all confined to `runs/{slug}/` so the convention preserves clean `git filter-repo` extraction at promotion time. Five-commit cadence consolidates proposal §4's six-commit ideal: Integrator is internal to Coordinator and lands in the same wave as Build, so its boundary collapses into C3. The C5 commit is the only gating commit (its failure surfaces to user as `delivery_pending_git`); C1–C4 failures are logged as Severity 3 and the build proceeds — the always-deliver contract overrides git failures. Convention spec lives in full at `codex/docs/maintenance-initiated/git-integration-proposal.md`; this amendment is the Orchestrator-side operational reference. Companion scripts (`commit-build.bat`, `commit-step.bat`, `retroactive-bootstrap.bat`, `promote-build.bat`) are drafted at `scripts/draft/` pending first end-to-end test before promotion to project root.
 
 ## Suggested First-Time Run
 

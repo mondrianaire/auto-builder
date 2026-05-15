@@ -55,7 +55,7 @@ Downstream roles append their own dynamic tasks (Discovery appends per-IP, TD ap
      "write_target_contracts": "contracts/original/"
    }
    ```
-5. Await TD. TD will internally dispatch any Researchers it needs.
+5. Await TD. TD will internally dispatch any Researchers it needs. **Then commit C1** per § Git Commit Cadence below (`[run:{slug}] phase: discovery + td complete`) before proceeding.
 5.5. **Dispatch Editor (v1.9)** to audit TD's plan against the prompt before any build work begins. The Editor's job is structural: confirm proper nouns have citations, high-importance IPs have concrete action, TD-IPs are not self-referentially sourced for external claims, first-contact requirements have assertions, and the plan coheres with the telos. Mark the Discovery phase task `completed` and the Technical Discovery phase task `completed` if you haven't already; TaskCreate a transient `Editor review` sub-task under Verification (or as a standalone) to surface the gate.
    ```json
    {
@@ -76,13 +76,15 @@ Downstream roles append their own dynamic tasks (Discovery appends per-IP, TD ap
    - `route_to_td` → dispatch TD in Impact-Analysis Mode with Editor's findings as the delta source. Same loop semantics.
 
    **Iteration cap (v1.9):** if the Editor loop has not converged to `pass` / `pass_with_recommendations` after 3 passes, the architecture commits to the current best-effort plan and proceeds to step 6. Unresolved findings carry into the run-report's Uncertainty Manifest. The Editor gate is non-skippable in the sense that Editor *must run*, but the gate cannot halt the build indefinitely — the project's contract is to always deliver. This gate is the architecture's defense against TD's plan diverging from the user's atomic intent (see `principles.md` § North Star and Principles E/F/G), but the contract overrides the gate when iteration would otherwise prevent delivery.
+
+   **Commit C2** per § Git Commit Cadence below (`[run:{slug}] phase: editor pass`) before proceeding to step 6, regardless of whether the convergence was clean or via iteration cap.
 6. **Choose Coordinator dispatch mode** based on TD's section count:
    - `inline` if section count ≤ 8 *and* no escalation behaviors are being explicitly studied. Coordinator does Overseer + Builder work itself, writing state files as if real dispatches occurred. Default for typical builds.
    - `nested` if section count > 8, or if the run is specifically designed to study real multi-agent interaction patterns. Coordinator dispatches actual sub-agents via the Agent tool.
 7. Boot the long-running roles: **Coordinator** is dispatched immediately with chosen `dispatch_mode`. **Critic**, **Arbiter**, **Historian** operate event-driven — under inline mode, the Coordinator may collapse their happy-path work into its own execution; under nested mode, they are dispatched on their respective triggers. Coordinator is responsible for ensuring `history/log.jsonl` and `audit/flags.jsonl` get populated regardless of mode.
 8. Wait. Coordinator drives the build. You are idle until either:
    - (a) an escalation reaches Severity 4 (irreconcilable) and is routed back to you, or
-   - (b) Coordinator writes `state/coordinator/build-complete.json`. On (b), trigger the final-verification sequence.
+   - (b) Coordinator writes `state/coordinator/build-complete.json`. On (b), **commit C3** per § Git Commit Cadence below (`[run:{slug}] phase: build complete`), then trigger the final-verification sequence.
 
 **Delivery Checklist (REQUIRED — the run is NOT complete until every item exists):**
 
@@ -115,11 +117,62 @@ If any required item is missing, the run is incomplete.
    ```
 2. If Critic flags severity ≥ medium: route to Arbiter and pause.
 3. If Critic clean: dispatch **Convergence Verifier**. Edge-case-testing execution already happened during Coordinator's wave per v1.1 amendment; CV reads its report.
-4. CV must pass. If it fails, escalate per its charter.
+4. CV must pass. If it fails, escalate per its charter. **Then commit C4** per § Git Commit Cadence below (`[run:{slug}] phase: verification complete`) before proceeding to the `final/` copy.
 5. **Copy the integrated artifact to `output/final/`.** Mandatory and your responsibility under both dispatch modes. If you must apply a recovery patch (rare; only when CV's production-fidelity exercise reveals a defect that requires bundling a runtime dep, fixing a path, etc., that doesn't warrant full re-integration), you are the only role authorized to write to `final/` directly. Whenever `final/` diverges from `integration/`, you must also write `output/final/divergence-from-integration.json` per the schema, and (if vendoring) `output/final/vendor-manifest.json`.
 6. **Trigger Historian to produce the build summary and decision index.** `history/build-summary.md` and `history/decision-index.json` must exist before delivery.
 7. **Write `runs/{slug}/run-report.md`** documenting what worked, what broke, what surprised you, what the architecture should learn. Use prior run-reports as format reference.
-8. Surface delivery to user with: path to `final/`, summary, pointers to ledger and OOS list.
+8. **Commit C5 (delivery)** by invoking `scripts/commit-build.bat {slug}` per § Git Commit Cadence below. This stages `runs/{slug}/`, commits with `[run:{slug}] delivery: final artifact written`, applies the annotated `delivery/{slug}` tag, and pushes. Must succeed before step 9.
+9. Surface delivery to user with: path to `final/`, summary, pointers to ledger and OOS list.
+
+**Git commit cadence (v1.10):**
+
+The Orchestrator commits to git at five phase boundaries during a build run. The cadence gives Codex's `readGitLog()` adapter and `revisions[]` dashboard a real narrative timeline to render, and snapshots the build's state at known-good recoverable points. The convention (prefix scheme, tag scheme, scope rule) is defined in full in `codex/docs/maintenance-initiated/git-integration-proposal.md`; this section is the Orchestrator-side operational spec.
+
+**Scope rule (load-bearing).** Every commit you make during a build run MUST only `git add` paths under `runs/{slug}/`. Never `git add .`, never `git add -A`. Cross-scope commits break `git filter-repo` extraction at promotion time and smear the build's history with unrelated changes. This is the discipline that lets a build later be promoted to a standalone GitHub repo cleanly.
+
+The five commit boundaries:
+
+1. **C1 — After Discovery + TD complete** (after step 5 "Await TD", before step 5.5 "Editor dispatch"):
+   ```
+   git add runs/{slug}/decisions/discovery/ runs/{slug}/decisions/technical-discovery/ runs/{slug}/contracts/original/
+   git commit -F <message-file>
+   git push origin main
+   ```
+   Commit message subject: `[run:{slug}] phase: discovery + td complete`. Body: brief summary of telos, IP count, section count.
+
+2. **C2 — After Editor pass** (after step 5.5 returns `pass` / `pass_with_recommendations`, OR after the 3-pass iteration cap fires and the architecture commits to best-effort):
+   ```
+   git add runs/{slug}/decisions/editor/
+   git commit -F <message-file>
+   git push origin main
+   ```
+   Subject: `[run:{slug}] phase: editor pass`. Body: verdict, iteration count, any unresolved findings carried into Uncertainty Manifest.
+
+3. **C3 — After build-complete arrives** (between step 8 wait condition (b) and the final-sweep Critic dispatch):
+   ```
+   git add runs/{slug}/state/ runs/{slug}/output/builders/ runs/{slug}/output/integration/
+   git commit -F <message-file>
+   git push origin main
+   ```
+   Subject: `[run:{slug}] phase: build complete`. Body: section count, integration status. (Includes Integration since Integrator is internal to Coordinator and lands in the same wave; per proposal §4 this combines the proposal's boundaries 4 and 5.)
+
+4. **C4 — After Critic final-sweep + CV pass** (after post-build-complete step 4 "CV must pass", before step 5 "Copy to `final/`"):
+   ```
+   git add runs/{slug}/output/verification/ runs/{slug}/audit/
+   git commit -F <message-file>
+   git push origin main
+   ```
+   Subject: `[run:{slug}] phase: verification complete`. Body: CV verdict, first-contact verification results, any audit flags.
+
+5. **C5 — At delivery** (after post-build-complete steps 5-7: `final/` copy, Historian summary, run-report.md):
+   ```
+   scripts/commit-build.bat {slug}
+   ```
+   The `commit-build.bat` helper stages `runs/{slug}/`, commits with subject `[run:{slug}] delivery: final artifact written`, applies the annotated tag `delivery/{slug}` (the immutable primary-delivery anchor per the cardinal rule), and pushes with `--follow-tags`. Pin the tag *before* surfacing delivery to the user — the dashboard's revisions strip depends on it.
+
+**Failure handling.** If C1–C4 fails (lock files, push rejected, network), retry once. If still failing, log to `audit/flags.jsonl` as Severity 3 and continue the build — the architecture's contract is to always deliver an artifact; an intermediate git failure is recoverable manually afterwards and must not block delivery. **C5 is different**: the delivery commit + tag is what Codex's dashboard uses to determine the build is delivered. If C5 fails, retry up to 3 times with brief backoff. If all retries fail, mark the run as `delivery_pending_git` in run-report.md and surface to user that the artifact is at `final/` but the git delivery anchor is uncommitted (this is the only git-failure case the user sees).
+
+**Commit message format.** Use `git commit -F <file>` for every commit, never `-m "..."` with multi-word strings. Reason: when invoked through PowerShell `Start-Process -ArgumentList`, multi-word `-m` strings get tokenized into separate args and every word after `-m` becomes a pathspec, producing "error: pathspec 'word' did not match any file(s)" cascades. Write the message (subject line + blank line + body) to a temp file, pass the path. Single-arg, no tokenization risk.
 
 **On Severity 4 escalation:**
 
