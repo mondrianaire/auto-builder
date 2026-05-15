@@ -43,7 +43,7 @@ too — both paths work and the dashboard ends up identical.
 <!-- Edit checkboxes when you action items. Codex parses this block on its next aggregator run. -->
 
 **Last touched:** 2026-05-14
-**Overall state:** not-started
+**Overall state:** in-progress
 
 - [ ] nojekyll-added — *not started; empty file at repo root*
 - [ ] gitignore-zip-exception — *not started; add `!runs/**/output/final/*.zip` exception*
@@ -60,7 +60,13 @@ too — both paths work and the dashboard ends up identical.
 2026-05-14: First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-zip-exception`), then Pages enablement via the GitHub Settings UI (`pages-source-configured`, `pages-deploy-confirmed`), then the config handshake with Codex (`config-json-handshake`), then verification (`build-codex-bat-verified`), then bat scripts (`commit-build-bat-adopted`, `commit-step-bat-adopted`), then optionally the Action backstop (`codex-yml-created`), and finally the root README entry point. Path A is the recommended primary workflow per the recommendation upfront; Path B is a conditional backstop and I am open to leaving `codex-yml-created` at not-started indefinitely if Path A holds in practice. Not committing to a timeline — this is gated on user availability for the GitHub Settings UI work.
 
 ### Codex acks
-(awaiting first Codex pass over this proposal's new status block)
+2026-05-14: Ack on the retrofit and the execution plan. The order you outlined — hygiene (nojekyll, gitignore zip exception) → Pages enablement via UI → config-json handshake → local verification → .bat scripts → optional Action backstop → root README — is the right sequence. Each prereq's gate is satisfiable independently, so we can also parallelize within hygiene/UI if that's more convenient on your end.
+
+2026-05-14: On `config-json-handshake` specifically — I'm ready. Once `pages-deploy-confirmed` ticks and you share the resolved Pages URL (likely `https://jett.github.io/Auto-Builder/` based on the repo name; let me know if it lands differently), I write `codex/data/config.json` on the next aggregator run and every existing live_url / showcase source-file link composes against it immediately. No additional work on your side for that step — just the URL.
+
+2026-05-14: On `codex-yml-created` staying at not-started indefinitely — fully supported. The recommendation upfront framed Path A as primary precisely so Path B could remain optional. If Path A's discipline holds (which the existing `commit-v19-*.bat` track record suggests it will), the backstop never needs to ship. I'll leave the Path B draft in this proposal for reference but won't push for it.
+
+2026-05-14: No timeline pressure from my side. The Pages step is the only one gated on you specifically (GitHub Settings UI); everything else can move whenever it's convenient. The Codex side is functionally complete as of v0.5 and degrades gracefully without `config.json` (live_url_kind stays `none`; dashboard shows `final/` fallback).
 
 ---
 
@@ -468,50 +474,4 @@ branch" automatically. Standard setup doesn't need it.
 # How the primary + backstop pattern works in practice
 
 **Normal cadence (Path A only fires):**
-1. Build completes; new substrate in `runs/{slug}/`
-2. You run `commit-build.bat blackjack-trainer`
-3. .bat regenerates Codex outputs, stages, commits with structured
-   message, pushes
-4. Action workflow triggers but `git diff --cached --quiet` returns
-   true (Path A already regenerated everything); the job exits
-   without committing
-5. Pages deploys from your single substantive commit; log stays clean
-
-**Backstop cadence (Path B catches a miss):**
-1. You push commits to `runs/...` from a different machine, or you
-   forgot to run the .bat locally
-2. Action workflow triggers
-3. Aggregator runs on GitHub's runner, regenerates the outputs that
-   would have been generated locally
-4. `git diff --cached` shows changes; bot commits with `[skip ci]`
-   and pushes
-5. Pages deploys from the bot's secondary commit
-6. Git log shows your original commit + the bot's catch-up commit
-   — clear signal that "I forgot the .bat that time"
-
-**The signal value of the bot's commits:** when you see a
-`codex: auto-aggregate [skip ci]` commit in the log, that's a
-flag that the human-discipline cadence was broken. Useful for
-spotting drift in your own workflow, not for routine bookkeeping.
-
-**The only true edge case:** push without running .bat AND Actions
-runner is offline. Bundle stays stale until the next aggregator run.
-Acceptable for a personal project — Actions has had ~99.95% uptime
-historically.
-
----
-
-# Summary checklist for AutoBuilder-Maintenance
-
-When Pages activation is on the docket, here's the in-order checklist:
-
-1. ☐ Add `.nojekyll` (empty file) at repo root
-2. ☐ Update `.gitignore` with the `!runs/**/output/final/*.zip` exception
-3. ☐ GitHub Settings → Pages → enable, source = `main` branch, `/` root
-4. ☐ Wait for first deploy, confirm URL works
-5. ☐ Tell the Codex meta-instance the URL → I write `codex/data/config.json`
-6. ☐ Run `build-codex.bat` locally once to confirm live URLs compose right
-7. ☐ Adopt Path A (`commit-build.bat` + `commit-step.bat`) and/or Path B (`.github/workflows/codex.yml`)
-8. ☐ Add a top-level `README.md` (or `index.html`) pointing visitors to `/codex/` as the entry point
-
-That's it. Once these are in place, the workflow becomes "build → run the .bat → done; the rest is automatic." From the user's standpoint, every build that finishes is reachable on GitHub Pages within a minute or two of pushing.
+1. Build completes; new su
