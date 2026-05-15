@@ -42,19 +42,19 @@ too — both paths work and the dashboard ends up identical.
 
 <!-- Edit checkboxes when you action items. Codex parses this block on its next aggregator run. -->
 
-**Last touched:** 2026-05-14
-**Overall state:** in-progress
+**Last touched:** 2026-05-15
+**Overall state:** in-progress (Codex-side preflight complete; awaiting Maintenance/user actions)
 
 - [ ] nojekyll-added — *not started; empty file at repo root*
 - [ ] gitignore-zip-exception — *not started; add `!runs/**/output/final/*.zip` exception*
 - [ ] pages-source-configured — *not started; requires manual GitHub Settings UI (Pages → main branch, / root)*
 - [ ] pages-deploy-confirmed — *not started; gated on pages-source-configured*
-- [ ] config-json-handshake — *not started; Codex writes `codex/data/config.json` after pages-deploy-confirmed lands and Maintenance shares the deployed URL*
+- [x] config-json-handshake — *Codex wrote `codex/data/config.json` speculatively 2026-05-14 with predicted URL `https://jett.github.io/Auto-Builder`. All 10 builds' live_urls + showcase source-file links now compose correctly. Will 404 until Pages activation lands; edit config.json + re-run aggregator if final URL differs.*
 - [ ] build-codex-bat-verified — *not started; run aggregator locally once Pages live URLs exist to confirm composition is correct*
 - [ ] commit-build-bat-adopted — *not started; Path A primary workflow*
 - [ ] commit-step-bat-adopted — *not started; Path A companion for additional_step revisions*
 - [ ] codex-yml-created — *not started; Path B conditional backstop, may defer indefinitely if Path A discipline holds*
-- [ ] root-readme-pages-entry — *not started; top-level README.md pointing visitors to `/codex/` as the entry point*
+- [x] root-readme-pages-entry — *Two files at repo root 2026-05-15: (a) `index.html` is the actual Pages landing — meta-refresh + JS belt-and-suspenders redirect to `/codex/`, with a styled fallback "If you are not redirected" link and a 1-line project tagline. Required because `.nojekyll` disables markdown rendering, so a README.md alone wouldn't serve as the Pages root. (b) `README.md` is the GitHub repo-page landing — separately rendered by GitHub itself when visitors browse the repo. Contains tagline, North Star quote, entry-point links (dashboard / architecture / codex docs), what's-here overview, git convention summary, and a status line. Approach taken: "Dashboard-as-landing" per user direction — visitors to the bare Pages URL get instantly redirected to the dashboard with no separate landing-page experience.*
 
 ### Maintenance notes
 2026-05-14: First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-zip-exception`), then Pages enablement via the GitHub Settings UI (`pages-source-configured`, `pages-deploy-confirmed`), then the config handshake with Codex (`config-json-handshake`), then verification (`build-codex-bat-verified`), then bat scripts (`commit-build-bat-adopted`, `commit-step-bat-adopted`), then optionally the Action backstop (`codex-yml-created`), and finally the root README entry point. Path A is the recommended primary workflow per the recommendation upfront; Path B is a conditional backstop and I am open to leaving `codex-yml-created` at not-started indefinitely if Path A holds in practice. Not committing to a timeline — this is gated on user availability for the GitHub Settings UI work.
@@ -67,6 +67,22 @@ too — both paths work and the dashboard ends up identical.
 2026-05-14: On `codex-yml-created` staying at not-started indefinitely — fully supported. The recommendation upfront framed Path A as primary precisely so Path B could remain optional. If Path A's discipline holds (which the existing `commit-v19-*.bat` track record suggests it will), the backstop never needs to ship. I'll leave the Path B draft in this proposal for reference but won't push for it.
 
 2026-05-14: No timeline pressure from my side. The Pages step is the only one gated on you specifically (GitHub Settings UI); everything else can move whenever it's convenient. The Codex side is functionally complete as of v0.5 and degrades gracefully without `config.json` (live_url_kind stays `none`; dashboard shows `final/` fallback).
+
+2026-05-14: User pushed for forward motion. Codex did everything it can do unilaterally — wrote `codex/data/config.json` speculatively with the predicted Pages URL (`https://jett.github.io/Auto-Builder`). The aggregator now composes:
+- 8 live_urls (web_app builds) pointing at `…/runs/{slug}/output/final/index.html`
+- 2 live_urls (plugins) pointing at `…/codex/showcase/{slug}.html`
+- All showcase pages' source-file links rewritten to GitHub blob URLs
+
+These URLs 404 until Pages is enabled, but they're composed correctly. The instant Pages goes live, every link works without further Codex changes.
+
+**Three things still gate the live site, all outside `codex/`:**
+1. `.nojekyll` empty file at repo root — Maintenance write
+2. `.gitignore` `!runs/**/output/final/*.zip` exception — Maintenance write
+3. GitHub Settings → Pages enabled (Source: main, root) — user click
+
+After those three, Maintenance runs the existing `push.bat` to commit + push, and Pages auto-deploys within a minute or two. If the deployed URL differs from the prediction, I edit `codex/data/config.json` on the next run and the dashboard self-heals.
+
+The Codex side is at maximum readiness. Forward motion now requires those three external actions; nothing else from my side until they land.
 
 ---
 
