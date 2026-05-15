@@ -1,0 +1,55 @@
+{
+  "_comment_template": "Copy this file to {slug}.json and fill in the fields you want to curate. Delete any keys you don't want to set — partial curation is fine.",
+
+  "first_delivery_outcome": "succeeded | succeeded_with_concerns | failed_user_reprompted | failed_unrecoverable | unverified",
+  "first_delivery_outcome_rationale": "One-paragraph plain-language explanation of why this outcome was assigned. Future you (or AutoBuilder-Maintenance) will read this to decide whether to amend.",
+  "first_delivery_curated_by": "your name or role",
+  "first_delivery_curated_at": "YYYY-MM-DD",
+
+  "notes": "Free-form text the dashboard can render alongside the run summary. Useful for the 'we re-prompted three times to get the layout right' kind of context that the substrate doesn't capture.",
+
+  "events": [
+    {
+      "id": "curated-001",
+      "kind": "user_first_contact_failure",
+      "phase": "post_delivery",
+      "ts": "YYYY-MM-DDThh:mm:ssZ",
+      "module": "section-name or null if cross-cutting",
+      "summary": "One-line description of what happened.",
+      "verbatim_excerpt": "Optional longer detail or quote.",
+      "source_file": "optional pointer; can be null for memory-curated events",
+      "severity": "0 | 1 | 2 | 3 | 4 | null",
+      "explicit_roles": ["TD", "Builder"],
+      "principles_implicated": ["E", "F"],
+      "confidence": "high | medium | low"
+    }
+  ],
+
+  "revisions": [
+    {
+      "id": "rev-1",
+      "kind": "additional_step",
+      "summary": "Short description of the follow-up step",
+      "triggered_by_outcome": "failed_user_reprompted",
+      "triggered_by_event": "evt-NNN or null",
+      "verdict": "pass | partial | fail",
+      "rationale": "Why this step was needed; what it fixed.",
+      "diff_summary": "+ added X, - removed Y",
+      "curated_by": "your name or role",
+      "curated_at": "YYYY-MM-DD",
+      "ts": "YYYY-MM-DDThh:mm:ssZ or null",
+      "ref": "git commit hash or null"
+    }
+  ],
+
+  "deliverable_kind": "(optional override) web_app | plugin | cli | library | document | data | other",
+  "live_url": "(optional explicit override; otherwise composed from codex/data/config.json)",
+  "live_url_kind": "(optional) artifact | showcase",
+
+  "showcase_assets": {
+    "screenshots": ["images/{slug}/screenshot-1.png"],
+    "screencast_url": null,
+    "install_command_override": null,
+    "demo_steps": ["Step 1: ...", "Step 2: ..."]
+  }
+}

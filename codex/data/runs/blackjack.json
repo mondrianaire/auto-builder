@@ -1,0 +1,569 @@
+{
+  "schema_version": "0.1",
+  "slug": "blackjack",
+  "summary": {
+    "slug": "blackjack",
+    "prompt": "build me a web app to play blackjack",
+    "date": "2026-05-09",
+    "architecture_version": null,
+    "dispatch_mode": null,
+    "verdict": "failed_recovered",
+    "raw_verdict": "pass_with_concerns (13/13 assumption checks, 15/15 out-of-scope checks, both inflection points honored; concerns are TD-level tightenings, not spec violations) — **superseded by FAILED reclassification above**",
+    "final_artifact": "runs/blackjack/output/final/index.html",
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "failed",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "verified"
+      },
+      "cost": {
+        "minutes": 35,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "reclassified"
+    },
+    "counts": {
+      "dispatches": 17,
+      "overseer_dispatches": 5,
+      "builder_dispatches": 7,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": 35,
+      "sections": 5,
+      "edge_cases_total": 14,
+      "edge_cases_passing": 14,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 4,
+      "sev0_fixes": 0,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 14,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/blackjack/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "failed_user_reprompted",
+    "first_delivery_outcome_source": "run_report_status",
+    "re_audit_present": true,
+    "re_audit_reclassified_verdict": "fail",
+    "rca_present": true,
+    "links": {
+      "run_report": "runs/blackjack/run-report.md",
+      "verification": "runs/blackjack/output/verification/report.json",
+      "ledger": "runs/blackjack/decisions/discovery/ledger-v1.json",
+      "sections": "runs/blackjack/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/blackjack/output/final/",
+      "audit_flags": "runs/blackjack/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "Build a single-page web application that lets a user play the card game blackjack against a computer dealer in their browser. The user prompt names blackjack as the game and 'web app' as the form factor; everything else (rules variant, visual style, persistence, multiplayer, accounts, money) is unspecified and will default to the simplest standalone single-player experience that demonstrably plays blackjack end-to-end.",
+    "telos": null,
+    "assumption_count": 13,
+    "inflection_count": 2,
+    "oos_count": 15,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1",
+        "charter_excerpt": "Own all blackjack rules logic as a pure JavaScript module with no DOM dependency. This includes deck construction and shuffling, dealing, hand evaluation (totals with soft-ace handling), legal-action determination per hand state, dealer au…",
+        "acceptance_excerpt": "A file named `rules-engine.js` exists at the project root and, when loaded in a browser, attaches a `RulesEngine` object to `window` exposing the methods specified in the contracts. Unit-style assertions embedded in the file's IIFE or a si…"
+      },
+      {
+        "id": "section-2",
+        "charter_excerpt": "Own all chip and bankroll logic as a pure JavaScript module with no DOM dependency. Track current bankroll, current bet, validate bet legality (must be >= min, <= bankroll), compute payouts on round outcomes (1:1 win, 3:2 blackjack, push r…",
+        "acceptance_excerpt": "A file named `bankroll.js` exists at the project root and, when loaded, attaches a `Bankroll` object to `window` exposing the methods specified in the contracts. Demonstrable behaviors: (a) starting pool = 1000, min bet = 5, (b) `placeBet(…"
+      },
+      {
+        "id": "section-3",
+        "charter_excerpt": "Own all DOM rendering of the table state as pure render functions. Given a state object describing dealer hand, player hand(s), bankroll, current bet, available actions, and round phase, produce DOM that visually communicates the table. Pr…",
+        "acceptance_excerpt": "Files `ui-render.js` and `styles.css` exist at the project root. When loaded together with a host HTML page, calling `UIRender.render(state, rootEl)` produces a recognizable blackjack table with cards visible by rank and suit, dealer area,…"
+      },
+      {
+        "id": "section-4",
+        "charter_excerpt": "Own `index.html` and `controller.js`. The shell HTML loads `rules-engine.js`, `bankroll.js`, `ui-render.js`, and `controller.js` in that order via `<script>` tags, plus `styles.css`. The controller is the only place that imports all three …",
+        "acceptance_excerpt": "Files `index.html` and `controller.js` exist at the project root. Opening `index.html` in a modern browser shows a playable blackjack game where the user can place a bet, hit, stand, double, and split (when legal), see the dealer play out,…"
+      },
+      {
+        "id": "section-5",
+        "charter_excerpt": "Own a sandbox-driven verification pass against the integrated artifact. Copy the integrated build into a `sandbox/` directory and run a headless or scripted suite that exercises edge cases: blackjack on initial deal, dealer blackjack, push…",
+        "acceptance_excerpt": "A directory `sandbox/` contains a copy of the integrated artifact. A file `tests/report.json` exists and conforms to the shape `{ passed: number, failed: number, total: number, scenarios: [{ id, name, status: 'pass'|'fail', detail }] }`. A…"
+      }
+    ],
+    "contracts": [
+      "betting-and-bankroll--controller-and-shell",
+      "rules-engine--controller-and-shell",
+      "ui-render--controller-and-shell"
+    ],
+    "prompt_verb_chosen": null
+  },
+  "timeline": [
+    {
+      "phase": "Discovery",
+      "duration": "~87s",
+      "duration_seconds": 87,
+      "mode": null,
+      "notes": "13 assumptions, 2 inflection points, 15 OOS"
+    },
+    {
+      "phase": "Technical Discovery",
+      "duration": "~158s",
+      "duration_seconds": 158,
+      "mode": null,
+      "notes": "5 sections, 3 contracts, both inflections locked via quick reasoning"
+    },
+    {
+      "phase": "Coordinator + all waves + Integrator",
+      "duration": "~530s",
+      "duration_seconds": 530,
+      "mode": null,
+      "notes": "Inline mode; 4 waves (1: rules-engine ‖ bankroll ‖ ui-render; 2: controller-and-shell; 3: integrator; 4: edge-case-testing)"
+    },
+    {
+      "phase": "Critic final-sweep",
+      "duration": "~145s",
+      "duration_seconds": 145,
+      "mode": null,
+      "notes": "All 4 checks pass"
+    },
+    {
+      "phase": "CV ‖ edge-case-rerun (parallel)",
+      "duration": "~123s / 85s",
+      "duration_seconds": 123,
+      "mode": null,
+      "notes": "Both pass"
+    },
+    {
+      "phase": "Total",
+      "duration": "**~17–18 min wall**",
+      "duration_seconds": 1080,
+      "mode": null,
+      "notes": null
+    }
+  ],
+  "verification": {
+    "verdict": "pass_with_concerns",
+    "assumption_checks_total": 13,
+    "assumption_checks_verified": 13,
+    "out_of_scope_total": 15,
+    "out_of_scope_verified": 15,
+    "inflection_point_checks_total": 2,
+    "inflection_point_checks_honored": 2,
+    "edge_cases_total": 14,
+    "edge_cases_passing": 14,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": [
+      {
+        "topic": "Deck count tightening (A6)",
+        "detail": "Discovery's A6 named 'a standard 52-card deck' as the simplest defensible deck model and explicitly left exact deck count as a TD/Builder detail. Downstream contracts tightened this to a 6-deck shoe (rules-engine.js DECK_COUNT=6, header co…"
+      },
+      {
+        "topic": "canReset visibility timing",
+        "detail": "controller.js comments note canReset is kept strict (true only when bankroll exhausted) per contract, so the user cannot proactively reset before going broke. This matches the contract but is a UX choice worth noting; spec does not require…"
+      }
+    ]
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 4
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 1,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 0,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 7,
+    "earliest": "2026-05-09T00:00:00Z",
+    "latest": "2026-05-09T00:15:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "Architecture v1.1 refinements held. — The dispatch-mode dichotomy from the tic-tac-toe retrospective is documented; the Orchestrator picked inline mode based on section count (5 ≤ 8) without ambiguity. The Critic final-sweep ran as a non-s…",
+      "Discovery's `simplest-within-reason` produced a coherent ledger that survived end-to-end. — All 13 assumptions verified at CV; no Discovery amendment was needed during the run. The hard line on real-money gambling (A4) and the explicit bou…",
+      "TD's quick-reasoning rubric correctly handled both inflection points. — IP1 (betting model → bankroll+bets) and IP2 (hand actions → full hit/stand/double/split) both passed all four rubric conditions: canonical knowledge, similar branch co…",
+      "Contracts paid off at integration, exactly as in tic-tac-toe. — Integrator added zero glue code: the controller's `<script>` filenames (`rules-engine.js`, `bankroll.js`, `ui-render.js`, `controller.js`) and CSS link (`styles.css`) all alig…",
+      "Edge-case-testing pulled real weight. — 14 scenarios: blackjack-on-deal, dealer-blackjack-push, busts, soft-17 stands, splits (including ace-restriction), double-deals-one-card, illegal-action filters, payout precision, reset behavior, sof…",
+      "Section decomposition was right-sized. — Five sections (rules-engine, bankroll, ui-render, controller-and-shell, edge-case-testing) — within the recommended 3–8 range, one more than tic-tac-toe (the addition is bankroll, which is a real se…",
+      "No escalations of any kind were filed. — Happy path ran clean."
+    ],
+    "what_broke": [
+      "Linux-bind-mount sync delay (false alarm, repeated from tic-tac-toe context). — The Coordinator agent observed that `wc -l` from inside the bash sandbox returned 0 lines for `state/coordinator/dispatch-log.jsonl`, `history/log.jsonl`, and …",
+      "CV's `pass_with_concerns` verdict on A6 deck-count tightening. — Discovery's A6 said \"a standard 52-card deck, shuffled fresh for each hand (or each session).\" TD's IP2 inflection-resolution rationale tightened this to \"six-deck shoe shuff…",
+      "Edge-case-testing position in the wave order — handled correctly but the architecture still has a soft spot. — Per the v1.1 fix, edge-case-testing's `depends_on: [\"integrator\"]` is honored: Coordinator ran section-5 only after Integrator m…",
+      "No Critic during the build (only final-sweep). — Same as tic-tac-toe — under inline dispatch the scheduled-mode Critic is collapsed into Coordinator, and the architecture says writer-permission compliance and out-of-scope drift are checked…",
+      "Bankroll module's \"reset only when broke\" UX is contract-correct but slightly user-hostile. — The bankroll contract gates the Reset button via `canReset = bankroll < MIN_BET`. CV noted this. A user who wants to start over with a fresh 1000…",
+      "No Researcher dispatched. — Both inflection points qualified for quick reasoning — same as tic-tac-toe. So we still don't have a real-world test of the Researcher dispatch path. The architecture has v1.1 documented rubric for skip-research…",
+      "Post-delivery defect: CV missed a spec-violating UI bug. — After delivery, the user reported there was no way to continue past the first hand. The defect: the renderer disabled the bet input and Deal button whenever `phase !== 'betting'`, …"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "reclassification",
+      "phase": "post_delivery",
+      "ts": null,
+      "module": null,
+      "summary": "STATUS: RECLASSIFIED FAILED (2026-05-10).",
+      "verbatim_excerpt": "> **STATUS: RECLASSIFIED FAILED (2026-05-10).**",
+      "source_file": "runs/blackjack/run-report.md",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-001",
+      "kind": "user_first_contact_failure",
+      "phase": "post_delivery",
+      "ts": null,
+      "module": null,
+      "summary": "Original delivery was reclassified as failed: pass_with_concerns (13/13 assumption checks, 15/15 out-of-scope checks, both inflection points honored; concerns are TD-level tightenings, not spec violations)…",
+      "verbatim_excerpt": "**Original CV verdict:** pass_with_concerns (13/13 assumption checks, 15/15 out-of-scope checks, both inflection points honored; concerns are TD-level tightenings, not spec violations) — **superseded by FAILED reclassification above**",
+      "source_file": "runs/blackjack/run-report.md",
+      "severity": null,
+      "explicit_roles": [
+        "TD",
+        "CV"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-002",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[build_complete_handoff] (v1.2) fail",
+      "verbatim_excerpt": "No state/coordinator/build-complete.json. Run terminated after edge-case-testing without writing the v1.2 handoff signal — same pattern that motivated the v1.2 amendment.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-003",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[delivery_checklist] (v1.2) fail",
+      "verbatim_excerpt": "Original blackjack run was missing output/final/, audit/flags.jsonl with final-sweep entry, output/verification/report.json. Subsequent re-runs added these incidentally but the run as-delivered failed delivery checklist.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-004",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[machine_checkable_assertions_per_ip_lock] (v1.2) fail",
+      "verbatim_excerpt": "Sections file lacks machine_checkable_assertions[] on inflection_resolutions. The IP2 'six-deck shoe shuffled per session' lock had no machine-checkable form, which is exactly why the per-round shoe drift went undetected.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-005",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[acceptance_assertions_per_section] (v1.3) fail",
+      "verbatim_excerpt": "Sections lack acceptance_assertions[]. The 'see the round outcome and start a new round' acceptance phrase was prose-only, structurally untestable, and the Deal-button-stays-disabled-after-resolve defect shipped past every gate.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-006",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_pass] (v1.3) fail",
+      "verbatim_excerpt": "No cv_artifact_exercise was performed. The verification report is static inspection only. This is the gate v1.3 introduced; this run pre-dates it.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-007",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_production_fidelity] (v1.5) fail",
+      "verbatim_excerpt": "Even had cv_artifact_exercise been added retroactively under v1.3 substrate, it would have run in jsdom with stubs (the substrate v1.5 strikes). The deliverable was never loaded the way users open it.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-008",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_named_verb_assertion] (v1.5) fail",
+      "verbatim_excerpt": "No PNV exists. The prompt's named verb 'play blackjack' was never asserted end-to-end against the deliverable in production fidelity.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-009",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[historian_build_summary_and_decision_index] (v1.6) fail",
+      "verbatim_excerpt": "Neither artifact exists.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-010",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_verb_analysis] (v1.6) fail",
+      "verbatim_excerpt": "Absent.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-011",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: The artifact also has the Deal-button-disabled defect (per the conversation context where another Claude found it post-delivery). That is a real artifact defect on top of the verification regime gaps.",
+      "verbatim_excerpt": "The artifact also has the Deal-button-disabled defect (per the conversation context where another Claude found it post-delivery). That is a real artifact defect on top of the verification regime gaps.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-012",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: The IP2 shoe drift (per-round vs per-session) is also a real artifact deviation from the locked spec.",
+      "verbatim_excerpt": "The IP2 shoe drift (per-round vs per-session) is also a real artifact deviation from the locked spec.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-013",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: This run failed on every load-bearing v1.2-onward gate. It is the canonical example of why the architecture has grown the gates it has.",
+      "verbatim_excerpt": "This run failed on every load-bearing v1.2-onward gate. It is the canonical example of why the architecture has grown the gates it has.",
+      "source_file": "runs/blackjack/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-09",
+      "summary": "Initial Auto Builder run",
+      "verdict": "failed_recovered",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "failed_user_reprompted"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {
+    "TD": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    },
+    "CV": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    },
+    "Re-Verification": {
+      "high": 9,
+      "medium": 0,
+      "low": 3,
+      "total": 12,
+      "explicit_count": 9
+    }
+  },
+  "first_delivery": {
+    "outcome": "failed_user_reprompted",
+    "source": "run_report_status"
+  },
+  "re_audit": {
+    "audit_at": "2026-05-10T07:00:00Z",
+    "audit_under_architecture_version": "v1.6",
+    "original_verdict": "pass",
+    "reclassified_verdict": "fail",
+    "fail_count": 9,
+    "pass_count": 0,
+    "not_applicable_count": 0,
+    "recommendation": "rebuild_under_v1.6"
+  },
+  "links": {
+    "run_report": "runs/blackjack/run-report.md",
+    "verification": "runs/blackjack/output/verification/report.json",
+    "ledger": "runs/blackjack/decisions/discovery/ledger-v1.json",
+    "sections": "runs/blackjack/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/blackjack/output/final/",
+    "audit_flags": "runs/blackjack/audit/flags.jsonl"
+  }
+}

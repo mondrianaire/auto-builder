@@ -1,0 +1,546 @@
+{
+  "schema_version": "0.1",
+  "slug": "tic-tac-toe",
+  "summary": {
+    "slug": "tic-tac-toe",
+    "prompt": "build me a single-page tic-tac-toe game where I play against the computer",
+    "date": "2026-05-09",
+    "architecture_version": null,
+    "dispatch_mode": null,
+    "verdict": "pass",
+    "raw_verdict": "pass (12/12 assumption checks, 15/15 out-of-scope checks, both inflection points honored)",
+    "final_artifact": "runs/tic-tac-toe/output/final/index.html",
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "verified",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "failed"
+      },
+      "cost": {
+        "minutes": 44,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 27,
+      "overseer_dispatches": 0,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": 44,
+      "sections": 5,
+      "edge_cases_total": null,
+      "edge_cases_passing": null,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 0,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 14,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/tic-tac-toe/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "unverified",
+    "first_delivery_outcome_source": "default",
+    "re_audit_present": true,
+    "re_audit_reclassified_verdict": "fail",
+    "rca_present": true,
+    "links": {
+      "run_report": "runs/tic-tac-toe/run-report.md",
+      "verification": "runs/tic-tac-toe/output/verification/report.json",
+      "ledger": "runs/tic-tac-toe/decisions/discovery/ledger-v1.json",
+      "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/tic-tac-toe/output/final/",
+      "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "A single-page tic-tac-toe game where one human player plays against a computer opponent on the same device.",
+    "telos": null,
+    "assumption_count": 12,
+    "inflection_count": 2,
+    "oos_count": 15,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "rules-engine",
+        "charter_excerpt": "Implement the pure game-rules layer of tic-tac-toe with no DOM, no I/O, no module-global mutable state beyond what the API exposes. Provide functions to create an empty board, apply a move (with legality check), detect a winner with the wi…",
+        "acceptance_excerpt": "Exports a stable API matching contracts/original/rules-engine--ai-opponent.json and rules-engine--controller-and-shell.json. · createBoard() returns a fresh empty 3x3 board representation. · applyMove(state, index, player) returns a new st…"
+      },
+      {
+        "id": "ai-opponent",
+        "charter_excerpt": "Implement a beatable heuristic move selector that, given the current board state and the AI's symbol, returns a single chosen cell index. The heuristic priority is: (1) play any immediately winning move, (2) block any immediately losing mo…",
+        "acceptance_excerpt": "Exports chooseMove(state, aiSymbol) per contracts/original/ai-opponent--controller-and-shell.json. · Returns a legal cell index for any non-terminal board state. · Demonstrates win-take and block-loss behavior for the canonical test boards…"
+      },
+      {
+        "id": "ui-render",
+        "charter_excerpt": "Implement the presentation layer: CSS for a clean 3x3 grid, hover state on empty cells, X/O glyphs, turn indicator slot, outcome message slot, and restart button. Provide a JS renderer that takes a view-model (board cells + status text + w…",
+        "acceptance_excerpt": "Exports a renderer matching contracts/original/ui-render--controller-and-shell.json. · render(viewModel) updates board cells, status text, turn indicator, and applies winning-line highlight when present. · onCellClick(handler) and onRestar…"
+      },
+      {
+        "id": "controller-and-shell",
+        "charter_excerpt": "Build the single-page HTML shell (index.html) and the controller module that wires rules-engine, ai-opponent, and ui-render together. Own the turn-flow state machine: human (X) clicks, controller validates via rules-engine, applies move, c…",
+        "acceptance_excerpt": "index.html is a single self-contained page that loads the renderer's CSS and the JS modules in correct order; opens in a modern browser with no build step. · Game loop: human click on empty cell places X, AI places O after a brief percepti…"
+      },
+      {
+        "id": "edge-case-testing",
+        "charter_excerpt": "After all functional sections are complete, exercise the assembled artifact against edge cases. Verify all eight winning lines (3 rows, 3 columns, 2 diagonals) are detected for both X and O; verify draw detection on a full non-winning boar…",
+        "acceptance_excerpt": "All eight winning lines detected and highlighted correctly for both symbols. · Draw detection fires on a full board with no winner. · AI win-take and AI block-loss behaviors are confirmed on canonical setups. · Illegal-input ignore behavio…"
+      }
+    ],
+    "contracts": [
+      "ai-opponent--controller-and-shell",
+      "rules-engine--ai-opponent",
+      "rules-engine--controller-and-shell",
+      "ui-render--controller-and-shell"
+    ],
+    "prompt_verb_chosen": null
+  },
+  "timeline": [
+    {
+      "phase": "Discovery",
+      "duration": "~73s",
+      "duration_seconds": 73,
+      "mode": null,
+      "notes": "12 assumptions, 2 inflection points, 15 OOS"
+    },
+    {
+      "phase": "Technical Discovery",
+      "duration": "~165s",
+      "duration_seconds": 165,
+      "mode": null,
+      "notes": "5 sections, 4 contracts, both inflections locked via quick reasoning (no Researcher dispatch)"
+    },
+    {
+      "phase": "Coordinator + all waves",
+      "duration": "~656s",
+      "duration_seconds": 656,
+      "mode": null,
+      "notes": "Waves 1–4 executed inline (see \"what broke\" #1)"
+    },
+    {
+      "phase": "Integrator",
+      "duration": "~217s",
+      "duration_seconds": 217,
+      "mode": null,
+      "notes": "No glue code needed; filenames already aligned"
+    },
+    {
+      "phase": "Convergence Verifier",
+      "duration": "~181s",
+      "duration_seconds": 181,
+      "mode": null,
+      "notes": "All checks passed"
+    },
+    {
+      "phase": "Total",
+      "duration": "**~22 min**",
+      "duration_seconds": 1320,
+      "mode": null,
+      "notes": null
+    }
+  ],
+  "verification": {
+    "verdict": "pass",
+    "assumption_checks_total": 12,
+    "assumption_checks_verified": 0,
+    "out_of_scope_total": 15,
+    "out_of_scope_verified": 0,
+    "inflection_point_checks_total": 2,
+    "inflection_point_checks_honored": 0,
+    "edge_cases_total": null,
+    "edge_cases_passing": null,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 0,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 7,
+    "earliest": "2026-05-09T00:00:00Z",
+    "latest": "2026-05-09T21:30:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "Discovery ledger held up end-to-end. — Every assumption survived to CV without amendment. The `simplest-within-reason` heuristic produced a clean spec for tic-tac-toe with zero downstream contradictions. No Discovery amendment was needed d…",
+      "Section decomposition was right-sized. — Four functional sections (rules-engine, ai-opponent, ui-render, controller-and-shell) plus edge-case-testing — matched the suggested 3–8 range, allowed wave-1 parallelism (rules-engine || ui-render)…",
+      "Contracts paid off at integration. — Integrator added zero glue code: the filenames the controller's `<script>` tags reference, the script load order, and the exposed module symbols (`window.RulesEngine`, `window.AIOpponent`, `window.UIRen…",
+      "TD's choice to skip Researcher dispatch for both inflection points was correct. — Both I1 (AI strength) and I2 (visual style) had well-known canonical answers; reaching for a Researcher would have wasted budget.",
+      "Edge-case-testing as a real section produced a real test report. — 46 cases covering all eight winning lines for both symbols, draw detection, AI win-take, AI block-loss, illegal-input handling, restart, and a network-call grep. This is th…",
+      "No escalations of any kind were filed. — Happy path ran clean."
+    ],
+    "what_broke": [
+      "Long-running roles + synchronous Agent dispatch don't fit cleanly. — The architecture specifies Coordinator/Critic/Arbiter/Historian as long-running event-driven roles. The Cowork Agent tool is one-shot synchronous. The Orchestrator handle…",
+      "The dispatched Coordinator could not access the Agent tool. — It executed the Overseer/Builder dispatch architecture *inline* (single agent doing all the section work) rather than spawning sub-sub-agents. It documented this in `state/coord…",
+      "**Edge-case-testing depends on `controller-and-shell`, which is the integration target — but the Integrator runs *after* edge-case-testing.** This means edge-case-testing has to either (a) run against builder outputs in their staging paths…",
+      "One Builder mid-run correction was made silently. — The ai-opponent Builder added a `RulesEngine = require('./rules-engine.js')` fallback so the node sandbox tests could run. This was a connecting change between the sandbox harness and the…",
+      "Inflection-point research was skipped on quick-reasoning grounds and that's probably fine for tic-tac-toe but not generally. — TD's call to skip Researcher dispatch for both I1 and I2 was correct here — both have canonical answers — but th…",
+      "One false-alarm during integration. — The Integrator's first Read of `ai-opponent.js` showed apparent duplicated trailing tokens after the IIFE; cross-verified via `node --check` + `md5sum` and confirmed the file is clean (display/buffer a…"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[build_complete_handoff] (v1.2) fail",
+      "verbatim_excerpt": "No state/coordinator/build-complete.json exists in this run. The run pre-dates the v1.2 explicit handoff signal.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-001",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[machine_checkable_assertions_per_ip_lock] (v1.2) fail",
+      "verbatim_excerpt": "decisions/technical-discovery/sections-v1.json does not include machine_checkable_assertions[] on its inflection_resolutions[]. Critic's charter-implementation conformance check would have nothing to verify.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-002",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[acceptance_assertions_per_section] (v1.3) fail",
+      "verbatim_excerpt": "Sections file lacks acceptance_assertions[]; prose acceptance criteria are not derivable into structured tests.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-003",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_pass] (v1.3) fail",
+      "verbatim_excerpt": "Verification report's checks are all static inspection (grep + structural). No artifact-exercise pass, no DOM-capable sandbox loading. Behavioral defects could not have been caught.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-004",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[inline_deviation_logging] (v1.4) not_applicable_to_this_run",
+      "verbatim_excerpt": "No inline deviations documented, but no state/inline-deviations/ directory exists either. Cannot determine whether deviations occurred during build; pattern of skipped logging predates the requirement.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-005",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_production_fidelity] (v1.5) fail",
+      "verbatim_excerpt": "Original verification did not run under any DOM-capable sandbox at all (was static inspection only). Production fidelity is moot when behavioral exercise was never attempted. Compounded: tic-tac-toe has no runtime deps to substitute, so the failure is the absence of exercise rather than substitution per se.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-006",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_named_verb_assertion] (v1.5) fail",
+      "verbatim_excerpt": "No PNV exists. The prompt's named verb 'play tic-tac-toe' is never asserted end-to-end against the deliverable.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-007",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[td_introduced_ip_schema] (v1.6) not_applicable_to_this_run",
+      "verbatim_excerpt": "No TD-introduced IPs in this run; both IPs were Discovery-sourced. Schema absence is non-blocking.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-008",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[integration_final_divergence_record] (v1.6) not_applicable_to_this_run",
+      "verbatim_excerpt": "output/final/ matches output/integration/ byte-for-byte (no recovery patches). Divergence record not required.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-009",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[historian_build_summary_and_decision_index] (v1.6) fail",
+      "verbatim_excerpt": "Neither history/build-summary.md nor history/decision-index.json exists. Required for delivery under v1.6.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-010",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_verb_analysis] (v1.6) fail",
+      "verbatim_excerpt": "TD did not enumerate candidate verbs or pick the load-bearing one. Coupled with PNV absence, the verification regime never tested the prompt's central job.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-011",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: The artifact almost certainly does play tic-tac-toe correctly — the rules engine and UI from inspection look sound. The reclassification is about verification regime conformance, not artifact correct…",
+      "verbatim_excerpt": "The artifact almost certainly does play tic-tac-toe correctly — the rules engine and UI from inspection look sound. The reclassification is about verification regime conformance, not artifact correctness.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-012",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: Reflects the v1.0 era of the architecture: static inspection sufficed for the first run because the prompt's domain is small and the architecture's verification gates hadn't been built yet.",
+      "verbatim_excerpt": "Reflects the v1.0 era of the architecture: static inspection sufficed for the first run because the prompt's domain is small and the architecture's verification gates hadn't been built yet.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-013",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: Useful as a baseline of how much the architecture has grown: 7 gates fail not because the build is bad but because the gates didn't exist when the build happened.",
+      "verbatim_excerpt": "Useful as a baseline of how much the architecture has grown: 7 gates fail not because the build is bad but because the gates didn't exist when the build happened.",
+      "source_file": "runs/tic-tac-toe/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-09",
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "unverified"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {
+    "Re-Verification": {
+      "high": 11,
+      "medium": 0,
+      "low": 3,
+      "total": 14,
+      "explicit_count": 11
+    }
+  },
+  "first_delivery": {
+    "outcome": "unverified",
+    "source": "default"
+  },
+  "re_audit": {
+    "audit_at": "2026-05-10T07:00:00Z",
+    "audit_under_architecture_version": "v1.6",
+    "original_verdict": "pass",
+    "reclassified_verdict": "fail",
+    "fail_count": 7,
+    "pass_count": 0,
+    "not_applicable_count": 3,
+    "recommendation": "patch_artifact"
+  },
+  "links": {
+    "run_report": "runs/tic-tac-toe/run-report.md",
+    "verification": "runs/tic-tac-toe/output/verification/report.json",
+    "ledger": "runs/tic-tac-toe/decisions/discovery/ledger-v1.json",
+    "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/tic-tac-toe/output/final/",
+    "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
+  }
+}

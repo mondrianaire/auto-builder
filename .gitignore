@@ -1,0 +1,87 @@
+# Auto Builder .gitignore
+#
+# Keeps the repo focused on:
+#   - architecture/      (the framework)
+#   - runs/{slug}/       (each build's decisions, state, history, output)
+#   - top-level docs
+#
+# Excludes large or regenerable artifacts that would bloat the repo
+# without adding meaningful version history.
+
+# Node ecosystem
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Vendored dependencies under any plugin bundle
+**/*.sdPlugin/plugin/node_modules/
+
+# Python ecosystem
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Rust / Go / etc. build outputs
+target/
+dist/
+build/
+out/
+*.exe
+*.dll
+*.dylib
+*.so
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+.directory
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+
+# Logs / scratch
+*.log
+*.tmp
+tmp/
+scratch/
+
+# Secrets — paranoia even though we don't expect them here
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Files the bash sandbox may leave around
+.fuse_hidden*
+.nfs*
+
+# Large binary assets that don't belong in git
+# (Add specific patterns here as builds surface them. By default everything
+# else under runs/ IS tracked — the per-build decisions, charters, audits,
+# and small source artifacts are the whole point.)
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# Don't ignore the snapshot dirs even though they look generated
+!architecture/v*-snapshot/

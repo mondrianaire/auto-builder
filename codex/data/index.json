@@ -1,0 +1,1124 @@
+{
+  "schema_version": "0.1",
+  "generated_at": "2026-05-15T05:38:44.142Z",
+  "codex_version": "0.2",
+  "architecture_versions_seen": [
+    "v1.3",
+    "v1.4 (initial run); v1.5 (recovery)",
+    "v1.7",
+    "v1.8",
+    "v1.9"
+  ],
+  "run_count": 10,
+  "runs": [
+    {
+      "slug": "gto-poker-async-duel",
+      "prompt": null,
+      "date": "2026-05-14",
+      "architecture_version": null,
+      "dispatch_mode": null,
+      "verdict": "pass_with_concerns",
+      "raw_verdict": "`pass_with_concerns` — Tier 2 first-contact 8/8 pass (static + code-trace); Tier 1 PNV.1 structural pass + edge-case-report behavioral pass-through; Tier 3 sub-goal 20/20 assumption checks + 14/14 OOS checks + 8/8 IP checks",
+      "final_artifact": null,
+      "telos": "Build a GitHub-Pages-hostable web application that lets two users play an asynchronous head-to-head GTO poker quiz, submit per-decision confidence ratings, and receive a post-game summary highlighting their highest-confidence disagreements.",
+      "rating": {
+        "telos_fidelity": "adequate",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "failed"
+        },
+        "cost": {
+          "minutes": 135,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 34,
+        "overseer_dispatches": 0,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": 135,
+        "sections": 7,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 2,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 1,
+        "events_total": 0,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-async-duel/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "first_delivery_outcome_source": "uncertainty_manifest",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "links": {
+        "run_report": "runs/gto-poker-async-duel/run-report.md",
+        "verification": "runs/gto-poker-async-duel/output/verification/report.json",
+        "ledger": "runs/gto-poker-async-duel/decisions/discovery/ledger-v1.json",
+        "sections": "runs/gto-poker-async-duel/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/gto-poker-async-duel/output/final/",
+        "audit_flags": "runs/gto-poker-async-duel/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "streamdock-apple-music-touchbar",
+      "prompt": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that Utilizes the Touchbar Mode to display the currently playing song and artist from Apple Music Desktop Application. The plugin should take up the entire length of the VSD N4 Pro touch bar for display.",
+      "date": "2026-05-14",
+      "architecture_version": "v1.9",
+      "dispatch_mode": null,
+      "verdict": "pass_with_concerns",
+      "raw_verdict": "CV `pass_with_concerns` · Editor `pass_with_recommendations` · Critic 0 high / 2 medium (both resolved or routed)",
+      "final_artifact": null,
+      "telos": "A plugin that shows the user, on their MiraboxSpace StreamDock VSD N4 Pro's Touchbar Mode, the song and artist currently playing in the Apple Music Desktop Application on their Windows PC, occupying the entire length of the touch bar.",
+      "rating": {
+        "telos_fidelity": "adequate",
+        "deliverability": {
+          "tier1_pnv": "unverifiable",
+          "tier2_first_contact": "unverifiable",
+          "tier3_subgoal": "failed"
+        },
+        "cost": {
+          "minutes": null,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 5,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 7,
+        "overseer_dispatches": 5,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": null,
+        "sections": 5,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 0,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 1,
+        "events_total": 0,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "plugin",
+      "deliverable_can_run_in_browser": false,
+      "deliverable_index": "com.autobuilder.applemusic-now-playing.sdPlugin/",
+      "deliverable_manifest": {
+        "Name": "Apple Music Now Playing (Touch Bar)",
+        "Author": "Auto Builder v1.9",
+        "Version": "1.0.0",
+        "Description": "Shows the currently playing song and artist from the Apple Music Desktop Application on the VSD N4 Pro Touch Bar.",
+        "Icon": "images/icon",
+        "Category": "Music",
+        "CategoryIcon": "images/icon",
+        "URL": "https://github.com/MiraboxSpace/StreamDock-Plugin-SDK",
+        "CodePath": "index.js",
+        "SDKVersion": 1,
+        "Software": {
+          "MinimumVersion": "3.10.188.226"
+        },
+        "OS": [
+          {
+            "Platform": "windows",
+            "MinimumVersion": "10"
+          }
+        ],
+        "Nodejs": {
+          "Version": "20"
+        },
+        "TargetDevice": "streamdock-n4-pro",
+        "Actions": [
+          {
+            "UUID": "com.autobuilder.applemusic-now-playing.touchbar",
+            "Name": "Apple Music Now Playing",
+            "Tooltip": "Display the currently playing Apple Music track on the Touch Bar.",
+            "Icon": "images/icon",
+            "PropertyInspectorPath": null,
+            "SupportedInMultiActions": false,
+            "Controllers": [
+              "TouchBar",
+              "Information"
+            ],
+            "TargetDevice": "streamdock-n4-pro",
+            "Type": "TouchBar",
+            "Encoder": {
+              "background": "images/icon",
+              "Icon": "images/icon",
+              "layout": "$X1",
+              "TouchBar": true
+            },
+            "States": [
+              {
+                "Image": "images/icon",
+                "TitleAlignment": "middle",
+                "FontSize": "16",
+                "ShowTitle": true,
+                "Title": "Not Playing"
+              }
+            ]
+          }
+        ]
+      },
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/streamdock-apple-music-touchbar.html",
+      "live_url_kind": "showcase",
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "first_delivery_outcome_source": "uncertainty_manifest",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "links": {
+        "run_report": "runs/streamdock-apple-music-touchbar/run-report.md",
+        "verification": "runs/streamdock-apple-music-touchbar/output/verification/report.json",
+        "ledger": "runs/streamdock-apple-music-touchbar/decisions/discovery/ledger-v1.json",
+        "sections": "runs/streamdock-apple-music-touchbar/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/streamdock-apple-music-touchbar/output/final/",
+        "audit_flags": "runs/streamdock-apple-music-touchbar/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "earthquake-map",
+      "prompt": "Build me a tool to visualize earthquake activity on a map.",
+      "date": "2026-05-10",
+      "architecture_version": "v1.7",
+      "dispatch_mode": "inline",
+      "verdict": "pass",
+      "raw_verdict": "pass",
+      "final_artifact": null,
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "failed"
+        },
+        "cost": {
+          "minutes": null,
+          "escalations_high": 1,
+          "critic_high": 1
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 19,
+        "overseer_dispatches": 0,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": null,
+        "sections": 4,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 1,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 3,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 1,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/earthquake-map/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "unverified",
+      "first_delivery_outcome_source": "default",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "links": {
+        "run_report": "runs/earthquake-map/run-report.md",
+        "verification": "runs/earthquake-map/output/verification/report.json",
+        "ledger": "runs/earthquake-map/decisions/discovery/ledger-v1.json",
+        "sections": "runs/earthquake-map/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/earthquake-map/output/final/",
+        "audit_flags": "runs/earthquake-map/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "kanban-board",
+      "prompt": "Build me a kanban board with multiple lists, drag-and-drop, and local saving.",
+      "date": "2026-05-10",
+      "architecture_version": "v1.3",
+      "dispatch_mode": "inline",
+      "verdict": "pass",
+      "raw_verdict": "delivered. All 6 required artifacts present. CV pass, Critic clean (one low-severity manifest-schema flag, non-blocking). 16/16 edge-case assertions + 8/8 CV user-flow scenarios pass.",
+      "final_artifact": null,
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "verified"
+        },
+        "cost": {
+          "minutes": null,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 21,
+        "overseer_dispatches": 0,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": null,
+        "sections": 7,
+        "edge_cases_total": 16,
+        "edge_cases_passing": 16,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 0,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 15,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/kanban-board/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "unverified",
+      "first_delivery_outcome_source": "default",
+      "re_audit_present": true,
+      "re_audit_reclassified_verdict": "fail",
+      "rca_present": true,
+      "links": {
+        "run_report": "runs/kanban-board/run-report.md",
+        "verification": "runs/kanban-board/output/verification/report.json",
+        "ledger": "runs/kanban-board/decisions/discovery/ledger-v1.json",
+        "sections": "runs/kanban-board/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/kanban-board/output/final/",
+        "audit_flags": "runs/kanban-board/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "latex-equation-renderer",
+      "prompt": "build me a tool to render mathematical equations from LaTeX input",
+      "date": "2026-05-10",
+      "architecture_version": "v1.4 (initial run); v1.5 (recovery)",
+      "dispatch_mode": "inline",
+      "verdict": "failed_recovered",
+      "raw_verdict": "FAILED → recovered with bundled KaTeX + production-fidelity re-verification",
+      "final_artifact": null,
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "failed",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "verified"
+        },
+        "cost": {
+          "minutes": 0,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "reclassified"
+      },
+      "counts": {
+        "dispatches": 20,
+        "overseer_dispatches": 10,
+        "builder_dispatches": 6,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": 0,
+        "sections": 5,
+        "edge_cases_total": 22,
+        "edge_cases_passing": 22,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 1,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 17,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/latex-equation-renderer/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "failed_user_reprompted",
+      "first_delivery_outcome_source": "run_report_status",
+      "re_audit_present": true,
+      "re_audit_reclassified_verdict": "pass_with_concerns",
+      "rca_present": true,
+      "links": {
+        "run_report": "runs/latex-equation-renderer/run-report.md",
+        "verification": "runs/latex-equation-renderer/output/verification/report.json",
+        "ledger": "runs/latex-equation-renderer/decisions/discovery/ledger-v1.json",
+        "sections": "runs/latex-equation-renderer/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/latex-equation-renderer/output/final/",
+        "audit_flags": "runs/latex-equation-renderer/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "blackjack",
+      "prompt": "build me a web app to play blackjack",
+      "date": "2026-05-09",
+      "architecture_version": null,
+      "dispatch_mode": null,
+      "verdict": "failed_recovered",
+      "raw_verdict": "pass_with_concerns (13/13 assumption checks, 15/15 out-of-scope checks, both inflection points honored; concerns are TD-level tightenings, not spec violations) — **superseded by FAILED reclassification above**",
+      "final_artifact": "runs/blackjack/output/final/index.html",
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "failed",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "verified"
+        },
+        "cost": {
+          "minutes": 35,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "reclassified"
+      },
+      "counts": {
+        "dispatches": 17,
+        "overseer_dispatches": 5,
+        "builder_dispatches": 7,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": 35,
+        "sections": 5,
+        "edge_cases_total": 14,
+        "edge_cases_passing": 14,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 4,
+        "sev0_fixes": 0,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 14,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/blackjack/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "failed_user_reprompted",
+      "first_delivery_outcome_source": "run_report_status",
+      "re_audit_present": true,
+      "re_audit_reclassified_verdict": "fail",
+      "rca_present": true,
+      "links": {
+        "run_report": "runs/blackjack/run-report.md",
+        "verification": "runs/blackjack/output/verification/report.json",
+        "ledger": "runs/blackjack/decisions/discovery/ledger-v1.json",
+        "sections": "runs/blackjack/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/blackjack/output/final/",
+        "audit_flags": "runs/blackjack/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "blackjack-trainer",
+      "prompt": null,
+      "date": "2026-05-09",
+      "architecture_version": "v1.3",
+      "dispatch_mode": "inline",
+      "verdict": "pass",
+      "raw_verdict": "Delivered. CV verdict `pass`. All 6 required delivery artifacts present.",
+      "final_artifact": null,
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "verified"
+        },
+        "cost": {
+          "minutes": 0,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 17,
+        "overseer_dispatches": 7,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": 0,
+        "sections": 7,
+        "edge_cases_passing": 21,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 2,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 19,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/blackjack-trainer/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "unverified",
+      "first_delivery_outcome_source": "default",
+      "re_audit_present": true,
+      "re_audit_reclassified_verdict": "fail",
+      "rca_present": true,
+      "links": {
+        "run_report": "runs/blackjack-trainer/run-report.md",
+        "verification": "runs/blackjack-trainer/output/verification/report.json",
+        "ledger": "runs/blackjack-trainer/decisions/discovery/ledger-v1.json",
+        "sections": "runs/blackjack-trainer/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/blackjack-trainer/output/final/",
+        "audit_flags": "runs/blackjack-trainer/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "tic-tac-toe",
+      "prompt": "build me a single-page tic-tac-toe game where I play against the computer",
+      "date": "2026-05-09",
+      "architecture_version": null,
+      "dispatch_mode": null,
+      "verdict": "pass",
+      "raw_verdict": "pass (12/12 assumption checks, 15/15 out-of-scope checks, both inflection points honored)",
+      "final_artifact": "runs/tic-tac-toe/output/final/index.html",
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "failed"
+        },
+        "cost": {
+          "minutes": 44,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 27,
+        "overseer_dispatches": 0,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": 44,
+        "sections": 5,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 0,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 14,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/tic-tac-toe/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "unverified",
+      "first_delivery_outcome_source": "default",
+      "re_audit_present": true,
+      "re_audit_reclassified_verdict": "fail",
+      "rca_present": true,
+      "links": {
+        "run_report": "runs/tic-tac-toe/run-report.md",
+        "verification": "runs/tic-tac-toe/output/verification/report.json",
+        "ledger": "runs/tic-tac-toe/decisions/discovery/ledger-v1.json",
+        "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/tic-tac-toe/output/final/",
+        "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "gto-poker-trainer",
+      "prompt": "Perform a deep dive into GTO poker theory and create a training application with multiple modes one of which highlights a curated selection of hands to walk through that identify edge cases of GTO play for training. Another mode should be a fully functional 9 person table that tracks stats over sessions and features a sampling of 'classic' poker player archetypes.",
+      "date": null,
+      "architecture_version": "v1.8",
+      "dispatch_mode": "inline",
+      "verdict": "pass",
+      "raw_verdict": "pass (PNV.1 verified end-to-end under jsdom production fidelity).",
+      "final_artifact": null,
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "verified"
+        },
+        "cost": {
+          "minutes": 0,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 18,
+        "overseer_dispatches": 0,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": 0,
+        "sections": 7,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 2,
+        "sev0_fixes": 4,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 3,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "unverified",
+      "first_delivery_outcome_source": "default",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "links": {
+        "run_report": "runs/gto-poker-trainer/run-report.md",
+        "verification": "runs/gto-poker-trainer/output/verification/report.json",
+        "ledger": "runs/gto-poker-trainer/decisions/discovery/ledger-v1.json",
+        "sections": "runs/gto-poker-trainer/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/gto-poker-trainer/output/final/",
+        "audit_flags": "runs/gto-poker-trainer/audit/flags.jsonl"
+      }
+    },
+    {
+      "slug": "streamdock-applemusic-touchbar",
+      "prompt": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that Utilizes the Touchbar Mode to display the currently playing song and artist from Apple Music Desktop Application. The plugin should take up the entire length of the VSD N4 Pro touch bar for display.",
+      "date": null,
+      "architecture_version": "v1.8",
+      "dispatch_mode": null,
+      "verdict": "pass",
+      "raw_verdict": "pass (CV verified production-fidelity PNV.1; 28/28 harness assertions; Critic v2 clean)",
+      "final_artifact": null,
+      "telos": null,
+      "rating": {
+        "telos_fidelity": "unknown",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "not_run"
+        },
+        "cost": {
+          "minutes": null,
+          "escalations_high": 2,
+          "critic_high": 2
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 31,
+        "overseer_dispatches": 15,
+        "builder_dispatches": 9,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": null,
+        "sections": 6,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 2,
+        "critic_findings_medium": 4,
+        "critic_findings_low": 4,
+        "sev0_fixes": 7,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 0,
+        "events_total": 15,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "plugin",
+      "deliverable_can_run_in_browser": false,
+      "deliverable_index": "com.autobuilder.applemusic-nowplaying.sdPlugin/",
+      "deliverable_manifest": {
+        "SDKVersion": 2,
+        "Author": "Auto Builder",
+        "Category": "Apple Music",
+        "CategoryIcon": "icons/category",
+        "CodePathWin": "plugin/main.js",
+        "Description": "Displays the currently playing song and artist from the Apple Music app for Windows (Microsoft Store preview) on the StreamDock VSD N4 Pro touch bar.",
+        "Icon": "icons/pluginIcon",
+        "Name": "Apple Music Now Playing",
+        "URL": "https://example.invalid/streamdock-applemusic-touchbar",
+        "Version": "1.0.0",
+        "OS": [
+          {
+            "Platform": "windows",
+            "MinimumVersion": "10"
+          }
+        ],
+        "Software": {
+          "MinimumVersion": "6.0"
+        },
+        "Nodejs": {
+          "Version": "20"
+        },
+        "PropertyInspectorPath": "ui/inspector.html",
+        "Actions": [
+          {
+            "Name": "Now Playing",
+            "UUID": "com.autobuilder.applemusic-nowplaying.nowplaying",
+            "Icon": "icons/actionIcon",
+            "PropertyInspectorPath": "ui/inspector.html",
+            "Controllers": [
+              "Encoder"
+            ],
+            "Encoder": {
+              "layout": "layouts/nowplaying.json",
+              "TriggerDescription": {
+                "Push": "",
+                "Touch": "",
+                "Rotate": "",
+                "LongTouch": ""
+              }
+            },
+            "States": [
+              {
+                "Image": "icons/actionIcon",
+                "TitleAlignment": "middle"
+              }
+            ]
+          }
+        ]
+      },
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/streamdock-applemusic-touchbar.html",
+      "live_url_kind": "showcase",
+      "first_delivery_outcome": "failed_user_reprompted",
+      "first_delivery_outcome_source": "run_report_status",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": true,
+      "links": {
+        "run_report": "runs/streamdock-applemusic-touchbar/run-report.md",
+        "verification": "runs/streamdock-applemusic-touchbar/output/verification/report.json",
+        "ledger": "runs/streamdock-applemusic-touchbar/decisions/discovery/ledger-v1.json",
+        "sections": "runs/streamdock-applemusic-touchbar/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/streamdock-applemusic-touchbar/output/final/",
+        "audit_flags": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl"
+      }
+    }
+  ],
+  "amendments": [
+    {
+      "version": "v1.0",
+      "title": "v1.0",
+      "summary": "initial draft, before any runs.",
+      "principles_mentioned": [],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.1",
+      "title": "v1.1",
+      "summary": "refinements after the tic-tac-toe run. Added: dispatch-mode dichotomy (inline vs nested), edge-case-testing post-integration positioning, Critic final-sweep mode, TD quick-reasoning rubric, Integrator false-alarm prevention.",
+      "principles_mentioned": [],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.2",
+      "title": "v1.2",
+      "summary": "refinements after the blackjack run. Added: explicit Coordinator-Orchestrator handoff via `build-complete.json`, mandatory delivery checklist (6 required artifacts), Orchestrator's explicit responsibility for `final/`, and TD's machine-checkable assertions for IP locks consumed by Critic's charter-implementation conformance check.",
+      "principles_mentioned": [],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.3",
+      "title": "v1.3",
+      "summary": "after blackjack behavioral defect (Deal button stayed disabled after `phase === 'resolved'`, violating an acceptance phrase). Added: per-section `acceptance_assertions[]`, CV's required `artifact_exercise` pass that loads integrated artifact in DOM-capable sandbox and simulates user_flow assertions, Sev 0 trivial-fix pathway with mandatory scope_check audit by Critic.",
+      "principles_mentioned": [],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.4",
+      "title": "v1.4",
+      "summary": "addresses inline-mode silent-correction blindspot. Added: mandatory `state/inline-deviations/` logging for six judgment-call categories under inline mode, each with required `nested_equivalent` articulation, audited by Critic during final-sweep.",
+      "principles_mentioned": [],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.5",
+      "title": "v1.5",
+      "summary": "after the latex-equation-renderer build delivered with verdict `pass` while the artifact failed at the prompt's named verb in the user's actual environment. Root cause: cv_artifact_exercise ran in jsdom with the runtime CDN dependency substituted by an npm-installed copy of the same library; the deliverable was never loaded the way users open it. Reclassified the original blackjack run as FAILED for the same root-cause class — its v1.3-introduced cv_artifact_exercise was layered on the same flawed substrate. Added: (1) **production-fidelity exercise** requirement on the CV charter, striking t…",
+      "principles_mentioned": [],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.6",
+      "title": "v1.6",
+      "summary": "analysis-driven amendment after the latex-equation-renderer run-report and post-run insight pass. Six additions, all addressing patterns visible across the four-run corpus: (1) **TD-introduced IP schema** formalizes TD's ability to surface technical decisions Discovery didn't see, with `source` and `td_introduction_rationale` fields. (2) **Integration/final divergence record** required whenever `output/final/` differs from `output/integration/` (e.g., recovery patches), with companion `vendor-manifest.json` for any third-party assets. (3) **Historian artifacts** (`build-summary.md`, `decision…",
+      "principles_mentioned": [],
+      "roles_introduced": [
+        "Re-Verification"
+      ]
+    },
+    {
+      "version": "v1.7",
+      "title": "v1.7",
+      "summary": "first **principle elevation** rather than reactive amendment. Per `principles.md`, the v1.x amendment trail had been reactive enumeration; v1.7 elevates Principle C (spec-to-test coverage) from enumeration to property check. The architecture used to enumerate specific assertion-array requirements per artifact type (machine_checkable_assertions for IPs, acceptance_assertions for sections, prompt_named_verb_assertion for prompt verb). v1.7 unifies these under one property: every coverage-required prose field has at least one assertion pointing back via a `covers` field. Adds: (1) **Coverage-Req…",
+      "principles_mentioned": [
+        "C"
+      ],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.8",
+      "title": "v1.8",
+      "summary": "UX/observability amendment: distribute Cowork's Task* progress pane responsibility to the role with the knowledge. Each role's charter now includes Progress Communication instructions. Orchestrator TaskCreates the six phase tasks at build start (Discovery → TD → Build → Integration → Verification → Delivery) with appropriate `blockedBy` dependencies, as the always-visible structural backbone. Discovery TaskCreates per-IP tasks. TD TaskCreates per-section tasks (the user's primary visibility into the build's structure) and per-Researcher tasks. Researcher updates its own task during work. Coor…",
+      "principles_mentioned": [],
+      "roles_introduced": []
+    },
+    {
+      "version": "v1.9",
+      "title": "v1.9",
+      "summary": "largest amendment in the project to date, driven by the StreamDock-plugin retrospective (see `failure-catalog-streamdock.md`). The StreamDock build passed every internal gate (Critic clean, CV pass, Orchestrator delivered verdict `pass`) and failed the simplest user-facing test: the plugin did not appear in the host application. Combined with the same first-contact failure in poker 1.0 and the latex CDN failure pattern, this amendment elevates the project's mission to operational rules. **North Star** added to `principles.md`: *\"The perfect Auto Builder would understand exactly what the user …",
+      "principles_mentioned": [
+        "F",
+        "E",
+        "H",
+        "G"
+      ],
+      "roles_introduced": [
+        "Editor",
+        "Discovery (Demotion Mode)"
+      ]
+    }
+  ],
+  "principles": [
+    {
+      "id": "A",
+      "name": "Verification Fidelity",
+      "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+      "introduced_in": "v1.7"
+    },
+    {
+      "id": "B",
+      "name": "Audit Completeness",
+      "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+      "introduced_in": "v1.7"
+    },
+    {
+      "id": "C",
+      "name": "Spec-to-Test Coverage",
+      "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+      "introduced_in": "v1.7"
+    },
+    {
+      "id": "D",
+      "name": "Path Coverage",
+      "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+      "introduced_in": "v1.7"
+    },
+    {
+      "id": "E",
+      "name": "Atomic Lexical Anchors",
+      "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+      "introduced_in": "v1.9"
+    },
+    {
+      "id": "F",
+      "name": "External Authority Discipline",
+      "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+      "introduced_in": "v1.9"
+    },
+    {
+      "id": "G",
+      "name": "Deliverability Tier Discipline",
+      "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+      "introduced_in": "v1.9"
+    },
+    {
+      "id": "H",
+      "name": "Verification Independence",
+      "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+      "introduced_in": "v1.9"
+    }
+  ],
+  "role_attribution_corpus_totals": {
+    "CV": {
+      "high": 10,
+      "medium": 0,
+      "low": 15,
+      "total": 25,
+      "explicit_count": 3,
+      "runs_implicated": 7
+    },
+    "Re-Verification": {
+      "high": 55,
+      "medium": 1,
+      "low": 15,
+      "total": 71,
+      "explicit_count": 50,
+      "runs_implicated": 6
+    },
+    "Historian": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1,
+      "runs_implicated": 1
+    },
+    "TD": {
+      "high": 4,
+      "medium": 0,
+      "low": 0,
+      "total": 4,
+      "explicit_count": 4,
+      "runs_implicated": 2
+    },
+    "Coordinator": {
+      "high": 2,
+      "medium": 0,
+      "low": 0,
+      "total": 2,
+      "explicit_count": 2,
+      "runs_implicated": 1
+    },
+    "Overseer": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1,
+      "runs_implicated": 1
+    },
+    "Builder": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1,
+      "runs_implicated": 1
+    },
+    "Integrator": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1,
+      "runs_implicated": 1
+    },
+    "Discovery": {
+      "high": 6,
+      "medium": 1,
+      "low": 0,
+      "total": 7,
+      "explicit_count": 6,
+      "runs_implicated": 1
+    },
+    "Researcher": {
+      "high": 2,
+      "medium": 0,
+      "low": 0,
+      "total": 2,
+      "explicit_count": 2,
+      "runs_implicated": 1
+    },
+    "Critic": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1,
+      "runs_implicated": 1
+    }
+  },
+  "first_delivery_outcome_distribution": {
+    "succeeded": 0,
+    "succeeded_with_concerns": 2,
+    "failed_user_reprompted": 3,
+    "failed_unrecoverable": 0,
+    "unverified": 5
+  },
+  "maintenance_handoffs": [
+    {
+      "slug": "git-integration-proposal",
+      "title": "Git Integration — proposal for Codex",
+      "origin": "maintenance-initiated",
+      "source_file": "codex/docs/maintenance-initiated/git-integration-proposal.md",
+      "last_touched": "2026-05-15",
+      "overall_state": "in-progress",
+      "items_total": 11,
+      "items_done": 8,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 3,
+      "codex_acks_count": 19,
+      "maintenance_notes_latest": {
+        "date": "2026-05-15",
+        "excerpt": "Acks of Codex's 2026-05-14 implementation notes — `readGitLog.mjs` with the three-way field-level merge sounds exactly right, and the cardinal-rule enforcement at the merge layer (always-from-synthesized `first_delivery_outcome` on rev-0) is precisely the structural protection t…"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "---"
+      },
+      "parse_warnings": []
+    },
+    {
+      "slug": "coordination-proposal",
+      "title": "Async coordination — proposal for AutoBuilder-Maintenance",
+      "origin": "codex-initiated",
+      "source_file": "codex/docs/coordination-proposal.md",
+      "last_touched": "2026-05-14",
+      "overall_state": "in-progress",
+      "items_total": 6,
+      "items_done": 6,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 4,
+      "codex_acks_count": 4,
+      "maintenance_notes_latest": {
+        "date": "2026-05-14",
+        "excerpt": "Codex's acks on github-pages-proposal.md observed (4 dated entries). Ticked `codex-implements-parser` and `codex-implements-panel` based on Codex's statement that \"the Codex side is functionally complete as of v0.5.\" Surfacing one structural gap noticed during this exchange (tex…"
+      },
+      "codex_acks_latest": {
+        "date": "2026-05-14",
+        "excerpt": "Note on this proposal's own status — five of six items now done (proposal-reviewed, format-agreed, codex-implements-parser, codex-implements-panel, retrofit-github-pages-proposal, first-end-to-end-cycle). The only thing technically open is whether Maintenance considers the conve…"
+      },
+      "parse_warnings": []
+    },
+    {
+      "slug": "github-pages-proposal",
+      "title": "GitHub Pages enablement — proposal for AutoBuilder-Maintenance",
+      "origin": "codex-initiated",
+      "source_file": "codex/docs/github-pages-proposal.md",
+      "last_touched": "2026-05-14",
+      "overall_state": "in-progress",
+      "items_total": 10,
+      "items_done": 1,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 1,
+      "codex_acks_count": 10,
+      "maintenance_notes_latest": {
+        "date": "2026-05-14",
+        "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "---"
+      },
+      "parse_warnings": []
+    }
+  ]
+}

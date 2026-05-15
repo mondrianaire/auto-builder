@@ -1,0 +1,244 @@
+{
+  "schema_version": "0.1",
+  "slug": "earthquake-map",
+  "summary": {
+    "slug": "earthquake-map",
+    "prompt": "Build me a tool to visualize earthquake activity on a map.",
+    "date": "2026-05-10",
+    "architecture_version": "v1.7",
+    "dispatch_mode": "inline",
+    "verdict": "pass",
+    "raw_verdict": "pass",
+    "final_artifact": null,
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "verified",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "failed"
+      },
+      "cost": {
+        "minutes": null,
+        "escalations_high": 1,
+        "critic_high": 1
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 19,
+      "overseer_dispatches": 0,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": null,
+      "sections": 4,
+      "edge_cases_total": null,
+      "edge_cases_passing": null,
+      "critic_findings_high": 1,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 3,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 1,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/earthquake-map/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "unverified",
+    "first_delivery_outcome_source": "default",
+    "re_audit_present": false,
+    "re_audit_reclassified_verdict": null,
+    "rca_present": false,
+    "links": {
+      "run_report": "runs/earthquake-map/run-report.md",
+      "verification": "runs/earthquake-map/output/verification/report.json",
+      "ledger": "runs/earthquake-map/decisions/discovery/ledger-v1.json",
+      "sections": "runs/earthquake-map/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/earthquake-map/output/final/",
+      "audit_flags": "runs/earthquake-map/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "A self-contained tool that displays earthquake events as markers on a geographic map, letting a single user see where earthquakes have occurred and get a sense of their distribution and intensity at a glance.",
+    "telos": null,
+    "assumption_count": 12,
+    "inflection_count": 3,
+    "oos_count": 12,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1",
+        "charter_excerpt": "Provide a single async function that retrieves the past-24-hour earthquake feed from the USGS public GeoJSON endpoint and returns a normalized array of event records the rest of the artifact can consume. The function isolates network acces…",
+        "acceptance_excerpt": "Calling the fetch function from a browser context loads the USGS past-day feed and returns an array of normalized event records, each with id, magnitude, place, time (epoch ms), lat, lon, and depth. On network or parse failure the function…"
+      },
+      {
+        "id": "section-2",
+        "charter_excerpt": "Initialize a Leaflet map filling its container, attach a tile layer (OSM raster tiles), and render an array of normalized earthquake records as circle markers whose radius and fill color encode magnitude. Provide a popup on each marker wit…",
+        "acceptance_excerpt": "Calling mount(containerId, events) on a non-empty events array produces a visible, interactive (pan, zoom) world map in the named container, with one circle marker per event. Marker radius is a monotonic function of magnitude. Marker fill …"
+      },
+      {
+        "id": "section-3",
+        "charter_excerpt": "Provide the index.html page structure: a header with the tool name, a main region holding the map container, a fixed legend explaining the size+color magnitude encoding, and a hidden-by-default error banner. Wire page bootstrap: on DOMCont…",
+        "acceptance_excerpt": "The page renders a header, a map region that occupies the dominant area of the viewport, and a visible legend that labels at least three magnitude buckets with their corresponding marker style. On data-fetch failure (simulated by pointing …"
+      },
+      {
+        "id": "section-4",
+        "charter_excerpt": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment per CV charter — no substitution of runtime dependencies the artifact loads in production. Open the in…",
+        "acceptance_excerpt": "The verification suite executes against the integrated artifact in a real browser, opens output/final/index.html via file://, and reports a pass/fail entry for: PV1, every DC.* assertion tagged edge_case_testing, every IP*.A* assertion, ev…"
+      }
+    ],
+    "contracts": [
+      "integrator--section-4",
+      "section-1--section-2",
+      "section-1--section-3",
+      "section-2--section-3"
+    ],
+    "prompt_verb_chosen": "visualize"
+  },
+  "timeline": [],
+  "verification": {
+    "verdict": "pass",
+    "assumption_checks_total": 12,
+    "assumption_checks_verified": 0,
+    "out_of_scope_total": 12,
+    "out_of_scope_verified": 0,
+    "inflection_point_checks_total": 3,
+    "inflection_point_checks_honored": 0,
+    "edge_cases_total": null,
+    "edge_cases_passing": null,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 1,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 6,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 3,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 34,
+    "earliest": "2026-05-10T00:00:00Z",
+    "latest": "2026-05-10T01:45:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "Inline dispatch held up at four sections. — Coordinator ran sections 1–3 in wave 1 (data-fetcher, map renderer, page shell), Integrator in wave 2, edge-case-testing in wave 3, with no escalations originating inside the build phase.",
+      "Production-fidelity-at-design-time (v1.6) paid off immediately. — TD vendored Leaflet at design time rather than reaching for a CDN. CV's production exercise loaded the artifact via `file://` with no substitution; the latex-equation-render…",
+      "TD-introduced inflection points were used as designed. — Discovery surfaced 3 IPs (live-vs-static, fixed window, filters); TD added 3 of its own (map library = Leaflet, data source = USGS `all_day.geojson`, magnitude encoding = dual size+c…",
+      "Prompt-verb analysis kept PNV honest. — TD enumerated three candidate verbs (\"build\", \"visualize\", \"map\") and explicitly rejected \"build\" as meta and \"map\" as the medium. PNV exercised \"visualize\" literally — open the artifact, see earthqu…",
+      "CV's headless-Chromium environment is the right level of fidelity for browser artifacts. — Real Leaflet, real USGS fetch, real OSM tiles, real DOM. 480 markers, 4 distinct magnitude buckets observed, popup contents inspected, transform del…"
+    ],
+    "what_broke": [
+      "What architecture should learn — The TD initial-mode charter mentions `discovery_coverage_assertions[]` explicitly but doesn't enumerate the parallel `section_coverage_assertions[]` and `contract_coverage_assertions[]` collections that the…",
+      "(a) Charter clarification: — TD charter §\"Prose coverage and `covers` field\" lists the four Discovery fields it must cover but stops there. Extend it to enumerate the section and contract fields too, with the same prescriptive \"you must pr…",
+      "(b) Schema-level prompt: — the `sections-v{N}.json` schema example in `file_schemas.md` currently shows only `discovery_coverage_assertions[]`. Add example entries for `section_coverage_assertions[]` and `contract_coverage_assertions[]` so…",
+      "What architecture should learn",
+      "(a) — If `history/log.jsonl` is required by the schema (it is) but not on the Orchestrator's delivery checklist, treat it as schema-required regardless. The current delivery checklist enumerates the build-summary and decision-index but not…",
+      "(b) — Future Orchestrator implementations should verify file presence via the file Read tool (the path source of truth) rather than the bash mount when there's a discrepancy. A 0-byte readout on an append-only log file should trigger a Rea…",
+      "(c) — The Historian reconstruction was useful even though it turned out to be unnecessary — it filled in beats from Discovery / TD / Arbiter / CV / Orchestrator that the Coordinator's inline-collapsed Historian work hadn't captured (Coordi…",
+      "What architecture should learn — consider whether edge-case-testing and CV should share a single production-fidelity exercise pass rather than each owning one. Concretely: edge-case-testing's report could be a list of *assertions to exerci…",
+      "What architecture should learn — Orchestrator briefings could include both path forms once at the top (\"absolute Windows path: X; bash mount path: Y\") rather than scatter Windows paths through the body. Minor."
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-10T01:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] Coverage map for ledger fields and IPs is complete: restatement -> DC.R1+DC.R2; A1-A12 -> DC.A1-A12; IP1-IP3 topic+default_branch -> DC.IP1-3 plus IP*.A*; out_of_scope[0..11] -> DC.OOS1-12; chosen_verb -> PV1; each inflect…",
+      "verbatim_excerpt": "Coverage map for ledger fields and IPs is complete: restatement -> DC.R1+DC.R2; A1-A12 -> DC.A1-A12; IP1-IP3 topic+default_branch -> DC.IP1-3 plus IP*.A*; out_of_scope[0..11] -> DC.OOS1-12; chosen_verb -> PV1; each inflection_resolutions[].chosen_option -> IP*.A* and TDIP*.A*. HOWEVER, several Coverage-Required Fields per file_schemas.md have ZERO assertions whose covers field points back to them: (a) sections[].charter — no assertion has covers='S1.charter' or 'S2.charter' etc. (charters are h…",
+      "source_file": "runs/earthquake-map/audit/flags.jsonl",
+      "severity": 1,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-10",
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "unverified"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {
+    "CV": {
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "total": 1,
+      "explicit_count": 0
+    }
+  },
+  "first_delivery": {
+    "outcome": "unverified",
+    "source": "default"
+  },
+  "re_audit": null,
+  "links": {
+    "run_report": "runs/earthquake-map/run-report.md",
+    "verification": "runs/earthquake-map/output/verification/report.json",
+    "ledger": "runs/earthquake-map/decisions/discovery/ledger-v1.json",
+    "sections": "runs/earthquake-map/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/earthquake-map/output/final/",
+    "audit_flags": "runs/earthquake-map/audit/flags.jsonl"
+  }
+}

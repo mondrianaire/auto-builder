@@ -1,0 +1,825 @@
+{
+  "schema_version": "0.1",
+  "slug": "streamdock-applemusic-touchbar",
+  "summary": {
+    "slug": "streamdock-applemusic-touchbar",
+    "prompt": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that Utilizes the Touchbar Mode to display the currently playing song and artist from Apple Music Desktop Application. The plugin should take up the entire length of the VSD N4 Pro touch bar for display.",
+    "date": null,
+    "architecture_version": "v1.8",
+    "dispatch_mode": null,
+    "verdict": "pass",
+    "raw_verdict": "pass (CV verified production-fidelity PNV.1; 28/28 harness assertions; Critic v2 clean)",
+    "final_artifact": null,
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "verified",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "not_run"
+      },
+      "cost": {
+        "minutes": null,
+        "escalations_high": 2,
+        "critic_high": 2
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 31,
+      "overseer_dispatches": 15,
+      "builder_dispatches": 9,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": null,
+      "sections": 6,
+      "edge_cases_total": null,
+      "edge_cases_passing": null,
+      "critic_findings_high": 2,
+      "critic_findings_medium": 4,
+      "critic_findings_low": 4,
+      "sev0_fixes": 7,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 15,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "plugin",
+    "deliverable_can_run_in_browser": false,
+    "deliverable_index": "com.autobuilder.applemusic-nowplaying.sdPlugin/",
+    "deliverable_manifest": {
+      "SDKVersion": 2,
+      "Author": "Auto Builder",
+      "Category": "Apple Music",
+      "CategoryIcon": "icons/category",
+      "CodePathWin": "plugin/main.js",
+      "Description": "Displays the currently playing song and artist from the Apple Music app for Windows (Microsoft Store preview) on the StreamDock VSD N4 Pro touch bar.",
+      "Icon": "icons/pluginIcon",
+      "Name": "Apple Music Now Playing",
+      "URL": "https://example.invalid/streamdock-applemusic-touchbar",
+      "Version": "1.0.0",
+      "OS": [
+        {
+          "Platform": "windows",
+          "MinimumVersion": "10"
+        }
+      ],
+      "Software": {
+        "MinimumVersion": "6.0"
+      },
+      "Nodejs": {
+        "Version": "20"
+      },
+      "PropertyInspectorPath": "ui/inspector.html",
+      "Actions": [
+        {
+          "Name": "Now Playing",
+          "UUID": "com.autobuilder.applemusic-nowplaying.nowplaying",
+          "Icon": "icons/actionIcon",
+          "PropertyInspectorPath": "ui/inspector.html",
+          "Controllers": [
+            "Encoder"
+          ],
+          "Encoder": {
+            "layout": "layouts/nowplaying.json",
+            "TriggerDescription": {
+              "Push": "",
+              "Touch": "",
+              "Rotate": "",
+              "LongTouch": ""
+            }
+          },
+          "States": [
+            {
+              "Image": "icons/actionIcon",
+              "TitleAlignment": "middle"
+            }
+          ]
+        }
+      ]
+    },
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/streamdock-applemusic-touchbar.html",
+    "live_url_kind": "showcase",
+    "first_delivery_outcome": "failed_user_reprompted",
+    "first_delivery_outcome_source": "run_report_status",
+    "re_audit_present": false,
+    "re_audit_reclassified_verdict": null,
+    "rca_present": true,
+    "links": {
+      "run_report": "runs/streamdock-applemusic-touchbar/run-report.md",
+      "verification": "runs/streamdock-applemusic-touchbar/output/verification/report.json",
+      "ledger": "runs/streamdock-applemusic-touchbar/decisions/discovery/ledger-v1.json",
+      "sections": "runs/streamdock-applemusic-touchbar/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/streamdock-applemusic-touchbar/output/final/",
+      "audit_flags": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "A StreamDock VSD N4 Pro plugin that uses the device's Touchbar Mode (the contiguous wide-display strip) to show the currently playing song and artist from the Apple Music desktop application, occupying the full length of the touch bar.",
+    "telos": null,
+    "assumption_count": 13,
+    "inflection_count": 3,
+    "oos_count": 10,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "S1",
+        "charter_excerpt": "Define the on-disk shape of the deliverable: the .sdPlugin folder name, the manifest.json with all required SDK-v2 keys (Name, Version, Author, Description mentioning Windows + Apple Music for Windows, Icon, Category, CategoryIcon, OS arra…",
+        "acceptance_excerpt": "The plugin folder exists at the canonical reverse-DNS name. manifest.json parses as JSON and contains all SDK-v2 required keys with values consistent with the Windows-only, single-Encoder-action, Apple-Music-for-Windows-now-playing intent.…"
+      },
+      {
+        "id": "S2",
+        "charter_excerpt": "Author the custom Encoder layout JSON that the manifest references (two text items: 'title' large/bold and 'artist' smaller/regular, both full-bar width with SDK-native truncation), and the minimal Property Inspector HTML (one input for po…",
+        "acceptance_excerpt": "The layout JSON file declares two items keyed 'title' and 'artist' with text-item types and SDK-native truncation. The PI HTML loads in a plain browser without errors and emits sendToPlugin/setSettings messages of a documented shape when t…"
+      },
+      {
+        "id": "S3",
+        "charter_excerpt": "Implement the Stream Deck SDK plugin-side runtime: parse the four CLI args (-port, -pluginUUID, -registerEvent, -info), open a WebSocket to ws://127.0.0.1:<port>, send the registerPlugin event with the uuid, register handlers for willAppea…",
+        "acceptance_excerpt": "When launched with valid SDK CLI args against a mock WebSocket host, the plugin process connects, sends a registerPlugin frame with the correct event name and uuid, and is willing to receive events. willAppear adds the context to an in-mem…"
+      },
+      {
+        "id": "S4",
+        "charter_excerpt": "Implement the orchestration loop that, for each currently appearing action context, periodically asks the music-source module (S5) for the current track and translates the result into a setFeedback payload sent via S3's sendFeedback helper…",
+        "acceptance_excerpt": "When at least one context is appearing and the music-source module returns {title:'X', artist:'Y'}, S3's sendFeedback is called with {title:'X', artist:'Y'} for that context within one poll interval. When the music-source returns null, sen…"
+      },
+      {
+        "id": "S5",
+        "charter_excerpt": "Implement a small Node module that spawns powershell.exe with an inline WinRT script that queries the Windows SMTC (Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager) for the current media session, awaits TryGetMediaPr…",
+        "acceptance_excerpt": "Calling getNowPlaying() on a Windows system where Apple Music for Windows is playing a known track returns {title, artist} equal to that track's name and artist. Calling it when Apple Music is paused, stopped, not running, or when no SMTC …"
+      },
+      {
+        "id": "S6",
+        "charter_excerpt": "Stand up a production-fidelity verification harness that drives the integrated .sdPlugin bundle through every assertion whose verifier is 'edge_case_testing' or 'prompt_named_verb'. The harness spawns a real Node child process against the …",
+        "acceptance_excerpt": "Every assertion in this sections file whose verifier is 'edge_case_testing' is exercised by at least one harness scenario. The PNV scenario runs end-to-end against the real integrated bundle and passes. Stub injection touches only the musi…"
+      }
+    ],
+    "contracts": [
+      "C-S1-S2-manifest-references",
+      "C-S1-S3-codepath-entry",
+      "C-S2-S3-pi-settings",
+      "C-S2-S4-feedback-payload",
+      "C-S3-S4-internal-api",
+      "C-S4-S5-music-source"
+    ],
+    "prompt_verb_chosen": "display"
+  },
+  "timeline": [],
+  "verification": {
+    "verdict": "pass",
+    "assumption_checks_total": 0,
+    "assumption_checks_verified": 0,
+    "out_of_scope_total": 0,
+    "out_of_scope_verified": 0,
+    "inflection_point_checks_total": 0,
+    "inflection_point_checks_honored": 0,
+    "edge_cases_total": null,
+    "edge_cases_passing": null,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 2,
+      "medium": 4,
+      "low": 4
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 15,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 7,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 18,
+    "earliest": "2026-05-13T00:00:00Z",
+    "latest": "2026-05-13T01:10:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "The hardware-specific build path actually delivered a production-fidelity artifact — This is the first AutoBuilder run targeting third-party device SDK (StreamDock / Stream Deck-family). The PNV scenario was carefully designed to be exerci…",
+      "TD's quick-reasoning self-resolution of TD-IP-C (Node.js runtime) was defensible despite rubric failure — Two of four rubric conditions failed (similar_complexity, no_new_deps) but TD chose to lock the canonical Stream Deck pattern (Node +…",
+      "The inline-mode Coordinator handled the polyglot deliverable well — JSON manifest, JSON layout, HTML PI, Node.js plugin process, AppleScript embedded string, shell entry script, vendored npm package — all coordinated by a single agent with…",
+      "The S6 production-fidelity harness as auxiliary CV — S6 was designed to BE the production-fidelity verification rig, not just a unit-test pass. CV's job became spot-check + independent re-run rather than from-scratch verification. This dov…"
+    ],
+    "what_broke": [
+      "Same prose_coverage gap as the earthquake-map run — Historian flagged this explicitly: two runs in a row with charters and contract interfaces uncovered in the `covers` graph. TD's initial-mode charter enumerates `discovery_coverage_assert…",
+      "Sev 3's mandatory Discovery amendment is a no-op when the gap is TD-side — esc-003 referenced Discovery prose (assumption_ledger, OOS items) but no Discovery assumption was actually *invalidated* — Discovery's claims are correct, just unde…",
+      "dev-002 (MUSIC_SOURCE_FIXTURE) sits in the inline-deviation grey zone — S5's charter said \"Node module exposing getNowPlaying() that spawns osascript\"; the Builder added an env-var-conditional early-return path for test-shimming. This lite…",
+      "The Coordinator briefing for hardware plugin builds is large — This briefing included substantial technical scaffolding (manifest schema, layout schema, run.sh shape, sdk.js method list, main.js polling loop spec, harness design). Without …"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "user_first_contact_failure",
+      "phase": "post_delivery",
+      "ts": null,
+      "module": null,
+      "summary": "User installation failed: FAIL — wrong OS.** Plugin did not appear in the user's VSD Craft side panel because Discovery defaulted IP1 (host OS) to macOS while the user is on Windows. Di…",
+      "verbatim_excerpt": "**Verdict on user installation (v1):** **FAIL — wrong OS.** Plugin did not appear in the user's VSD Craft side panel because Discovery defaulted IP1 (host OS) to macOS while the user is on Windows. Discovery had Windows-path evidence (`C:\\Users\\mondr\\...`) in its execution context and did not consult it. TD then accepted the Discovery default without exercising the quick-reasoning rubric (which would have failed 3/4 conditions on IP1 and mandated a Researcher dispatch). See `root-cause-analysis…",
+      "source_file": "runs/streamdock-applemusic-touchbar/run-report.md",
+      "severity": null,
+      "explicit_roles": [
+        "Discovery",
+        "TD",
+        "Researcher"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [
+        "E"
+      ],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-001",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Failure mode: Environmental-evidence blindness",
+      "verbatim_excerpt": "Discovery's charter: \"*simplest-within-reason*: pick the simplest defensible interpretation that doesn't contradict the prompt.\"",
+      "source_file": "runs/streamdock-applemusic-touchbar/root-cause-analysis.md",
+      "severity": null,
+      "explicit_roles": [
+        "Discovery"
+      ],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-002",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Failure mode: Discovery-default-accepted as a rubric bypass",
+      "verbatim_excerpt": "TD's quick-reasoning rubric (all four must hold to skip Researcher dispatch):\n- Well-known canonical answers in training data\n- Both branches have similar implementation complexity\n- Choice introduces no new external dependencies\n- Choice is easily reversible",
+      "source_file": "runs/streamdock-applemusic-touchbar/root-cause-analysis.md",
+      "severity": null,
+      "explicit_roles": [
+        "TD",
+        "Researcher"
+      ],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-003",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Failure mode: No \"should we ask?\" gate for high-importance IPs",
+      "verbatim_excerpt": "Discovery flagged IP1 as `importance: high`. The architecture does nothing differential with that flag. There is no rule of the form:",
+      "source_file": "runs/streamdock-applemusic-touchbar/root-cause-analysis.md",
+      "severity": null,
+      "explicit_roles": [
+        "Discovery"
+      ],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-004",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Principle E — Decision Grounding:** every load-bearing decision (IP resolution, default-branch selection, technol…",
+      "verbatim_excerpt": "",
+      "source_file": "runs/streamdock-applemusic-touchbar/root-cause-analysis.md",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification",
+        "Discovery"
+      ],
+      "principles_implicated": [
+        "E"
+      ],
+      "confidence": "medium",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-005",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] Discovery assumption_ledger items A1 (SDK shape), A3 (data source = local Apple Music), A4 (host OS = macOS), A9 (single-user/no-auth/no-telemetry) have NO assertion with covers field pointing to them. file_schemas.md tabl…",
+      "verbatim_excerpt": "Discovery assumption_ledger items A1 (SDK shape), A3 (data source = local Apple Music), A4 (host OS = macOS), A9 (single-user/no-auth/no-telemetry) have NO assertion with covers field pointing to them. file_schemas.md table lists assumption_ledger[].assumption as coverage-required. 4 of 13 assumptions uncovered.",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 2,
+      "explicit_roles": [
+        "Discovery"
+      ],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-006",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] Discovery out_of_scope items at indices 1,2,3,4,7,8,9 are NOT pointed to by any covers field. Items uncovered: 'Lyrics display, queue display, or playback history'; 'Album art rendering (see IP2)'; 'Rich playback controls …",
+      "verbatim_excerpt": "Discovery out_of_scope items at indices 1,2,3,4,7,8,9 are NOT pointed to by any covers field. Items uncovered: 'Lyrics display, queue display, or playback history'; 'Album art rendering (see IP2)'; 'Rich playback controls — skip, previous, scrub, like/dislike (see IP3)'; 'Multi-user, account, cloud sync, or remote control'; 'Persistent history of played tracks, scrobbling, or analytics/telemetry' (partial — out_of_scope/6 IS covered by DCA.OOS.TELEMETRY.1 which uses the 'analytics/telemetry' ph…",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 2,
+      "explicit_roles": [
+        "Discovery"
+      ],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-007",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] prompt_verb_analysis.chosen_verb is coverage-required per file_schemas.md but no assertion has covers pointing to '.../prompt_verb_analysis/chosen_verb'. PNV.1 implicitly verifies it (verb_from_prompt='display') but does s…",
+      "verbatim_excerpt": "prompt_verb_analysis.chosen_verb is coverage-required per file_schemas.md but no assertion has covers pointing to '.../prompt_verb_analysis/chosen_verb'. PNV.1 implicitly verifies it (verb_from_prompt='display') but does so via covers=ledger-v1.json#/restatement instead of pointing at chosen_verb. Functionally equivalent but schema-strict violation.",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 2,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-008",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] All 6 section charters are coverage-required per file_schemas.md but ZERO assertions point covers at any '.../sections/<i>/charter'. Charter prose for S1-S6 has no structured assertion derived from it. Acceptance is covere…",
+      "verbatim_excerpt": "All 6 section charters are coverage-required per file_schemas.md but ZERO assertions point covers at any '.../sections/<i>/charter'. Charter prose for S1-S6 has no structured assertion derived from it. Acceptance is covered, but charter is the prior load-bearing claim of WHAT the section must do.",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 1,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-009",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] All section out_of_scope arrays are coverage-required per file_schemas.md but ZERO assertions point covers at any '.../sections/<i>/out_of_scope/<j>'. Total uncovered: 19 per-section OOS items across S1-S6. (Note: Discover…",
+      "verbatim_excerpt": "All section out_of_scope arrays are coverage-required per file_schemas.md but ZERO assertions point covers at any '.../sections/<i>/out_of_scope/<j>'. Total uncovered: 19 per-section OOS items across S1-S6. (Note: Discovery-level OOS items are partially covered by DCA.OOS.* assertions, but per-section OOS items are not.)",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 2,
+      "explicit_roles": [
+        "Discovery"
+      ],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-010",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] All 6 contract interface surfaces are coverage-required per file_schemas.md but ZERO assertions have covers pointing at any 'contracts/original/*.json'. Contracts C-S1-S2 (manifest references), C-S1-S3 (codepath entry), C-…",
+      "verbatim_excerpt": "All 6 contract interface surfaces are coverage-required per file_schemas.md but ZERO assertions have covers pointing at any 'contracts/original/*.json'. Contracts C-S1-S2 (manifest references), C-S1-S3 (codepath entry), C-S2-S3 (PI settings), C-S2-S4 (feedback payload), C-S3-S4 (internal API), C-S4-S5 (music-source) are all uncovered by the covers-graph. The contract surfaces are exercised behaviorally by the harness (e.g., feedback payload shape verified by AA.S3.4, AA.S4.1) but no assertion's…",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 1,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-011",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[prose_coverage] Naming variance: file_schemas.md table names 'inflection_resolutions[].chosen_branch' as coverage-required, but sections-v1.json uses 'td_introduced_inflection_points[].default_branch' (since all 6 TD-IPs resolved via quic…",
+      "verbatim_excerpt": "Naming variance: file_schemas.md table names 'inflection_resolutions[].chosen_branch' as coverage-required, but sections-v1.json uses 'td_introduced_inflection_points[].default_branch' (since all 6 TD-IPs resolved via quick_reasoning without an inflection_resolutions block). All 6 default_branch values ARE covered by MCA assertions. Semantic coverage holds; schema-strict path-name match does not.",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 3,
+      "explicit_roles": [
+        "TD"
+      ],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-012",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:08:00Z",
+      "module": null,
+      "summary": "[inline_deviation_audit] Both inline-deviations (dev-001, dev-002) are missing the explicit boolean fields changes_artifact, changes_contract, changes_assumption (per Critic charter audit rule). Their prose articulates equivalent claims: d…",
+      "verbatim_excerpt": "Both inline-deviations (dev-001, dev-002) are missing the explicit boolean fields changes_artifact, changes_contract, changes_assumption (per Critic charter audit rule). Their prose articulates equivalent claims: dev-001 says 'kept S1<->S2 binding intact' (i.e., changes_contract=false); dev-002 says 'contract_impact: None. C-S4-S5 is untouched' (i.e., changes_contract=false). nested_equivalent fields are articulated and plausible in both. dev-002 effectively adds code (MUSIC_SOURCE_FIXTURE bran…",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 3,
+      "explicit_roles": [
+        "Critic"
+      ],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-013",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T00:16:00Z",
+      "module": null,
+      "summary": "[inline_deviation_audit] ",
+      "verbatim_excerpt": "",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 3,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-014",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-13T01:15:00Z",
+      "module": null,
+      "summary": "[inline_deviation_audit] ",
+      "verbatim_excerpt": "",
+      "source_file": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl",
+      "severity": 3,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": null,
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "failed_user_reprompted"
+    }
+  ],
+  "file_tree": {
+    "tree": [
+      {
+        "kind": "dir",
+        "name": "com.autobuilder.applemusic-nowplaying.sdPlugin",
+        "children": [
+          {
+            "kind": "dir",
+            "name": "icons",
+            "children": [
+              {
+                "kind": "file",
+                "name": "actionIcon.png",
+                "size": 87
+              },
+              {
+                "kind": "file",
+                "name": "actionIcon@2x.png",
+                "size": 114
+              },
+              {
+                "kind": "file",
+                "name": "category.png",
+                "size": 99
+              },
+              {
+                "kind": "file",
+                "name": "category@2x.png",
+                "size": 136
+              },
+              {
+                "kind": "file",
+                "name": "pluginIcon.png",
+                "size": 87
+              },
+              {
+                "kind": "file",
+                "name": "pluginIcon@2x.png",
+                "size": 114
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "layouts",
+            "children": [
+              {
+                "kind": "file",
+                "name": "nowplaying.json",
+                "size": 492
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "plugin",
+            "children": [
+              {
+                "kind": "file",
+                "name": "main.js",
+                "size": 3131
+              },
+              {
+                "kind": "file",
+                "name": "music_source.js",
+                "size": 4874
+              },
+              {
+                "kind": "file",
+                "name": "run.sh",
+                "size": 459
+              },
+              {
+                "kind": "file",
+                "name": "sdk.js",
+                "size": 4617
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "ui",
+            "children": [
+              {
+                "kind": "file",
+                "name": "inspector.html",
+                "size": 4043
+              }
+            ]
+          },
+          {
+            "kind": "file",
+            "name": "manifest.json",
+            "size": 1276
+          }
+        ]
+      },
+      {
+        "kind": "dir",
+        "name": "com.autobuilder.applemusic-nowplaying.sdPlugin - Copy",
+        "children": [
+          {
+            "kind": "dir",
+            "name": "icons",
+            "children": [
+              {
+                "kind": "file",
+                "name": "actionIcon.png",
+                "size": 87
+              },
+              {
+                "kind": "file",
+                "name": "actionIcon@2x.png",
+                "size": 114
+              },
+              {
+                "kind": "file",
+                "name": "category.png",
+                "size": 99
+              },
+              {
+                "kind": "file",
+                "name": "category@2x.png",
+                "size": 136
+              },
+              {
+                "kind": "file",
+                "name": "pluginIcon.png",
+                "size": 87
+              },
+              {
+                "kind": "file",
+                "name": "pluginIcon@2x.png",
+                "size": 114
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "layouts",
+            "children": [
+              {
+                "kind": "file",
+                "name": "nowplaying.json",
+                "size": 492
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "plugin",
+            "children": [
+              {
+                "kind": "file",
+                "name": "main.js",
+                "size": 3131
+              },
+              {
+                "kind": "file",
+                "name": "music_source.js",
+                "size": 1999
+              },
+              {
+                "kind": "file",
+                "name": "run.sh",
+                "size": 174
+              },
+              {
+                "kind": "file",
+                "name": "sdk.js",
+                "size": 4617
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "ui",
+            "children": [
+              {
+                "kind": "file",
+                "name": "inspector.html",
+                "size": 4043
+              }
+            ]
+          },
+          {
+            "kind": "file",
+            "name": "manifest.json",
+            "size": 1204
+          }
+        ]
+      },
+      {
+        "kind": "file",
+        "name": "divergence-from-integration.json",
+        "size": 4055
+      }
+    ],
+    "node_count": 37,
+    "truncated": false
+  },
+  "role_attribution_totals": {
+    "Discovery": {
+      "high": 6,
+      "medium": 1,
+      "low": 0,
+      "total": 7,
+      "explicit_count": 6
+    },
+    "TD": {
+      "high": 3,
+      "medium": 0,
+      "low": 0,
+      "total": 3,
+      "explicit_count": 3
+    },
+    "Researcher": {
+      "high": 2,
+      "medium": 0,
+      "low": 0,
+      "total": 2,
+      "explicit_count": 2
+    },
+    "Re-Verification": {
+      "high": 3,
+      "medium": 1,
+      "low": 0,
+      "total": 4,
+      "explicit_count": 0
+    },
+    "CV": {
+      "high": 5,
+      "medium": 0,
+      "low": 5,
+      "total": 10,
+      "explicit_count": 0
+    },
+    "Critic": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    }
+  },
+  "first_delivery": {
+    "outcome": "failed_user_reprompted",
+    "source": "run_report_status"
+  },
+  "re_audit": null,
+  "links": {
+    "run_report": "runs/streamdock-applemusic-touchbar/run-report.md",
+    "verification": "runs/streamdock-applemusic-touchbar/output/verification/report.json",
+    "ledger": "runs/streamdock-applemusic-touchbar/decisions/discovery/ledger-v1.json",
+    "sections": "runs/streamdock-applemusic-touchbar/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/streamdock-applemusic-touchbar/output/final/",
+    "audit_flags": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl"
+  }
+}

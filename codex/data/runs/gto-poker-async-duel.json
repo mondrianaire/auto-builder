@@ -1,0 +1,394 @@
+{
+  "schema_version": "0.1",
+  "slug": "gto-poker-async-duel",
+  "summary": {
+    "slug": "gto-poker-async-duel",
+    "prompt": null,
+    "date": "2026-05-14",
+    "architecture_version": null,
+    "dispatch_mode": null,
+    "verdict": "pass_with_concerns",
+    "raw_verdict": "`pass_with_concerns` — Tier 2 first-contact 8/8 pass (static + code-trace); Tier 1 PNV.1 structural pass + edge-case-report behavioral pass-through; Tier 3 sub-goal 20/20 assumption checks + 14/14 OOS checks + 8/8 IP checks",
+    "final_artifact": null,
+    "telos": "Build a GitHub-Pages-hostable web application that lets two users play an asynchronous head-to-head GTO poker quiz, submit per-decision confidence ratings, and receive a post-game summary highlighting their highest-confidence disagreements.",
+    "rating": {
+      "telos_fidelity": "adequate",
+      "deliverability": {
+        "tier1_pnv": "verified",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "failed"
+      },
+      "cost": {
+        "minutes": 135,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 34,
+      "overseer_dispatches": 0,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": 135,
+      "sections": 7,
+      "edge_cases_total": null,
+      "edge_cases_passing": null,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 2,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 1,
+      "events_total": 0,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-async-duel/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "succeeded_with_concerns",
+    "first_delivery_outcome_source": "uncertainty_manifest",
+    "re_audit_present": false,
+    "re_audit_reclassified_verdict": null,
+    "rca_present": false,
+    "links": {
+      "run_report": "runs/gto-poker-async-duel/run-report.md",
+      "verification": "runs/gto-poker-async-duel/output/verification/report.json",
+      "ledger": "runs/gto-poker-async-duel/decisions/discovery/ledger-v1.json",
+      "sections": "runs/gto-poker-async-duel/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/gto-poker-async-duel/output/final/",
+      "audit_flags": "runs/gto-poker-async-duel/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "An asynchronous two-player head-to-head GTO poker quiz game, hostable in full on GitHub Pages. Each round, one user receives a 'handful' of identical GTO 'gotcha' scenarios, selects an action for each, and indicates a confidence rating per decision; once submitted, the opponent receives the same handful and answers reciprocally. The exchange continues for a configured number of rounds. After the final round, both users see end-of-game statistics covering individual performance against the GTO-verified action and agreement between the two players, with the post-game wrap-up explicitly highligh…",
+    "telos": "Build a GitHub-Pages-hostable web application that lets two users play an asynchronous head-to-head GTO poker quiz, submit per-decision confidence ratings, and receive a post-game summary highlighting their highest-confidence disagreements.",
+    "assumption_count": 20,
+    "inflection_count": 8,
+    "oos_count": 14,
+    "proper_nouns": [
+      {
+        "surface": "GTO Poker Training",
+        "role": "supportive",
+        "verification_status": "pending"
+      },
+      {
+        "surface": "GitHub Pages",
+        "role": "target_defining",
+        "verification_status": "pending"
+      }
+    ],
+    "first_contact_requirements": [
+      {
+        "description": "The deliverable produces a working set of static files (HTML/CSS/JS plus any service worker and manifest) that, when committed to the docs/ directory or gh-pages branch of a GitHub repo with Pages enabled, serve a loadable application at t…"
+      },
+      {
+        "description": "Opening the published URL in a modern desktop browser (Chrome/Edge/Firefox) loads the application's start screen without console errors; the user can see a 'create a new game' affordance immediately, with no procedural setup required betwe…"
+      },
+      {
+        "description": "Creating a new game produces a shareable identifier (URL or short code) on the creator's screen that the creator can copy. Opening that identifier in a second browser profile / device joins the game as the second player."
+      },
+      {
+        "description": "On the first scenario screen, the user sees: the scenario description, the available actions, and a confidence input. Submitting without selecting an action and confidence is prevented (cannot accidentally submit an empty answer)."
+      },
+      {
+        "description": "Asset paths resolve correctly under a GitHub Pages project subpath (e.g., username.github.io/repo-name/) — no absolute root-anchored asset URLs that 404 when not at a user-page root."
+      },
+      {
+        "description": "Opt-in notifications: clicking the in-app 'enable notifications' affordance triggers the browser's standard permission prompt. After granting, the recipient receives a notification when their opponent submits a turn — including when the re…"
+      },
+      {
+        "description": "Mobile first-contact: opening the published URL on a recent mobile browser (Chrome Android, Safari iOS) renders an interactive, touch-usable game screen — actions are tappable, confidence input is usable, no horizontal scroll required to r…"
+      },
+      {
+        "description": "End-of-game wrap-up: after the configured final round is submitted by both players, both players see (on next open / via notification) an end-of-game screen that includes individual performance stats, agreement stats, and an explicit highl…"
+      }
+    ]
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1",
+        "charter_excerpt": "Define and embed the static GTO scenario library and the associated type definitions used across the app. Port the ancestor 'gto-poker-trainer' scenario data as JSON content (>=20 entries), annotated with each scenario's id, description, b…",
+        "acceptance_excerpt": "A static JSON scenario library exists with at least 20 entries, every entry having all required fields non-empty. A read-only API exposes getScenarioById, listScenarios, and sampleNScenarios(n, rngSeed). The shared type definitions are exp…"
+      },
+      {
+        "id": "section-2",
+        "charter_excerpt": "Wrap Firebase: initialize the Firebase app from the user-supplied config, perform anonymous sign-in at boot, and expose a small idempotent adapter that the rest of the app uses for all backend operations. Adapter API includes: createGame(c…",
+        "acceptance_excerpt": "Firebase is initialized exactly once from the user's config file at boot. Anonymous sign-in completes before any UI surface that requires authentication is shown. The adapter's API surface is exactly the methods listed in the charter, with…"
+      },
+      {
+        "id": "section-3",
+        "charter_excerpt": "Implement the Web Push pipeline. Author a service worker (sw.js) at the project root that handles the 'push' event by rendering a notification and the 'notificationclick' event by focusing or opening the game tab. Register the service work…",
+        "acceptance_excerpt": "Service worker registers with a relative URL so its scope equals the directory of the entrypoint (and thus the project subpath when published). manifest.json exists at a relative path, is referenced from <link rel='manifest'>, and has disp…"
+      },
+      {
+        "id": "section-4",
+        "charter_excerpt": "Build the in-game UI: the per-round handful view (one scenario at a time or all-at-once — implementer's call), per-scenario submission controls (action selection from the scenario's available_actions, discrete 1-5 confidence rating, option…",
+        "acceptance_excerpt": "From a joined game, the user is presented with their round's handful, can submit an action + confidence (+ optional note) per scenario, sees a 'waiting' state after submitting, and (once the opponent has also submitted) sees the reveal pan…"
+      },
+      {
+        "id": "section-5",
+        "charter_excerpt": "Build the landing screen, create-game flow, join-via-URL flow, and the inline onboarding text that explains how to share a game and how to enable notifications (including the iOS Add-to-Home-Screen pathway). Landing screen offers two paths…",
+        "acceptance_excerpt": "Landing screen offers create and join paths. Create-game flow exposes round-count + handful-size + display-name inputs, calls createGame(), and shows the share code + join URL + copy affordances. The join flow auto-detects ?join=<code> in …"
+      },
+      {
+        "id": "section-6",
+        "charter_excerpt": "Build the top-level page shell: index.html, the page-level routing (landing -> create | join | in-game | wrap-up), the global header/footer with the app's name (chosen distinct from 'GTO Poker Training' per DCA.31), the boot sequence that …",
+        "acceptance_excerpt": "index.html exists at the project root with a manifest link, a service-worker registration script, the app-name header, and a relative-path asset graph. Page-level routing transitions between landing, create-game, join-game, in-game, and wr…"
+      },
+      {
+        "id": "section-7",
+        "charter_excerpt": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment. Production fidelity here means: the integrated artifact is served under a project-subpath URL prefix …",
+        "acceptance_excerpt": "A verification report exists with an entry for every assertion in this sections file whose verifier is edge_case_testing or prompt_named_verb, plus every DCA assertion tagged edge_case_testing. Every entry includes pass/fail and at least o…"
+      }
+    ],
+    "contracts": [
+      "section-1--section-2",
+      "section-1--section-4",
+      "section-1--section-6",
+      "section-2--section-3",
+      "section-2--section-4",
+      "section-2--section-5",
+      "section-2--section-6",
+      "section-3--section-4",
+      "section-3--section-6",
+      "section-4--section-6",
+      "section-5--section-6"
+    ],
+    "prompt_verb_chosen": "play (a complete asynchronous head-to-head GTO duel: create a game, share the join code, alternate handful submissions across multiple rounds with confidence-rated decisions, receive opt-in notifications when it is your turn, and see the end-of-game wrap-up highlighting the highest joint-confidence disagreements)"
+  },
+  "timeline": [
+    {
+      "phase": "Discovery",
+      "duration": "~210s",
+      "duration_seconds": 210,
+      "mode": null,
+      "notes": "20 assumptions, 8 inflection points (2 high-importance), 8 first-contact requirements, 14 OOS items, 2 proper nouns (one demoted inline)"
+    },
+    {
+      "phase": "Technical Discovery (incl. inline Researcher)",
+      "duration": "~650s",
+      "duration_seconds": 650,
+      "mode": null,
+      "notes": "7 sections, 10 contracts, 8 IPs resolved (2 via Researcher with verbatim citations, 6 via quick reasoning), 54 discovery_coverage_assertions, PNV.1 spans 9 steps end-to-end"
+    },
+    {
+      "phase": "Editor",
+      "duration": "~130s",
+      "duration_seconds": 130,
+      "mode": null,
+      "notes": "4 findings (0 high, 2 medium, 2 low); verdict pass_with_recommendations; no route-backs"
+    },
+    {
+      "phase": "Coordinator + all waves + Integrator + edge-case-testing",
+      "duration": "~2180s",
+      "duration_seconds": 2180,
+      "mode": null,
+      "notes": "Inline mode; 7 waves; 11 builders; integrated artifact + edge-case Node harness 32/32 PASS"
+    },
+    {
+      "phase": "Critic final-sweep",
+      "duration": "~267s",
+      "duration_seconds": 267,
+      "mode": null,
+      "notes": "13/13 checks clean"
+    },
+    {
+      "phase": "Convergence Verifier",
+      "duration": "~294s",
+      "duration_seconds": 294,
+      "mode": null,
+      "notes": "Tier 2 8/8 pass; Tier 1 PNV structural pass + behavioral pass-through; Tier 3 sub-goal 20/20 + 14/14 + 8/8; zero Principle H skips"
+    },
+    {
+      "phase": "Historian",
+      "duration": "~155s",
+      "duration_seconds": 155,
+      "mode": null,
+      "notes": "build-summary.md + decision-index.json (23 decisions indexed)"
+    },
+    {
+      "phase": "Total",
+      "duration": "**~70 min wall**",
+      "duration_seconds": 4200,
+      "mode": null,
+      "notes": null
+    }
+  ],
+  "verification": {
+    "verdict": "pass_with_concerns",
+    "assumption_checks_total": 20,
+    "assumption_checks_verified": 0,
+    "out_of_scope_total": 14,
+    "out_of_scope_verified": 0,
+    "inflection_point_checks_total": 8,
+    "inflection_point_checks_honored": 0,
+    "edge_cases_total": null,
+    "edge_cases_passing": null,
+    "first_contact_results": [
+      {
+        "id": "FC.1",
+        "description": "Static directory committable to gh-pages branch with no build step.",
+        "result": "pass",
+        "evidence": "Integration directory contains only static assets (index.html, sw.js, manifest.json, firestore.rules, README.md, src/*.js, styles/app.css, data/scenarios.json, icons/*.svg). Zero package.json files exist at the integration root. No build script the user must run. All JS is ES modules loaded directly via <script type=module>. Firebase SDK is loaded from gstatic CDN at runtime, not bundled.",
+        "verifier": "static_inspection"
+      },
+      {
+        "id": "FC.2",
+        "description": "Landing screen with 'Create a new game' affordance loads without console errors.",
+        "result": "pass",
+        "evidence": "Traced src/app.js boot(): loadScenarios -> initFirebase -> signInAnonymously -> registerServiceWorker -> mountRouter -> goLanding -> mountLandingView. mountLandingView (src/onboarding.js:44) renders a button 'Create a new game' (line 58). With placeholder Firebase config (apiKey starts with 'PASTE_'), the renderConfigError() branch is hit instead (app.js:56-58), surfacing a user-readable 'Setup needed' screen — this is intentional and matches FC.2's 'assuming user has already configured Firebase' rider. No throw paths reach the user on a fresh load.",
+        "verifier": "static_trace"
+      },
+      {
+        "id": "FC.3",
+        "description": "Create-game produces a shareable identifier; join URL pattern implemented.",
+        "result": "pass",
+        "evidence": "src/state.js#createGame generates a 6-char base32 share code (line 116-126) and a join URL of the form '<origin><pathname>?join=<code>' (buildJoinUrl, line 128-134). src/onboarding.js#mountWaitingForOpponentView renders the share code and join URL with copy-to-clipboard affordances (lines 243-267). src/app.js initial route resolution reads ?join= from URL.searchParams and routes to mountJoinGameView with prefilled code (lines 164-168).",
+        "verifier": "static_trace"
+      },
+      {
+        "id": "FC.4",
+        "description": "Scenario screen requires action + confidence before submit.",
+        "result": "pass",
+        "evidence": "src/ui.js#renderMyTurn validation loop (lines 176-186): rejects submission with 'Pick an action for scenario N' if !s.action, then 'Pick a confidence (1-5) for scenario N' if !s.confidence. Submission only proceeds after both gates pass. Note input is optional (no validation gate, accepts up to 280 chars).",
+        "verifier": "static_trace"
+      },
+      {
+        "id": "FC.5",
+        "description": "No absolute-root asset paths; subpath-safe asset graph.",
+        "result": "pass",
+        "evidence": "grep for src=\"/ and href=\"/ across output/integration returned zero matches. index.html uses ./manifest.json, ./icons/icon-192.svg, ./styles/app.css, ./src/app.js. scenarios.js loads ../data/scenarios.json via new URL('../data/scenarios.json', import.meta.url) (subpath-safe per import.meta semantics). sw.js icon refs use ./icons/icon-192.svg. Service worker registers with relative './sw.js' (push.js:82).",
+        "verifier": "static_inspection"
+      },
+      {
+        "id": "FC.6",
+        "description": "Notification opt-in: permission request -> subscribe -> store endpoint; sw.js handles push event.",
+        "result": "pass",
+        "evidence": "src/push.js#enableNotifications gated on platformSupportsPush() and on iOS standalone state. Notification.requestPermission() invoked at line 127, called from a user-click handler bound in src/ui.js#buildNotifControl (line 310). On grant: reg.pushManager.subscribe with VAPID public key (lines 141-144); subscription serialized to PushSubscriptionRecord shape (endpoint + keys.p256dh + keys.auth + subscribed_at) and persisted via savePushSubscription (line 157). sw.js registers 'push' event handler (line 14) that renders self.registration.showNotification with title/body/tag/icon, and a 'notificationclick' handler (line 40) that focuses/opens the game tab.",
+        "verifier": "static_trace"
+      },
+      {
+        "id": "FC.7",
+        "description": "Mobile: viewport meta + responsive CSS + tappable controls.",
+        "result": "pass",
+        "evidence": "index.html line 5: <meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover'>. styles/app.css line 341: @media (max-width: 480px) overrides for .input-row, .stats-row, .stat-block, .app-title, .action-btn (full-width on mobile). Action buttons are <button> elements (not custom DOM), inherently tappable.",
+        "verifier": "static_inspection"
+      },
+      {
+        "id": "FC.8",
+        "description": "Wrap-up screen: individual + agreement stats + highest-joint-confidence-disagreement list.",
+        "result": "pass",
+        "evidence": "src/ui.js#mountWrapUpView (line 339+) renders three sections: accuracySection (per-player accuracy via stats.perPlayerAccuracy), agreementSection (inter-player agreement via stats.interPlayerAgreement), disagreementSection (ranked list via stats.rankedDisagreements ordered by joint_confidence_min descending with tie-break by joint_confidence_sum then scenario_id, per src/stats.js#rankedDisagreements lines 101-105). Edge-case-testing report confirms ranking ordering: 'S4.A7' shows minima=[5,3,2] in actual output order.",
+        "verifier": "static_trace + edge_case_report_cited"
+      }
+    ],
+    "principle_h_skips": [],
+    "concerns": [
+      {},
+      {},
+      {},
+      {}
+    ]
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 3,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 2,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 17,
+    "earliest": "2026-05-14T00:00:00Z",
+    "latest": "2026-05-14T01:05:32Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "v1.9 Editor role earned its keep. — This was the first run where Editor formally audited TD's plan before Coordinator's first wave. It caught two structural record-keeping gaps in Discovery's ledger (PN.2's `verification_status` left at `p…",
+      "Discovery's \"authoritative intent holder\" framing produced a ledger that survived end-to-end with no amendments. — All 20 assumptions verified at CV. No amendment, no escalation, no Sev 0 fix on the artifact itself. The `telos` field's dis…",
+      "Principle F (Researcher Citation Discipline) materially constrained the IP1+IP2 decision. — The Researcher's findings disqualified Supabase by a verbatim citation from Supabase's pricing/limits page noting the 7-day inactivity auto-pause o…",
+      "Production-fidelity-at-design-time (v1.6) avoided the latex/StreamDock recovery loop. — TD designed the artifact as vanilla JS + ES modules + CDN-loaded Firebase SDK + relative-path service worker from the start. There was no recovery patc…",
+      "Per-component real/modeled tagging (v1.9 Principle H) produced an honest CV report. — The CV declared `firebase_sdk` and `service_worker_registration_path` as `real` (vendored from gstatic CDN, static-inspectable), and `firestore_backend`,…",
+      "The 7-section spine right-sized the work. — Sections were mostly independent (only section-2 → section-1 was a hard chain; everything else fanned out from the backend adapter). The integrator added bootstrapping glue but no per-section rew…",
+      "No Critic-during-build flags despite inline mode. — Under inline dispatch, scheduled-mode Critic is collapsed into Coordinator; only final-sweep is non-skippable. Critic's final-sweep found zero severity-medium-or-higher issues across writ…"
+    ],
+    "what_broke": [
+      "Coordinator skipped the v1.6 delivery-required Historian artifacts. — Coordinator wrote `state/coordinator/build-complete.json` with `ready_for_final_verification: true` but did NOT write `history/build-summary.md` or `history/decision-ind…",
+      "Discovery's proper_noun record-keeping is updated by no role after Researcher findings return. — When Probe 001 returned canonical evidence for the `GitHub Pages` proper noun (`verbatim_excerpt` quoting GitHub's docs page on Pages static-o…",
+      "PN.1 (\"GTO Poker Training\") was demoted inline in the ledger rather than as a separate `demotion-v1.json`. — Discovery (initial mode) included a `demotion_note` field on the proper-noun entry summarizing why PN.1 was supportive — but the f…",
+      "PNV.1 cannot be exercised end-to-end live in any verifier environment. — The deliverable connects to a Firebase project the user creates. Until the user creates that project, pastes the config, generates VAPID keys, and pushes to a Pages-e…",
+      "Deliverability/setup-burden tension on \"fully can be hosted on github pages\". — The user said \"It is imperative that this application fully can be hosted on github pages.\" The strict-literal reading would forbid any third-party service dep…",
+      "Inline-mode Researcher: the TD agent inlined Probe 001 into its own execution rather than dispatching a real sub-agent. — TD's report explicitly noted: *\"No subagent/Agent tool was available in this environment, so I performed Probe 001's …"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 1,
+    "verdicts": [
+      "pass_with_recommendations"
+    ]
+  },
+  "demotion_count": 0,
+  "events": [],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-14",
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass_with_concerns",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "succeeded_with_concerns"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {},
+  "first_delivery": {
+    "outcome": "succeeded_with_concerns",
+    "source": "uncertainty_manifest"
+  },
+  "re_audit": null,
+  "links": {
+    "run_report": "runs/gto-poker-async-duel/run-report.md",
+    "verification": "runs/gto-poker-async-duel/output/verification/report.json",
+    "ledger": "runs/gto-poker-async-duel/decisions/discovery/ledger-v1.json",
+    "sections": "runs/gto-poker-async-duel/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/gto-poker-async-duel/output/final/",
+    "audit_flags": "runs/gto-poker-async-duel/audit/flags.jsonl"
+  }
+}

@@ -1,0 +1,534 @@
+{
+  "schema_version": "0.1",
+  "slug": "streamdock-apple-music-touchbar",
+  "summary": {
+    "slug": "streamdock-apple-music-touchbar",
+    "prompt": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that Utilizes the Touchbar Mode to display the currently playing song and artist from Apple Music Desktop Application. The plugin should take up the entire length of the VSD N4 Pro touch bar for display.",
+    "date": "2026-05-14",
+    "architecture_version": "v1.9",
+    "dispatch_mode": null,
+    "verdict": "pass_with_concerns",
+    "raw_verdict": "CV `pass_with_concerns` · Editor `pass_with_recommendations` · Critic 0 high / 2 medium (both resolved or routed)",
+    "final_artifact": null,
+    "telos": "A plugin that shows the user, on their MiraboxSpace StreamDock VSD N4 Pro's Touchbar Mode, the song and artist currently playing in the Apple Music Desktop Application on their Windows PC, occupying the entire length of the touch bar.",
+    "rating": {
+      "telos_fidelity": "adequate",
+      "deliverability": {
+        "tier1_pnv": "unverifiable",
+        "tier2_first_contact": "unverifiable",
+        "tier3_subgoal": "failed"
+      },
+      "cost": {
+        "minutes": null,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 5,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 7,
+      "overseer_dispatches": 5,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": null,
+      "sections": 5,
+      "edge_cases_total": null,
+      "edge_cases_passing": null,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 0,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 1,
+      "events_total": 0,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "plugin",
+    "deliverable_can_run_in_browser": false,
+    "deliverable_index": "com.autobuilder.applemusic-now-playing.sdPlugin/",
+    "deliverable_manifest": {
+      "Name": "Apple Music Now Playing (Touch Bar)",
+      "Author": "Auto Builder v1.9",
+      "Version": "1.0.0",
+      "Description": "Shows the currently playing song and artist from the Apple Music Desktop Application on the VSD N4 Pro Touch Bar.",
+      "Icon": "images/icon",
+      "Category": "Music",
+      "CategoryIcon": "images/icon",
+      "URL": "https://github.com/MiraboxSpace/StreamDock-Plugin-SDK",
+      "CodePath": "index.js",
+      "SDKVersion": 1,
+      "Software": {
+        "MinimumVersion": "3.10.188.226"
+      },
+      "OS": [
+        {
+          "Platform": "windows",
+          "MinimumVersion": "10"
+        }
+      ],
+      "Nodejs": {
+        "Version": "20"
+      },
+      "TargetDevice": "streamdock-n4-pro",
+      "Actions": [
+        {
+          "UUID": "com.autobuilder.applemusic-now-playing.touchbar",
+          "Name": "Apple Music Now Playing",
+          "Tooltip": "Display the currently playing Apple Music track on the Touch Bar.",
+          "Icon": "images/icon",
+          "PropertyInspectorPath": null,
+          "SupportedInMultiActions": false,
+          "Controllers": [
+            "TouchBar",
+            "Information"
+          ],
+          "TargetDevice": "streamdock-n4-pro",
+          "Type": "TouchBar",
+          "Encoder": {
+            "background": "images/icon",
+            "Icon": "images/icon",
+            "layout": "$X1",
+            "TouchBar": true
+          },
+          "States": [
+            {
+              "Image": "images/icon",
+              "TitleAlignment": "middle",
+              "FontSize": "16",
+              "ShowTitle": true,
+              "Title": "Not Playing"
+            }
+          ]
+        }
+      ]
+    },
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/streamdock-apple-music-touchbar.html",
+    "live_url_kind": "showcase",
+    "first_delivery_outcome": "succeeded_with_concerns",
+    "first_delivery_outcome_source": "uncertainty_manifest",
+    "re_audit_present": false,
+    "re_audit_reclassified_verdict": null,
+    "rca_present": false,
+    "links": {
+      "run_report": "runs/streamdock-apple-music-touchbar/run-report.md",
+      "verification": "runs/streamdock-apple-music-touchbar/output/verification/report.json",
+      "ledger": "runs/streamdock-apple-music-touchbar/decisions/discovery/ledger-v1.json",
+      "sections": "runs/streamdock-apple-music-touchbar/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/streamdock-apple-music-touchbar/output/final/",
+      "audit_flags": "runs/streamdock-apple-music-touchbar/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "Build a plugin for the MiraboxSpace StreamDock VSD N4 Pro (a physical hardware device with a Touchbar Mode display) which, when installed into the StreamDock host application on the user's Windows PC, listens to the Apple Music Desktop Application running on that same Windows PC and renders the currently playing song title and artist name on the device's touch bar, with the rendered region spanning the entire length of the touch bar.",
+    "telos": "A plugin that shows the user, on their MiraboxSpace StreamDock VSD N4 Pro's Touchbar Mode, the song and artist currently playing in the Apple Music Desktop Application on their Windows PC, occupying the entire length of the touch bar.",
+    "assumption_count": 10,
+    "inflection_count": 6,
+    "oos_count": 13,
+    "proper_nouns": [
+      {
+        "surface": "MiraboxSpace StreamDock VSD N4 Pro",
+        "role": "target_defining",
+        "verification_status": "pending"
+      },
+      {
+        "surface": "Touchbar Mode",
+        "role": "target_defining",
+        "verification_status": "pending"
+      },
+      {
+        "surface": "Apple Music Desktop Application",
+        "role": "target_defining",
+        "verification_status": "pending"
+      },
+      {
+        "surface": "VSD N4 Pro",
+        "role": "target_defining",
+        "verification_status": "pending"
+      }
+    ],
+    "first_contact_requirements": [
+      {
+        "description": "After the user follows the documented install steps for the delivered artifact on Windows, the plugin appears in the MiraboxSpace StreamDock host application's plugin list / available-actions catalog (under whatever name and category the h…"
+      },
+      {
+        "description": "The user can select Touchbar Mode on the VSD N4 Pro via the StreamDock host application and assign / activate this plugin to occupy the touch bar, using whatever UI affordance the host provides for placing plugins in Touchbar Mode."
+      },
+      {
+        "description": "Once activated, the plugin's rendered output occupies the entire length of the VSD N4 Pro touch bar (the long axis), not a single virtual key, not a centered subregion, and not only one segment of the bar. This is the prompt's explicit 'en…"
+      },
+      {
+        "description": "With the Apple Music Desktop Application running on the same Windows PC and playing a track, the touch bar displays the currently playing song title and artist name (both, in some visually clear arrangement) corresponding to the track that…"
+      },
+      {
+        "description": "When the user changes tracks in Apple Music (next/previous, selects a different track, or playback advances to the next track in a queue), the touch bar updates within a few seconds to show the new track's title and artist without the user…"
+      },
+      {
+        "description": "When the Apple Music Desktop Application is not running or has nothing playing, the plugin remains loaded and shows a sensible idle state (blank, or a clearly non-erroneous placeholder), rather than crashing the host application or freezin…"
+      }
+    ]
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1",
+        "charter_excerpt": "Implements the Stream Dock plugin host contract on Windows. Owns the WebSocket connection to ws://localhost:{port}/ on the port supplied by the host at registration (per the SDK's documented protocol), sends the 'registerPlugin' message wi…",
+        "acceptance_excerpt": "Plugin connects to the host's WebSocket within 5 seconds of process startup; registers successfully; correctly dispatches onWillAppear / onWillDisappear callbacks when the host enables/disables the action; drawText messages reach the host …"
+      },
+      {
+        "id": "section-2",
+        "charter_excerpt": "Reads the currently playing track's Title and Artist from the Windows-native Apple Music Desktop Application via the System Media Transport Controls (SMTC) API. Implementation spawns a PowerShell sidecar that loads the Windows.Media.Contro…",
+        "acceptance_excerpt": "When Apple Music on Windows is playing a track, subscribe(onTrack) receives a TrackState whose title and artist match Apple Music's own UI display within 2 seconds; on track change, onTrack receives the new TrackState within 3 seconds; whe…"
+      },
+      {
+        "id": "section-3",
+        "charter_excerpt": "Composes the TrackState into a display payload and dispatches it to host-integration's drawText. On every TrackState update from now-playing-source: if track is null or !isPlaying, sends an idle payload (blank or 'Not Playing'); otherwise …",
+        "acceptance_excerpt": "Renderer is subscribed to now-playing-source's subscribe(); on every callback the renderer calls host-integration.drawText with a payload reflecting the current track. When the track is null, the payload is the idle string. When the compos…"
+      },
+      {
+        "id": "section-4",
+        "charter_excerpt": "Produces the installable .sdPlugin directory artifact and the user-facing install README. Directory name is '{reverse-DNS-UUID}.sdPlugin' with the manifest.json at the root, code under a subdirectory (e.g., js/), the PowerShell sidecar und…",
+        "acceptance_excerpt": "output/final/ contains exactly one *.sdPlugin directory and a README.md. The manifest.json validates against the SDK schema (SDKVersion:1, OS array with Windows, Actions non-empty). The README literally contains the install path 'HotSpot\\S…"
+      },
+      {
+        "id": "section-5",
+        "charter_excerpt": "Covers every acceptance_assertion in this sections file whose verifier is 'edge_case_testing', exercised under the production-fidelity environment per CV charter §Production-fidelity exercise — no substitution of runtime dependencies the a…",
+        "acceptance_excerpt": "Covers every acceptance assertion with verifier 'edge_case_testing' from the section list (S1.A1, S1.A2, S1.A4, S2.A3, S3.A1, S3.A2, S3.A3, DCA.A6, DCA.FC.6), exercised under production-fidelity environment per CV charter §Production-fidel…"
+      }
+    ],
+    "contracts": [
+      "host-integration--now-playing-source",
+      "host-integration--touchbar-renderer",
+      "now-playing-source--touchbar-renderer"
+    ],
+    "prompt_verb_chosen": "display"
+  },
+  "timeline": [],
+  "verification": {
+    "verdict": "pass_with_concerns",
+    "assumption_checks_total": 10,
+    "assumption_checks_verified": 0,
+    "out_of_scope_total": 13,
+    "out_of_scope_verified": 0,
+    "inflection_point_checks_total": 6,
+    "inflection_point_checks_honored": 0,
+    "edge_cases_total": null,
+    "edge_cases_passing": null,
+    "first_contact_results": [
+      {
+        "id": "FC.1",
+        "description": "After install, plugin appears in Stream Dock host's plugin list / available-actions catalog on Windows.",
+        "result": "unverifiable_under_production_fidelity",
+        "production_fidelity_gap": "Stream Dock host application is not installed and per Principle H cannot be modeled from TD's plan; sandbox is Linux. CV cannot launch the host's plugin loader.",
+        "static_substitute": {
+          "performed": true,
+          "checks": [
+            "manifest.json present at .sdPlugin/manifest.json — PASS",
+            "manifest.SDKVersion == 1 (matches probe-ip1/C.1.3) — PASS",
+            "manifest.OS contains windows entry (matches probe-ip1/C.1.3) — PASS",
+            "manifest.Software.MinimumVersion == '3.10.188.226' (Node 20 host) — PASS",
+            "manifest.CodePath == 'index.js' and index.js exists — PASS",
+            "Directory name suffix == .sdPlugin — PASS",
+            "Zip distribution preserves directory at root — PASS (verified via unzip -l)"
+          ],
+          "interpretation": "Structural preconditions for FC.1 satisfied. Behavioral FC.1 (host actually enumerates the plugin in its UI) requires the host."
+        }
+      },
+      {
+        "id": "FC.2",
+        "description": "User can select Touchbar Mode on the VSD N4 Pro and assign the plugin to occupy the touch bar via the host UI.",
+        "result": "unverifiable_under_production_fidelity",
+        "production_fidelity_gap": "Requires both the Stream Dock host UI and the VSD N4 Pro hardware. Neither is present and per Principle H cannot be modeled.",
+        "static_substitute": {
+          "performed": true,
+          "checks": [
+            "manifest.Actions[0].Controllers includes 'TouchBar' — PASS (literal token; canonical SDK enumeration does NOT contain TouchBar per probe-ip3/C.3.3; token sourced from VSDinside porting guide + MiraboxSpace example repo per dev-001/IP3.A1 — flagged in Uncertainty Manifest)",
+            "manifest.Actions[0].Type == 'TouchBar' — PASS",
+            "manifest.TargetDevice == 'streamdock-n4-pro' — PASS",
+            "Action count == 1 (IP3.A2: 'entire length' satisfied by occupying the single per-scene Touch Bar slot) — PASS"
+          ],
+          "interpretation": "Structural preconditions satisfied with the documented Uncertainty Manifest caveat that the exact Touch Bar manifest token is external_source_unreachable; the host may or may not accept the chosen tokens, and the user is the test."
+        }
+      },
+      {
+        "id": "FC.3",
+        "description": "Plugin's rendered output occupies the entire length of the VSD N4 Pro touch bar.",
+        "result": "unverifiable_under_production_fidelity",
+        "production_fidelity_gap": "Geometry verification requires the physical VSD N4 Pro device. Pixel-extent observation cannot be modeled.",
+        "static_substitute": {
+          "performed": true,
+          "checks": [
+            "manifest.Actions length == 1 with Type=='TouchBar' (IP3.A2 single-slot occupancy) — PASS",
+            "Renderer paints all liveContexts (single-Action design means a single Touch Bar context populates the bar) — PASS (code inspection of renderer.start.paintAll)"
+          ],
+          "interpretation": "Structural preconditions satisfied. Whether the host actually addresses the bar as a single full-width canvas vs. a row of widgets is host-determined and not observable without hardware."
+        }
+      },
+      {
+        "id": "FC.4",
+        "description": "With Apple Music playing, touch bar shows the current track's title and artist.",
+        "result": "unverifiable_under_production_fidelity",
+        "production_fidelity_gap": "Requires running Apple Music Windows app + SMTC + Stream Dock host + VSD N4 Pro. None present.",
+        "static_substitute": {
+          "performed": true,
+          "checks": [
+            "renderer.composePayload({title:'Bohemian Rhapsody', artist:'Queen', isPlaying:true}) returns {title:'Bohemian Rhapsody', artist:'Queen', marquee:false} — PASS (exercised in Node)",
+            "host.drawText sends setTitle event with payload.title containing both title and artist joined by em-dash (host.js._composeText) — PASS (exercised in Node)",
+            "host.drawText additionally sends setFeedback with title and artist as separate fields — PASS (dev-001 dual-send strategy)",
+            "smtc-reader.ps1 reads MediaProperties.Title and MediaProperties.Artist from the SMTC session — PASS (grep)"
+          ],
+          "interpretation": "All in-process logic paths produce title+artist on the wire. Whether the host displays them on the bar is the host's responsibility and is unverifiable here."
+        }
+      },
+      {
+        "id": "FC.5",
+        "description": "On track change, touch bar updates within a few seconds.",
+        "result": "unverifiable_under_production_fidelity",
+        "production_fidelity_gap": "Requires Apple Music + SMTC + host + device. None present.",
+        "static_substitute": {
+          "performed": true,
+          "checks": [
+            "smtc-reader.ps1 subscribes to MediaPropertiesChanged and PlaybackInfoChanged via Register-ObjectEvent — PASS (grep)",
+            "smtc-reader.ps1 subscribes to SessionsChanged and CurrentSessionChanged on the manager — PASS (grep)",
+            "source.js debounces emissions to 150ms (well under 'a few seconds') and pushes new TrackState to subscribers — PASS (code inspection)",
+            "renderer.onTrack callback re-paints on every TrackState — PASS (exercised in Node)"
+          ],
+          "interpretation": "Reactivity wiring is in place. Wall-clock latency on real hardware not observable here."
+        }
+      },
+      {
+        "id": "FC.6",
+        "description": "When Apple Music is not running or has nothing playing, plugin shows a sensible idle state, does not crash.",
+        "result": "unverifiable_under_production_fidelity",
+        "production_fidelity_gap": "Closing Apple Music on Windows and observing the touch bar requires user hardware. Edge-case-testing report 5a marked this assertion (S2.A3, DCA.A6, DCA.FC.6) unverifiable_without_hardware for the same reason.",
+        "static_substitute": {
+          "performed": true,
+          "checks": [
+            "smtc-reader.ps1 emits {track: null} when no AppleMusic session found — PASS (Get-AppleMusicSession returns $null path)",
+            "source.js parseLine handles {track: null} by scheduleEmit(null) — PASS (code inspection)",
+            "renderer.composePayload(null) returns {title:'Not Playing', artist:'', marquee:false} — PASS (exercised in Node)",
+            "host.drawText handles null/empty payload without throw — PASS (exercised in Node: _composeText({}) returns {text:''})"
+          ],
+          "interpretation": "Idle-state code path produces a clean 'Not Playing' display through every layer. No exceptions observed in pure-logic exercise. Behavioral confirmation on real Apple-Music-closed scenario remains user-side."
+        }
+      }
+    ],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 0,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 25,
+    "earliest": "2026-05-14T01:30:00Z",
+    "latest": "2026-05-14T11:05:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "Discovery used execution-context evidence — The ledger's `execution_context_observed` field locked the platform to Windows from briefing path evidence (`C:\\Users\\mondr\\...`) and explicitly forbade downstream re-derivation. The prior run's …",
+      "Researcher found the actual MiraboxSpace SDK, not Elgato — The probe for IP1 returned canonical citations from `sdk.key123.vip` with `verbatim_excerpt` per Principle F, including the install path string and the manifest's `Keypad/Informati…",
+      "Editor's URL re-fetch backstop worked — The Editor agent literally re-fetched the cited URLs (the `sdk.key123.vip` SPA's underlying asset bundles, the GitHub API for the example-repo existence check) and confirmed the Researcher's verbatim…",
+      "Principle H prevented a fake-SDK pass — CV declared its `production_fidelity_environment` with per-component real/modeled tagging and refused to model the Stream Dock host from TD's plan. Six first-contact requirements and PNV.1 are record…",
+      "Three `external_source_unreachable` flags are honest, not papered over — When canonical sources for the exact Touch Bar manifest field name (IP3.A1), the exact host-protocol Touch Bar draw message (S1.A3), and Apple Music's exact `SourceAp…"
+    ],
+    "what_broke": [
+      "1. Editor improvised a \"North Star contract overrides the gate\" rationale — The Editor agent justified its `pass_with_recommendations` (rather than `route_to_user`) by citing \"the architecture's North Star contract overrides the gate: buil…",
+      "2. CV charter ambiguity on `unverifiable_under_production_fidelity` for plugin artifacts — The CV charter says \"If any first-contact requirement fails: halt verification immediately and write verdict `fail` with `first_contact_failure: tru…",
+      "3. Architecture's coverage-required-fields strict-walker is too strict — Critic flagged that `ledger#inflection_points[].default_branch` is not directly covered by any assertion — it's covered transitively via `inflection_resolutions[].cho…",
+      "4. Inline-dispatch Historian: log.jsonl is sparsely populated — Under inline mode, the Coordinator absorbed Historian's responsibilities. The log captured 25 entries by build end (Discovery decision, TD decisions, section transitions, Sev …",
+      "5. Sandbox-mount permission limitations affected delivery hygiene — CV created two artifacts (cv-test.tmp + node_modules symlink) inside the integrated .sdPlugin directory and could not unlink them. Orchestrator could not remove them durin…",
+      "6. The packaging gap (`ws` dependency) was honestly flagged but not fixed — Coordinator flagged that `require('ws')` is in the integrated code but `node_modules/ws` is not bundled. Without running `npm install --omit=dev` inside the .sdPlu…"
+    ],
+    "amendment_candidates": [
+      {
+        "version": "v1.10",
+        "text": "** either codify a \"North Star override\" clause for first-pass Editor verdicts (under which conditions?), or instruct Editor explicitly that `route_to_user` is the correct routing for non-blocking unreachables."
+      },
+      {
+        "version": "v1.10",
+        "text": "** add an explicit \"Tier 2b — user-side first-contact echo\" pathway: the build delivers, the user runs first-contact themselves, the result feeds back as a re-verification trigger. This closes the gap between \"we built something\" and \"the …"
+      },
+      {
+        "version": "v1.10",
+        "text": "** either (a) make the walker transitively-aware (resolution-of-IP counts as coverage of IP topic+default), or (b) clarify in the coverage-required-fields table that resolved IPs are exempt."
+      },
+      {
+        "version": "v1.10",
+        "text": "** either codify that log.jsonl can be sparse under inline mode (build-summary.md + decision-index.json suffice), or require log entries on every significant inline action."
+      },
+      {
+        "version": "v1.10",
+        "text": "** the sandbox-mount permission semantics should be either (a) discovered by Discovery's execution-context check and routed around, or (b) recognized in the divergence schema as a class of justified residuals (which this report does inline…"
+      }
+    ]
+  },
+  "uncertainty_manifest": [
+    "Manifest Touch Bar declaration. — The `manifest.json` declares `\"Controllers\": [\"TouchBar\", \"Information\"]` with `\"Type\": \"TouchBar\"` and `\"TargetDevice\": \"streamdock-n4-pro\"`. The canonical SDK reference at `sdk.key123.vip` enumerates onl…",
+    "Apple Music SMTC filter. — The PowerShell sidecar (`sidecar/smtc-reader.ps1`) filters SMTC sessions where `SourceAppUserModelId -match 'AppleMusic'`. If Apple ships a build whose `SourceAppUserModelId` does not contain that substring, the …",
+    "Host-protocol Touch Bar draw message. — The plugin dual-sends `setTitle` and `setFeedback` events to the host for every render, on the assumption that one of the two is the canonical draw verb for Touch Bar actions. The canonical SDK does …",
+    "`ws` npm dependency is not bundled. — Run `npm install --omit=dev` inside the `.sdPlugin/` directory before installing to your StreamDock host's plugins folder, OR verify whether your host's bundled Node.js 20 already provides `ws` (some h…",
+    "Icon assets are placeholders. — `images/icon.txt` is a text placeholder rather than 72×72 / 144×144 PNGs. The host will show a default icon with a warning. Provide real icons to silence the warning.",
+    "Stray sandbox artifacts in the expanded directory form. — `output/final/com.autobuilder.applemusic-now-playing.sdPlugin/cv-test.tmp` (now empty) and `output/final/com.autobuilder.applemusic-now-playing.sdPlugin/node_modules` (dangling syml…"
+  ],
+  "editor": {
+    "iterations": 1,
+    "verdicts": [
+      "pass_with_recommendations"
+    ]
+  },
+  "demotion_count": 0,
+  "events": [],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-14",
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass_with_concerns",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "succeeded_with_concerns"
+    }
+  ],
+  "file_tree": {
+    "tree": [
+      {
+        "kind": "dir",
+        "name": "com.autobuilder.applemusic-now-playing.sdPlugin",
+        "children": [
+          {
+            "kind": "dir",
+            "name": "images",
+            "children": [
+              {
+                "kind": "file",
+                "name": "icon.txt",
+                "size": 752
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "js",
+            "children": [
+              {
+                "kind": "file",
+                "name": "host.js",
+                "size": 6625
+              },
+              {
+                "kind": "file",
+                "name": "process-utils.js",
+                "size": 1399
+              },
+              {
+                "kind": "file",
+                "name": "renderer.js",
+                "size": 2091
+              },
+              {
+                "kind": "file",
+                "name": "source.js",
+                "size": 3635
+              }
+            ]
+          },
+          {
+            "kind": "dir",
+            "name": "sidecar",
+            "children": [
+              {
+                "kind": "file",
+                "name": "smtc-reader.ps1",
+                "size": 4468
+              }
+            ]
+          },
+          {
+            "kind": "file",
+            "name": "cv-test.tmp",
+            "size": 1
+          },
+          {
+            "kind": "file",
+            "name": "index.js",
+            "size": 2006
+          },
+          {
+            "kind": "file",
+            "name": "manifest.json",
+            "size": 1441
+          },
+          {
+            "kind": "file",
+            "name": "package.json",
+            "size": 371
+          }
+        ]
+      },
+      {
+        "kind": "file",
+        "name": "com.autobuilder.applemusic-now-playing.sdPlugin.zip",
+        "size": 11562
+      },
+      {
+        "kind": "file",
+        "name": "divergence-from-integration.json",
+        "size": 4491
+      },
+      {
+        "kind": "file",
+        "name": "README.md",
+        "size": 4560
+      }
+    ],
+    "node_count": 17,
+    "truncated": false
+  },
+  "role_attribution_totals": {},
+  "first_delivery": {
+    "outcome": "succeeded_with_concerns",
+    "source": "uncertainty_manifest"
+  },
+  "re_audit": null,
+  "links": {
+    "run_report": "runs/streamdock-apple-music-touchbar/run-report.md",
+    "verification": "runs/streamdock-apple-music-touchbar/output/verification/report.json",
+    "ledger": "runs/streamdock-apple-music-touchbar/decisions/discovery/ledger-v1.json",
+    "sections": "runs/streamdock-apple-music-touchbar/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/streamdock-apple-music-touchbar/output/final/",
+    "audit_flags": "runs/streamdock-apple-music-touchbar/audit/flags.jsonl"
+  }
+}

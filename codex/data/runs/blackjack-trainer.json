@@ -1,0 +1,692 @@
+{
+  "schema_version": "0.1",
+  "slug": "blackjack-trainer",
+  "summary": {
+    "slug": "blackjack-trainer",
+    "prompt": null,
+    "date": "2026-05-09",
+    "architecture_version": "v1.3",
+    "dispatch_mode": "inline",
+    "verdict": "pass",
+    "raw_verdict": "Delivered. CV verdict `pass`. All 6 required delivery artifacts present.",
+    "final_artifact": null,
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "verified",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "verified"
+      },
+      "cost": {
+        "minutes": 0,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 17,
+      "overseer_dispatches": 7,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": 0,
+      "sections": 7,
+      "edge_cases_passing": 21,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 2,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 19,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/blackjack-trainer/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "unverified",
+    "first_delivery_outcome_source": "default",
+    "re_audit_present": true,
+    "re_audit_reclassified_verdict": "fail",
+    "rca_present": true,
+    "links": {
+      "run_report": "runs/blackjack-trainer/run-report.md",
+      "verification": "runs/blackjack-trainer/output/verification/report.json",
+      "ledger": "runs/blackjack-trainer/decisions/discovery/ledger-v1.json",
+      "sections": "runs/blackjack-trainer/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/blackjack-trainer/output/final/",
+      "audit_flags": "runs/blackjack-trainer/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "A single-page web application that lets a user play hands of blackjack, request a hint before committing to an action (proactive guidance), and receive a post-hand review comparing the user's decisions against basic-strategy correct plays. Correctness is grounded in the standard basic-strategy cheat sheet referenced by URL in the prompt.",
+    "telos": null,
+    "assumption_count": 14,
+    "inflection_count": 5,
+    "oos_count": 15,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1",
+        "charter_excerpt": "Pure JavaScript module implementing standard blackjack mechanics: shoe construction (multi-deck) with shuffling, hand scoring with proper ace handling (soft vs hard totals), blackjack and bust detection, legal-actions evaluator for the cur…",
+        "acceptance_excerpt": "Given any sequence of card draws, the module returns correct hand totals, correctly identifies blackjacks and busts, returns the legal action set per the locked ruleset (hit/stand/double/split, with double-after-split allowed and surrender…"
+      },
+      {
+        "id": "section-2",
+        "charter_excerpt": "Pure JavaScript module encoding the standard basic-strategy table for the locked S17 + DAS + no-surrender variant: hard totals 5-21, soft totals A2-A9, and pair splits AA-TT, each keyed by player hand category and dealer upcard. Exposes a …",
+        "acceptance_excerpt": "For any legal player hand state and dealer upcard, returns the basic-strategy-correct action under the locked ruleset. The table covers hard totals 5-21, soft totals A2-A9, and pair splits AA-TT. The module is data-only plus a lookup funct…"
+      },
+      {
+        "id": "section-3",
+        "charter_excerpt": "Pure JavaScript module that orchestrates the hand lifecycle (betting -> dealing -> player decisions -> dealer play -> resolution -> review -> next), holds the canonical game state, exposes a subscribe/dispatch API for UI and hint/review co…",
+        "acceptance_excerpt": "Drives a hand from betting through resolution and into a review state, transitioning only via legal actions per rules-engine. Builds a decision log per hand with one entry per player decision, each entry annotated with the basic-strategy c…"
+      },
+      {
+        "id": "section-4",
+        "charter_excerpt": "DOM-rendering layer that subscribes to the game-state-machine and paints the table area, dealer hand, player hand(s) including any split sub-hands, action buttons (Hit/Stand/Double/Split), the Hint button, and the Deal/Next button. Buttons…",
+        "acceptance_excerpt": "The page renders the dealer hand, player hand(s), action buttons, Hint button, Deal/Next button, and a post-hand review panel container. Action buttons are enabled only when the corresponding action is legal in the current phase. The Deal/…"
+      },
+      {
+        "id": "section-5",
+        "charter_excerpt": "Wires the Hint button and the post-hand review panel content. On hint click, queries strategy-table for the recommended action given the current player hand and dealer upcard, and surfaces a single action label into the hint area. After ev…",
+        "acceptance_excerpt": "Clicking the Hint button mid-hand reveals the basic-strategy action for the current state, sourced from strategy-table. After every resolved hand, the post-hand review panel appears and lists each decision the user made vs basic-strategy c…"
+      },
+      {
+        "id": "section-6",
+        "charter_excerpt": "Top-level page wiring: index.html, styles.css, and the small bootstrap script that constructs the rules-engine, strategy-table, game-state-machine, ui-render, and hint-and-review modules and wires them together (state machine <-> ui-render…",
+        "acceptance_excerpt": "Loading index.html in a modern browser produces a working blackjack trainer single-page app with no build step required: dealer hand, player hand(s), action buttons, Hint button, Deal/Next button, and a review panel area are all present, a…"
+      },
+      {
+        "id": "section-7",
+        "charter_excerpt": "Cover every acceptance assertion with `verifier: edge_case_testing` from the section list. Every section's `acceptance_assertions[]` is in scope. Build a runnable test harness that exercises the integrated artifact (DOM + wired modules) an…",
+        "acceptance_excerpt": "A runnable test harness exists in the integrated artifact and reports pass/fail per assertion id (S1.A1 through S6.A3, plus the IP-level assertions). Every acceptance assertion tagged `verifier: edge_case_testing` in sections-v1.json is co…"
+      }
+    ],
+    "contracts": [
+      "section-1--section-3",
+      "section-2--section-3",
+      "section-2--section-5",
+      "section-3--section-4",
+      "section-3--section-5",
+      "section-3--section-6",
+      "section-4--section-5",
+      "section-4--section-6",
+      "section-5--section-6"
+    ],
+    "prompt_verb_chosen": null
+  },
+  "timeline": [
+    {
+      "phase": "1",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": null
+    },
+    {
+      "phase": "2",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": null
+    },
+    {
+      "phase": "3",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": null
+    },
+    {
+      "phase": "4",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": null
+    },
+    {
+      "phase": "5",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": null
+    },
+    {
+      "phase": "6",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": null
+    }
+  ],
+  "verification": {
+    "verdict": "pass",
+    "assumption_checks_total": 14,
+    "assumption_checks_verified": 14,
+    "out_of_scope_total": 15,
+    "out_of_scope_verified": 15,
+    "inflection_point_checks_total": 5,
+    "inflection_point_checks_honored": 5,
+    "edge_cases_passing": 21,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 2,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 2,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 10,
+    "earliest": "2026-05-09T00:45:00Z",
+    "latest": "2026-05-09T01:13:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "`acceptance_assertions[]` per section caught the prior run's regression class. — TD wrote four explicit `user_flow` assertions specifically targeting the v1.3-prompting bug: `S3.A5` (next-hand from resolved without reload), `S4.A3` (Deal b…",
+      "IP machine-checkable assertions kept the rules-variant lock honest. — IP1 was locked to S17+DAS+no-surrender; the four assertions (S17 dealer, DAS legal-actions, no-surrender absence, 3:2 payout) are tight enough that Critic could verify e…",
+      "Inline dispatch mode handled this scope cleanly. — 7 sections, 9 contracts, ~1100 lines of integrated JS + HTML + CSS plus a ~600-line test harness — all produced by one agent acting as Coordinator+Overseer+Builder+Integrator. Compared to …",
+      "Charter-implementation conformance and acceptance-assertion coverage both clean. — No TD section shipped with an un-asserted prose phrase. No IP shipped without a machine-checkable claim that Critic could verify against the integrated arti…",
+      "Sev 0 fixes pathway not needed. — Integration was clean enough that no trivial fixes were required. The Sev 0 audit at Critic final-sweep confirmed an empty directory, which is the cheapest happy path through that mechanism."
+    ],
+    "what_broke": [
+      "Nothing broke. — This run completed end-to-end without escalations, without Sev 0 fixes, without Researcher dispatches, without contract amendments. That's notable for a build with 7 sections and 9 contracts, but it's also evidence the arc…",
+      "The cheat-sheet image was not directly readable. — The prompt named a specific URL but the image content wasn't accessible to the Discovery agent. Discovery handled this correctly: captured an assumption (A5) that we'd encode the standard …",
+      "The basic-strategy table is the single point of correctness. — The strategy-table module is consumed by both the hint surface and the review surface. If a single cell is wrong, both surfaces are wrong identically — which is bad for learnin…"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[build_complete_handoff] (v1.2) pass",
+      "verbatim_excerpt": "state/coordinator/build-complete.json exists. Handoff signal correctly written.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-001",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[machine_checkable_assertions_per_ip_lock] (v1.2) needs_inspection",
+      "verbatim_excerpt": "TD's sections file should be checked for machine_checkable_assertions[] on each inflection_resolution. If absent, fail; if present, pass. Likely present given run-report sophistication, but unverified by this audit pass.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-002",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[acceptance_assertions_per_section] (v1.3) needs_inspection",
+      "verbatim_excerpt": "Each section's acceptance phrases should derive at least one acceptance_assertion. Likely present given the depth of the verification report; unverified.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-003",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_pass] (v1.3) needs_inspection",
+      "verbatim_excerpt": "Verification report exists but does not document an artifact-exercise pass under cv_artifact_exercise. Static inspection fields ('source grep across...') dominate. May or may not have done DOM-loaded exercise; absence of a cv-runner script (unlike kanban-board which has one) suggests static-only.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-004",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_production_fidelity] (v1.5) fail_likely",
+      "verbatim_excerpt": "If the run did do artifact-exercise (uncertain), it would have been pre-v1.5 and likely used jsdom with stubbed runtime deps. The trainer uses ES modules and likely has no CDN deps (unlike latex), so the substitution risk is lower — but the verification still didn't run under explicit production fidelity per v1.5 wording.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-005",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_named_verb_assertion] (v1.5) fail",
+      "verbatim_excerpt": "No PNV in the verification report. The prompt's named verb 'train me on blackjack' (or whatever the literal verb was) was not asserted end-to-end.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-006",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[historian_build_summary_and_decision_index] (v1.6) needs_inspection",
+      "verbatim_excerpt": "history/log.jsonl exists; build-summary.md and decision-index.json existence is unverified by this audit pass.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-007",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_verb_analysis] (v1.6) fail",
+      "verbatim_excerpt": "Absent — the v1.6 schema field didn't exist when this run was built.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-008",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: This run was more sophisticated than the original blackjack run — has build-complete.json, full verification report with assumption checks, populated final/. It's closer to passing v1.6 than blackjac…",
+      "verbatim_excerpt": "This run was more sophisticated than the original blackjack run — has build-complete.json, full verification report with assumption checks, populated final/. It's closer to passing v1.6 than blackjack is.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-009",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: The two definite failures are PNV and prompt_verb_analysis, both v1.5/v1.6 gates that postdate this run. The 'needs_inspection' items might pass; a more thorough audit pass would resolve them.",
+      "verbatim_excerpt": "The two definite failures are PNV and prompt_verb_analysis, both v1.5/v1.6 gates that postdate this run. The 'needs_inspection' items might pass; a more thorough audit pass would resolve them.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-010",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: If the trainer artifact actually trains the user on blackjack correctly (which the run-report claims it does), the failures here are documentation/structure, not behavior.",
+      "verbatim_excerpt": "If the trainer artifact actually trains the user on blackjack correctly (which the run-report claims it does), the failures here are documentation/structure, not behavior.",
+      "source_file": "runs/blackjack-trainer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-011",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:00Z",
+      "module": null,
+      "summary": "[writer_permission_compliance] All files attribute to authorized writers per file_schemas.md permission table. Build ran under inline dispatch mode (dispatch_mode='inline' in dag.json and build-complete.json). Coordinator legitimately wrot…",
+      "verbatim_excerpt": "All files attribute to authorized writers per file_schemas.md permission table. Build ran under inline dispatch mode (dispatch_mode='inline' in dag.json and build-complete.json). Coordinator legitimately wrote section state, builder outputs, integration files, harness report, etc. on behalf of overseers/builders/integrator. History log uses 'coordinator-inline-as-overseer-N' and 'coordinator-inline-as-integrator' attribution as required. Section state files set owner='coordinator-inline'. Spot-…",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [
+        "Coordinator",
+        "Overseer",
+        "Builder",
+        "Integrator"
+      ],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-012",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:01Z",
+      "module": null,
+      "summary": "[out_of_scope_presence] Greps over integration source for the 15 out-of-scope items in ledger-v1.json: login/auth/signup/password — no matches; fetch/XHR/network — no matches; sync/share — no matches; player_id/seat/socket — no matches; st…",
+      "verbatim_excerpt": "Greps over integration source for the 15 out-of-scope items in ledger-v1.json: login/auth/signup/password — no matches; fetch/XHR/network — no matches; sync/share — no matches; player_id/seat/socket — no matches; stripe/wallet/USD — no matches; count/true count/card counting — no matches; insurance — no matches; perfectpairs/21+3/sidebet — no matches; tournament/timer — no matches; share/leaderboard — no matches; cordova/ionic/react-native — no matches; i18n/locale/translate — no matches; analy…",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-013",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:02Z",
+      "module": null,
+      "summary": "[schema_conformance] ledger-v1.json: version, created_at, project_name, restatement, assumption_ledger[14], inflection_points[5], out_of_scope[15] all present. sections-v1.json: version, based_on_ledger, inflection_resolutions[5] each with…",
+      "verbatim_excerpt": "ledger-v1.json: version, created_at, project_name, restatement, assumption_ledger[14], inflection_points[5], out_of_scope[15] all present. sections-v1.json: version, based_on_ledger, inflection_resolutions[5] each with machine_checkable_assertions[], sections[7] each with acceptance_assertions[]. dag.json: version 8, nodes[8] with status/wave/depends_on, edges[16], current_wave 7. build-complete.json: signaled_at, all_sections_verified, integrator_verified, edge_case_testing_executed, ready_for…",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-014",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:03Z",
+      "module": null,
+      "summary": "[section_coverage] All 7 sections (rules-engine, strategy-table, game-state-machine, ui-render, hint-and-review, app-shell, edge-case-testing) have state file with status='verified', have output files referenced in output/builders/{section…",
+      "verbatim_excerpt": "All 7 sections (rules-engine, strategy-table, game-state-machine, ui-render, hint-and-review, app-shell, edge-case-testing) have state file with status='verified', have output files referenced in output/builders/{section}/, and all six production sections appear in manifest.section_outputs_used. Section-7 (edge-case-testing) contributes tests.html + tests.js via manifest. No section silently skipped.",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-015",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:04Z",
+      "module": null,
+      "summary": "[charter_implementation_conformance] IP1.A1 S17: rules-engine.js line 120 'if (score.total >= 17) break' fires regardless of soft — soft 17 stands. IP1.A2 DAS: rules-engine.js lines 101-103 'cards.length===2 && !hasHit' allows double on sp…",
+      "verbatim_excerpt": "IP1.A1 S17: rules-engine.js line 120 'if (score.total >= 17) break' fires regardless of soft — soft 17 stands. IP1.A2 DAS: rules-engine.js lines 101-103 'cards.length===2 && !hasHit' allows double on split sub-hand 2-card decision. IP1.A3 no surrender: zero literal occurrences in source. IP1.A4 3:2 payout: rules-engine.js line 140 'netDelta: Math.round(bet * 1.5)' returns 15 on bet=10. IP2.A1 no drill UI: grep clean for drill/mode-select/mode-toggle in production. IP2.A2 free-play loop: game-st…",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-016",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:05Z",
+      "module": null,
+      "summary": "[sev0_audit] Directory contains only .gitkeep — no Sev 0 fixes applied during this run, consistent with Coordinator's claim in build-complete.json summary. No scope_check claims to audit.",
+      "verbatim_excerpt": "Directory contains only .gitkeep — no Sev 0 fixes applied during this run, consistent with Coordinator's claim in build-complete.json summary. No scope_check claims to audit.",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [
+        "Coordinator"
+      ],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-017",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:06Z",
+      "module": null,
+      "summary": "[acceptance_assertion_coverage] Every section has acceptance_assertions[] populated. Section 1: 6 assertions (S1.A1-A6) covering totals, blackjack/bust flags, legal actions, S17 dealer, 3:2 payout, Node-loadable purity. Section 2: 3 assert…",
+      "verbatim_excerpt": "Every section has acceptance_assertions[] populated. Section 1: 6 assertions (S1.A1-A6) covering totals, blackjack/bust flags, legal actions, S17 dealer, 3:2 payout, Node-loadable purity. Section 2: 3 assertions (S2.A1-A3) covering basic-strategy spot checks, every-cell-defined, data-only export. Section 3: 5 assertions (S3.A1-A5) covering phase progression, illegal-dispatch noop, decision log shape, subscribe firing, next-hand from resolved. Section 4: 5 assertions (S4.A1-A5) covering DOM pres…",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-018",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-09T01:15:07Z",
+      "module": null,
+      "summary": "[critical_user_flow_assertions] S3.A5 verified-in-source: game-state-machine.js dispatch() case 'deal' lines 313-316: 'if (state.phase===\"betting\") mutated=doDeal(); else if (state.phase===\"resolved\"||state.phase===\"review\") mutated=doNext…",
+      "verbatim_excerpt": "S3.A5 verified-in-source: game-state-machine.js dispatch() case 'deal' lines 313-316: 'if (state.phase===\"betting\") mutated=doDeal(); else if (state.phase===\"resolved\"||state.phase===\"review\") mutated=doNext()'. doNext (lines 300-307) preserves handsPlayed via 'const carriedHands=state.handsPlayed; state=freshState(); state.handsPlayed=carriedHands; startHand()'. No page reload. Harness covers via testS3A5 + testS7A3. S4.A3 verified-in-source: ui-render.js line 167 'const dealEnabled = (phase==…",
+      "source_file": "runs/blackjack-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-09",
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "unverified"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {
+    "Re-Verification": {
+      "high": 8,
+      "medium": 0,
+      "low": 3,
+      "total": 11,
+      "explicit_count": 8
+    },
+    "Coordinator": {
+      "high": 2,
+      "medium": 0,
+      "low": 0,
+      "total": 2,
+      "explicit_count": 2
+    },
+    "Overseer": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    },
+    "Builder": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    },
+    "Integrator": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    },
+    "CV": {
+      "high": 2,
+      "medium": 0,
+      "low": 6,
+      "total": 8,
+      "explicit_count": 0
+    }
+  },
+  "first_delivery": {
+    "outcome": "unverified",
+    "source": "default"
+  },
+  "re_audit": {
+    "audit_at": "2026-05-10T07:00:00Z",
+    "audit_under_architecture_version": "v1.6",
+    "original_verdict": "pass",
+    "reclassified_verdict": "fail",
+    "fail_count": 2,
+    "pass_count": 1,
+    "not_applicable_count": 0,
+    "recommendation": "patch_artifact_after_full_inspection"
+  },
+  "links": {
+    "run_report": "runs/blackjack-trainer/run-report.md",
+    "verification": "runs/blackjack-trainer/output/verification/report.json",
+    "ledger": "runs/blackjack-trainer/decisions/discovery/ledger-v1.json",
+    "sections": "runs/blackjack-trainer/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/blackjack-trainer/output/final/",
+    "audit_flags": "runs/blackjack-trainer/audit/flags.jsonl"
+  }
+}

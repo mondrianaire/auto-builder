@@ -1,0 +1,341 @@
+{
+  "schema_version": "0.1",
+  "slug": "gto-poker-trainer",
+  "summary": {
+    "slug": "gto-poker-trainer",
+    "prompt": "Perform a deep dive into GTO poker theory and create a training application with multiple modes one of which highlights a curated selection of hands to walk through that identify edge cases of GTO play for training. Another mode should be a fully functional 9 person table that tracks stats over sessions and features a sampling of 'classic' poker player archetypes.",
+    "date": null,
+    "architecture_version": "v1.8",
+    "dispatch_mode": "inline",
+    "verdict": "pass",
+    "raw_verdict": "pass (PNV.1 verified end-to-end under jsdom production fidelity).",
+    "final_artifact": null,
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "verified",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "verified"
+      },
+      "cost": {
+        "minutes": 0,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 18,
+      "overseer_dispatches": 0,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": 0,
+      "sections": 7,
+      "edge_cases_total": null,
+      "edge_cases_passing": null,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 2,
+      "sev0_fixes": 4,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 3,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "unverified",
+    "first_delivery_outcome_source": "default",
+    "re_audit_present": false,
+    "re_audit_reclassified_verdict": null,
+    "rca_present": false,
+    "links": {
+      "run_report": "runs/gto-poker-trainer/run-report.md",
+      "verification": "runs/gto-poker-trainer/output/verification/report.json",
+      "ledger": "runs/gto-poker-trainer/decisions/discovery/ledger-v1.json",
+      "sections": "runs/gto-poker-trainer/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/gto-poker-trainer/output/final/",
+      "audit_flags": "runs/gto-poker-trainer/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "A Texas Hold'em GTO training application for a semi-professional player who struggles to practice pure GTO play. Contains at least two modes: (1) a guided walkthrough of a curated hand library showcasing GTO edge cases, and (2) a fully functional 9-handed table populated with classic poker player archetypes that records per-session statistics across sessions.",
+    "telos": null,
+    "assumption_count": 12,
+    "inflection_count": 5,
+    "oos_count": 11,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1",
+        "charter_excerpt": "Build the single-page browser shell that hosts the entire app: a top-level home screen with two clearly labeled entrypoints (Walkthrough mode, Table mode) plus a Stats Dashboard route. Provide the shared layout primitives (header, mode-swi…",
+        "acceptance_excerpt": "Opening the entrypoint via file:// in a fresh browser reaches an interactive home screen with no console errors and no outbound network requests. The home screen exposes navigation into Walkthrough mode, Table mode, and Stats Dashboard. Th…"
+      },
+      {
+        "id": "section-2",
+        "charter_excerpt": "Author and embed the GTO reference dataset and the prose theory content that lives inside the artifact. This includes: preflop opening / 3-bet / 4-bet / call ranges for each of the 9-max positions at 100bb, a curated library of >= 20 postf…",
+        "acceptance_excerpt": "The dataset module exposes preflop ranges keyed by (position, action) for all 9 standard positions and reference data for every hand in the curated library. The curated library contains >= 20 hands, each with a non-empty lesson tag, a GTO …"
+      },
+      {
+        "id": "section-3",
+        "charter_excerpt": "Build the curated-hand walkthrough UI: a hand index, a per-hand decision view that shows the spot (cards, board, action history, pot, stack), decision controls (action + sizing), a commit gate that hides the GTO answer until decision, and …",
+        "acceptance_excerpt": "From the home screen, the user can enter Walkthrough mode and see a hand index of all curated hands. Selecting a hand presents the spot with no GTO answer visible. Committing a decision transitions to a revealed-answer state showing the GT…"
+      },
+      {
+        "id": "section-4",
+        "charter_excerpt": "Define the archetype roster (>= 6 profiles: TAG, LAG, Nit, CallingStation, Maniac, Rock at minimum) as static frequency tables (preflop ranges + postflop bet/call/fold heuristics keyed by board texture, pot odds, and prior action). Impleme…",
+        "acceptance_excerpt": "The archetype roster contains >= 6 distinct profiles. Each profile is a static data structure with explicit frequency tables. The decide function is pure: identical (game_state, profile, rng_seed) inputs produce identical outputs and no pr…"
+      },
+      {
+        "id": "section-5",
+        "charter_excerpt": "Build the 9-handed cash-game table: deck/shuffle/deal, blinds posting, hero seat (1 of 9) and 8 archetype seats, betting rounds (preflop, flop, turn, river), valid-action enforcement (min-raise, all-in, check/call/fold), pot accounting, si…",
+        "acceptance_excerpt": "Entering Table mode shows a 9-seat table with the hero in one seat and 8 named archetype agents in the others. Hands deal correctly (2 hole cards, then flop/turn/river as betting permits), blinds post, betting rounds enforce valid actions,…"
+      },
+      {
+        "id": "section-6",
+        "charter_excerpt": "Implement the stats writer that consumes HandResult events from Table mode and DecisionResult events from Walkthrough mode and updates running totals stored via section-1's storage adapter. Compute and render the dashboard metrics: hands p…",
+        "acceptance_excerpt": "From any mode, the user can navigate to the Stats Dashboard and see all eight named metrics rendered with numeric values for both current-session and all-time scopes. After playing N hands, reloading the page, and re-opening the dashboard,…"
+      },
+      {
+        "id": "section-7",
+        "charter_excerpt": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment per CV charter. Run the integrated artifact opened via file:// in a fresh browser profile with cleared…",
+        "acceptance_excerpt": "Every assertion in this sections file with verifier in {edge_case_testing, prompt_named_verb} and every DCA assertion tagged edge_case_testing has been exercised against the integrated artifact under production fidelity (file://, fresh pro…"
+      }
+    ],
+    "contracts": [
+      "section-1--section-3",
+      "section-1--section-4",
+      "section-1--section-5",
+      "section-1--section-6",
+      "section-2--section-3",
+      "section-2--section-4",
+      "section-2--section-5",
+      "section-3--section-6",
+      "section-4--section-5",
+      "section-5--section-6"
+    ],
+    "prompt_verb_chosen": "play (a full session of 9-handed cash vs archetype agents with stats persisted across sessions)"
+  },
+  "timeline": [
+    {
+      "phase": "Discovery",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": "All IPs flagged at high or medium importance — IP1 (delivery surface) and IP2 (data source) are the cascade-loaded ones"
+    },
+    {
+      "phase": "Technical Discovery",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": "All 5 IPs resolved via quick-reasoning. Prompt-named verb chosen as \"play\" (the 9-handed table session w/ persistence chain)"
+    },
+    {
+      "phase": "Build (inline Coordinator)",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": "The Sev 0 (dev-002, quoted `'raise_3.5'` key) was caught by Integrator's `node --check` pass — exactly the false-alarm-prevention loop v1.1 specified"
+    },
+    {
+      "phase": "Integration",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": "Byte-equivalent to `output/final/`"
+    },
+    {
+      "phase": "Verification",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": "jsdom workaround for `file://` localStorage documented in CV report"
+    },
+    {
+      "phase": "Delivery",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": null,
+      "notes": "Run-report (this file) is the last item"
+    }
+  ],
+  "verification": {
+    "verdict": "pass",
+    "assumption_checks_total": 12,
+    "assumption_checks_verified": 12,
+    "out_of_scope_total": 11,
+    "out_of_scope_verified": 11,
+    "inflection_point_checks_total": 5,
+    "inflection_point_checks_honored": 5,
+    "edge_cases_total": null,
+    "edge_cases_passing": null,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 2
+    },
+    "by_principle": {
+      "A": 1,
+      "B": 0,
+      "C": 4,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 4,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 18,
+    "earliest": "2026-05-10T00:05:00Z",
+    "latest": "2026-05-10T01:35:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "Inline mode for 7 sections held up. — Coordinator-as-Overseer-as-Builder produced 56 files in a single dispatch. The substrate is faithful — section state files, dispatch log, deviations, history log, build-complete signal all present.",
+      "The PNV chain caught what per-section assertions wouldn't. — PNV.1 specified play → reload → play, which exercised cross-section state (table → stats writer → storage → reload → reconstitution). No single section's acceptance phrase tested…",
+      "Production-fidelity gate had teeth. — CV correctly identified that jsdom's `file://` localStorage rejection is an environment quirk, not a runtime-dep substitution, and documented the workaround. The artifact's runtime code path is unchang…",
+      "TD's quick-reasoning rubric saved a Researcher dispatch on every IP. — All five IPs were canonical-answer (browser vs desktop, embedded vs solver, quiz vs replay, static vs adaptive, dashboard vs full-history) — none warranted research giv…",
+      "GTO content depth. — The 22-hand library, 16-concept glossary, and 8-archetype roster with `contrast_with_gto` commentary live in the artifact (per TD's design choice to put the \"deep dive\" in the deliverable, not in a side document). This…"
+    ],
+    "what_broke": [
+      "Sev 0 record went to `state/inline-deviations/` instead of `state/escalations/sev0-fixes/`. — Coordinator filed dev-002 (the `'raise_3.5'` quoted-key fix) at the deviations path, cross-referenced from build-complete.json, but the canonical…",
+      "TaskCreate per-IP task creation by Discovery did not happen. — Discovery's v1.8 charter says \"For each inflection point identified, TaskCreate a task.\" The Discovery agent didn't. The phase-backbone tasks were created by Orchestrator (me),…",
+      "TD's Researcher TaskCreate similarly didn't fire — , but for a benign reason: TD chose quick-reasoning for all five IPs, so no Researchers were dispatched and no Research tasks needed creating. v1.8 didn't anticipate the all-quick-reasonin…",
+      "PNV's \"play 10 complete hands\" is a heavy scenario for jsdom. — The CV agent had to drive ten full hands of 9-handed poker through an event loop without a real user — this required programmatic forcing of the hero's `decide` step. CV did i…"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-10T02:00:00Z",
+      "module": null,
+      "summary": "[final_sweep_start] ",
+      "verbatim_excerpt": "",
+      "source_file": "runs/gto-poker-trainer/audit/flags.jsonl",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-001",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-10T02:00:06Z",
+      "module": null,
+      "summary": "[sev0_audit] ",
+      "verbatim_excerpt": "",
+      "source_file": "runs/gto-poker-trainer/audit/flags.jsonl",
+      "severity": 3,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-002",
+      "kind": "audit_flag",
+      "phase": "verification",
+      "ts": "2026-05-10T02:00:10Z",
+      "module": null,
+      "summary": "[final_integration_divergence] ",
+      "verbatim_excerpt": "",
+      "source_file": "runs/gto-poker-trainer/audit/flags.jsonl",
+      "severity": 3,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "CV"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": null,
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "unverified"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {
+    "CV": {
+      "high": 0,
+      "medium": 0,
+      "low": 3,
+      "total": 3,
+      "explicit_count": 0
+    }
+  },
+  "first_delivery": {
+    "outcome": "unverified",
+    "source": "default"
+  },
+  "re_audit": null,
+  "links": {
+    "run_report": "runs/gto-poker-trainer/run-report.md",
+    "verification": "runs/gto-poker-trainer/output/verification/report.json",
+    "ledger": "runs/gto-poker-trainer/decisions/discovery/ledger-v1.json",
+    "sections": "runs/gto-poker-trainer/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/gto-poker-trainer/output/final/",
+    "audit_flags": "runs/gto-poker-trainer/audit/flags.jsonl"
+  }
+}

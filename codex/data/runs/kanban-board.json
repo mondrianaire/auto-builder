@@ -1,0 +1,553 @@
+{
+  "schema_version": "0.1",
+  "slug": "kanban-board",
+  "summary": {
+    "slug": "kanban-board",
+    "prompt": "Build me a kanban board with multiple lists, drag-and-drop, and local saving.",
+    "date": "2026-05-10",
+    "architecture_version": "v1.3",
+    "dispatch_mode": "inline",
+    "verdict": "pass",
+    "raw_verdict": "delivered. All 6 required artifacts present. CV pass, Critic clean (one low-severity manifest-schema flag, non-blocking). 16/16 edge-case assertions + 8/8 CV user-flow scenarios pass.",
+    "final_artifact": null,
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "verified",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "verified"
+      },
+      "cost": {
+        "minutes": null,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "shipped_with_concerns"
+    },
+    "counts": {
+      "dispatches": 21,
+      "overseer_dispatches": 0,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": null,
+      "sections": 7,
+      "edge_cases_total": 16,
+      "edge_cases_passing": 16,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 0,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 15,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/kanban-board/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "unverified",
+    "first_delivery_outcome_source": "default",
+    "re_audit_present": true,
+    "re_audit_reclassified_verdict": "fail",
+    "rca_present": true,
+    "links": {
+      "run_report": "runs/kanban-board/run-report.md",
+      "verification": "runs/kanban-board/output/verification/report.json",
+      "ledger": "runs/kanban-board/decisions/discovery/ledger-v1.json",
+      "sections": "runs/kanban-board/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/kanban-board/output/final/",
+      "audit_flags": "runs/kanban-board/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "A single-user, client-side kanban board web application with multiple named lists (columns), cards that can be created and moved between lists via drag-and-drop, and persistent state saved locally in the browser so the board survives page reloads. No backend, no authentication, no collaboration — just one person managing tasks across columns on their own machine.",
+    "telos": null,
+    "assumption_count": 11,
+    "inflection_count": 2,
+    "oos_count": 14,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1",
+        "charter_excerpt": "Define the pure-JavaScript data model for the kanban board (board, lists, cards) and provide reducer-style mutation functions that return new state without touching the DOM. Includes id generation, validation, and a subscribe/notify mechan…",
+        "acceptance_excerpt": "Exposes createList, renameList, deleteList, createCard, editCard, deleteCard, moveCard, reorderCard mutations; getState returns current board; subscribe registers change listeners; mutations validate inputs and produce predictable state tr…"
+      },
+      {
+        "id": "section-2",
+        "charter_excerpt": "Implement a localStorage adapter that loads board state on startup and saves it after every mutation. Exposes load(), save(state), and clear() functions plus a key constant. Handles JSON parse errors and missing data gracefully by returnin…",
+        "acceptance_excerpt": "load() returns parsed board state or null if absent/corrupt; save(state) serializes state to localStorage under a stable key; clear() removes the key; corrupt JSON does not throw uncaught; survives page reload."
+      },
+      {
+        "id": "section-3",
+        "charter_excerpt": "Render the current board state into the DOM: lists as columns containing card elements, plus a 'add list' affordance and an 'add card' affordance per list. Subscribes to the state-model and re-renders on change. Card elements carry data-ca…",
+        "acceptance_excerpt": "render(rootEl, state) produces one column per list, one card element per card, in the correct order; cards have draggable=true and data attributes for ids; subscription causes re-render on state change; rendering an empty board still shows…"
+      },
+      {
+        "id": "section-4",
+        "charter_excerpt": "Wire HTML5 drag-and-drop onto the rendered DOM so the user can drag cards between lists and reorder cards within a list. On drop, compute the source list, target list, and target index, then invoke moveCard or reorderCard on the state-mode…",
+        "acceptance_excerpt": "Dragging a card from list A and dropping it on list B invokes moveCard with the correct ids and a target index; dragging within the same list invokes reorderCard with the correct target index; dropping outside any drop zone is a no-op; dra…"
+      },
+      {
+        "id": "section-5",
+        "charter_excerpt": "Wire non-DnD UI events to state-model mutations: clicking 'add list' and submitting a name calls createList; clicking a list title to rename calls renameList; clicking list delete calls deleteList; clicking 'add card' and submitting a titl…",
+        "acceptance_excerpt": "Each of the six interactions (add list, rename list, delete list, add card, edit card, delete card) successfully invokes the corresponding state-model mutation; empty/whitespace-only titles are rejected client-side before mutation; deletes…"
+      },
+      {
+        "id": "section-6",
+        "charter_excerpt": "Provide index.html and the entry-point app.js that boots the application: load persisted state via persistence; if absent, seed To Do / Doing / Done lists per A11; instantiate the state-model with that initial state; mount ui-render onto a…",
+        "acceptance_excerpt": "Opening index.html in a modern desktop browser shows a working board; first-load shows To Do / Doing / Done with no cards; subsequent loads restore previous state; every mutation is autosaved without an explicit save button."
+      },
+      {
+        "id": "section-7",
+        "charter_excerpt": "Cover every acceptance assertion with `verifier: edge_case_testing` from the section list. Every section's acceptance_assertions[] is in scope. Produce executable tests (or test-equivalent harness scripts) that exercise the listed scenario…",
+        "acceptance_excerpt": "All acceptance_assertions from sections 1-6 with verifier=edge_case_testing have a corresponding executable test that passes; tests fail fast and cleanly on regression; coverage report enumerates each assertion id."
+      }
+    ],
+    "contracts": [
+      "dnd--integration",
+      "interactions--integration",
+      "persistence--integration",
+      "state-model--dnd",
+      "state-model--integration",
+      "state-model--interactions",
+      "state-model--persistence",
+      "state-model--ui-render",
+      "ui-render--dnd",
+      "ui-render--integration",
+      "ui-render--interactions"
+    ],
+    "prompt_verb_chosen": null
+  },
+  "timeline": [],
+  "verification": {
+    "verdict": "pass",
+    "assumption_checks_total": 11,
+    "assumption_checks_verified": 11,
+    "out_of_scope_total": 14,
+    "out_of_scope_verified": 14,
+    "inflection_point_checks_total": 2,
+    "inflection_point_checks_honored": 2,
+    "edge_cases_total": 16,
+    "edge_cases_passing": 16,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 0,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 11,
+    "earliest": "2026-05-09T00:00:00Z",
+    "latest": "2026-05-10T00:00:26Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "Inline dispatch was the right call for 7 sections. — The architecture's heuristic (≤8 → inline) held up. A single Coordinator agent decomposing → building → integrating → testing was efficient (~12 minutes wall-clock for the build phase) a…",
+      "TD's quick-reasoning resolved both inflection points without research. — Both IPs (title-only cards, fixed list order) cleanly satisfied the four-condition rubric: canonical answers, similar branch complexity, no new dependencies, easily r…",
+      "Machine-checkable assertions caught zero drift this run, but they cost almost nothing to write and gave Critic something concrete to grep for. — All 6 IP assertions (3 per IP) verified against the integrated artifact directly via grep + st…",
+      "Acceptance assertions with `verifier: cv_artifact_exercise` translated cleanly into a Node+jsdom runner. — CV's user_flow scenarios (first-load seed, reload-survives-add, DnD between lists, delete card, rename list, etc.) ran against the *…",
+      "Coordinator self-corrected one test bug during the build. — The original S4.A4 assertion checked `drag-over` removal on the same DOM element after `drop`, but `drop` triggers a re-render that replaces the list element. Coordinator updated …"
+    ],
+    "what_broke": [
+      "Manifest schema drift was caught only at Critic final-sweep, severity low. — `output/integration/manifest.json` used `created_at` instead of `completed_at` and omitted `section_outputs_used`. Cosmetic, doesn't block delivery, but it's a sm…",
+      "No Researcher was dispatched the entire run. — TD resolved both IPs via quick reasoning; Critic flagged nothing escalation-worthy; CV passed. So Arbiter, Researcher (planning + escalation), and Discovery (amendment mode) charters did not e…",
+      "DnD reorder-within-list cannot be fully simulated in jsdom. — jsdom doesn't perform CSS layout, so `getBoundingClientRect()` returns zeros and the drop-index calculation degrades. CV's user_flow scenario (d) covered the contract layer (`re…"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[build_complete_handoff] (v1.2) pass",
+      "verbatim_excerpt": "state/coordinator/build-complete.json exists.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-001",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[machine_checkable_assertions_per_ip_lock] (v1.2) pass",
+      "verbatim_excerpt": "Sections file has machine_checkable_assertions[] on both IP1 and IP2 (verified earlier in conversation analysis: 6 IP assertions across 2 IPs).",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-002",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[acceptance_assertions_per_section] (v1.3) pass",
+      "verbatim_excerpt": "Sections file has 39 acceptance_assertions[] across 7 sections per the run-report. Each prose acceptance phrase has structured assertions.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-003",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_pass] (v1.3) pass",
+      "verbatim_excerpt": "output/verification/cv-runner.js + cv-runner-report.json exist. 8/8 user_flow scenarios pass under jsdom-based artifact-exercise.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-004",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_production_fidelity] (v1.5) pass_with_concerns",
+      "verbatim_excerpt": "cv-runner-report shows DOM-loaded exercise of integrated artifact with state-model + persistence + ui-render + dnd + interactions. Kanban has zero CDN deps and uses only browser-native localStorage; jsdom natively provides localStorage, so 'no substitution' trivially holds (nothing to substitute). However, the v1.5 amendment was not in force when this run was built, and no explicit production-fidelity declaration appears in the cv-runner-report. The exercise was probably production-fidelity by …",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-005",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_named_verb_assertion] (v1.5) fail",
+      "verbatim_excerpt": "No PNV in either verification report. The prompt's named verb 'organize tasks' (or whatever the literal verb is — 'use a kanban board'?) is not asserted end-to-end. The 8 user_flow scenarios cover individual interactions but no single scenario is the canonical user-success path.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-006",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_verb_analysis] (v1.6) fail",
+      "verbatim_excerpt": "TD's sections file does not include prompt_verb_analysis. The verb-derivation rationale is undocumented.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-007",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[integration_final_divergence_record] (v1.6) not_applicable_to_this_run",
+      "verbatim_excerpt": "output/final/ contents look to match output/integration/ (no recovery patches were needed). Divergence record not required.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-008",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[historian_build_summary_and_decision_index] (v1.6) fail",
+      "verbatim_excerpt": "history/log.jsonl exists; build-summary.md and decision-index.json do not.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-009",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[td_introduced_ip_schema] (v1.6) not_applicable_to_this_run",
+      "verbatim_excerpt": "Both IPs were Discovery-sourced. No TD-introduced IPs to schema-check.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-010",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[inline_deviation_logging] (v1.4) needs_inspection",
+      "verbatim_excerpt": "Run-report mentions Coordinator self-corrected the S4.A4 test specification mid-build. v1.4 requires this to be logged in state/inline-deviations/. Audit needs to verify whether the directory exists and contains an entry for that correction.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-011",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: This is the strongest of the prior runs against v1.6 — passes 4 gates outright, 1 pass-with-concerns, only 3 hard failures. The failures are all v1.5/v1.6-introduced (PNV, prompt_verb_analysis, Histo…",
+      "verbatim_excerpt": "This is the strongest of the prior runs against v1.6 — passes 4 gates outright, 1 pass-with-concerns, only 3 hard failures. The failures are all v1.5/v1.6-introduced (PNV, prompt_verb_analysis, Historian artifacts).",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Historian"
+      ],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-012",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: The cv-runner used jsdom and ran the integrated artifact end-to-end with real localStorage and real event dispatching. This is closer to v1.5 production fidelity than any other prior run. The pass-wi…",
+      "verbatim_excerpt": "The cv-runner used jsdom and ran the integrated artifact end-to-end with real localStorage and real event dispatching. This is closer to v1.5 production fidelity than any other prior run. The pass-with-concerns is a documentation gap, not a substantive verification weakness.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "CV"
+      ],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-013",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: Of the four prior runs, this is the best candidate for patch-not-rebuild.",
+      "verbatim_excerpt": "Of the four prior runs, this is the best candidate for patch-not-rebuild.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-014",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: The S4.A4 inline correction noted in the run-report would not satisfy v1.4's logging requirement if no state/inline-deviations/ entry exists. Worth verifying.",
+      "verbatim_excerpt": "The S4.A4 inline correction noted in the run-report would not satisfy v1.4's logging requirement if no state/inline-deviations/ entry exists. Worth verifying.",
+      "source_file": "runs/kanban-board/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-10",
+      "summary": "Initial Auto Builder run",
+      "verdict": "pass",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "unverified"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {
+    "Re-Verification": {
+      "high": 13,
+      "medium": 0,
+      "low": 2,
+      "total": 15,
+      "explicit_count": 11
+    },
+    "Historian": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    },
+    "CV": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    }
+  },
+  "first_delivery": {
+    "outcome": "unverified",
+    "source": "default"
+  },
+  "re_audit": {
+    "audit_at": "2026-05-10T07:00:00Z",
+    "audit_under_architecture_version": "v1.6",
+    "original_verdict": "pass",
+    "reclassified_verdict": "fail",
+    "fail_count": 3,
+    "pass_count": 4,
+    "not_applicable_count": 2,
+    "recommendation": "patch_artifact"
+  },
+  "links": {
+    "run_report": "runs/kanban-board/run-report.md",
+    "verification": "runs/kanban-board/output/verification/report.json",
+    "ledger": "runs/kanban-board/decisions/discovery/ledger-v1.json",
+    "sections": "runs/kanban-board/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/kanban-board/output/final/",
+    "audit_flags": "runs/kanban-board/audit/flags.jsonl"
+  }
+}

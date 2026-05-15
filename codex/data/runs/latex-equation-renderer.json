@@ -1,0 +1,613 @@
+{
+  "schema_version": "0.1",
+  "slug": "latex-equation-renderer",
+  "summary": {
+    "slug": "latex-equation-renderer",
+    "prompt": "build me a tool to render mathematical equations from LaTeX input",
+    "date": "2026-05-10",
+    "architecture_version": "v1.4 (initial run); v1.5 (recovery)",
+    "dispatch_mode": "inline",
+    "verdict": "failed_recovered",
+    "raw_verdict": "FAILED → recovered with bundled KaTeX + production-fidelity re-verification",
+    "final_artifact": null,
+    "telos": null,
+    "rating": {
+      "telos_fidelity": "unknown",
+      "deliverability": {
+        "tier1_pnv": "failed",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "verified"
+      },
+      "cost": {
+        "minutes": 0,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "reclassified"
+    },
+    "counts": {
+      "dispatches": 20,
+      "overseer_dispatches": 10,
+      "builder_dispatches": 6,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": 0,
+      "sections": 5,
+      "edge_cases_total": 22,
+      "edge_cases_passing": 22,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 1,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 0,
+      "events_total": 17,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/latex-equation-renderer/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "failed_user_reprompted",
+    "first_delivery_outcome_source": "run_report_status",
+    "re_audit_present": true,
+    "re_audit_reclassified_verdict": "pass_with_concerns",
+    "rca_present": true,
+    "links": {
+      "run_report": "runs/latex-equation-renderer/run-report.md",
+      "verification": "runs/latex-equation-renderer/output/verification/report.json",
+      "ledger": "runs/latex-equation-renderer/decisions/discovery/ledger-v1.json",
+      "sections": "runs/latex-equation-renderer/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/latex-equation-renderer/output/final/",
+      "audit_flags": "runs/latex-equation-renderer/audit/flags.jsonl"
+    }
+  },
+  "ledger": {
+    "restatement": "A tool that takes LaTeX source as input and renders it as a visible mathematical equation. The user types/pastes LaTeX, the tool shows the typeset math.",
+    "telos": null,
+    "assumption_count": 9,
+    "inflection_count": 3,
+    "oos_count": 8,
+    "proper_nouns": [],
+    "first_contact_requirements": []
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "section-1-renderer-core",
+        "charter_excerpt": "Own the LaTeX-to-DOM rendering function. Encapsulate KaTeX so the rest of the app talks to a single render(latex, targetEl) entry point and receives a structured success/error result. Keep the surface small enough that swapping engines lat…",
+        "acceptance_excerpt": "Exposes a single render function that takes a LaTeX string and a target element, populates the target with rendered math on success, and returns a structured error (with message) on failure without throwing past the boundary. KaTeX is load…"
+      },
+      {
+        "id": "section-2-input-ui",
+        "charter_excerpt": "Own the LaTeX source input element and its change-event stream. Provide a single textarea where the user types LaTeX, and emit the current input string on every change so downstream consumers can re-render. Do not own rendering, output dis…",
+        "acceptance_excerpt": "A single textarea is present for LaTeX source. The current input value is observable to downstream consumers via a documented mechanism (event or callback) that fires on every user edit. The input is keyboard-accessible and labeled."
+      },
+      {
+        "id": "section-3-output-and-errors",
+        "charter_excerpt": "Own the visible output region where rendered math appears, and the visible region where parse/render errors are surfaced to the user. Wire the input change stream to the renderer and route the renderer's structured result into either the s…",
+        "acceptance_excerpt": "An output container shows live-rendered math whenever the input is valid LaTeX. When the renderer returns an error result, the output area is cleared (or visually marked as stale) and the error message is displayed in a clearly distinguish…"
+      },
+      {
+        "id": "section-4-page-shell-and-styling",
+        "charter_excerpt": "Own the top-level page document, layout, and visual styling that hosts the input and output regions. Provide a desktop-first two-region layout (input on one side or above, output on the other), a readable typographic baseline, and the glob…",
+        "acceptance_excerpt": "An index.html shell exists with a clear title, a labeled input region, and a labeled output region arranged in a desktop-friendly layout. Global CSS is applied so that the rendered math and the error region are visually legible and visuall…"
+      },
+      {
+        "id": "section-5-edge-case-testing",
+        "charter_excerpt": "Cover every acceptance assertion with verifier: edge_case_testing from the section list. Exercise the integrated artifact against the boundary cases of LaTeX input (empty input, whitespace-only, very long input, valid math, malformed math,…",
+        "acceptance_excerpt": "All acceptance assertions in this sections file with verifier 'edge_case_testing' are exercised against the integrated artifact and pass. Empty input produces no error and an empty (or placeholder) output region. Whitespace-only input is t…"
+      }
+    ],
+    "contracts": [
+      "section-1-renderer-core--section-3-output-and-errors",
+      "section-2-input-ui--section-3-output-and-errors",
+      "section-2-input-ui--section-4-page-shell-and-styling",
+      "section-3-output-and-errors--section-4-page-shell-and-styling"
+    ],
+    "prompt_verb_chosen": null
+  },
+  "timeline": [
+    {
+      "phase": "Discovery",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": "nested",
+      "notes": "9 assumptions, 3 IPs, clean OOS list"
+    },
+    {
+      "phase": "Technical Discovery",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": "nested",
+      "notes": "5 sections, 4 contracts, 4 IP locks (all quick-reasoning), 0 Researchers dispatched"
+    },
+    {
+      "phase": "Coordinator (build)",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": "inline",
+      "notes": "5 waves, 6 builders, 0 cancellations, 3 inline deviations"
+    },
+    {
+      "phase": "Integrator",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": "inline (within coordinator)",
+      "notes": "5 files assembled into `output/integration/`, jsdom smoke check passed"
+    },
+    {
+      "phase": "Edge-case-testing",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": "inline",
+      "notes": "22/22 assertions pass (12 section + 10 IP)"
+    },
+    {
+      "phase": "Critic final-sweep",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": "nested",
+      "notes": "0 flags across all 8 checks"
+    },
+    {
+      "phase": "Convergence Verifier",
+      "duration": null,
+      "duration_seconds": null,
+      "mode": "nested",
+      "notes": "pass; 5 user-flow assertions exercised in jsdom"
+    }
+  ],
+  "verification": {
+    "verdict": "fail",
+    "assumption_checks_total": 9,
+    "assumption_checks_verified": 9,
+    "out_of_scope_total": 8,
+    "out_of_scope_verified": 8,
+    "inflection_point_checks_total": 4,
+    "inflection_point_checks_honored": 4,
+    "edge_cases_total": 22,
+    "edge_cases_passing": 22,
+    "first_contact_results": [],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 2,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 1,
+    "escalations_open": 0
+  },
+  "history": {
+    "entry_count": 25,
+    "earliest": "2026-05-10T00:05:00Z",
+    "latest": "2026-05-10T00:09:30Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "The IP locks were all genuine quick-reasoning candidates — TD's rubric (canonical answer, similar branch complexity, no new dependencies, reversible) cleanly filtered all four IPs to no-research-needed. KaTeX-vs-MathJax (IP4 added during T…",
+      "Inline dispatch was the right mode — 5 sections, no escalations, no behaviors-being-studied — exactly the \"default for typical builds\" case the charter calls out. Coordinator was able to produce all the nested-mode artifacts (state files, …",
+      "The v1.3 user-flow assertion + cv_artifact_exercise machinery worked — TD wrote 5 user-flow assertions (input change → output render, error display, layout grid, etc.). CV simulated each in jsdom and confirmed behavioral correctness. This …",
+      "Inline-deviation logging behaved as intended — 3 deviations logged, all `documentation-only` (no artifact/contract/assumption changes). Critic's audit confirmed `nested_equivalent` was articulated for each. The dev-003 case (jsdom test har…",
+      "Edge-case-testing depending on `integrator` worked — The pseudo-node sequencing (W4 integrator → W5 edge-case-testing) executed cleanly. The harness ran against the integrated artifact, not pre-integration outputs, which is the v1.1 fix."
+    ],
+    "what_broke": [
+      "Nothing broke per se, but the run was easy — Every phase ran clean on the first attempt. That makes this run useful as a smoke test of the v1.4 substrate, but a poor test of escalation handling, Researcher dispatch, Sev 0 fix paths, or imp…",
+      "The TD agent added IP4 (KaTeX vs MathJax) as a \"technical IP\" beyond Discovery's 3 — This is fine — TD's job is to surface technical decisions Discovery wouldn't have flagged. But the schema doesn't explicitly allow TD to *add* IPs vs only…",
+      "Inline-mode role collapse for Critic scheduled cycles — The charter says Critic's scheduled mode \"may be collapsed into Coordinator under inline dispatch.\" Coordinator did append basic `audit/flags.jsonl` entries during the build, but the …",
+      "The `output/builders/section-5-edge-case-testing/...` path is awkwardly long — Worth considering whether edge-case-testing should have a flatter path. Minor.",
+      "No Historian summary or decision-index — The Historian charter says \"compose summary `history/build-summary.md`\" and \"maintain index at `history/decision-index.json`.\" Neither exists in this run because Historian work was collapsed into Co…"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 0,
+    "verdicts": []
+  },
+  "demotion_count": 0,
+  "events": [
+    {
+      "id": "evt-000",
+      "kind": "reclassification",
+      "phase": "post_delivery",
+      "ts": null,
+      "module": null,
+      "summary": "STATUS: FAILED → RECOVERED under v1.5 (reclassified 2026-05-10).",
+      "verbatim_excerpt": "> **STATUS: FAILED → RECOVERED under v1.5 (reclassified 2026-05-10).**",
+      "source_file": "runs/latex-equation-renderer/run-report.md",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-001",
+      "kind": "user_first_contact_failure",
+      "phase": "post_delivery",
+      "ts": null,
+      "module": null,
+      "summary": "Original delivery was reclassified as failed: delivered, CV pass — **WRONG** (see addendum)",
+      "verbatim_excerpt": "**Original verdict:** delivered, CV pass — **WRONG** (see addendum)",
+      "source_file": "runs/latex-equation-renderer/run-report.md",
+      "severity": null,
+      "explicit_roles": [
+        "CV"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-002",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[build_complete_handoff] (v1.2) pass",
+      "verbatim_excerpt": "state/coordinator/build-complete.json present.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-003",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[machine_checkable_assertions_per_ip_lock] (v1.2) pass",
+      "verbatim_excerpt": "Per the run-report: 22/22 assertions including 10 IP-level. IP locks have machine_checkable_assertions[].",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-004",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[acceptance_assertions_per_section] (v1.3) pass",
+      "verbatim_excerpt": "Per run-report: 12 section + 10 IP assertions. Sections have acceptance_assertions[].",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-005",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_pass] (v1.3) pass",
+      "verbatim_excerpt": "report-v15.json documents 5 user_flow assertions exercised in production fidelity.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-006",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[cv_artifact_exercise_production_fidelity] (v1.5) pass",
+      "verbatim_excerpt": "report-v15.json explicitly documents production_fidelity_environment with runtime_dependency_substitution: false and a fetch_log_evidence array showing local file:// loads only. This is the exemplar passing case for the v1.5 amendment.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-007",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_named_verb_assertion] (v1.5) pass",
+      "verbatim_excerpt": "PNV.1 ('render mathematical equations from LaTeX input') passes per report-v15.json with explicit production_fidelity: true and non_skippable: true.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-008",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[inline_deviation_logging] (v1.4) pass",
+      "verbatim_excerpt": "3 inline deviations logged at state/inline-deviations/dev-001.json through dev-003.json. Each has nested_equivalent articulated per run-report.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-009",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[td_introduced_ip_schema] (v1.6) fail",
+      "verbatim_excerpt": "Per run-report, TD added IP4 (KaTeX vs MathJax) beyond Discovery's 3 IPs. The sections file does not have a `source: \"td\"` field on IP4 because the v1.6 schema didn't exist when the run was built. Easy patch: add `source: \"td\"` and `td_introduction_rationale` to IP4's resolution entry.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-010",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[integration_final_divergence_record] (v1.6) fail",
+      "verbatim_excerpt": "output/final/ diverges from output/integration/ (final/ contains vendor/katex/ that integration/ does not). Per v1.6, this requires output/final/divergence-from-integration.json. The recovery action that bundled KaTeX is documented in run-report.md but not in the structured divergence record. Also missing: output/final/vendor-manifest.json describing the vendored KaTeX assets.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-011",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[historian_build_summary_and_decision_index] (v1.6) fail",
+      "verbatim_excerpt": "history/log.jsonl exists. Per run-report, neither history/build-summary.md nor history/decision-index.json was produced. Run-report explicitly flags this as a gap: 'No Historian summary or decision-index.'",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-012",
+      "kind": "reaudit_gate",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "[prompt_verb_analysis] (v1.6) fail",
+      "verbatim_excerpt": "TD's sections file does not include prompt_verb_analysis. The verb 'render' was correctly chosen for PNV but the alternatives (display, typeset, format) and selection rationale are not documented. PNV would have benefited from the same explicit-articulation discipline that machine_checkable_assertions get.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": 1,
+      "explicit_roles": [
+        "Re-Verification"
+      ],
+      "inferred_roles": [],
+      "principles_implicated": [],
+      "confidence": "high",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-013",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: All v1.5 gates pass cleanly — this run is the canonical post-v1.5-recovery example.",
+      "verbatim_excerpt": "All v1.5 gates pass cleanly — this run is the canonical post-v1.5-recovery example.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-014",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: All four v1.6 failures are pure documentation/structure additions, no behavioral concerns. The artifact is verifiably correct under production fidelity.",
+      "verbatim_excerpt": "All four v1.6 failures are pure documentation/structure additions, no behavioral concerns. The artifact is verifiably correct under production fidelity.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-015",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: The four failures are exactly the gates that v1.6 was designed to introduce based on this run's experience. The latex run is both the proof v1.5 works and the motivation for v1.6.",
+      "verbatim_excerpt": "The four failures are exactly the gates that v1.6 was designed to introduce based on this run's experience. The latex run is both the proof v1.5 works and the motivation for v1.6.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    },
+    {
+      "id": "evt-016",
+      "kind": "rca_finding",
+      "phase": "reaudit",
+      "ts": null,
+      "module": null,
+      "summary": "Incidental: Patches needed are surgical and additive: add 4 fields/files. No artifact code touched.",
+      "verbatim_excerpt": "Patches needed are surgical and additive: add 4 fields/files. No artifact code touched.",
+      "source_file": "runs/latex-equation-renderer/v16-reaudit.json",
+      "severity": null,
+      "explicit_roles": [],
+      "inferred_roles": [
+        "Re-Verification"
+      ],
+      "principles_implicated": [],
+      "confidence": "low",
+      "curated": false,
+      "rev_id": "rev-0"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": null,
+      "ts": "2026-05-10",
+      "summary": "Initial Auto Builder run",
+      "verdict": "failed_recovered",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized"
+      ],
+      "first_delivery_outcome": "failed_user_reprompted"
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {
+    "CV": {
+      "high": 1,
+      "medium": 0,
+      "low": 0,
+      "total": 1,
+      "explicit_count": 1
+    },
+    "Re-Verification": {
+      "high": 11,
+      "medium": 0,
+      "low": 4,
+      "total": 15,
+      "explicit_count": 11
+    }
+  },
+  "first_delivery": {
+    "outcome": "failed_user_reprompted",
+    "source": "run_report_status"
+  },
+  "re_audit": {
+    "audit_at": "2026-05-10T07:00:00Z",
+    "audit_under_architecture_version": "v1.6",
+    "original_verdict": "pass (under v1.4)",
+    "reclassified_verdict": "pass_with_concerns",
+    "fail_count": 4,
+    "pass_count": 7,
+    "not_applicable_count": 0,
+    "recommendation": "patch_artifact"
+  },
+  "links": {
+    "run_report": "runs/latex-equation-renderer/run-report.md",
+    "verification": "runs/latex-equation-renderer/output/verification/report.json",
+    "ledger": "runs/latex-equation-renderer/decisions/discovery/ledger-v1.json",
+    "sections": "runs/latex-equation-renderer/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/latex-equation-renderer/output/final/",
+    "audit_flags": "runs/latex-equation-renderer/audit/flags.jsonl"
+  }
+}
