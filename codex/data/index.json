@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-15T05:38:44.142Z",
+  "generated_at": "2026-05-15T07:22:30.058Z",
   "codex_version": "0.2",
   "architecture_versions_seen": [
     "v1.3",
@@ -41,7 +41,7 @@
         "composite": "shipped_with_concerns"
       },
       "counts": {
-        "dispatches": 34,
+        "dispatches": 44,
         "overseer_dispatches": 0,
         "builder_dispatches": 0,
         "researcher_dispatches": 0,
@@ -262,8 +262,8 @@
       "showcase_assets": null,
       "live_url": "https://mondrianaire.github.io/auto-builder/runs/earthquake-map/output/final/index.html",
       "live_url_kind": "artifact",
-      "first_delivery_outcome": "unverified",
-      "first_delivery_outcome_source": "default",
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "first_delivery_outcome_source": "curation",
       "re_audit_present": false,
       "re_audit_reclassified_verdict": null,
       "rca_present": false,
@@ -332,8 +332,8 @@
       "showcase_assets": null,
       "live_url": "https://mondrianaire.github.io/auto-builder/runs/kanban-board/output/final/index.html",
       "live_url_kind": "artifact",
-      "first_delivery_outcome": "unverified",
-      "first_delivery_outcome_source": "default",
+      "first_delivery_outcome": "succeeded",
+      "first_delivery_outcome_source": "curation",
       "re_audit_present": true,
       "re_audit_reclassified_verdict": "fail",
       "rca_present": true,
@@ -541,8 +541,8 @@
       "showcase_assets": null,
       "live_url": "https://mondrianaire.github.io/auto-builder/runs/blackjack-trainer/output/final/index.html",
       "live_url_kind": "artifact",
-      "first_delivery_outcome": "unverified",
-      "first_delivery_outcome_source": "default",
+      "first_delivery_outcome": "succeeded",
+      "first_delivery_outcome_source": "curation",
       "re_audit_present": true,
       "re_audit_reclassified_verdict": "fail",
       "rca_present": true,
@@ -611,8 +611,8 @@
       "showcase_assets": null,
       "live_url": "https://mondrianaire.github.io/auto-builder/runs/tic-tac-toe/output/final/index.html",
       "live_url_kind": "artifact",
-      "first_delivery_outcome": "unverified",
-      "first_delivery_outcome_source": "default",
+      "first_delivery_outcome": "succeeded",
+      "first_delivery_outcome_source": "curation",
       "re_audit_present": true,
       "re_audit_reclassified_verdict": "fail",
       "rca_present": true,
@@ -681,8 +681,8 @@
       "showcase_assets": null,
       "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
       "live_url_kind": "artifact",
-      "first_delivery_outcome": "unverified",
-      "first_delivery_outcome_source": "default",
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "first_delivery_outcome_source": "curation",
       "re_audit_present": false,
       "re_audit_reclassified_verdict": null,
       "rca_present": false,
@@ -898,6 +898,13 @@
         "Editor",
         "Discovery (Demotion Mode)"
       ]
+    },
+    {
+      "version": "v1.10",
+      "title": "v1.10",
+      "summary": "operational amendment: git commit cadence added to the Orchestrator charter. Builds are no longer a single undifferentiated artifact-snapshot at delivery; each build now lands as a sequence of five scoped commits at natural phase boundaries (C1 discovery+td complete / C2 editor pass / C3 build complete / C4 verification complete / C5 delivery + `delivery/{slug}` tag), all confined to `runs/{slug}/` so the convention preserves clean `git filter-repo` extraction at promotion time. Five-commit cadence consolidates proposal §4's six-commit ideal: Integrator is internal to Coordinator and lands in…",
+      "principles_mentioned": [],
+      "roles_introduced": []
     }
   ],
   "principles": [
@@ -1041,13 +1048,37 @@
     }
   },
   "first_delivery_outcome_distribution": {
-    "succeeded": 0,
-    "succeeded_with_concerns": 2,
+    "succeeded": 3,
+    "succeeded_with_concerns": 4,
     "failed_user_reprompted": 3,
     "failed_unrecoverable": 0,
-    "unverified": 5
+    "unverified": 0
   },
   "maintenance_handoffs": [
+    {
+      "slug": "github-pages-proposal",
+      "title": "GitHub Pages enablement — proposal for AutoBuilder-Maintenance",
+      "origin": "codex-initiated",
+      "source_file": "codex/docs/github-pages-proposal.md",
+      "last_touched": "2026-05-15",
+      "overall_state": "in-progress",
+      "items_total": 10,
+      "items_done": 6,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 1,
+      "codex_acks_count": 12,
+      "maintenance_notes_latest": {
+        "date": "2026-05-14",
+        "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "---"
+      },
+      "parse_warnings": []
+    },
     {
       "slug": "git-integration-proposal",
       "title": "Git Integration — proposal for Codex",
@@ -1056,15 +1087,15 @@
       "last_touched": "2026-05-15",
       "overall_state": "in-progress",
       "items_total": 11,
-      "items_done": 8,
+      "items_done": 9,
       "items_in_progress": 0,
       "items_blocked": 0,
       "pending_ack": false,
-      "maintenance_notes_count": 3,
+      "maintenance_notes_count": 8,
       "codex_acks_count": 19,
       "maintenance_notes_latest": {
         "date": "2026-05-15",
-        "excerpt": "Acks of Codex's 2026-05-14 implementation notes — `readGitLog.mjs` with the three-way field-level merge sounds exactly right, and the cardinal-rule enforcement at the merge layer (always-from-synthesized `first_delivery_outcome` on rev-0) is precisely the structural protection t…"
+        "excerpt": "Adjacent finding worth surfacing (NOT addressed in v1.10 — separate cleanup): the Orchestrator charter's \"On Severity 4 escalation\" subsection (lines ~129-134 post-amendment) still routes Sev 4 to user with the pattern \"Compose a clear non-technical question to the user. Wait fo…"
       },
       "codex_acks_latest": {
         "date": null,
@@ -1093,30 +1124,6 @@
       "codex_acks_latest": {
         "date": "2026-05-14",
         "excerpt": "Note on this proposal's own status — five of six items now done (proposal-reviewed, format-agreed, codex-implements-parser, codex-implements-panel, retrofit-github-pages-proposal, first-end-to-end-cycle). The only thing technically open is whether Maintenance considers the conve…"
-      },
-      "parse_warnings": []
-    },
-    {
-      "slug": "github-pages-proposal",
-      "title": "GitHub Pages enablement — proposal for AutoBuilder-Maintenance",
-      "origin": "codex-initiated",
-      "source_file": "codex/docs/github-pages-proposal.md",
-      "last_touched": "2026-05-14",
-      "overall_state": "in-progress",
-      "items_total": 10,
-      "items_done": 1,
-      "items_in_progress": 0,
-      "items_blocked": 0,
-      "pending_ack": false,
-      "maintenance_notes_count": 1,
-      "codex_acks_count": 10,
-      "maintenance_notes_latest": {
-        "date": "2026-05-14",
-        "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
-      },
-      "codex_acks_latest": {
-        "date": null,
-        "excerpt": "---"
       },
       "parse_warnings": []
     }

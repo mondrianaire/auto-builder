@@ -1,0 +1,10 @@
+{
+  "_comment": "Curation overlay for tic-tac-toe. Sets first_delivery_outcome based on run-report + RCA evidence.",
+
+  "first_delivery_outcome": "succeeded",
+  "first_delivery_outcome_rationale": "Artifact works: CV verdict pass, 12/12 assumption checks, 15/15 OOS checks, both inflection points honored, edge-case tests 46/46 passing. The run-report explicitly states 'No escalations of any kind were filed. Happy path ran clean.' The RCA confirms: 'The artifact happens to work... tic-tac-toe is the architecture's easy mode baseline.' The retroactive v16-reaudit reclassified this as 'fail' against current principle-compliance standards (zero verification fidelity, minimal audit completeness, zero spec-to-test coverage by v1.7 definition), but the RCA's explicit recommendation is to preserve this run as-is: 'patching teaches nothing; the run's value is its evidence of shipped-correct on minimal verification.' That is a retroactive critique of verification regime under newer architecture, not a first-delivery failure. No user re-prompt occurred.",
+  "first_delivery_curated_by": "Codex",
+  "first_delivery_curated_at": "2026-05-15",
+
+  "notes": "Source: runs/tic-tac-toe/run-report.md §What worked, runs/tic-tac-toe/root-cause-analysis.md §What this run teaches the architecture. This is the architecture's first successful end-to-end run and shipped a correct artifact under near-zero principle enforcement — the RCA calls it 'artifact-correctness-by-luck.' First-delivery user-experience truth is unaffected by the retroactive critique."
+}

@@ -1,6 +1,6 @@
 # tic-tac-toe — Codex narrative
 
-**First-delivery outcome:** Unverified (no first-delivery signal found) _(source: default)_
+**First-delivery outcome:** Succeeded _(source: curation)_
 **Composite (architectural):** shipped_with_concerns
 **Verdict (build pipeline):** pass
 **Date:** 2026-05-09  ·  **Architecture:** —

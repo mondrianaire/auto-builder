@@ -1,0 +1,10 @@
+{
+  "_comment": "Curation overlay for earthquake-map. Sets first_delivery_outcome based on run-report evidence.",
+
+  "first_delivery_outcome": "succeeded_with_concerns",
+  "first_delivery_outcome_rationale": "Artifact works end-to-end at first contact: CV's production-fidelity exercise in headless Chromium loaded the artifact via file://, fetched the live USGS feed, and rendered 480 markers with working pan/zoom and click-popups. PNV ('visualize') passed. However, the run incurred one Critic-flagged severity-HIGH escalation on prose_coverage (38 assertions had to be added in TD impact-mode), and bash-mount tooling artifacts created false alarms about empty audit/history logs. Both were resolved before delivery, but the run-report explicitly surfaces them as 'concerns' rather than a clean ship. No user re-prompt occurred.",
+  "first_delivery_curated_by": "Codex",
+  "first_delivery_curated_at": "2026-05-15",
+
+  "notes": "Source: runs/earthquake-map/run-report.md §Outcome, §What broke A1/A2. No RCA exists for this run; no v16-reaudit. The run-report's own recommendation is to ship the charter/schema clarifications it surfaces, which suggests the architecture is doing its job at v1.7 baseline."
+}

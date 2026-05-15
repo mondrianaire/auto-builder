@@ -57,8 +57,8 @@
     "showcase_assets": null,
     "live_url": "https://mondrianaire.github.io/auto-builder/runs/kanban-board/output/final/index.html",
     "live_url_kind": "artifact",
-    "first_delivery_outcome": "unverified",
-    "first_delivery_outcome_source": "default",
+    "first_delivery_outcome": "succeeded",
+    "first_delivery_outcome_source": "curation",
     "re_audit_present": true,
     "re_audit_reclassified_verdict": "fail",
     "rca_present": true,
@@ -490,18 +490,26 @@
     {
       "id": "rev-0",
       "kind": "primary_run",
-      "ref": null,
-      "ts": "2026-05-10",
-      "summary": "Initial Auto Builder run",
+      "ref": "38404d2b32296b22404aa8757444014e78dd7bb8",
+      "ts": "2026-05-15T02:53:41-04:00",
+      "summary": "Retroactive primary delivery: kanban-board (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/kanban-board/ at bootstrap time)",
       "verdict": "pass",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
       "triggered_by_outcome": null,
       "sources": [
-        "synthesized"
+        "synthesized",
+        "git"
       ],
-      "first_delivery_outcome": "unverified"
+      "first_delivery_outcome": "succeeded",
+      "contributing_commits": [
+        {
+          "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+          "ts": "2026-05-14T04:48:40-04:00",
+          "subject": "Initial commit"
+        }
+      ]
     }
   ],
   "file_tree": null,
@@ -529,8 +537,8 @@
     }
   },
   "first_delivery": {
-    "outcome": "unverified",
-    "source": "default"
+    "outcome": "succeeded",
+    "source": "curation"
   },
   "re_audit": {
     "audit_at": "2026-05-10T07:00:00Z",

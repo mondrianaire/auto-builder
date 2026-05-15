@@ -408,18 +408,26 @@
     {
       "id": "rev-0",
       "kind": "primary_run",
-      "ref": null,
-      "ts": "2026-05-14",
-      "summary": "Initial Auto Builder run",
+      "ref": "96f4ac9f33d5797f8ab346012b1d90728563e1b9",
+      "ts": "2026-05-15T02:53:41-04:00",
+      "summary": "Retroactive primary delivery: streamdock-apple-music-touchbar (tagged at commit 1755c1a03d1cdc47867a8145c281f5c3c5f97d24 which is the most recent commit touching runs/streamdock-apple-music-touchbar/ at bootstrap time)",
       "verdict": "pass_with_concerns",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
       "triggered_by_outcome": null,
       "sources": [
-        "synthesized"
+        "synthesized",
+        "git"
       ],
-      "first_delivery_outcome": "succeeded_with_concerns"
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "contributing_commits": [
+        {
+          "sha": "1755c1a03d1cdc47867a8145c281f5c3c5f97d24",
+          "ts": "2026-05-15T02:10:38-04:00",
+          "subject": "Add .nojekyll for GitHub Pages serving"
+        }
+      ]
     }
   ],
   "file_tree": {
@@ -478,11 +486,6 @@
           },
           {
             "kind": "file",
-            "name": "cv-test.tmp",
-            "size": 1
-          },
-          {
-            "kind": "file",
             "name": "index.js",
             "size": 2006
           },
@@ -514,7 +517,7 @@
         "size": 4560
       }
     ],
-    "node_count": 17,
+    "node_count": 16,
     "truncated": false
   },
   "role_attribution_totals": {},

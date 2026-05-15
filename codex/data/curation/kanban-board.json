@@ -1,0 +1,10 @@
+{
+  "_comment": "Curation overlay for kanban-board. Sets first_delivery_outcome based on run-report + RCA evidence.",
+
+  "first_delivery_outcome": "succeeded",
+  "first_delivery_outcome_rationale": "Artifact works: 16/16 edge-case assertions pass, 8/8 CV user_flow scenarios pass under jsdom, drag-and-drop verified at contract layer with real DOM events, localStorage persistence verified across reload. The run-report headline calls this 'Second successful Auto Builder run.' Only one low-severity issue surfaced (manifest.json schema drift on field names) — non-blocking, doesn't affect user experience. The retroactive v16-reaudit reclassified this as 'fail' against current principle-compliance standards (no PNV, no production-fidelity declaration, S4.A4 deviation went unlogged), but the RCA explicitly says: 'Do not patch this run. The artifact apparently works.' Reclassification is about principle compliance, not artifact correctness. No user re-prompt occurred.",
+  "first_delivery_curated_by": "Codex",
+  "first_delivery_curated_at": "2026-05-15",
+
+  "notes": "Source: runs/kanban-board/run-report.md headline + §What worked, runs/kanban-board/root-cause-analysis.md §Recommendation. The DnD pixel-layer-untestable-in-jsdom limitation is real but the run-report notes 'In a real browser the behavior is correct (verified manually would close the loop)' — and the user did not re-prompt, which is itself evidence the deliverable was acceptable."
+}

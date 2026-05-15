@@ -1,6 +1,6 @@
 # gto-poker-trainer — Codex narrative
 
-**First-delivery outcome:** Unverified (no first-delivery signal found) _(source: default)_
+**First-delivery outcome:** Succeeded with concerns _(source: curation)_
 **Composite (architectural):** shipped_with_concerns
 **Verdict (build pipeline):** pass
 **Date:** —  ·  **Architecture:** v1.8

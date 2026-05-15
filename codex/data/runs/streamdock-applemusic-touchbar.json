@@ -550,18 +550,26 @@
     {
       "id": "rev-0",
       "kind": "primary_run",
-      "ref": null,
-      "ts": null,
-      "summary": "Initial Auto Builder run",
+      "ref": "58bd41b18d93a19e57d99747b6eeda9233fe09f8",
+      "ts": "2026-05-15T02:53:41-04:00",
+      "summary": "Retroactive primary delivery: streamdock-applemusic-touchbar (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/streamdock-applemusic-touchbar/ at bootstrap time)",
       "verdict": "pass",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
       "triggered_by_outcome": null,
       "sources": [
-        "synthesized"
+        "synthesized",
+        "git"
       ],
-      "first_delivery_outcome": "failed_user_reprompted"
+      "first_delivery_outcome": "failed_user_reprompted",
+      "contributing_commits": [
+        {
+          "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+          "ts": "2026-05-14T04:48:40-04:00",
+          "subject": "Initial commit"
+        }
+      ]
     }
   ],
   "file_tree": {

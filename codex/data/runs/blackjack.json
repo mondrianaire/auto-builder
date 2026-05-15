@@ -506,18 +506,26 @@
     {
       "id": "rev-0",
       "kind": "primary_run",
-      "ref": null,
-      "ts": "2026-05-09",
-      "summary": "Initial Auto Builder run",
+      "ref": "7b9222006a6b6e334d72ff6bdb36fdc10d207f98",
+      "ts": "2026-05-15T02:53:41-04:00",
+      "summary": "Retroactive primary delivery: blackjack (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/blackjack/ at bootstrap time)",
       "verdict": "failed_recovered",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
       "triggered_by_outcome": null,
       "sources": [
-        "synthesized"
+        "synthesized",
+        "git"
       ],
-      "first_delivery_outcome": "failed_user_reprompted"
+      "first_delivery_outcome": "failed_user_reprompted",
+      "contributing_commits": [
+        {
+          "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+          "ts": "2026-05-14T04:48:40-04:00",
+          "subject": "Initial commit"
+        }
+      ]
     }
   ],
   "file_tree": null,

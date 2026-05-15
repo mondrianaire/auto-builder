@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-15T05:38:44.142Z",
+    "generated_at": "2026-05-15T07:22:30.058Z",
     "codex_version": "0.2",
     "architecture_versions_seen": [
       "v1.3",
@@ -44,7 +44,7 @@ window.CODEX_BUNDLE = {
           "composite": "shipped_with_concerns"
         },
         "counts": {
-          "dispatches": 34,
+          "dispatches": 44,
           "overseer_dispatches": 0,
           "builder_dispatches": 0,
           "researcher_dispatches": 0,
@@ -265,8 +265,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/earthquake-map/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
@@ -335,8 +335,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/kanban-board/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
@@ -544,8 +544,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/blackjack-trainer/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
@@ -614,8 +614,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/tic-tac-toe/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
@@ -684,8 +684,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
@@ -901,6 +901,13 @@ window.CODEX_BUNDLE = {
           "Editor",
           "Discovery (Demotion Mode)"
         ]
+      },
+      {
+        "version": "v1.10",
+        "title": "v1.10",
+        "summary": "operational amendment: git commit cadence added to the Orchestrator charter. Builds are no longer a single undifferentiated artifact-snapshot at delivery; each build now lands as a sequence of five scoped commits at natural phase boundaries (C1 discovery+td complete / C2 editor pass / C3 build complete / C4 verification complete / C5 delivery + `delivery/{slug}` tag), all confined to `runs/{slug}/` so the convention preserves clean `git filter-repo` extraction at promotion time. Five-commit cadence consolidates proposal §4's six-commit ideal: Integrator is internal to Coordinator and lands in…",
+        "principles_mentioned": [],
+        "roles_introduced": []
       }
     ],
     "principles": [
@@ -1044,13 +1051,37 @@ window.CODEX_BUNDLE = {
       }
     },
     "first_delivery_outcome_distribution": {
-      "succeeded": 0,
-      "succeeded_with_concerns": 2,
+      "succeeded": 3,
+      "succeeded_with_concerns": 4,
       "failed_user_reprompted": 3,
       "failed_unrecoverable": 0,
-      "unverified": 5
+      "unverified": 0
     },
     "maintenance_handoffs": [
+      {
+        "slug": "github-pages-proposal",
+        "title": "GitHub Pages enablement — proposal for AutoBuilder-Maintenance",
+        "origin": "codex-initiated",
+        "source_file": "codex/docs/github-pages-proposal.md",
+        "last_touched": "2026-05-15",
+        "overall_state": "in-progress",
+        "items_total": 10,
+        "items_done": 6,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 1,
+        "codex_acks_count": 12,
+        "maintenance_notes_latest": {
+          "date": "2026-05-14",
+          "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
+        },
+        "codex_acks_latest": {
+          "date": null,
+          "excerpt": "---"
+        },
+        "parse_warnings": []
+      },
       {
         "slug": "git-integration-proposal",
         "title": "Git Integration — proposal for Codex",
@@ -1059,15 +1090,15 @@ window.CODEX_BUNDLE = {
         "last_touched": "2026-05-15",
         "overall_state": "in-progress",
         "items_total": 11,
-        "items_done": 8,
+        "items_done": 9,
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": false,
-        "maintenance_notes_count": 3,
+        "maintenance_notes_count": 8,
         "codex_acks_count": 19,
         "maintenance_notes_latest": {
           "date": "2026-05-15",
-          "excerpt": "Acks of Codex's 2026-05-14 implementation notes — `readGitLog.mjs` with the three-way field-level merge sounds exactly right, and the cardinal-rule enforcement at the merge layer (always-from-synthesized `first_delivery_outcome` on rev-0) is precisely the structural protection t…"
+          "excerpt": "Adjacent finding worth surfacing (NOT addressed in v1.10 — separate cleanup): the Orchestrator charter's \"On Severity 4 escalation\" subsection (lines ~129-134 post-amendment) still routes Sev 4 to user with the pattern \"Compose a clear non-technical question to the user. Wait fo…"
         },
         "codex_acks_latest": {
           "date": null,
@@ -1096,30 +1127,6 @@ window.CODEX_BUNDLE = {
         "codex_acks_latest": {
           "date": "2026-05-14",
           "excerpt": "Note on this proposal's own status — five of six items now done (proposal-reviewed, format-agreed, codex-implements-parser, codex-implements-panel, retrofit-github-pages-proposal, first-end-to-end-cycle). The only thing technically open is whether Maintenance considers the conve…"
-        },
-        "parse_warnings": []
-      },
-      {
-        "slug": "github-pages-proposal",
-        "title": "GitHub Pages enablement — proposal for AutoBuilder-Maintenance",
-        "origin": "codex-initiated",
-        "source_file": "codex/docs/github-pages-proposal.md",
-        "last_touched": "2026-05-14",
-        "overall_state": "in-progress",
-        "items_total": 10,
-        "items_done": 1,
-        "items_in_progress": 0,
-        "items_blocked": 0,
-        "pending_ack": false,
-        "maintenance_notes_count": 1,
-        "codex_acks_count": 10,
-        "maintenance_notes_latest": {
-          "date": "2026-05-14",
-          "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
-        },
-        "codex_acks_latest": {
-          "date": null,
-          "excerpt": "---"
         },
         "parse_warnings": []
       }
@@ -1159,7 +1166,7 @@ window.CODEX_BUNDLE = {
           "composite": "shipped_with_concerns"
         },
         "counts": {
-          "dispatches": 34,
+          "dispatches": 44,
           "overseer_dispatches": 0,
           "builder_dispatches": 0,
           "researcher_dispatches": 0,
@@ -1453,9 +1460,9 @@ window.CODEX_BUNDLE = {
         "escalations_open": 0
       },
       "history": {
-        "entry_count": 17,
+        "entry_count": 18,
         "earliest": "2026-05-14T00:00:00Z",
-        "latest": "2026-05-14T01:05:32Z"
+        "latest": "2026-05-14T21:35:00Z"
       },
       "run_report_excerpts": {
         "what_worked": [
@@ -1490,18 +1497,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-14",
-          "summary": "Initial Auto Builder run",
+          "ref": "5b38c9ccc1be800971cb9569d314ee77b495d183",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: gto-poker-async-duel (tagged at commit fcc56947694e615744e93cc4b7879e44a28229d4 which is the most recent commit touching runs/gto-poker-async-duel/ at bootstrap time)",
           "verdict": "pass_with_concerns",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "succeeded_with_concerns"
+          "first_delivery_outcome": "succeeded_with_concerns",
+          "contributing_commits": [
+            {
+              "sha": "fcc56947694e615744e93cc4b7879e44a28229d4",
+              "ts": "2026-05-15T00:55:19-04:00",
+              "subject": "[retroactive] gto-poker-async-duel: imported primary delivery from pre-git substrate"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -1930,18 +1945,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-14",
-          "summary": "Initial Auto Builder run",
+          "ref": "96f4ac9f33d5797f8ab346012b1d90728563e1b9",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: streamdock-apple-music-touchbar (tagged at commit 1755c1a03d1cdc47867a8145c281f5c3c5f97d24 which is the most recent commit touching runs/streamdock-apple-music-touchbar/ at bootstrap time)",
           "verdict": "pass_with_concerns",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "succeeded_with_concerns"
+          "first_delivery_outcome": "succeeded_with_concerns",
+          "contributing_commits": [
+            {
+              "sha": "1755c1a03d1cdc47867a8145c281f5c3c5f97d24",
+              "ts": "2026-05-15T02:10:38-04:00",
+              "subject": "Add .nojekyll for GitHub Pages serving"
+            }
+          ]
         }
       ],
       "file_tree": {
@@ -2000,11 +2023,6 @@ window.CODEX_BUNDLE = {
               },
               {
                 "kind": "file",
-                "name": "cv-test.tmp",
-                "size": 1
-              },
-              {
-                "kind": "file",
                 "name": "index.js",
                 "size": 2006
               },
@@ -2036,7 +2054,7 @@ window.CODEX_BUNDLE = {
             "size": 4560
           }
         ],
-        "node_count": 17,
+        "node_count": 16,
         "truncated": false
       },
       "role_attribution_totals": {},
@@ -2113,8 +2131,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/earthquake-map/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
@@ -2260,18 +2278,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-10",
-          "summary": "Initial Auto Builder run",
+          "ref": "c08412b26252e35791a82a88a99bfe394019673f",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: earthquake-map (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/earthquake-map/ at bootstrap time)",
           "verdict": "pass",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "unverified"
+          "first_delivery_outcome": "succeeded_with_concerns",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -2285,8 +2311,8 @@ window.CODEX_BUNDLE = {
         }
       },
       "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
+        "outcome": "succeeded_with_concerns",
+        "source": "curation"
       },
       "re_audit": null,
       "links": {
@@ -2357,8 +2383,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/kanban-board/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
@@ -2790,18 +2816,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-10",
-          "summary": "Initial Auto Builder run",
+          "ref": "38404d2b32296b22404aa8757444014e78dd7bb8",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: kanban-board (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/kanban-board/ at bootstrap time)",
           "verdict": "pass",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "unverified"
+          "first_delivery_outcome": "succeeded",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -2829,8 +2863,8 @@ window.CODEX_BUNDLE = {
         }
       },
       "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
+        "outcome": "succeeded",
+        "source": "curation"
       },
       "re_audit": {
         "audit_at": "2026-05-10T07:00:00Z",
@@ -3410,18 +3444,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-10",
-          "summary": "Initial Auto Builder run",
+          "ref": "8469377002f9c7c7ecf0819b3292dddf2daea33f",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: latex-equation-renderer (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/latex-equation-renderer/ at bootstrap time)",
           "verdict": "failed_recovered",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "failed_user_reprompted"
+          "first_delivery_outcome": "failed_user_reprompted",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -3972,18 +4014,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-09",
-          "summary": "Initial Auto Builder run",
+          "ref": "7b9222006a6b6e334d72ff6bdb36fdc10d207f98",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: blackjack (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/blackjack/ at bootstrap time)",
           "verdict": "failed_recovered",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "failed_user_reprompted"
+          "first_delivery_outcome": "failed_user_reprompted",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -4091,8 +4141,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/blackjack-trainer/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
@@ -4643,18 +4693,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-09",
-          "summary": "Initial Auto Builder run",
+          "ref": "013ee7898daee22bf2b628eb6567465ff12dd594",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: blackjack-trainer (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/blackjack-trainer/ at bootstrap time)",
           "verdict": "pass",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "unverified"
+          "first_delivery_outcome": "succeeded",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -4703,8 +4761,8 @@ window.CODEX_BUNDLE = {
         }
       },
       "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
+        "outcome": "succeeded",
+        "source": "curation"
       },
       "re_audit": {
         "audit_at": "2026-05-10T07:00:00Z",
@@ -4784,8 +4842,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/tic-tac-toe/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
@@ -5224,18 +5282,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": "2026-05-09",
-          "summary": "Initial Auto Builder run",
+          "ref": "7d8144b0174d062b3a89f7ec730c559e95a5b07c",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: tic-tac-toe (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/tic-tac-toe/ at bootstrap time)",
           "verdict": "pass",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "unverified"
+          "first_delivery_outcome": "succeeded",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -5249,8 +5315,8 @@ window.CODEX_BUNDLE = {
         }
       },
       "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
+        "outcome": "succeeded",
+        "source": "curation"
       },
       "re_audit": {
         "audit_at": "2026-05-10T07:00:00Z",
@@ -5330,8 +5396,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
@@ -5574,18 +5640,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": null,
-          "summary": "Initial Auto Builder run",
+          "ref": "e17fd8524f31d7e560b9052c7c04fe4e507f3ff9",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: gto-poker-trainer (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/gto-poker-trainer/ at bootstrap time)",
           "verdict": "pass",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "unverified"
+          "first_delivery_outcome": "succeeded_with_concerns",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": null,
@@ -5599,8 +5673,8 @@ window.CODEX_BUNDLE = {
         }
       },
       "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
+        "outcome": "succeeded_with_concerns",
+        "source": "curation"
       },
       "re_audit": null,
       "links": {
@@ -6164,18 +6238,26 @@ window.CODEX_BUNDLE = {
         {
           "id": "rev-0",
           "kind": "primary_run",
-          "ref": null,
-          "ts": null,
-          "summary": "Initial Auto Builder run",
+          "ref": "58bd41b18d93a19e57d99747b6eeda9233fe09f8",
+          "ts": "2026-05-15T02:53:41-04:00",
+          "summary": "Retroactive primary delivery: streamdock-applemusic-touchbar (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/streamdock-applemusic-touchbar/ at bootstrap time)",
           "verdict": "pass",
           "rationale": null,
           "diff_summary": null,
           "triggered_by_event": null,
           "triggered_by_outcome": null,
           "sources": [
-            "synthesized"
+            "synthesized",
+            "git"
           ],
-          "first_delivery_outcome": "failed_user_reprompted"
+          "first_delivery_outcome": "failed_user_reprompted",
+          "contributing_commits": [
+            {
+              "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+              "ts": "2026-05-14T04:48:40-04:00",
+              "subject": "Initial commit"
+            }
+          ]
         }
       ],
       "file_tree": {

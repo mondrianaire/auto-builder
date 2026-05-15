@@ -1,0 +1,10 @@
+{
+  "_comment": "Curation overlay for blackjack-trainer. Sets first_delivery_outcome based on run-report + RCA evidence.",
+
+  "first_delivery_outcome": "succeeded",
+  "first_delivery_outcome_rationale": "Artifact works: CV verdict pass, all 6 required delivery artifacts present, 14/14 assumption checks + 15/15 OOS absences + 5/5 IP locks + 3/3 CV exercises + 21/21 edge-case + 12/12 IP harness. The run-report's 'What Broke' section is explicit: 'Nothing broke. This run completed end-to-end without escalations, without Sev 0 fixes, without Researcher dispatches, without contract amendments.' The RCA confirms: 'the artifact apparently does train the user on basic strategy as claimed.' The retroactive v16-reaudit reclassified this as 'fail' against current architecture standards (no production-fidelity exercise, no PNV, missing Historian artifacts), but the RCA explicitly recommends NOT patching: 'A passing verdict under v1.2 is not evidence of principle compliance; it's evidence of v1.2 checklist compliance.' That is a retroactive principle-compliance critique, not a user-experience failure. No user re-prompt occurred.",
+  "first_delivery_curated_by": "Codex",
+  "first_delivery_curated_at": "2026-05-15",
+
+  "notes": "Source: runs/blackjack-trainer/run-report.md §What Worked + §What Broke, runs/blackjack-trainer/root-cause-analysis.md §Recommendation. This is the 'midpoint conformance' exhibit: built under v1.2 standards, honors v1.2 checklist completely, retroactively scored against v1.6+ principles. The clean delivery + absence of re-prompt is the user-facing truth."
+}

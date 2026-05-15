@@ -31,7 +31,7 @@
       "composite": "shipped_with_concerns"
     },
     "counts": {
-      "dispatches": 34,
+      "dispatches": 44,
       "overseer_dispatches": 0,
       "builder_dispatches": 0,
       "researcher_dispatches": 0,
@@ -325,9 +325,9 @@
     "escalations_open": 0
   },
   "history": {
-    "entry_count": 17,
+    "entry_count": 18,
     "earliest": "2026-05-14T00:00:00Z",
-    "latest": "2026-05-14T01:05:32Z"
+    "latest": "2026-05-14T21:35:00Z"
   },
   "run_report_excerpts": {
     "what_worked": [
@@ -362,18 +362,26 @@
     {
       "id": "rev-0",
       "kind": "primary_run",
-      "ref": null,
-      "ts": "2026-05-14",
-      "summary": "Initial Auto Builder run",
+      "ref": "5b38c9ccc1be800971cb9569d314ee77b495d183",
+      "ts": "2026-05-15T02:53:41-04:00",
+      "summary": "Retroactive primary delivery: gto-poker-async-duel (tagged at commit fcc56947694e615744e93cc4b7879e44a28229d4 which is the most recent commit touching runs/gto-poker-async-duel/ at bootstrap time)",
       "verdict": "pass_with_concerns",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
       "triggered_by_outcome": null,
       "sources": [
-        "synthesized"
+        "synthesized",
+        "git"
       ],
-      "first_delivery_outcome": "succeeded_with_concerns"
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "contributing_commits": [
+        {
+          "sha": "fcc56947694e615744e93cc4b7879e44a28229d4",
+          "ts": "2026-05-15T00:55:19-04:00",
+          "subject": "[retroactive] gto-poker-async-duel: imported primary delivery from pre-git substrate"
+        }
+      ]
     }
   ],
   "file_tree": null,

@@ -57,8 +57,8 @@
     "showcase_assets": null,
     "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
     "live_url_kind": "artifact",
-    "first_delivery_outcome": "unverified",
-    "first_delivery_outcome_source": "default",
+    "first_delivery_outcome": "succeeded_with_concerns",
+    "first_delivery_outcome_source": "curation",
     "re_audit_present": false,
     "re_audit_reclassified_verdict": null,
     "rca_present": false,
@@ -301,18 +301,26 @@
     {
       "id": "rev-0",
       "kind": "primary_run",
-      "ref": null,
-      "ts": null,
-      "summary": "Initial Auto Builder run",
+      "ref": "e17fd8524f31d7e560b9052c7c04fe4e507f3ff9",
+      "ts": "2026-05-15T02:53:41-04:00",
+      "summary": "Retroactive primary delivery: gto-poker-trainer (tagged at commit 6aa4d8fa823112ce9b69baed99abd4055d017785 which is the most recent commit touching runs/gto-poker-trainer/ at bootstrap time)",
       "verdict": "pass",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
       "triggered_by_outcome": null,
       "sources": [
-        "synthesized"
+        "synthesized",
+        "git"
       ],
-      "first_delivery_outcome": "unverified"
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "contributing_commits": [
+        {
+          "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
+          "ts": "2026-05-14T04:48:40-04:00",
+          "subject": "Initial commit"
+        }
+      ]
     }
   ],
   "file_tree": null,
@@ -326,8 +334,8 @@
     }
   },
   "first_delivery": {
-    "outcome": "unverified",
-    "source": "default"
+    "outcome": "succeeded_with_concerns",
+    "source": "curation"
   },
   "re_audit": null,
   "links": {
