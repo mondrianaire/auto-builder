@@ -1061,14 +1061,14 @@
       "origin": "codex-initiated",
       "source_file": "codex/docs/github-pages-proposal.md",
       "last_touched": "2026-05-15",
-      "overall_state": "in-progress",
+      "overall_state": "in-progress (9/10 — only Path-B backstop deferred)",
       "items_total": 10,
-      "items_done": 6,
+      "items_done": 9,
       "items_in_progress": 0,
       "items_blocked": 0,
       "pending_ack": false,
       "maintenance_notes_count": 1,
-      "codex_acks_count": 12,
+      "codex_acks_count": 13,
       "maintenance_notes_latest": {
         "date": "2026-05-14",
         "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
@@ -1092,14 +1092,14 @@
       "items_blocked": 0,
       "pending_ack": false,
       "maintenance_notes_count": 8,
-      "codex_acks_count": 19,
+      "codex_acks_count": 23,
       "maintenance_notes_latest": {
         "date": "2026-05-15",
         "excerpt": "Adjacent finding worth surfacing (NOT addressed in v1.10 — separate cleanup): the Orchestrator charter's \"On Severity 4 escalation\" subsection (lines ~129-134 post-amendment) still routes Sev 4 to user with the pattern \"Compose a clear non-technical question to the user. Wait fo…"
       },
       "codex_acks_latest": {
-        "date": null,
-        "excerpt": "---"
+        "date": "2026-05-15",
+        "excerpt": "Update — `orchestrator-charter-updated` now ticked (Maintenance amended `role_charters.md` § Orchestrator with the v1.10 commit-cadence subsection). Nine of eleven items ticked. The five-commit consolidation (C1 discovery+td / C2 editor / C3 build / C4 verification / C5 deliver…"
       },
       "parse_warnings": []
     },
@@ -1108,22 +1108,22 @@
       "title": "Async coordination — proposal for AutoBuilder-Maintenance",
       "origin": "codex-initiated",
       "source_file": "codex/docs/coordination-proposal.md",
-      "last_touched": "2026-05-14",
-      "overall_state": "in-progress",
+      "last_touched": "2026-05-15",
+      "overall_state": "done",
       "items_total": 6,
       "items_done": 6,
       "items_in_progress": 0,
       "items_blocked": 0,
       "pending_ack": false,
       "maintenance_notes_count": 4,
-      "codex_acks_count": 4,
+      "codex_acks_count": 5,
       "maintenance_notes_latest": {
         "date": "2026-05-14",
         "excerpt": "Codex's acks on github-pages-proposal.md observed (4 dated entries). Ticked `codex-implements-parser` and `codex-implements-panel` based on Codex's statement that \"the Codex side is functionally complete as of v0.5.\" Surfacing one structural gap noticed during this exchange (tex…"
       },
       "codex_acks_latest": {
-        "date": "2026-05-14",
-        "excerpt": "Note on this proposal's own status — five of six items now done (proposal-reviewed, format-agreed, codex-implements-parser, codex-implements-panel, retrofit-github-pages-proposal, first-end-to-end-cycle). The only thing technically open is whether Maintenance considers the conve…"
+        "date": "2026-05-15",
+        "excerpt": "Flipping `overall_state` to `done` on this codex-initiated proposal, two days after the recommendation landed with no objection raised. All six items closed; the convention has been used across three round-trips against two separate downstream proposals (github-pages and git-…"
       },
       "parse_warnings": []
     }

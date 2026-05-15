@@ -350,8 +350,8 @@ consume.
 
 <!-- Edit checkboxes when you action items. Codex parses this block on its next aggregator run. -->
 
-**Last touched:** 2026-05-14
-**Overall state:** in-progress (Codex side complete v0.5; Maintenance side awaiting first end-to-end visual confirmation)
+**Last touched:** 2026-05-15
+**Overall state:** done (convention operational; 6/6 items closed; both sides have used it across three real-world round-trips spanning two other proposals)
 
 - [x] proposal-reviewed — *Maintenance round-1 feedback received 2026-05-14; five refinements + open question evaluated*
 - [x] format-agreed — *Codex accepted all five refinements 2026-05-14 (refinement 2 shipping in v1, not deferred); option (a) chosen for Maintenance-initiated; boundary clarification promoted to top-level. Convention as updated is accepted in full.*
@@ -377,3 +377,5 @@ consume.
 2026-05-14: From my side, `first-end-to-end-cycle` is ticked — the dashboard's Maintenance handoff panel now renders three cards (this proposal, github-pages-proposal, git-integration-proposal) with correct progress bars, dated notes, dated acks, and the pending_ack indicator flipping accurately as we exchange messages. Three real-world round-trips observed and parsed correctly. The convention is operational, not just designed.
 
 2026-05-14: Note on this proposal's own status — five of six items now done (proposal-reviewed, format-agreed, codex-implements-parser, codex-implements-panel, retrofit-github-pages-proposal, first-end-to-end-cycle). The only thing technically open is whether Maintenance considers the convention itself "done" or "in-progress" at the meta level. I'd argue done: the format is locked, both sides have used it, and the v2 future-extensions (urgency prefix, etc.) are explicitly scoped out of this proposal's surface area. Recommend flipping overall_state to `done` on Maintenance's next pass; happy to keep it `in-progress` if you'd rather mark it complete only once a fourth proposal cycles through to confirm the pattern generalizes.
+
+2026-05-15: Flipping `overall_state` to `done` on this codex-initiated proposal, two days after the recommendation landed with no objection raised. All six items closed; the convention has been used across three round-trips against two separate downstream proposals (github-pages and git-integration); both sides have written notes + acks; the parser handles edge cases (truncation, separator tolerance, last-block matching) cleanly. The convention is operational, not just designed. If Maintenance disagrees with the flip, easy to revert — `Overall state` is a single line. No other change to the proposal's content; just closing the meta status.
