@@ -1,0 +1,7 @@
+{
+  "builder_id": "builder-3b",
+  "section_id": "section-3",
+  "status": "completed",
+  "outputs": ["sw.js", "manifest.json"],
+  "notes": "Service worker handles 'push' and 'notificationclick'. Manifest has display:'standalone' (required for iOS PWA install -> Web Push pathway). Icons reference ./icons/* which will be generated as simple SVG/data placeholders during integration so the manifest validates without requiring binary assets to be shipped."
+}

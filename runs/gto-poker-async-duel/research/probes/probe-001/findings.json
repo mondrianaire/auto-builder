@@ -1,0 +1,154 @@
+{
+  "probe_id": "probe-001",
+  "phase": "planning",
+  "completed_at": "2026-05-14T00:00:00Z",
+  "question_restated": "Simplest viable client-only architecture for async two-player gameplay with persistent shared state and out-of-app push, deployable in full from a GitHub Pages static site, in 2026.",
+  "framing_concern": null,
+  "options": [
+    {
+      "option_id": "OPT.A",
+      "name": "Firebase (Firestore + FCM Web Push) on the Spark free plan",
+      "summary": "Static GitHub Pages site loads the Firebase JS SDK from npm-vendored bundle or Google CDN, connects to a Firebase project the user creates (Spark plan, no billing). Game state lives in Firestore documents protected by security rules predicated on Firebase Anonymous Auth UIDs. Push notifications are delivered through FCM Web Push: each device subscribes via the service worker, FCM issues a token, the token is stored alongside the player record in Firestore, and a notification is triggered from the opponent's client at submit-time by calling the FCM HTTP v1 API. On iOS, push requires the site to be added to the Home Screen as a PWA per iOS 16.4+ rules.",
+      "pros": [
+        "FCM Cloud Messaging is no-cost on the Spark plan, with unlimited Web Push capacity for typical friends-and-family volume",
+        "Firestore Spark quotas (1 GiB stored data, 50K reads/day, 20K writes/day, 20K deletes/day) are >>> what a two-player turn-based quiz produces",
+        "Anonymous Auth gives a stable UID for security-rules predicates ('only the two participant UIDs may read/write this game doc') without forcing the user through a sign-up flow",
+        "Project never auto-pauses on inactivity — survives the 'mom plays once a week' use case",
+        "Single vendor for state + auth + push removes integration glue between sub-services"
+      ],
+      "cons": [
+        "User must create their own Firebase project and paste config (apiKey, projectId, messagingSenderId, appId, VAPID public key) into a config file — one-time setup burden",
+        "FCM HTTP v1 API requires a server-side OAuth token (service account); cannot be safely called directly from the client. Workaround: use the FCM Web Push protocol with a VAPID-signed JWT generated client-side, or rely on Firestore-triggered Cloud Functions (Blaze plan only). For Spark plan, the practical pattern is the standard Web Push protocol with VAPID keys, sending directly from the submitting client to the recipient's push subscription endpoint — bypassing FCM-the-service while still using FCM-the-browser-push-receiver",
+        "API keys live in client bundle; security depends entirely on Firestore Security Rules being correctly written",
+        "iOS Safari requires Add-to-Home-Screen + PWA manifest with display: standalone; users on iOS must perform that step to receive push",
+        "EU PWA situation is fragile (Apple removed standalone PWA support in EU under DMA per 2024 reporting; community indicates partial restoration in 2026 but this remains region-specific)"
+      ],
+      "confidence": 0.85,
+      "supporting_citations": [
+        "CIT.1",
+        "CIT.2",
+        "CIT.3",
+        "CIT.5",
+        "CIT.6"
+      ]
+    },
+    {
+      "option_id": "OPT.B",
+      "name": "Supabase (Postgres + Edge Functions + standard Web Push) on free plan",
+      "summary": "Static GitHub Pages site loads the supabase-js SDK, connects to a Supabase project on the free plan. Game state lives in Postgres rows protected by Row Level Security predicated on Supabase Anonymous Auth user IDs. Push notifications are delivered via an Edge Function that runs at submit-time, generates a VAPID-signed Web Push request, and POSTs to the recipient's push subscription endpoint.",
+      "pros": [
+        "RLS on Postgres is a battle-tested authorization model",
+        "Edge Functions on free plan give 500,000 invocations/month — generous for this use case",
+        "Realtime subscriptions are natively supported, useful for in-app refresh when both players happen to be online",
+        "Web Push libraries for Deno (the Edge Functions runtime) are mature"
+      ],
+      "cons": [
+        "FATAL FOR THIS PROMPT: Supabase free-tier projects are auto-paused after 7 days of inactivity. A 'mom plays once a week' game would routinely hit a paused project, requiring the user to unpause it via the Supabase dashboard before the next turn can be processed. This directly contradicts the prompt's 'fully functions asynchronously' requirement",
+        "User must create their own Supabase project and paste config + anon key into client code (similar setup burden to Firebase)",
+        "Edge Function deployment requires the Supabase CLI — adds a step the user must perform outside their GitHub Pages repo, partially violating A1's spirit"
+      ],
+      "confidence": 0.9,
+      "supporting_citations": [
+        "CIT.4"
+      ]
+    },
+    {
+      "option_id": "OPT.C",
+      "name": "No-backend URL/code-payload exchange",
+      "summary": "Game state is fully encoded into a shareable URL or short code. Each player, after submitting their handful, generates a new payload-URL and pastes it to the opponent via SMS/email/messenger. The opponent opens the URL, sees the round's scenarios, submits, and the cycle repeats.",
+      "pros": [
+        "Zero external dependencies; truly hostable in full on GitHub Pages with no third-party setup",
+        "No API keys, no security-rules layer, no project-management overhead",
+        "Trivially deletable game state (close the tab; throw away the URL)"
+      ],
+      "cons": [
+        "FATAL FOR THE NOTIFICATION REQUIREMENT: there is no server-side actor to fire a Web Push notification when the opponent has the tab closed. The bare Notification API only fires when the page is open, which the prompt explicitly rules out by requiring 'notify the opposing player that it is their turn' (implying the recipient is NOT in the app)",
+        "URL length grows linearly with rounds + handful_size + notes — quickly hits practical SMS/messenger length limits (~2000 chars for compressed JSON of ~20 scenarios with notes)",
+        "Manual copy-paste of URL between players is friction the user did not ask for and would erode the 'feels like the prior app felt' goal"
+      ],
+      "confidence": 0.95,
+      "supporting_citations": []
+    },
+    {
+      "option_id": "OPT.D",
+      "name": "GitHub Gist API as a backend",
+      "summary": "Use the GitHub REST API to read and write JSON documents stored as anonymous (or authenticated) gists. Each game has a single gist holding shared state.",
+      "pros": [
+        "Reuses a service the user is already authenticated to (sort of)",
+        "Free, no separate project to create"
+      ],
+      "cons": [
+        "Anonymous gist creation has been deprecated and now requires authentication (the user would need to provide a personal access token in the client bundle — a security non-starter)",
+        "No native push mechanism — would still need a separate Web Push relay, defeating the simplicity argument",
+        "Rate limits (60 req/hour unauthenticated, 5000/hour authenticated) are tight for a polling-based read pattern"
+      ],
+      "confidence": 0.9,
+      "supporting_citations": []
+    }
+  ],
+  "recommendation": {
+    "chosen_option_id": "OPT.A",
+    "rationale": "Firebase Spark plan is the only option among the four that simultaneously satisfies: (1) static-only deploy with no user-deployed companion server, (2) durable shared state with proper authorization via security rules, (3) true out-of-app Web Push delivery with no inactivity-pause, and (4) a free tier comfortable for friends-and-family scale. Supabase is disqualified by the 7-day inactivity pause against an explicitly async-weekly use case. URL-payload is disqualified by the explicit notification requirement (no server actor = no out-of-app push when recipient tab is closed). Gist-as-backend is disqualified by anonymous-gist deprecation and absence of a push partner.\n\nFor the FCM specifics: on the Spark plan, the production-fidelity pattern is to use the **standard W3C Web Push protocol with VAPID** rather than FCM's HTTP v1 API (which requires server-side OAuth credentials and is therefore incompatible with a client-only static-site architecture). The client generates a VAPID key pair at game-creation time, stores the public key in Firestore, and uses the private key (held in localStorage of the sender) to sign push requests to the recipient's `pushSubscription.endpoint` (which for Chrome/Edge/Android is an `fcm.googleapis.com` URL but is consumed via the standard Web Push protocol, not the FCM API). This pattern is fully client-side, uses no FCM server credentials, and works for any push subscription endpoint regardless of which browser-vendor push service it points to.\n\nFor iOS: the build must ship a `manifest.json` with `display: standalone`, register the service worker at a scope that covers the GitHub Pages project subpath, and instruct the user (via in-app onboarding text) to use Safari -> Share -> Add to Home Screen before enabling notifications. On iOS 16.4+ Home Screen installs, web push works through Apple's APNs-bridged Web Push service identically to other browsers.\n\nSecurity model: API keys in client bundle are unavoidable on GitHub Pages. Firestore Security Rules enforce that for any game doc with participants UIDs `[uid_a, uid_b]`, reads/writes are allowed only when `request.auth.uid in resource.data.participants`. This is the canonical anonymous-auth + per-doc-participants pattern.",
+    "couples_with": [
+      {
+        "ip_id": "IP3",
+        "implication": "Player identity is Firebase Anonymous Auth (UID-token stable per device). Display name is a free-form profile field."
+      },
+      {
+        "ip_id": "IP4",
+        "implication": "Game creation produces a game doc whose ID is the share code. Joining via URL/code adds the second player's UID to the participants array."
+      }
+    ]
+  },
+  "citations": [
+    {
+      "id": "CIT.1",
+      "url": "https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits",
+      "title": "GitHub Pages limits - GitHub Docs",
+      "citation_class": "static_canonical",
+      "verbatim_excerpt": "GitHub Pages is not intended for or allowed to be used as a free web-hosting service to run your online business, e-commerce site, or any other website that is primarily directed at either facilitating commercial transactions or providing commercial software as a service (SaaS). GitHub Pages sites shouldn't be used for sensitive transactions like sending passwords or credit card numbers.",
+      "supports_claim": "GitHub Pages is a static-file host with acceptable-use limits that exclude commercial SaaS, but a non-commercial friends-and-family game is in-scope."
+    },
+    {
+      "id": "CIT.2",
+      "url": "https://firebase.google.com/pricing",
+      "title": "Firebase Pricing - Google",
+      "citation_class": "static_canonical",
+      "verbatim_excerpt": "Cloud Firestore ... Stored data ... No-cost up to 1 GiB total ... 20K writes/day ... 50K reads/day ... 20K deletes/day ... Cloud Messaging (FCM) ... No-cost",
+      "supports_claim": "Firebase Spark plan provides no-cost Firestore at 1 GiB / 50K reads / 20K writes / 20K deletes per day, and FCM Cloud Messaging at no cost with no usage cap stated."
+    },
+    {
+      "id": "CIT.3",
+      "url": "https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers",
+      "title": "Sending web push notifications in web apps and browsers | Apple Developer Documentation",
+      "citation_class": "static_canonical",
+      "verbatim_excerpt": "Update your web server and website to send push notifications that work in Safari, other browsers, and web apps, following cross-browser standards.",
+      "supports_claim": "Apple documents Web Push in Safari and web apps as following cross-browser (W3C Web Push + VAPID) standards, not a proprietary protocol — meaning the same client-generated VAPID push request works across vendors."
+    },
+    {
+      "id": "CIT.4",
+      "url": "https://supabase.com/docs/guides/platform/billing-on-supabase",
+      "title": "About billing on Supabase | Supabase Docs",
+      "citation_class": "static_canonical",
+      "verbatim_excerpt": "Projects are automatically paused after 7 days of inactivity, making the free tier unsuitable for production apps requiring 24/7 uptime.",
+      "supports_claim": "Supabase free tier auto-pauses inactive projects, disqualifying it for a use case where players may go a week between turns. (Note: this verbatim text was returned by the search engine's extract of the Supabase docs page; treat as best-available canonical until a direct page fetch is feasible.)"
+    },
+    {
+      "id": "CIT.5",
+      "url": "https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/",
+      "title": "Web Push for Web Apps on iOS and iPadOS | WebKit",
+      "citation_class": "static_canonical",
+      "verbatim_excerpt": "A web app that has been added to the Home Screen can request permission to receive push notifications as long as that request is in response to direct user interaction — such as tapping on a 'subscribe' button provided by the web app.",
+      "supports_claim": "iOS Safari Web Push requires the site to be added to the Home Screen as a PWA and the permission prompt must be triggered by direct user action."
+    },
+    {
+      "id": "CIT.6",
+      "url": "https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/",
+      "title": "Web Push for Web Apps on iOS and iPadOS | WebKit",
+      "citation_class": "static_canonical",
+      "verbatim_excerpt": "Web Push makes it possible for web developers to send push notifications to their users through the use of Push API, Notifications API, and Service Workers all working together.",
+      "supports_claim": "Out-of-app push on the web requires the combination of Push API + Notifications API + Service Worker, not just the bare Notification API."
+    }
+  ],
+  "boundaries_respected": "Did not modify any decisions, contracts, or section state. Did not dispatch other agents. Read context pointers but wrote only to research/probes/probe-001/."
+}

@@ -1,0 +1,33 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-2",
+  "consumer_section": "section-4",
+  "interface_kind": "service_adapter_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "readGame",
+        "kind": "function",
+        "signature": "(gameId: string, onChange: (game: GameDocument) -> void) -> Unsubscribe; subscribes to live updates of the game document and invokes onChange on every change"
+      },
+      {
+        "name": "submitHandful",
+        "kind": "function",
+        "signature": "(gameId: string, roundIndex: integer, submissions: PlayerSubmission[]) -> Promise<{success: bool, status: 'waiting_for_opponent' | 'round_complete' | 'game_complete'}>; idempotent: re-calling with the same (gameId, roundIndex) and the same UID overwrites the prior write rather than duplicating"
+      },
+      {
+        "name": "getCurrentUid",
+        "kind": "function",
+        "signature": "() -> string"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["readGame", "submitHandful", "getCurrentUid"]
+  },
+  "invariants": [
+    "Section-4 receives the GameDocument shape exclusively through readGame; it never queries Firestore directly.",
+    "Section-4 enforces UI-side answer blindness by only rendering opponent submissions when the GameDocument's round status indicates both players have submitted that round (the adapter is permitted to return a redacted GameDocument view in which opponent submissions are masked until both have submitted, as a defense-in-depth layer behind the Security Rules).",
+    "submitHandful idempotency means section-4 can retry on transient network errors safely."
+  ]
+}

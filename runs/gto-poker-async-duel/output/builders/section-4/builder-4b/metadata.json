@@ -1,0 +1,8 @@
+{
+  "builder_id": "builder-4b",
+  "section_id": "section-4",
+  "status": "completed",
+  "outputs": ["stats.js"],
+  "exports": ["perPlayerAccuracy", "interPlayerAgreement", "rankedDisagreements"],
+  "notes": "Pure functions. rankedDisagreements implements joint_confidence_min ranking per DCA.10 / IP8.A2 / S4.A7."
+}

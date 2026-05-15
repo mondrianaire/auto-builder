@@ -1,0 +1,33 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-3",
+  "consumer_section": "section-4",
+  "interface_kind": "event_trigger_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "enableNotifications",
+        "kind": "function",
+        "signature": "() -> Promise<{granted: bool, reason?: 'denied' | 'unsupported' | 'requires_pwa_install'}>; gated to be called only from a user click handler; on success, subscribes via PushManager and persists via section-2's savePushSubscription"
+      },
+      {
+        "name": "sendTurnNotification",
+        "kind": "function",
+        "signature": "(gameId: string, recipientUid: string, payload: {title: string, body: string, url: string}) -> Promise<{sent: bool, reason?: 'no_subscription' | 'permission_denied' | 'send_failed'}>; reads the recipient's push subscription via section-2 and dispatches a VAPID-signed Web Push request to the recipient's endpoint"
+      },
+      {
+        "name": "notificationStatus",
+        "kind": "function",
+        "signature": "() -> {permission: 'default' | 'granted' | 'denied', subscribed: bool, platform_supports_push: bool, ios_requires_home_screen_install: bool}"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["enableNotifications", "sendTurnNotification", "notificationStatus"]
+  },
+  "invariants": [
+    "Section-4 calls sendTurnNotification immediately after a successful submitHandful when the round transitions to 'waiting_for_opponent' (i.e., when the current player has just submitted and the opponent now owes a turn).",
+    "If sendTurnNotification returns sent: false, the game still functions — the opponent will see their turn the next time they open the app. The notification is an enhancement, not a precondition.",
+    "Section-4 reads notificationStatus to decide whether to surface the 'Enable notifications' affordance or the 'Add to Home Screen first' prompt on iOS."
+  ]
+}

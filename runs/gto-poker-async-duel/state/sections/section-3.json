@@ -1,0 +1,19 @@
+{
+  "section_id": "section-3",
+  "name": "Notifications and Service Worker",
+  "status": "verified",
+  "dispatch_mode": "inline",
+  "builders": [
+    { "builder_id": "builder-3a", "status": "completed", "produced": "push.js (Web Push pipeline)" },
+    { "builder_id": "builder-3b", "status": "completed", "produced": "sw.js + manifest.json" }
+  ],
+  "assertions_verified": [
+    { "id": "S3.A1", "verified": true, "evidence": "registerServiceWorker() calls navigator.serviceWorker.register('./sw.js', { scope: './' }) — relative URL; resolved scope is the entrypoint's directory." },
+    { "id": "S3.A2", "verified": true, "evidence": "manifest.json exists with display:'standalone'; referenced from index.html via <link rel='manifest' href='./manifest.json'> (set up during integration)." },
+    { "id": "S3.A3", "verified": true, "evidence": "Notification.requestPermission() is invoked only inside enableNotifications(); section-4/section-5 only call enableNotifications() from button onclick handlers. Static scan: no boot-time or timer-deferred requestPermission calls." },
+    { "id": "S3.A4", "verified": true, "evidence": "After requestPermission grants, enableNotifications() calls pushManager.subscribe(...) and persists via savePushSubscription(_currentGameId, record) — endpoint, keys.p256dh, keys.auth all populated." },
+    { "id": "S3.A5", "verified": true, "evidence": "sendTurnNotification signs a VAPID JWT (ES256, P-256) and POSTs to sub.endpoint with Authorization: vapid t=<jwt>, k=<pub>. Service worker push handler renders a notification via self.registration.showNotification. Production-fidelity verification deferred to section-7 with real Firebase project." },
+    { "id": "S3.A6", "verified": true, "evidence": "platformSupportsPush() returns false on unsupported platforms; notificationStatus returns {permission, subscribed, platform_supports_push, ios_requires_home_screen_install}; enableNotifications returns {granted:false, reason:'unsupported'|'denied'|'requires_pwa_install'} without throwing. Section-4 reads notificationStatus and renders fallback UI when push is unavailable." }
+  ],
+  "verified_at": "2026-05-14T01:02:30Z"
+}

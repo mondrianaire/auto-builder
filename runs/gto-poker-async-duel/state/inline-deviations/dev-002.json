@@ -1,0 +1,9 @@
+{
+  "id": "dev-002",
+  "category": "contract_micro_adjustment",
+  "section": "integrator",
+  "summary": "Integrator build-manifest moved to output/integration/_build-manifest.json (instead of output/integration/manifest.json) because manifest.json at the project root is load-bearing as the W3C Web App Manifest required for PWA install on iOS Safari (IP2.A4 / S3.A2).",
+  "decision": "The briefing's instruction to 'Write output/integration/manifest.json per the schema' would conflict with the Web App Manifest already required at this path. The Web App Manifest is the more load-bearing artifact (it must live next to index.html and have display:standalone to satisfy iOS Safari's PWA install path, which is in turn the gate to iOS Web Push). The integrator's own build-manifest is therefore at _build-manifest.json. There is no information loss — both files exist, both are findable, the integrator manifest is JSON and validly readable by any downstream tool.",
+  "nested_equivalent": "Under nested dispatch, the Integrator would have raised this as a Sev 0 trivial-fix consult with the Orchestrator before applying. The fix is a single filename change in one location, with zero downstream consumers in the architecture that look at the integrator manifest by literal path; the Orchestrator would have approved.",
+  "logged_at": "2026-05-14T01:04:30Z"
+}

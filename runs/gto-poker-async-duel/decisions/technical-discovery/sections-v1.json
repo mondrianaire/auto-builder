@@ -1,0 +1,1383 @@
+{
+  "version": 1,
+  "created_at": "2026-05-14T00:00:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "researcher_dispatch_summary": {
+    "dispatched": [
+      {
+        "probe_id": "probe-001",
+        "covers_ips": ["IP1", "IP2"],
+        "findings_pointer": "research/probes/probe-001/findings.json"
+      }
+    ],
+    "quick_reasoning": [
+      {"ip_id": "IP3", "rationale": "Coupled to IP1; default branch (BaaS anonymous auth) is consistent with Researcher's verdict on IP1 and satisfies the quick-reasoning rubric: well-known canonical pattern, similar implementation complexity to alternatives, no new dependency beyond IP1's already-chosen BaaS, reversible behind an auth-adapter."},
+      {"ip_id": "IP4", "rationale": "Default branch (per-game share URL/code) is the simplest viable pairing; alternatives add a contacts layer Discovery flagged as out of scope. Well-known canonical pattern, no new dependency, reversible UX-only."},
+      {"ip_id": "IP5", "rationale": "Default branch (port ancestor scenario library) is content-only and meets all four quick-reasoning rubric criteria; no architectural fork."},
+      {"ip_id": "IP6", "rationale": "Default branch (game-creator-configurable handful) is UX-only with no architectural fork."},
+      {"ip_id": "IP7", "rationale": "Default branch (per-scenario async note) is the simplest data-model and UI addition that satisfies the communication requirement without expanding into full chat."},
+      {"ip_id": "IP8", "rationale": "Default branch (discrete 1-5 scale) is UX-only; the comparison computation works identically for any totally-ordered scale."}
+    ]
+  },
+  "prompt_verb_analysis": {
+    "candidate_verbs": [
+      "create (a new game, sharing the join code with the opposing player)",
+      "play (an asynchronous head-to-head GTO duel with confidence-rated decisions and a confidence-gap wrap-up)",
+      "submit (a handful of answers, then wait for the opponent's turn)"
+    ],
+    "chosen_verb": "play (a complete asynchronous head-to-head GTO duel: create a game, share the join code, alternate handful submissions across multiple rounds with confidence-rated decisions, receive opt-in notifications when it is your turn, and see the end-of-game wrap-up highlighting the highest joint-confidence disagreements)",
+    "rationale": "The prompt names several actions — create, play, submit, wait, highlight, notify — but only one of them is the load-bearing integrative verb whose absence would mean the build failed: 'play (an asynchronous multiplayer GTO Poker head to head quiz game)'. This verb integrates every sub-system that follows from Discovery's restatement: pairing (the share-code flow), state transport (the BaaS sync), the per-scenario decision capture, the confidence rating, the blind-until-both-submit reveal model, the round rotation, the opt-in notification, and the end-of-game disagreement wrap-up. 'Create' is a precondition. 'Submit' is a sub-step of play. 'Wait' is what the architecture must support (async). 'Highlight' is the wrap-up screen, a sub-feature of play. 'Play' is what the user and his mom would actually say they did when they used the app. The PNV assertion below exercises a full two-player play-through end-to-end."
+  },
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "play (a complete asynchronous head-to-head GTO duel across multiple rounds with confidence ratings, opt-in notifications, and a confidence-gap wrap-up)",
+    "scenario": "Production-fidelity scenario across two independent browser profiles representing Player A and Player B, both pointing at a single deployed GitHub Pages URL (or its file-served simulacrum loaded so service-worker subpath scoping behaves identically to the published URL). Configure a small game (e.g., 2 rounds x 3 scenarios per handful) to keep the run tractable. Step 1: Profile A loads the published URL, sees a landing screen, clicks 'Create a new game', is shown a configuration dialog, selects round count = 2 and handful size = 3, and submits. Profile A is shown a share code (and shareable URL) on a 'waiting for opponent' screen. Step 2: Profile B opens the share URL (in a separate browser profile to simulate a different device), enters a display name, and joins the game. Step 3: Round 1, Player A's turn. Profile A is presented with a handful of 3 GTO 'gotcha' scenarios. For each, Profile A selects an action and a confidence rating (1-5) and may add an optional per-scenario note; the GTO-verified action is NOT visible during input (blindness preserved). Profile A submits the handful. Step 4: Profile A is shown a 'waiting for Player B' screen. Profile B receives an in-app indicator and (if notifications were opted in and the platform supports it per the iOS/PWA caveat) an out-of-app push notification 'It's your turn'. Step 5: Profile B loads the app and is presented with the same 3 scenarios from Round 1. Profile B selects actions and confidence ratings, may add notes, and submits. Step 6: Both profiles can now view the Round 1 reveal: per-scenario, each player's action, each player's confidence, each player's note, and the GTO-verified action. Step 7: Round 2 begins with Player B leading (alternation per A17). Profile B submits a new handful of 3 scenarios. Step 8: Profile A receives the turn notification, submits Round 2 answers. Step 9: After both have submitted Round 2 (the configured final round), both profiles see the end-of-game wrap-up screen. The wrap-up displays: (a) individual performance stats (% agreement with the GTO-verified action, per-player), (b) inter-player agreement stats (% of scenarios where both players chose the same action), and (c) an explicit highlighted list of the scenarios with the largest joint-confidence disagreements (scenarios where the two players chose differing actions AND both reported high confidence, ordered by descending joint confidence). Throughout: zero outbound network requests fire to any origin other than the chosen BaaS endpoints and the Web Push subscription endpoints; the app's static assets all resolve correctly relative to the GitHub Pages project subpath; no console errors fire on either profile.",
+    "expected_result": "Profile A successfully creates a game and obtains a share code. Profile B successfully joins via the share URL. Both profiles complete a 2-round game with 3 scenarios per handful. The reveal panels correctly show each player's action and confidence per scenario along with the GTO-verified action. The end-of-game wrap-up renders individual performance metrics, inter-player agreement metrics, and a non-empty (when the test scenarios are chosen to produce a disagreement) highlighted list of the highest joint-confidence disagreements ordered by descending joint confidence. Opt-in notifications: on a browser/OS combination known to support Web Push (e.g., desktop Chrome), the recipient profile receives an out-of-app push notification within 30 seconds of the opponent's submit, fired by the service worker, even when the recipient profile's tab is closed. On iOS Safari, the notification flow requires Add-to-Home-Screen first and is verified only on that path. Throughout the run, all assets resolve under the GitHub Pages project subpath, zero console errors fire, and outbound network requests are restricted to the chosen BaaS endpoints + the recipient's Web Push endpoint.",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "source": "prompt",
+    "covers": "decisions/technical-discovery/sections-v1.json#prompt_verb_analysis.chosen_verb"
+  },
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "source": "canonical_evidence",
+      "resolved_via": "researcher_dispatched",
+      "researcher_findings_pointer": "research/probes/probe-001/findings.json",
+      "chosen_branch": "Firebase (Firestore + standard W3C Web Push via VAPID) on the Spark free plan. Game state lives in Firestore documents protected by Security Rules predicated on Firebase Anonymous Auth UIDs. Push delivery uses the W3C Web Push protocol (VAPID-signed) from the submitting client directly to the recipient's pushSubscription.endpoint — bypassing FCM's server-OAuth-required HTTP v1 API and keeping the architecture client-only.",
+      "rationale": "Researcher Probe 001 identified Firebase Spark as the only candidate among Firebase, Supabase, no-backend URL, and Gist-as-backend that simultaneously satisfies: (1) GitHub-Pages-only deploy with no companion server, (2) durable shared state with proper authorization, (3) true out-of-app Web Push delivery, and (4) free-tier headroom for friends-and-family scale, (5) no inactivity auto-pause. Supabase is disqualified by the 7-day-inactivity auto-pause against an explicitly weekly-cadence use case. URL-payload has no server actor to fire push when the recipient's tab is closed. Gist-as-backend has no native push and anonymous-gist deprecation.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "The integrated artifact is a directory of static assets (HTML/CSS/JS plus manifest.json and service worker) ready to commit to a GitHub Pages publishing source with no build step the user must run.",
+          "check_type": "behavior",
+          "target_module": "dist/",
+          "target_symbol": "page_load_under_pages_subpath",
+          "expected_value": "Serving the entrypoint from any directory at a project subpath (e.g., /repo-name/) reaches an interactive landing screen with no console errors and no failed asset requests.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.1]"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "Shared game state is persisted in Firestore via the Firebase JS SDK, identified by a game document whose ID is the share code, with a participants array of Firebase Anonymous Auth UIDs.",
+          "check_type": "structural",
+          "target_module": "state-and-backend-adapter",
+          "target_symbol": "firestore_game_document",
+          "expected_value": "Game document shape includes { gameId, createdAt, config: {rounds, handful_size}, participants: [uid_a, uid_b?], rounds: [...], status }; the participants array is referenced by Security Rules.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.2]"
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "Firestore Security Rules deny reads and writes to a game document by any UID not listed in the document's participants array.",
+          "check_type": "behavior",
+          "target_module": "firestore.rules",
+          "target_symbol": "participants_only_predicate",
+          "expected_value": "A request from an anonymous UID not in participants returns PERMISSION_DENIED for both read and write.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.2]"
+        },
+        {
+          "id": "IP1.A4",
+          "statement": "The Firebase configuration the user must paste (apiKey, projectId, etc., plus the VAPID public key) lives in a single, well-marked config file (e.g., src/config.js or a /config.json that the app fetches at boot) with explanatory comments describing where to obtain each value from the Firebase console.",
+          "check_type": "presence",
+          "target_module": "src/config",
+          "target_symbol": "firebase_user_config",
+          "expected_value": "A single config-file exists, contains placeholder values, and is referenced exactly once in the bundle.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "source": "canonical_evidence",
+      "resolved_via": "researcher_dispatched",
+      "researcher_findings_pointer": "research/probes/probe-001/findings.json",
+      "chosen_branch": "Web Push API + service worker + W3C VAPID-signed push requests, sent from the submitting client to the recipient's pushSubscription.endpoint at submit-time. The service worker is registered at a relative path so it scopes to the GitHub Pages project subpath. On iOS, the app surfaces a manifest with display:standalone and instructs the user (via in-app onboarding) to Add to Home Screen before enabling notifications, per Apple's WebKit documentation.",
+      "rationale": "Researcher Probe 001: the bare Notification API only fires when the page is open, which the prompt's 'it is their turn' wording rules out (the recipient is not currently using the app). True out-of-app push requires Push API + Notifications API + Service Worker working together (CIT.6). Apple's WebKit team documents iOS support specifically for web apps added to the Home Screen (CIT.5). FCM's server HTTP v1 API requires an OAuth-bearing service account and is therefore incompatible with a fully client-only static-site architecture; the standard W3C Web Push protocol with VAPID is the correct client-only substitute, and works across Chrome/Edge/Firefox/Android/iOS via each vendor's push service endpoint.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "The integrated artifact registers a service worker at a path relative to the entrypoint so the worker's scope covers the GitHub Pages project subpath (e.g., /repo-name/).",
+          "check_type": "structural",
+          "target_module": "notifications-and-service-worker",
+          "target_symbol": "sw_register_relative_scope",
+          "expected_value": "The registration call uses a relative URL (e.g., './sw.js' or 'sw.js'), not a root-anchored URL, and the resolved scope equals the project subpath when published.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.6]"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "Enabling notifications subscribes the device to the push service via PushManager.subscribe with the application server's VAPID public key, and stores the resulting subscription (endpoint + keys) on the player's record in Firestore.",
+          "check_type": "behavior",
+          "target_module": "notifications-and-service-worker",
+          "target_symbol": "subscribe_and_store",
+          "expected_value": "After the user clicks 'Enable notifications' and grants permission, a pushSubscription is created, its serialized form is written to the game document under the recipient player's record, and Firestore receives the write.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.6]"
+        },
+        {
+          "id": "IP2.A3",
+          "statement": "When a player submits a handful, the submitting client reads the opponent's stored pushSubscription from Firestore and (if present and not opted out) sends a VAPID-signed Web Push request to the opponent's subscription endpoint to fire an out-of-app notification.",
+          "check_type": "behavior",
+          "target_module": "notifications-and-service-worker",
+          "target_symbol": "send_push_on_submit",
+          "expected_value": "Submission triggers a POST to the opponent's pushSubscription.endpoint with VAPID Authorization headers; the recipient's service worker fires a notification even when the recipient's tab is closed.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.3]"
+        },
+        {
+          "id": "IP2.A4",
+          "statement": "The artifact ships a Web Application Manifest at a relative path with display set to 'standalone' (or 'fullscreen'), the minimum required for iOS Safari to treat the site as a Home Screen web app eligible for Web Push.",
+          "check_type": "presence",
+          "target_module": "controller-and-shell",
+          "target_symbol": "manifest_display_standalone",
+          "expected_value": "manifest.json or manifest.webmanifest exists, is referenced from <link rel='manifest'>, and contains a display field set to 'standalone' or 'fullscreen'.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.5]"
+        },
+        {
+          "id": "IP2.A5",
+          "statement": "The notification permission prompt is triggered only in response to direct user interaction (a click on an in-app 'Enable notifications' control), never on page load, per iOS Safari's requirement.",
+          "check_type": "behavior",
+          "target_module": "notifications-and-service-worker",
+          "target_symbol": "permission_request_on_user_gesture",
+          "expected_value": "Notification.requestPermission() is invoked from a click handler attached to the in-app enable-notifications button and is never invoked at boot or in a deferred timer.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.5]"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Firebase Anonymous Auth — each device receives a stable UID at first launch, optionally annotated with a free-form display name the user types at game-create or game-join time.",
+      "rationale": "Coupled to IP1's BaaS choice. Anonymous Auth gives Security Rules the auth.uid predicate they need to enforce per-game access control without forcing a sign-up flow. Quick-reasoning rubric satisfied: well-known canonical pattern, similar implementation cost to other auth paths, no new dependency beyond Firebase already chosen, reversible behind a small identity-adapter.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "On first app load, the client calls firebase.auth().signInAnonymously() and waits for the resulting UID before allowing game creation or joining.",
+          "check_type": "behavior",
+          "target_module": "state-and-backend-adapter",
+          "target_symbol": "anon_signin_at_boot",
+          "expected_value": "After boot, firebase.auth().currentUser exists and has a non-empty uid; gate UI is disabled until this resolves.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.2]"
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "There is no email/password, OAuth, or magic-link sign-up flow anywhere in the artifact.",
+          "check_type": "absence",
+          "target_module": "src",
+          "target_symbol": "non_anonymous_auth_paths",
+          "expected_value": "No signInWithEmailAndPassword, signInWithRedirect, signInWithPopup, or sendSignInLinkToEmail invocations.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].chosen_branch",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP4",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Per-game share code embedded in a join URL. Game creation produces a doc whose ID is a short human-readable code (e.g., 6-character base32). The creator is shown both the raw code and a full URL of the form '<pages-url>/?join=<code>' suitable for copy/paste into SMS or messenger.",
+      "rationale": "Default branch per Discovery; matches the user's specific-opponent use case. Quick-reasoning rubric satisfied.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.A1",
+          "statement": "Game creation generates a share code of fixed length and a join URL containing that code as a query parameter.",
+          "check_type": "behavior",
+          "target_module": "pairing-and-onboarding",
+          "target_symbol": "share_code_generation",
+          "expected_value": "After clicking 'Create game', the creator sees a 6+ character code and a full URL of the form '<origin><pathname>?join=<code>'.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP4.A2",
+          "statement": "Loading the join URL in a second browser profile presents a join screen with the game-code pre-filled, and submitting it adds the second player's UID to the game's participants array.",
+          "check_type": "user_flow",
+          "target_module": "pairing-and-onboarding",
+          "target_symbol": "join_via_url",
+          "expected_value": "Second-profile load of the join URL transitions to a join screen showing the code; on submit, Firestore game document gains the second UID.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP5",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Port the ancestor 'gto-poker-trainer' scenario library as static JSON content embedded in the build (data only, no runtime dependency on the ancestor application). Augment each entry with the fields needed for duel format: gto_action (the verified answer), gto_explanation (preserved from ancestor), available_actions[] (so the UI can render the choice buttons).",
+      "rationale": "Default branch; matches A20 and the user's emotional continuity with the ancestor build. Content-only; no architectural fork.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP5.A1",
+          "statement": "The build contains a static JSON scenario library of at least 20 GTO 'gotcha' entries, each annotated with: scenario_id, description, board, action_history, available_actions[], gto_action, gto_explanation, and lesson_tag.",
+          "check_type": "presence",
+          "target_module": "data-and-scenarios",
+          "target_symbol": "scenario_library",
+          "expected_value": "Array length >= 20; every entry has all required fields non-empty.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].chosen_branch",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP5.A2",
+          "statement": "The library is static data; no runtime call to the ancestor 'gto-poker-trainer' application or its files is performed.",
+          "check_type": "absence",
+          "target_module": "src",
+          "target_symbol": "ancestor_runtime_link",
+          "expected_value": "No fetch, import, or asset reference targeting paths under '../gto-poker-trainer/'.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].chosen_branch",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP6",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Game-creator-configurable handful size at game-creation time, alongside round count. Default values offered: 5 scenarios per handful, 4 rounds. Range: 1-10 scenarios per handful, 1-10 rounds.",
+      "rationale": "Default branch; symmetric with the prompt's explicit 'set number of rounds' configurability. Pure UX tuning.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP6.A1",
+          "statement": "The create-game flow exposes inputs for round count and handful size, both within documented ranges, and the values are persisted to the Firestore game document's config field.",
+          "check_type": "user_flow",
+          "target_module": "pairing-and-onboarding",
+          "target_symbol": "create_game_config_inputs",
+          "expected_value": "Round-count input accepts 1-10; handful-size input accepts 1-10; both are written to game.config.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP6].chosen_branch",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP7",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Per-scenario optional async note. Each player may attach a short freeform note (<= 280 chars) to their answer; both notes are revealed alongside both players' actions and confidences in the reveal panel and in the wrap-up.",
+      "rationale": "Default branch; matches the user's anecdote of talking through hands with his mom. Adds one nullable text field per submission; minimal data-model and UI cost.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP7.A1",
+          "statement": "On the per-scenario submission UI, an optional note input is visible and accepts up to 280 characters; the submission is valid with or without a note.",
+          "check_type": "user_flow",
+          "target_module": "game-flow-and-ui",
+          "target_symbol": "scenario_note_input",
+          "expected_value": "Note input is present, accepts >= 1 and <= 280 chars; submitting with the field empty still succeeds.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP7].chosen_branch",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP7.A2",
+          "statement": "The reveal panel for a scenario shows both players' notes (if any) alongside their actions and confidences once both have submitted that scenario's round.",
+          "check_type": "user_flow",
+          "target_module": "game-flow-and-ui",
+          "target_symbol": "reveal_shows_both_notes",
+          "expected_value": "Reveal UI displays for each player: action, confidence, note (or 'no note' indicator), and the GTO-verified action.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP7].chosen_branch",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP8",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Discrete 1-5 confidence scale (1 = Guess, 5 = Sure). Stored as integer. Joint confidence for the disagreement-ranking computation is min(c_a, c_b) (i.e., a scenario where one player is confident and the other guessed should rank below a scenario where both are confident).",
+      "rationale": "Default branch; simplest input, well-understood scale, and the joint-confidence formula matches the user's stated intent of 'highest confidence gap between differing answers' (both confident, but disagreeing).",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP8.A1",
+          "statement": "The confidence input is a discrete 1-5 control (e.g., 5 buttons or 5 stars). The submission cannot be completed without selecting a confidence value (no default).",
+          "check_type": "user_flow",
+          "target_module": "game-flow-and-ui",
+          "target_symbol": "confidence_input",
+          "expected_value": "Five distinct selectable values; submission is gated until a value is selected.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP8].chosen_branch",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP8.A2",
+          "statement": "Disagreement ranking on the wrap-up screen orders scenarios by min(player_a_confidence, player_b_confidence) descending, filtered to scenarios where player_a_action != player_b_action.",
+          "check_type": "behavior",
+          "target_module": "game-flow-and-ui",
+          "target_symbol": "disagreement_ranking_formula",
+          "expected_value": "Given two disagreement scenarios with joint confidences min(5,5)=5 and min(5,2)=2, the first appears above the second in the wrap-up list.",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP8].chosen_branch",
+          "source": "td_plan"
+        }
+      ]
+    }
+  ],
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.1",
+      "covers": "decisions/discovery/ledger-v1.json#restatement",
+      "statement": "The integrated artifact implements the full restatement: two players, each receiving the same handful of GTO scenarios per round, submitting action + confidence (with blindness preserved until both have submitted), across a configured number of rounds, with end-of-game stats covering individual performance and inter-player agreement and an explicit highlighted list of highest-joint-confidence disagreements, plus an opt-in notification capability.",
+      "check_type": "user_flow",
+      "scenario": "Execute the PNV.1 scenario end-to-end across two browser profiles and verify each clause of the restatement maps to an observable UI/behavior step.",
+      "expected_result": "Every clause maps to an observed step; no clause is missing.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.2",
+      "covers": "decisions/discovery/ledger-v1.json#telos",
+      "statement": "The artifact is hostable in full on GitHub Pages: it is a directory of static files committed to a publishing source (no companion server, no build the user must run); when served from that source it loads and operates.",
+      "check_type": "behavior",
+      "scenario": "Serve the dist/ directory under a project-subpath path prefix (e.g., a local static server at http://localhost:8080/repo-name/) and confirm the app boots, registers its service worker at the correct scope, and operates.",
+      "expected_result": "App loads under subpath; service worker scope equals the subpath; no failed asset requests.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.3",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A1]",
+      "statement": "There is no companion server, no backend the user is expected to deploy, and no build step the user must run; the only external service is the BaaS (Firebase) which the user creates via a console and configures via a single config file.",
+      "check_type": "absence",
+      "scenario": "Inspect the deliverable for any Node/Python/Ruby server source, any Dockerfile, any required CI step, or any Cloud Functions source. Confirm only static assets + config-file + (optional) Firestore rules file exist.",
+      "expected_result": "No companion server present; user setup steps are limited to: (1) create Firebase project, (2) paste config values, (3) push to GitHub, (4) enable Pages.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.4",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A2]",
+      "statement": "Exactly two players per game session; the data model and UI hard-enforce a maximum of two participants per game.",
+      "check_type": "behavior",
+      "scenario": "Attempt to join a game that already has two participants from a third anonymous UID.",
+      "expected_result": "Join is rejected (UI shows 'game full' or equivalent); Firestore rules independently reject the write.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.5",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A3]",
+      "statement": "The game is fully async: each player can complete their handful while the opponent is offline, and the opponent picks up where the game left off on their next open.",
+      "check_type": "user_flow",
+      "scenario": "Player A submits a handful while Player B's tab is closed; one hour later (simulated by gap in actions), Player B opens the URL fresh and sees the round waiting for them.",
+      "expected_result": "Player B's load shows the round-waiting state with the same scenarios Player A submitted against.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.6",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A4]",
+      "statement": "Within one round, both players see the same set of scenarios (identical, not independently sampled).",
+      "check_type": "behavior",
+      "scenario": "After Player A submits Round 1, open the round-1 scenarios shown to Player B and compare scenario_ids to those Player A saw.",
+      "expected_result": "Identical scenario_id list, same order.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.7",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A5]",
+      "statement": "Each player answers a configurable handful per turn (1-10 scenarios), set at game-creation time.",
+      "check_type": "user_flow",
+      "scenario": "Create a game with handful_size = 3 and confirm exactly 3 scenarios appear per turn.",
+      "expected_result": "Exactly 3 scenarios per turn; create-game flow exposes the configurability.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.8",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A6]",
+      "statement": "A game is played for a set number of rounds configured at game-creation time, after which end-of-game stats are presented.",
+      "check_type": "user_flow",
+      "scenario": "Create a 2-round game and play it through; verify the wrap-up screen appears exactly after Round 2 (not before, not after a 3rd round).",
+      "expected_result": "Wrap-up appears after Round 2 completion; no Round 3 is offered.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.9",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7]",
+      "statement": "Each decision carries a per-decision confidence rating supplied at submission time; the submission cannot be completed without one.",
+      "check_type": "user_flow",
+      "scenario": "Attempt to submit a scenario answer without selecting a confidence value.",
+      "expected_result": "Submission is blocked; UI surfaces the missing confidence requirement.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.10",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8]",
+      "statement": "The wrap-up explicitly highlights the scenarios where the two players' chosen actions differ AND both players reported high confidence, ordered by descending joint confidence.",
+      "check_type": "behavior",
+      "scenario": "Run a 2-round game where one disagreement scenario has both players at confidence 5 and another has player_a confidence 5 + player_b confidence 2. Check the wrap-up ordering.",
+      "expected_result": "The (5,5) disagreement appears above the (5,2) disagreement in the highlighted list.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.11",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A9]",
+      "statement": "End-of-game stats include both individual performance metrics (per-player % agreement with the GTO-verified action) and inter-player agreement metrics (% of scenarios where both players chose the same action).",
+      "check_type": "presence",
+      "scenario": "After a completed game, inspect the wrap-up screen for both metric axes.",
+      "expected_result": "Both axes are rendered with numeric values for each player.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.12",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A10]",
+      "statement": "Async per-scenario communication is supported via the optional per-scenario note (<= 280 chars) attached to each submission and revealed in both the per-scenario reveal panel and the wrap-up.",
+      "check_type": "user_flow",
+      "scenario": "Player A attaches a note 'This feels wrong to fold here' to a scenario; after Player B submits, both players see Player A's note in the reveal panel.",
+      "expected_result": "Note is visible on both profiles' reveal panels.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.13",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A11]",
+      "statement": "Opt-in notifications use web-standard Web Push (Push API + Notifications API + Service Worker), bound per-browser-session/device by user permission. No native iOS/Android app build.",
+      "check_type": "absence",
+      "scenario": "Inspect the deliverable for any native-app build artifacts (.apk, .ipa, .xcodeproj) and any non-web push mechanism.",
+      "expected_result": "Zero native build artifacts; push delivery uses only Push API + ServiceWorkerRegistration.pushManager.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.6]"
+    },
+    {
+      "id": "DCA.14",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A12]",
+      "statement": "All scenarios are No-Limit Texas Hold'em, inheriting from the ancestor build's variant.",
+      "check_type": "absence",
+      "scenario": "Inspect the scenario library and UI for any variant selector or non-NLHE entries.",
+      "expected_result": "No variant selector; every scenario is NLHE.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.15",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A13]",
+      "statement": "GTO answers are precomputed/curated static data, not computed by a live solver at runtime.",
+      "check_type": "absence",
+      "scenario": "Static-scan the bundle for solver/CFR/equilibrium iteration code paths or external solver API calls.",
+      "expected_result": "Zero solver code paths; all GTO answers come from embedded data.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.16",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A14]",
+      "statement": "Identity is lightweight: Firebase Anonymous Auth (per-device UID) plus an optional display name. No email/password, OAuth, or magic-link sign-up.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen for sign-up surfaces.",
+      "expected_result": "No sign-up/sign-in form; first launch silently establishes an anonymous session.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.17",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A15]",
+      "statement": "Pairing happens via a shared per-game identifier (share code embedded in a join URL); both players must use the same identifier to pair.",
+      "check_type": "user_flow",
+      "scenario": "Profile A creates a game and copies the share URL; Profile B opens it and joins; confirm both profiles are linked to the same game document.",
+      "expected_result": "Both profiles operate on the same gameId.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.18",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A16]",
+      "statement": "Game state persists across player absences for the duration of a game, stored in Firestore.",
+      "check_type": "behavior",
+      "scenario": "Player A submits and closes the browser entirely; one hour later Player A re-opens the URL.",
+      "expected_result": "Player A is restored to the same game state (round, status, opponent's progress).",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.19",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A17]",
+      "statement": "Order-of-play within a round is well-defined: the round's leader (alternating per round, starting with the game-creator) submits their handful first; the responder then sees those same scenarios.",
+      "check_type": "behavior",
+      "scenario": "In a 2-round game, confirm Round 1 leader is the creator (Player A) and Round 2 leader is the joiner (Player B). Confirm the responder sees the same scenarios the leader saw.",
+      "expected_result": "Alternation per round; scenarios identical for leader and responder within a round.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.20",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A18]",
+      "statement": "Answer blindness is preserved: neither player sees the other's action, confidence, or note until both have submitted that scenario.",
+      "check_type": "behavior",
+      "scenario": "Player A submits Round 1; before Player B submits, Profile A attempts to view any data about Player B's eventual answers.",
+      "expected_result": "No UI surface and no Firestore-readable field exposes Player B's pre-submission state; Security Rules prevent direct queries that would leak it.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.21",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A19]",
+      "statement": "The deliverable is a directory of static assets ready to commit to a publishing source; the user, not the build, enables GitHub Pages on their repo.",
+      "check_type": "presence",
+      "scenario": "Inspect the deliverable for a README (or equivalent onboarding doc) describing the four-step user setup: create Firebase project, paste config, push to GitHub, enable Pages.",
+      "expected_result": "Onboarding doc exists and names all four steps.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.22",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A20]",
+      "statement": "The build does not import or runtime-link the ancestor 'GTO Poker Training' application; the scenario library is data, not a runtime dependency.",
+      "check_type": "absence",
+      "scenario": "Search the bundle for any fetch/import/asset reference into the ancestor's directory.",
+      "expected_result": "Zero ancestor-runtime references.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.23",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP1].topic",
+      "statement": "Async-multiplayer state transport is resolved via Firebase Firestore (BaaS) — covered in detail by IP1.A1-A4.",
+      "check_type": "presence",
+      "scenario": "Inspect the artifact's state layer.",
+      "expected_result": "Firestore SDK is used; game state is read/written through it; no other state transport.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.2]"
+    },
+    {
+      "id": "DCA.24",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP2].topic",
+      "statement": "Cross-user notification delivery is resolved via Web Push + service worker + VAPID — covered in detail by IP2.A1-A5.",
+      "check_type": "behavior",
+      "scenario": "Trigger a turn-submit on Profile A while Profile B's tab is closed (on a Web-Push-capable platform).",
+      "expected_result": "Profile B receives an out-of-app notification via the service worker.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.3]"
+    },
+    {
+      "id": "DCA.25",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP3].topic",
+      "statement": "Player identity is resolved via Firebase Anonymous Auth — covered in detail by IP3.A1-A2.",
+      "check_type": "behavior",
+      "scenario": "Open the app in a fresh profile; check firebase.auth().currentUser.",
+      "expected_result": "Anonymous UID present without any sign-up step.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.26",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP4].topic",
+      "statement": "Pairing is resolved via per-game share code in a join URL — covered in detail by IP4.A1-A2.",
+      "check_type": "user_flow",
+      "scenario": "Create + join a game via the share URL.",
+      "expected_result": "Both profiles operate on the same game document.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.27",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5].topic",
+      "statement": "Scenario source is resolved by porting the ancestor library as static JSON — covered in detail by IP5.A1-A2.",
+      "check_type": "presence",
+      "scenario": "Inspect the scenario library.",
+      "expected_result": "Static JSON library with >= 20 entries, no ancestor runtime link.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.28",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP6].topic",
+      "statement": "Handful size is resolved as game-creator-configurable at game-creation time — covered in detail by IP6.A1.",
+      "check_type": "user_flow",
+      "scenario": "Open the create-game flow and inspect the handful-size input.",
+      "expected_result": "Input present, accepts 1-10, persisted to game.config.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.29",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP7].topic",
+      "statement": "Async in-game communication is resolved via optional per-scenario notes — covered in detail by IP7.A1-A2.",
+      "check_type": "user_flow",
+      "scenario": "Attach a note to a submission and verify it appears in the reveal panel.",
+      "expected_result": "Note input present and revealed after both submissions.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.30",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP8].topic",
+      "statement": "Confidence rating is resolved as a discrete 1-5 scale with joint-confidence-min ranking on the wrap-up — covered in detail by IP8.A1-A2.",
+      "check_type": "behavior",
+      "scenario": "Run a game with one (5,5) disagreement and one (5,2) disagreement; check wrap-up order.",
+      "expected_result": "(5,5) is ranked above (5,2).",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.31",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1]",
+      "statement": "The new artifact is distinguishable in-product from the ancestor 'GTO Poker Training' application — the app uses a name (e.g., 'GTO Duel' or whatever Editor chooses) that does not present itself to a user as the ancestor build.",
+      "check_type": "absence",
+      "scenario": "Inspect the rendered UI's title and any visible app-name surface.",
+      "expected_result": "App name shown to the user is not the literal string 'GTO Poker Training'.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.32",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.2]",
+      "statement": "The artifact respects current GitHub Pages constraints (static-only, asset paths relative to the project subpath, service worker scoped to the subpath, no server-side code).",
+      "check_type": "behavior",
+      "scenario": "Serve dist/ under a /repo-name/ subpath prefix and load the app; verify every asset resolves and the service worker scope equals the subpath.",
+      "expected_result": "All assets resolve; SW scope = subpath.",
+      "verifier": "cv_artifact_exercise",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.1]"
+    },
+    {
+      "id": "DCA.33",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.1]",
+      "statement": "The deliverable produces a working set of static files that, when committed to a publishing source with Pages enabled, serve a loadable application at the GitHub Pages URL with no 404s on first navigation.",
+      "check_type": "behavior",
+      "scenario": "Serve dist/ under a project-subpath path prefix.",
+      "expected_result": "First navigation reaches the landing screen with no 404s.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.34",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.2]",
+      "statement": "Opening the published URL in a modern desktop browser loads the start screen without console errors and exposes a 'create a new game' affordance immediately, with no procedural setup between landing and starting a game (assuming the user has already configured Firebase).",
+      "check_type": "user_flow",
+      "scenario": "Load the app cold in a fresh browser profile.",
+      "expected_result": "Start screen visible; 'Create a new game' control visible and enabled; console has zero errors.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.35",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]",
+      "statement": "Creating a new game produces a shareable identifier (URL or short code) on the creator's screen; opening that identifier in a second browser profile joins the game as the second player.",
+      "check_type": "user_flow",
+      "scenario": "Profile A creates a game; copy the join URL; open it in Profile B; complete the join flow.",
+      "expected_result": "Profile B successfully joins the same game as the second participant.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.36",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.4]",
+      "statement": "On the first scenario screen, the user sees the scenario description, the available actions, and a confidence input. Submitting without both an action and a confidence is prevented.",
+      "check_type": "user_flow",
+      "scenario": "Open a scenario; attempt to submit without selecting an action; then without selecting a confidence; then with both.",
+      "expected_result": "Submission blocked on the first two attempts; succeeds on the third.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.37",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.5]",
+      "statement": "Asset paths resolve correctly under a GitHub Pages project subpath; no absolute root-anchored asset URLs.",
+      "check_type": "absence",
+      "scenario": "Static-scan the bundle for absolute root-anchored asset references (e.g., src='/assets/...' or href='/foo.css').",
+      "expected_result": "Zero absolute-root references; all asset URLs are relative or include the project subpath.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.1]"
+    },
+    {
+      "id": "DCA.38",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.6]",
+      "statement": "Opt-in notifications: the in-app 'Enable notifications' affordance triggers the standard permission prompt; after granting, the recipient receives an out-of-app push notification when the opponent submits a turn, even when the recipient's tab is closed.",
+      "check_type": "behavior",
+      "scenario": "On a Web-Push-capable platform (e.g., desktop Chrome), Profile B clicks 'Enable notifications', grants permission, closes the tab; Profile A then submits a turn.",
+      "expected_result": "Profile B's device receives an OS-level notification within 30 seconds of the submit.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.6]"
+    },
+    {
+      "id": "DCA.39",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.7]",
+      "statement": "Mobile first-contact: opening the published URL on a recent mobile browser renders an interactive, touch-usable game screen — actions are tappable, confidence input is usable, no horizontal scroll required to read a scenario.",
+      "check_type": "user_flow",
+      "scenario": "Open the app at a 380px viewport simulating mobile; navigate through a scenario submission.",
+      "expected_result": "All controls are reachable and tappable; no horizontal scroll to read the scenario text.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.40",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.8]",
+      "statement": "End-of-game wrap-up: after the configured final round is submitted by both players, both players see an end-of-game screen including individual performance stats, agreement stats, and an explicit highlighted list of the scenarios with the largest joint-confidence disagreements.",
+      "check_type": "user_flow",
+      "scenario": "Complete a 2-round game across two profiles.",
+      "expected_result": "Wrap-up renders all three sections on both profiles.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.41",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[0]",
+      "statement": "Real-money play, deposits, wagering, or any gambling integration is absent.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen for deposit/withdraw/cashier/wager surfaces.",
+      "expected_result": "Zero real-money surfaces.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.42",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[1]",
+      "statement": "Variants other than NLHE are absent; no variant selector.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI for any variant selector or non-NLHE content.",
+      "expected_result": "NLHE only; no selector.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.43",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[2]",
+      "statement": "More than two players per game is absent; no N-player tournament, bracket, or cross-user leaderboard.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI for any 3+ player lobby, tournament, bracket, or leaderboard surfaces.",
+      "expected_result": "Zero N-player or leaderboard surfaces.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.44",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[3]",
+      "statement": "Synchronous real-time multiplayer with live turn timers is absent.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI for any countdown timer, live-action indicator, or 'both online' state.",
+      "expected_result": "Zero sync-multiplayer surfaces.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.45",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[4]",
+      "statement": "Native iOS/Android application builds are absent; web/PWA only.",
+      "check_type": "absence",
+      "scenario": "Inspect the deliverable for .apk, .ipa, or .xcodeproj files.",
+      "expected_result": "Zero native-build artifacts.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.46",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[5]",
+      "statement": "Email/password accounts, OAuth providers, and persistent cross-game profiles beyond anonymous auth are absent.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen for sign-up/sign-in surfaces.",
+      "expected_result": "Zero non-anonymous auth surfaces.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.47",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[6]",
+      "statement": "Live GTO solver computation is absent; scenarios are precomputed.",
+      "check_type": "absence",
+      "scenario": "Static-scan for solver/CFR/equilibrium iteration code.",
+      "expected_result": "Zero live-solver code paths.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.48",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[7]",
+      "statement": "User-authored custom scenarios are absent in v1.",
+      "check_type": "absence",
+      "scenario": "Inspect the scenario surfaces for create/edit affordances.",
+      "expected_result": "Scenarios are read-only.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.49",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[8]",
+      "statement": "Hand-history importing from external poker sites is absent.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI for any 'import hand history' control.",
+      "expected_result": "No import surface.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.50",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[9]",
+      "statement": "Coaching, community, public sharing, social feeds, public leaderboards are absent.",
+      "check_type": "absence",
+      "scenario": "Inspect every reachable screen for community/public-share surfaces.",
+      "expected_result": "Zero community surfaces.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.51",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[10]",
+      "statement": "Spectator mode and replay-sharing to non-participants are absent.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI for any spectate/share-replay surfaces.",
+      "expected_result": "Zero spectator surfaces.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.52",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[11]",
+      "statement": "Moderation tooling beyond basic local-only blocking is absent; the use case is known two-person games.",
+      "check_type": "absence",
+      "scenario": "Inspect for moderation/report/ban surfaces.",
+      "expected_result": "Zero moderation surfaces beyond, at most, a local-only block button on a note.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.53",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[12]",
+      "statement": "Server-side deployment, custom domains setup, DNS work, and CDN configuration are absent; the user handles GitHub Pages enablement on their own repo.",
+      "check_type": "absence",
+      "scenario": "Inspect the deliverable for any server config, DNS config, or CDN config.",
+      "expected_result": "Zero server/DNS/CDN config; deliverable is static assets + Firestore rules file + onboarding doc.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.54",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[13]",
+      "statement": "Backwards integration with the ancestor 'GTO Poker Training' app's saved data is absent; scenarios may be ported as data, but no runtime linkage to the ancestor.",
+      "check_type": "absence",
+      "scenario": "Static-scan for any read of the ancestor's localStorage namespace or any fetch of the ancestor's files.",
+      "expected_result": "Zero ancestor-runtime references.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "Data and Scenarios",
+      "charter": "Define and embed the static GTO scenario library and the associated type definitions used across the app. Port the ancestor 'gto-poker-trainer' scenario data as JSON content (>=20 entries), annotated with each scenario's id, description, board, action history, available actions, GTO-verified action, GTO explanation, and lesson tag. Author the shared TypeScript-style type definitions / JSDoc shapes for: ScenarioId, Scenario, PlayerSubmission (action + confidence + optional note + timestamp), Round, GameConfig, GameDocument, and PushSubscriptionRecord. This section is pure data + types; it exposes a read-only API (getScenarioById, listScenarios, sampleNScenarios) and no runtime state.",
+      "acceptance": "A static JSON scenario library exists with at least 20 entries, every entry having all required fields non-empty. A read-only API exposes getScenarioById, listScenarios, and sampleNScenarios(n, rngSeed). The shared type definitions are exported and consumed by every other section that handles game data. No fetch, import, or asset reference targets the ancestor 'gto-poker-trainer' directory at runtime.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "A static JSON scenario library exists with at least 20 entries, every entry having all required fields non-empty.",
+          "check_type": "presence",
+          "scenario": "Enumerate the scenario library and check each entry's shape.",
+          "expected_result": "Library length >= 20; every entry has non-empty scenario_id, description, available_actions[] (length >= 2), gto_action (one of available_actions), gto_explanation (>= 100 chars), lesson_tag.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "A read-only API exposes getScenarioById, listScenarios, and sampleNScenarios(n, rngSeed).",
+          "check_type": "structural",
+          "scenario": "Inspect the module's exports.",
+          "expected_result": "Three exported functions with the named signatures; sampleNScenarios is deterministic given the same rngSeed.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "The shared type definitions are exported and consumed by every other section that handles game data.",
+          "check_type": "structural",
+          "scenario": "Inspect cross-section imports.",
+          "expected_result": "GameDocument, Scenario, PlayerSubmission, GameConfig, PushSubscriptionRecord are imported from this section by sections 2 / 3 / 4 / 5 / 6 wherever those shapes are referenced.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "No fetch, import, or asset reference targets the ancestor 'gto-poker-trainer' directory at runtime.",
+          "check_type": "absence",
+          "scenario": "Static-scan the bundle for any path containing 'gto-poker-trainer'.",
+          "expected_result": "Zero matches.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "sampleNScenarios(n, rngSeed)",
+          "check_type": "behavior",
+          "scenario": "Call sampleNScenarios(5, 'seed-abc') twice; deep-compare outputs.",
+          "expected_result": "Identical outputs both calls.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Live solver computation",
+        "Per-game UI (lives in section-4)",
+        "Backend integration (lives in section-2)"
+      ]
+    },
+    {
+      "id": "section-2",
+      "name": "State and Backend Adapter (Firestore + Anonymous Auth)",
+      "charter": "Wrap Firebase: initialize the Firebase app from the user-supplied config, perform anonymous sign-in at boot, and expose a small idempotent adapter that the rest of the app uses for all backend operations. Adapter API includes: createGame(config) -> {gameId, shareCode, joinUrl}; joinGame(shareCode) -> gameId; readGame(gameId, callback) (subscribes to live updates); submitHandful(gameId, roundIndex, submissions[]); savePushSubscription(gameId, subscription); readOpponentPushSubscription(gameId). Ship the Firestore Security Rules file alongside the build, with the rules predicate enforcing 'participants-only' read/write per game document and rejecting any join that would push participants beyond two. The adapter is the ONLY module in the app that imports the Firebase SDK; every other section interacts with backend state via this adapter.",
+      "acceptance": "Firebase is initialized exactly once from the user's config file at boot. Anonymous sign-in completes before any UI surface that requires authentication is shown. The adapter's API surface is exactly the methods listed in the charter, with idempotent semantics (re-calling submitHandful for the same (gameId, roundIndex, uid) does not duplicate writes). Firestore Security Rules ship in the build, contain a participants-only predicate, and reject a third-participant join. No other section in the app imports the Firebase SDK directly.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "Firebase is initialized exactly once from the user's config file at boot.",
+          "check_type": "structural",
+          "scenario": "Inspect the boot sequence and search for firebase.initializeApp invocations across the bundle.",
+          "expected_result": "Exactly one initializeApp call; config sourced from the single config file.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "Anonymous sign-in completes before any UI surface that requires authentication is shown.",
+          "check_type": "behavior",
+          "scenario": "Cold-load the app; observe the order of: anon sign-in resolution, first authenticated UI render.",
+          "expected_result": "Auth resolves before any backend-dependent UI mounts.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "The adapter's API surface is exactly the methods listed in the charter, with idempotent semantics.",
+          "check_type": "structural",
+          "scenario": "Inspect the adapter's exports; submit a synthetic handful twice with identical inputs and check Firestore for duplicate writes.",
+          "expected_result": "Exports match charter; second submitHandful is a no-op or overwrites (does not duplicate).",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "Firestore Security Rules ship in the build, contain a participants-only predicate, and reject a third-participant join.",
+          "check_type": "behavior",
+          "scenario": "Apply the rules to a Firestore emulator; create a game; attempt to add a third UID via a write from a non-participant.",
+          "expected_result": "Write rejected with PERMISSION_DENIED.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.2]"
+        },
+        {
+          "id": "S2.A5",
+          "from_acceptance_phrase": "No other section in the app imports the Firebase SDK directly.",
+          "check_type": "absence",
+          "scenario": "Static-scan for 'firebase/' or 'from \"firebase\"' imports outside this section's module.",
+          "expected_result": "Zero matches outside this section.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["section-1"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Push delivery (section-3)",
+        "UI (section-4)",
+        "Pairing UI (section-5)"
+      ]
+    },
+    {
+      "id": "section-3",
+      "name": "Notifications and Service Worker",
+      "charter": "Implement the Web Push pipeline. Author a service worker (sw.js) at the project root that handles the 'push' event by rendering a notification and the 'notificationclick' event by focusing or opening the game tab. Register the service worker with a relative scope so it covers the GitHub Pages project subpath. Expose an API: enableNotifications() -> permissionGranted: bool (gated on user click), which subscribes to the push manager with the application's VAPID public key and writes the resulting PushSubscriptionRecord via section-2's adapter; and sendTurnNotification(gameId, recipientUid), which reads the opponent's stored PushSubscriptionRecord and POSTs a VAPID-signed Web Push request to the recipient's endpoint. Ship a Web App Manifest (manifest.json) at the project root with name, short_name, display: 'standalone', start_url: '.', icons[], so iOS Safari treats the site as installable. Include in-app guidance text instructing iOS users to use Share -> Add to Home Screen before enabling notifications.",
+      "acceptance": "Service worker registers with a relative URL so its scope equals the directory of the entrypoint (and thus the project subpath when published). manifest.json exists at a relative path, is referenced from <link rel='manifest'>, and has display set to 'standalone'. enableNotifications() is invoked only from a click handler. After permission grant, a PushSubscriptionRecord is written for the current player. When sendTurnNotification fires, the recipient's pushSubscription.endpoint receives a POST with VAPID headers, and the recipient's service worker fires an OS notification (verified on a Web-Push-capable platform). On platforms where push is unsupported (or permission denied), the rest of the app continues to function with no errors and a graceful fallback indicator.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "Service worker registers with a relative URL so its scope equals the directory of the entrypoint.",
+          "check_type": "structural",
+          "scenario": "Inspect the registration call and the resolved scope.",
+          "expected_result": "Registration URL is relative; scope equals the entrypoint's directory.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.6]"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "manifest.json exists at a relative path, is referenced from <link rel='manifest'>, and has display set to 'standalone'.",
+          "check_type": "presence",
+          "scenario": "Inspect index.html and manifest.json.",
+          "expected_result": "<link rel='manifest'> exists with relative href; manifest.display = 'standalone'.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.5]"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "enableNotifications() is invoked only from a click handler.",
+          "check_type": "absence",
+          "scenario": "Static-scan for Notification.requestPermission() invocations and check their call sites.",
+          "expected_result": "All call sites are inside click event handlers; no invocations at module load or in a deferred timer.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.5]"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "After permission grant, a PushSubscriptionRecord is written for the current player.",
+          "check_type": "behavior",
+          "scenario": "Trigger the enable-notifications flow on a permissive platform; check Firestore for the player's subscription record.",
+          "expected_result": "Record present with endpoint, keys.p256dh, keys.auth.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "the recipient's pushSubscription.endpoint receives a POST with VAPID headers, and the recipient's service worker fires an OS notification (verified on a Web-Push-capable platform).",
+          "check_type": "behavior",
+          "scenario": "On desktop Chrome with two profiles: Profile B opts in and closes the tab; Profile A submits a turn.",
+          "expected_result": "Profile B's device receives an OS notification within 30 seconds.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.3]"
+        },
+        {
+          "id": "S3.A6",
+          "from_acceptance_phrase": "On platforms where push is unsupported (or permission denied), the rest of the app continues to function with no errors and a graceful fallback indicator.",
+          "check_type": "behavior",
+          "scenario": "Run the app with Notification.permission forced to 'denied' (or in a browser without PushManager).",
+          "expected_result": "App still permits create/join/play; 'notifications unavailable' indicator visible; no console errors.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Backend state model (section-2)",
+        "Pairing UI (section-5)",
+        "Wrap-up screen (section-4)"
+      ]
+    },
+    {
+      "id": "section-4",
+      "name": "Game Flow and UI",
+      "charter": "Build the in-game UI: the per-round handful view (one scenario at a time or all-at-once — implementer's call), per-scenario submission controls (action selection from the scenario's available_actions, discrete 1-5 confidence rating, optional <= 280-char note input), the 'waiting for opponent' state, the per-round reveal panel showing both players' actions/confidences/notes alongside the GTO-verified action and explanation, and the end-of-game wrap-up screen displaying (a) per-player % agreement with the GTO-verified action, (b) inter-player % agreement, and (c) the highlighted ranked list of joint-confidence-min disagreements (scenarios where the players chose different actions, ordered by min(confidence_a, confidence_b) descending). Enforce answer blindness: the reveal panel and any UI surface that would show the opponent's pre-submission state are hidden until both players have submitted for that round. All state read/write goes through section-2's adapter. All scenario data comes from section-1's API.",
+      "acceptance": "From a joined game, the user is presented with their round's handful, can submit an action + confidence (+ optional note) per scenario, sees a 'waiting' state after submitting, and (once the opponent has also submitted) sees the reveal panel with both players' submissions and the GTO-verified action. After the configured final round, both players see a wrap-up screen with the three required sections (individual performance, inter-player agreement, joint-confidence-min disagreements ranked). Answer blindness is enforced: at no point before both submissions does the UI surface the opponent's pre-submission state. Submission gates: an action and a confidence value are both required; the note is optional.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "From a joined game, the user is presented with their round's handful, can submit an action + confidence (+ optional note) per scenario",
+          "check_type": "user_flow",
+          "scenario": "Join an active game; complete a handful submission.",
+          "expected_result": "Per-scenario controls are present and functional; submission produces a PlayerSubmission via the adapter.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "sees a 'waiting' state after submitting",
+          "check_type": "user_flow",
+          "scenario": "Submit a handful when the opponent has not yet submitted that round.",
+          "expected_result": "Waiting state is visible; no reveal is shown; no opponent data leaks.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "sees the reveal panel with both players' submissions and the GTO-verified action",
+          "check_type": "user_flow",
+          "scenario": "After both have submitted Round 1, open the reveal panel.",
+          "expected_result": "Per-scenario: both players' actions, both confidences, both notes (or 'no note'), and the GTO-verified action + explanation.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "wrap-up screen with the three required sections",
+          "check_type": "user_flow",
+          "scenario": "Complete the final round and view the wrap-up screen.",
+          "expected_result": "Three sections present: per-player performance, inter-player agreement, joint-confidence-min disagreement-ranked list.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S4.A5",
+          "from_acceptance_phrase": "Answer blindness is enforced",
+          "check_type": "absence",
+          "scenario": "Before both players have submitted Round 1, inspect the DOM and any subscribed Firestore field on Profile A's session for any data about Profile B's not-yet-submitted answers.",
+          "expected_result": "Zero leakage: no opponent-pre-submission state in DOM or in any Firestore query Profile A is permitted to make.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S4.A6",
+          "from_acceptance_phrase": "Submission gates: an action and a confidence value are both required",
+          "check_type": "user_flow",
+          "scenario": "Attempt to submit with action only, then with confidence only, then with both.",
+          "expected_result": "First two submissions blocked; third succeeds.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S4.A7",
+          "from_acceptance_phrase": "joint-confidence-min disagreements ranked",
+          "check_type": "behavior",
+          "scenario": "Construct a finished game with a (5,5) disagreement and a (5,2) disagreement; inspect wrap-up ranking.",
+          "expected_result": "(5,5) appears above (5,2).",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "prompt"
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 3,
+      "out_of_scope": [
+        "Pairing/landing/onboarding (section-5)",
+        "Backend adapter (section-2)",
+        "Notification delivery (section-3)"
+      ]
+    },
+    {
+      "id": "section-5",
+      "name": "Pairing and Onboarding",
+      "charter": "Build the landing screen, create-game flow, join-via-URL flow, and the inline onboarding text that explains how to share a game and how to enable notifications (including the iOS Add-to-Home-Screen pathway). Landing screen offers two paths: 'Create a new game' and 'Join a game'. Create-game flow exposes configuration inputs for round count (1-10) and handful size (1-10) and a display-name field, then calls section-2's createGame() and displays the share code and join URL on a 'waiting for opponent' screen with copy-to-clipboard affordances. Join flow accepts a share code (or auto-detects ?join=<code> in the URL), prompts for a display name, calls section-2's joinGame(), and transitions into the game UI. Onboarding copy explains: (a) how to share the join URL with the other player, (b) how to enable notifications and why, (c) for iOS users, that they must Add to Home Screen first.",
+      "acceptance": "Landing screen offers create and join paths. Create-game flow exposes round-count + handful-size + display-name inputs, calls createGame(), and shows the share code + join URL + copy affordances. The join flow auto-detects ?join=<code> in the URL and pre-fills the code. After joining, both profiles are participants of the same game document. Inline onboarding text covers share, notifications, and the iOS Add-to-Home-Screen pathway. Display names are persisted on the game document and rendered in reveal/wrap-up.",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "Landing screen offers create and join paths.",
+          "check_type": "user_flow",
+          "scenario": "Cold-load the app.",
+          "expected_result": "Both 'Create a new game' and 'Join a game' affordances are visible on the landing screen.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "Create-game flow exposes round-count + handful-size + display-name inputs",
+          "check_type": "user_flow",
+          "scenario": "Open the create-game flow.",
+          "expected_result": "Round-count input (1-10), handful-size input (1-10), and a display-name input are all present.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "shows the share code + join URL + copy affordances",
+          "check_type": "user_flow",
+          "scenario": "Submit a new-game form.",
+          "expected_result": "Code visible, join URL visible, copy buttons functional.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S5.A4",
+          "from_acceptance_phrase": "The join flow auto-detects ?join=<code> in the URL",
+          "check_type": "user_flow",
+          "scenario": "Open the app with ?join=ABCDEF in the URL.",
+          "expected_result": "Join screen loads with code 'ABCDEF' pre-filled.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S5.A5",
+          "from_acceptance_phrase": "Inline onboarding text covers share, notifications, and the iOS Add-to-Home-Screen pathway.",
+          "check_type": "presence",
+          "scenario": "Inspect the create/join/notification-enable surfaces for onboarding copy.",
+          "expected_result": "All three topics covered in visible copy; iOS Add-to-Home-Screen instruction is shown (at minimum on iOS user agents, or always-visible in a help affordance).",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.5]"
+        },
+        {
+          "id": "S5.A6",
+          "from_acceptance_phrase": "Display names are persisted on the game document and rendered in reveal/wrap-up.",
+          "check_type": "behavior",
+          "scenario": "Create a game with display name 'Mom'; check Firestore game document and reveal/wrap-up rendering.",
+          "expected_result": "Display name stored on game.participants[uid].name; rendered in reveal panel and wrap-up.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["section-2"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "In-game UI (section-4)",
+        "Notification delivery (section-3)"
+      ]
+    },
+    {
+      "id": "section-6",
+      "name": "Controller and Shell",
+      "charter": "Build the top-level page shell: index.html, the page-level routing (landing -> create | join | in-game | wrap-up), the global header/footer with the app's name (chosen distinct from 'GTO Poker Training' per DCA.31), the boot sequence that wires sections 1-5 together (load static data, init Firebase, register service worker, mount routing), and the onboarding README that documents the four-step user setup (create Firebase project, paste config values, push to GitHub, enable Pages). All asset references in index.html and from JS are relative paths (no absolute root-anchored URLs). The shell is the integrator's primary anchor: it imports each section's public API and composes them.",
+      "acceptance": "index.html exists at the project root with a manifest link, a service-worker registration script, the app-name header, and a relative-path asset graph. Page-level routing transitions between landing, create-game, join-game, in-game, and wrap-up states based on URL/state. Boot sequence runs in order: load scenario library, init Firebase + anon-sign-in, register service worker, mount routing. README exists at the project root documenting the four-step user setup. No absolute root-anchored asset URLs.",
+      "acceptance_assertions": [
+        {
+          "id": "S6.A1",
+          "from_acceptance_phrase": "index.html exists at the project root with a manifest link, a service-worker registration script, the app-name header, and a relative-path asset graph.",
+          "check_type": "presence",
+          "scenario": "Inspect index.html.",
+          "expected_result": "All four elements present; every <script src> and <link href> and <img src> is relative.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.1]"
+        },
+        {
+          "id": "S6.A2",
+          "from_acceptance_phrase": "Page-level routing transitions between landing, create-game, join-game, in-game, and wrap-up states",
+          "check_type": "user_flow",
+          "scenario": "From a cold load, walk landing -> create -> share-screen, then in a second profile landing -> join -> in-game, complete a game, observe wrap-up.",
+          "expected_result": "All five route states are reachable and back-navigation behaves consistently.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S6.A3",
+          "from_acceptance_phrase": "Boot sequence runs in order: load scenario library, init Firebase + anon-sign-in, register service worker, mount routing.",
+          "check_type": "structural",
+          "scenario": "Inspect the boot module.",
+          "expected_result": "Each step awaits the prior step; routing does not mount before anon-auth resolves.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S6.A4",
+          "from_acceptance_phrase": "README exists at the project root documenting the four-step user setup",
+          "check_type": "presence",
+          "scenario": "Inspect README.md (or equivalent onboarding doc).",
+          "expected_result": "Doc exists and names the four steps in order.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance",
+          "source": "prompt"
+        },
+        {
+          "id": "S6.A5",
+          "from_acceptance_phrase": "No absolute root-anchored asset URLs.",
+          "check_type": "absence",
+          "scenario": "Static-scan the bundle for asset references starting with '/'.",
+          "expected_result": "Zero matches (excluding external https:// URLs to the Firebase CDN if used).",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.1]"
+        },
+        {
+          "id": "S6.A6",
+          "from_acceptance_phrase": "the app-name header",
+          "check_type": "absence",
+          "scenario": "Inspect the rendered app-name header for the string 'GTO Poker Training'.",
+          "expected_result": "Header does not contain the literal ancestor name.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance",
+          "source": "prompt"
+        }
+      ],
+      "depends_on": ["section-1", "section-2", "section-3", "section-4", "section-5"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Per-section logic (lives in sections 1-5)"
+      ]
+    },
+    {
+      "id": "section-7",
+      "name": "Edge-Case Testing",
+      "charter": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment. Production fidelity here means: the integrated artifact is served under a project-subpath URL prefix (e.g., http://localhost:8080/repo-name/ with the dist/ directory rooted at /repo-name/) so service-worker scope, manifest paths, and asset paths behave identically to a published GitHub Pages site; a real Firebase project (or Firestore emulator with the production rules applied) is used so anonymous auth and Security Rules are exercised; two browser profiles are used to simulate two players. The section verifies: every edge_case_testing-tagged acceptance_assertion in sections 1-6, every DCA assertion tagged edge_case_testing, the IP-resolution machine_checkable_assertions, and PNV.1. Captures a verification report with assertion_id, scenario_run, pass/fail, and screenshot/log evidence per assertion.",
+      "acceptance": "A verification report exists with an entry for every assertion in this sections file whose verifier is edge_case_testing or prompt_named_verb, plus every DCA assertion tagged edge_case_testing. Every entry includes pass/fail and at least one piece of evidence (screenshot, console log capture, network log capture, or Firestore document snapshot). Any failure is logged with the failing scenario and routed back to the owning section as an amend task.",
+      "acceptance_assertions": [
+        {
+          "id": "S7.A1",
+          "from_acceptance_phrase": "Every assertion with verifier edge_case_testing or prompt_named_verb has been exercised under production fidelity.",
+          "check_type": "user_flow",
+          "scenario": "Launch the integrated artifact under a project-subpath prefix with a real (or emulated) Firebase project; for each targeted assertion, execute its scenario and record the result.",
+          "expected_result": "Report contains an entry for every targeted assertion id; all entries marked PASS.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S7.A2",
+          "from_acceptance_phrase": "verification report records pass/fail with screenshot/log evidence per assertion",
+          "check_type": "structural",
+          "scenario": "Inspect the verification report.",
+          "expected_result": "Each entry includes assertion_id, scenario_run, pass/fail, and >= 1 evidence artifact reference.",
+          "verifier": "static_analysis",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S7.A3",
+          "from_acceptance_phrase": "production-fidelity environment",
+          "check_type": "structural",
+          "scenario": "Inspect the test rig's server config and Firebase project config.",
+          "expected_result": "App is served from a /repo-name/ subpath prefix; service worker scope equals the subpath; Firebase rules from the dist/ are deployed to the test project.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001/findings.json#citations[id=CIT.1]"
+        },
+        {
+          "id": "S7.A4",
+          "from_acceptance_phrase": "PNV.1",
+          "check_type": "user_flow",
+          "scenario": "Execute the full PNV.1 scenario described in this sections file's prompt_named_verb_assertion across two browser profiles under production fidelity.",
+          "expected_result": "All PNV.1 expected_result clauses are observed (game completes, reveal renders, wrap-up shows ranked disagreements, notifications fire on a Web-Push-capable platform, no console errors, no unexpected outbound requests).",
+          "verifier": "prompt_named_verb",
+          "covers": "decisions/technical-discovery/sections-v1.json#prompt_named_verb_assertion.scenario",
+          "source": "prompt"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Authoring new product behavior — this section only verifies",
+        "Fixing failures (those become amend tasks routed back to the owning section)"
+      ]
+    }
+  ],
+  "concerns_for_editor": [
+    "The build presupposes a small one-time user-setup burden: the user must create a Firebase project, paste apiKey/projectId/messagingSenderId/appId/VAPID-public-key into the config file, then push to GitHub and enable Pages. This is the minimum-feasible cost of true out-of-app push on a static host; Editor should weigh this against deliverability when judging the artifact. The README onboarding doc is the load-bearing piece that makes this workable.",
+    "iOS Safari Web Push is contingent on the user adding the site to their Home Screen as a PWA (Apple's documented requirement). On iOS the notification pathway therefore reads: 'open in Safari -> Share -> Add to Home Screen -> open the installed icon -> tap Enable Notifications'. This is a real friction step the user (and his mom) will need to take on iOS; the onboarding copy must surface it clearly. Notifications still degrade gracefully on iOS without home-screen install (just no out-of-app push).",
+    "EU iOS users may experience reduced PWA push support due to Apple's DMA-driven changes; this is a region-specific deliverability concern flagged for completeness but not blocking (the prompt's use case is two specific users not in the EU as of the run, per the cwd evidence of a Windows machine).",
+    "The new artifact needs a distinguishing name (Discovery flagged this); 'GTO Duel', 'GTO Pair', 'GTO Head-to-Head' are candidates. Editor or Build can choose; DCA.31 only requires that the rendered name not be the literal ancestor string.",
+    "Section count is 7 (six product sections + edge-case testing), within the inline-dispatch threshold."
+  ]
+}

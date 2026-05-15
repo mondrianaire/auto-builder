@@ -1,0 +1,18 @@
+{
+  "section_id": "section-6",
+  "name": "Controller and Shell",
+  "status": "verified",
+  "dispatch_mode": "inline",
+  "builders": [
+    { "builder_id": "builder-6a", "status": "completed", "produced": "index.html, app.js, config.js, app.css, README.md" }
+  ],
+  "assertions_verified": [
+    { "id": "S6.A1", "verified": true, "evidence": "index.html includes <link rel='manifest' href='./manifest.json'>, <link rel='stylesheet' href='./styles/app.css'>, <script type='module' src='./src/app.js'>, an .app-header h1 reading 'GTO Duel'. All asset references are relative ('./...')." },
+    { "id": "S6.A2", "verified": true, "evidence": "app.js mountRouter dispatches between landing / create / join / waitingOrGame / inGame / wrapUp states; reads ?join= URL param and a localStorage active gameId for resume." },
+    { "id": "S6.A3", "verified": true, "evidence": "app.js boot() awaits in order: loadScenarios -> initFirebase -> signInAnonymously -> registerServiceWorker -> mountRouter. Each step awaits the prior." },
+    { "id": "S6.A4", "verified": true, "evidence": "README.md exists at the project root and walks the four steps (create Firebase project, paste config, push to GitHub, enable Pages) plus all auxiliary onboarding steps required to make the canonical four steps function." },
+    { "id": "S6.A5", "verified": true, "evidence": "All asset references in index.html start with './'. All ES module imports in app.js use relative paths. No absolute root-anchored paths." },
+    { "id": "S6.A6", "verified": true, "evidence": "app header renders 'GTO Duel', not the ancestor name 'GTO Poker Training'." }
+  ],
+  "verified_at": "2026-05-14T01:04:00Z"
+}

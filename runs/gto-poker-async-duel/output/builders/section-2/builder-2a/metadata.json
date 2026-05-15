@@ -1,0 +1,19 @@
+{
+  "builder_id": "builder-2a",
+  "section_id": "section-2",
+  "status": "completed",
+  "outputs": ["state.js"],
+  "exports": [
+    "initFirebase",
+    "signInAnonymously",
+    "getCurrentUid",
+    "createGame",
+    "joinGame",
+    "readGame",
+    "submitHandful",
+    "savePushSubscription",
+    "readOpponentPushSubscription",
+    "getOpponentUid"
+  ],
+  "notes": "Imports the Firebase JS SDK from the official gstatic CDN at version 10.12.5. This is the ONLY module that imports firebase/*. submitHandful is idempotent on (gameId, roundIndex, uid) via runTransaction overwrite semantics. redactGameForViewer enforces UI-side answer blindness as defense-in-depth behind the Security Rules."
+}

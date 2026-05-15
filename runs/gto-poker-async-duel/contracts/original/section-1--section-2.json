@@ -1,0 +1,91 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-1",
+  "consumer_section": "section-2",
+  "interface_kind": "data_types_and_static_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "Scenario",
+        "kind": "type",
+        "shape": {
+          "scenario_id": "string (unique, stable)",
+          "description": "string (the spot description shown to the player)",
+          "board": "string | null (community cards as a notation like '7h 8c Ts')",
+          "action_history": "string[] (prior-street actions in canonical notation)",
+          "available_actions": "string[] (length >= 2; the choices the player can pick)",
+          "gto_action": "string (must be one of available_actions)",
+          "gto_explanation": "string (>= 100 chars)",
+          "lesson_tag": "string (non-empty)"
+        }
+      },
+      {
+        "name": "PlayerSubmission",
+        "kind": "type",
+        "shape": {
+          "scenario_id": "string",
+          "action": "string (must be one of the scenario's available_actions)",
+          "confidence": "integer 1..5",
+          "note": "string | null (<= 280 chars when present)",
+          "submitted_at": "ISO 8601 timestamp string"
+        }
+      },
+      {
+        "name": "GameConfig",
+        "kind": "type",
+        "shape": {
+          "rounds": "integer 1..10",
+          "handful_size": "integer 1..10",
+          "scenario_seed": "string (RNG seed used to deterministically pick per-round scenario sets)"
+        }
+      },
+      {
+        "name": "GameDocument",
+        "kind": "type",
+        "shape": {
+          "gameId": "string (share-code)",
+          "createdAt": "ISO 8601 timestamp",
+          "config": "GameConfig",
+          "participants": "Array<{ uid: string, displayName: string, joinedAt: ISO 8601 }> (length 1..2)",
+          "rounds": "Array<{ roundIndex: integer, leaderUid: string, scenarioIds: string[], submissionsByUid: Record<uid, PlayerSubmission[]> }>",
+          "status": "'waiting_for_opponent' | 'in_progress' | 'complete'"
+        }
+      },
+      {
+        "name": "PushSubscriptionRecord",
+        "kind": "type",
+        "shape": {
+          "endpoint": "string (URL)",
+          "keys": {
+            "p256dh": "string (base64url)",
+            "auth": "string (base64url)"
+          },
+          "subscribed_at": "ISO 8601 timestamp"
+        }
+      },
+      {
+        "name": "getScenarioById",
+        "kind": "function",
+        "signature": "(scenario_id: string) -> Scenario | null"
+      },
+      {
+        "name": "listScenarios",
+        "kind": "function",
+        "signature": "() -> Scenario[]"
+      },
+      {
+        "name": "sampleNScenarios",
+        "kind": "function",
+        "signature": "(n: integer, rngSeed: string) -> Scenario[]; deterministic given rngSeed"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_types": ["Scenario", "PlayerSubmission", "GameConfig", "GameDocument", "PushSubscriptionRecord"],
+    "uses_functions": ["sampleNScenarios"]
+  },
+  "invariants": [
+    "Type shapes are stable across builders working on either side; any change requires an interface-revision step.",
+    "sampleNScenarios is pure — same (n, rngSeed) inputs always return the same Scenario[] in the same order."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "builder_id": "builder-2b",
+  "section_id": "section-2",
+  "status": "completed",
+  "outputs": ["firestore.rules"],
+  "notes": "Firestore Security Rules. Read/write/update gated on participantUids membership. Create constrained to 1 initial participant equal to request.auth.uid. Update allows a non-participant to join only when transitioning from 1 -> 2 participants and only if they add themselves. Third-participant joins are rejected by the size() == 2 constraint on the post-update array. Delete is disallowed."
+}

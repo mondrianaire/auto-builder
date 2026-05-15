@@ -1,0 +1,13 @@
+{
+  "builder_id": "edge-tests",
+  "section_id": "section-7",
+  "status": "completed",
+  "outputs": ["test-suite.mjs", "report.json", "report.md"],
+  "test_results": {
+    "total": 32,
+    "passed": 32,
+    "failed": 0
+  },
+  "execution_environment": "Node v22 (server-side static-analysis + pure-module unit tests). Dynamic browser/Firebase clauses of PNV.1 (live two-profile run with real push delivery) are deferred to first user deployment and called out in report.md and the README.",
+  "notes": "test-suite.mjs validates: scenario library shape + size, sampleNScenarios determinism, charter exports on state.js + push.js, Firestore Security Rules predicate, no-firebase-leaks outside state.js, redaction of opponent data, click-gated notification permission, README four-step setup, share-URL routing, joint-confidence-min ranking on a (5,5)+(5,2)+(3,3)+agreement game (engineered to verify DCA.10/IP8.A2/S4.A7), per-player accuracy, inter-player agreement, two-player cap, no native build artifacts, no non-anonymous auth, no absolute-root asset paths."
+}

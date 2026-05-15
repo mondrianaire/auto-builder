@@ -1,0 +1,8 @@
+{
+  "builder_id": "builder-4a",
+  "section_id": "section-4",
+  "status": "completed",
+  "outputs": ["flow.js"],
+  "exports": ["computePhase", "roundComplete"],
+  "notes": "Pure functions over GameDocument shape. computePhase returns the current player's phase (myTurn, waitingForOpponent, revealReady, gameComplete). Section-7 unit-tests this in isolation against synthetic GameDocuments."
+}

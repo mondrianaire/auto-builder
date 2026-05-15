@@ -1,0 +1,37 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-2",
+  "consumer_section": "section-3",
+  "interface_kind": "service_adapter_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "savePushSubscription",
+        "kind": "function",
+        "signature": "(gameId: string, subscription: PushSubscriptionRecord) -> Promise<void>; writes the current player's subscription record onto their participant entry in the game document"
+      },
+      {
+        "name": "readOpponentPushSubscription",
+        "kind": "function",
+        "signature": "(gameId: string) -> Promise<PushSubscriptionRecord | null>; returns the opponent's subscription record if present, else null"
+      },
+      {
+        "name": "getCurrentUid",
+        "kind": "function",
+        "signature": "() -> string; returns the current anonymous auth UID"
+      },
+      {
+        "name": "getOpponentUid",
+        "kind": "function",
+        "signature": "(gameId: string) -> Promise<string | null>"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["savePushSubscription", "readOpponentPushSubscription", "getCurrentUid", "getOpponentUid"]
+  },
+  "invariants": [
+    "Section-3 never imports the Firebase SDK directly; all backend reads/writes for push concerns route through section-2's adapter.",
+    "Push delivery on submit is a side-effect triggered by section-4 calling section-3's sendTurnNotification, which then reads the opponent's subscription via this adapter."
+  ]
+}

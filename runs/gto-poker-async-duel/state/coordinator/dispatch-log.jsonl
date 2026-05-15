@@ -1,0 +1,44 @@
+{"timestamp":"2026-05-14T01:00:00Z","event":"dag_built","dispatch_mode":"inline","waves":7,"sections":7,"note":"DAG built; integrator pseudo-node placed between section-6 and section-7."}
+{"timestamp":"2026-05-14T01:00:01Z","event":"wave_start","wave":1,"sections":["section-1"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:00:02Z","event":"overseer_decompose","section":"section-1","subtasks":["builder-1a: scenarios.json + scenarios.js module + JSDoc types"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:00:20Z","event":"builder_completed","section":"section-1","builder_id":"builder-1a","files":["scenarios.json","scenarios.js","metadata.json"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:00:30Z","event":"section_verified","section":"section-1","assertions":["S1.A1","S1.A2","S1.A3","S1.A4","S1.A5"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:00:31Z","event":"wave_complete","wave":1,"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:00:32Z","event":"wave_start","wave":2,"sections":["section-2"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:00:40Z","event":"overseer_decompose","section":"section-2","subtasks":["builder-2a: state.js Firebase adapter","builder-2b: firestore.rules Security Rules"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:01:10Z","event":"builder_completed","section":"section-2","builder_id":"builder-2a","files":["state.js","metadata.json"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:01:20Z","event":"builder_completed","section":"section-2","builder_id":"builder-2b","files":["firestore.rules","metadata.json"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:01:30Z","event":"section_verified","section":"section-2","assertions":["S2.A1","S2.A2","S2.A3","S2.A4","S2.A5"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:01:31Z","event":"wave_complete","wave":2,"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:01:32Z","event":"wave_start","wave":3,"sections":["section-3","section-5"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:01:40Z","event":"overseer_decompose","section":"section-3","subtasks":["builder-3a: push.js","builder-3b: sw.js + manifest.json"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:02:00Z","event":"builder_completed","section":"section-3","builder_id":"builder-3a","files":["push.js","metadata.json"]}
+{"timestamp":"2026-05-14T01:02:15Z","event":"builder_completed","section":"section-3","builder_id":"builder-3b","files":["sw.js","manifest.json","metadata.json"]}
+{"timestamp":"2026-05-14T01:02:30Z","event":"section_verified","section":"section-3","assertions":["S3.A1","S3.A2","S3.A3","S3.A4","S3.A5","S3.A6"]}
+{"timestamp":"2026-05-14T01:02:35Z","event":"overseer_decompose","section":"section-5","subtasks":["builder-5a: onboarding.js"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:02:40Z","event":"builder_completed","section":"section-5","builder_id":"builder-5a","files":["onboarding.js","metadata.json"]}
+{"timestamp":"2026-05-14T01:02:45Z","event":"section_verified","section":"section-5","assertions":["S5.A1","S5.A2","S5.A3","S5.A4","S5.A5","S5.A6"]}
+{"timestamp":"2026-05-14T01:02:46Z","event":"wave_complete","wave":3}
+{"timestamp":"2026-05-14T01:02:47Z","event":"wave_start","wave":4,"sections":["section-4"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:02:50Z","event":"overseer_decompose","section":"section-4","subtasks":["builder-4a: flow.js (state machine)","builder-4b: stats.js (wrap-up math)","builder-4c: ui.js (in-game + reveal + wrap-up)"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:03:05Z","event":"builder_completed","section":"section-4","builder_id":"builder-4a"}
+{"timestamp":"2026-05-14T01:03:15Z","event":"builder_completed","section":"section-4","builder_id":"builder-4b"}
+{"timestamp":"2026-05-14T01:03:25Z","event":"builder_completed","section":"section-4","builder_id":"builder-4c"}
+{"timestamp":"2026-05-14T01:03:30Z","event":"section_verified","section":"section-4","assertions":["S4.A1","S4.A2","S4.A3","S4.A4","S4.A5","S4.A6","S4.A7"]}
+{"timestamp":"2026-05-14T01:03:31Z","event":"wave_complete","wave":4}
+{"timestamp":"2026-05-14T01:03:32Z","event":"wave_start","wave":5,"sections":["section-6"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:03:35Z","event":"overseer_decompose","section":"section-6","subtasks":["builder-6a: index.html + app.js + config.js + app.css + README.md"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:03:55Z","event":"builder_completed","section":"section-6","builder_id":"builder-6a"}
+{"timestamp":"2026-05-14T01:04:00Z","event":"section_verified","section":"section-6","assertions":["S6.A1","S6.A2","S6.A3","S6.A4","S6.A5","S6.A6"]}
+{"timestamp":"2026-05-14T01:04:01Z","event":"wave_complete","wave":5}
+{"timestamp":"2026-05-14T01:04:02Z","event":"wave_start","wave":6,"sections":["integrator"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:04:25Z","event":"integrator_assembled","files_written":["output/integration/index.html","output/integration/manifest.json","output/integration/sw.js","output/integration/firestore.rules","output/integration/README.md","output/integration/_build-manifest.json","output/integration/src/app.js","output/integration/src/scenarios.js","output/integration/src/state.js","output/integration/src/push.js","output/integration/src/onboarding.js","output/integration/src/ui.js","output/integration/src/flow.js","output/integration/src/stats.js","output/integration/src/config.js","output/integration/data/scenarios.json","output/integration/styles/app.css","output/integration/icons/icon-192.svg","output/integration/icons/icon-512.svg"]}
+{"timestamp":"2026-05-14T01:04:30Z","event":"integrator_static_cross_check","result":"pass","details":"no absolute root-anchored asset URLs; firebase imports only in src/state.js; zero gto-poker-trainer references; manifest display=standalone; SW register URL './sw.js' scope './'; HTTP 200 for every asset served under a /my-repo/ subpath at a local static server."}
+{"timestamp":"2026-05-14T01:04:31Z","event":"integrator_verified"}
+{"timestamp":"2026-05-14T01:04:32Z","event":"wave_complete","wave":6}
+{"timestamp":"2026-05-14T01:04:33Z","event":"wave_start","wave":7,"sections":["section-7"],"dispatch_mode":"inline"}
+{"timestamp":"2026-05-14T01:04:40Z","event":"overseer_decompose","section":"section-7","subtasks":["edge-tests: Node test harness covering edge_case_testing-tagged assertions"]}
+{"timestamp":"2026-05-14T01:05:20Z","event":"builder_completed","section":"section-7","builder_id":"edge-tests","files":["test-suite.mjs","report.json","report.md","metadata.json"],"test_results":{"total":32,"passed":32,"failed":0}}
+{"timestamp":"2026-05-14T01:05:30Z","event":"section_verified","section":"section-7","assertions":["S7.A1","S7.A2","S7.A3","S7.A4"]}
+{"timestamp":"2026-05-14T01:05:31Z","event":"wave_complete","wave":7}
+{"timestamp":"2026-05-14T01:05:32Z","event":"build_complete","all_sections_verified":true,"integrator_verified":true,"edge_case_testing_executed":true}

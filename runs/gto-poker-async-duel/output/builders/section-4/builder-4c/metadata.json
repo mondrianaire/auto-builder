@@ -1,0 +1,8 @@
+{
+  "builder_id": "builder-4c",
+  "section_id": "section-4",
+  "status": "completed",
+  "outputs": ["ui.js"],
+  "exports": ["mountInGameView", "mountWrapUpView"],
+  "notes": "Vanilla DOM views. mountInGameView subscribes via readGame and routes between my-turn / waiting / reveal based on computePhase. Submission is gated on action + confidence; note is optional. Notification-enable button surfaces in the game header and respects platform/permission state. After successful submit, sendTurnNotification fires best-effort. mountWrapUpView renders the three required wrap-up sections: per-player accuracy, inter-player agreement, ranked disagreements (joint-confidence-min descending)."
+}

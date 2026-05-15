@@ -1,0 +1,26 @@
+{
+  "probe_id": "probe-001",
+  "phase": "planning",
+  "dispatched_by": "technical-discovery",
+  "question": "Given a static-only GitHub Pages site that must support asynchronous two-player gameplay with persistent shared state AND out-of-app push notifications when the opposing player has not opened the app, what is the simplest viable client-only architecture in 2026? Evaluate Firebase (Firestore + FCM Web Push), Supabase (Postgres + Edge Functions + Web Push), and a no-backend URL/code-payload model. For each: free-tier limits, client-side security model, true out-of-app push delivery support (especially iOS Safari Web Push status in 2026), and user setup burden.",
+  "context_pointers": [
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP1]",
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP2]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A1]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A11]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A19]"
+  ],
+  "constraints": [
+    "GitHub Pages static-only hosting; no server-side execution available to the user",
+    "User should not be required to deploy code outside their GitHub Pages repo",
+    "Free-tier sufficient for a friends-and-family use case (two players, low-frequency play)",
+    "iOS Safari + Android Chrome + desktop browser support required",
+    "True out-of-app push (notification fires while recipient's tab is closed) is the test, not just in-tab toast"
+  ],
+  "optimization_criterion": "fit_to_project_goals",
+  "budget_minutes": 30,
+  "max_options": 4,
+  "write_target": "research/probes/probe-001/findings.json",
+  "questioning_authority": true,
+  "notes_on_coupling": "IP1 (state transport) and IP2 (notification delivery) are explicitly flagged by Discovery as tightly coupled — choosing Firebase makes FCM the natural push partner; Supabase requires an Edge Function relay; a no-backend approach has no native push partner. Resolve as a pair."
+}

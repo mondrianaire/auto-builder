@@ -1,0 +1,21 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-3",
+  "consumer_section": "section-6",
+  "interface_kind": "service_adapter_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "registerServiceWorker",
+        "kind": "function",
+        "signature": "() -> Promise<ServiceWorkerRegistration | null>; uses a relative URL so scope equals the entrypoint's directory; returns null on platforms without service worker support without throwing"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["registerServiceWorker"]
+  },
+  "invariants": [
+    "Section-6 calls registerServiceWorker after Firebase init but before the router mounts. SW registration failure is non-fatal — the app still runs, just without push capability."
+  ]
+}

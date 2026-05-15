@@ -1,0 +1,246 @@
+{
+  "updated_at": "2026-05-14T21:35:00Z",
+  "decisions": [
+    {
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "version": 1,
+      "produced_by": "discovery",
+      "trigger": {
+        "type": "initial",
+        "from_prompt": "runs/gto-poker-async-duel/prompt.txt"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_discovery",
+        "consumes": "decisions/discovery/ledger-v1.json"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-001/briefing.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "researcher_dispatch",
+        "ip_ids": ["IP1", "IP2"],
+        "rationale": "Coupled-pair dispatch per Discovery's concerns_for_downstream.researcher_dispatch_recommended"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-001/findings.json",
+      "version": 1,
+      "produced_by": "researcher_planning",
+      "trigger": {
+        "type": "td_dispatch",
+        "ip_ids": ["IP1", "IP2"]
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-1--section-2.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-1 -> section-2"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-1--section-4.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-1 -> section-4"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-1--section-6.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-1 -> section-6"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-2--section-3.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-2 -> section-3"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-2--section-4.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-2 -> section-4"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-2--section-5.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-2 -> section-5"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-2--section-6.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-2 -> section-6"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-3--section-4.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-3 -> section-4"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-3--section-6.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-3 -> section-6"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-4--section-6.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-4 -> section-6"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-5--section-6.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {
+        "type": "post_td_initial",
+        "edge": "section-5 -> section-6"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/editor/review-v1.json",
+      "version": 1,
+      "produced_by": "editor",
+      "trigger": {
+        "type": "post_td_initial",
+        "consumes": [
+          "decisions/discovery/ledger-v1.json",
+          "decisions/technical-discovery/sections-v1.json",
+          "research/probes/probe-001/findings.json"
+        ]
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "state/coordinator/dag.json",
+      "version": 1,
+      "produced_by": "coordinator",
+      "trigger": {
+        "type": "post_editor_pass",
+        "dispatch_mode": "inline",
+        "waves": 7
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "state/inline-deviations/dev-001.json",
+      "version": 1,
+      "produced_by": "coordinator",
+      "trigger": {
+        "type": "inline_deviation",
+        "category": "implementation_path_chosen",
+        "section": "section-3",
+        "rationale": "Briefing-directed: client-side VAPID signing for Web Push, no Cloud Functions required"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "state/inline-deviations/dev-002.json",
+      "version": 1,
+      "produced_by": "integrator",
+      "trigger": {
+        "type": "inline_deviation",
+        "category": "contract_micro_adjustment",
+        "section": "integrator",
+        "rationale": "Integrator build-manifest renamed to _build-manifest.json so W3C Web App Manifest can remain at ./manifest.json (load-bearing for iOS PWA)"
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "output/integration/_build-manifest.json",
+      "version": 1,
+      "produced_by": "integrator",
+      "trigger": {
+        "type": "post_section_verification",
+        "sections_integrated": ["section-1", "section-2", "section-3", "section-4", "section-5", "section-6"]
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "output/builders/edge-case-testing/edge-tests/report.json",
+      "version": 1,
+      "produced_by": "edge-case-testing_builder",
+      "trigger": {
+        "type": "post_integration",
+        "test_results": {"total": 32, "passed": 32, "failed": 0}
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "audit/flags.jsonl",
+      "version": 1,
+      "produced_by": "critic",
+      "trigger": {
+        "type": "final_sweep",
+        "checks_run": 13,
+        "flags": 0
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "output/verification/report.json",
+      "version": 1,
+      "produced_by": "convergence_verifier",
+      "trigger": {
+        "type": "post_critic_clean",
+        "verdict": "pass_with_concerns"
+      },
+      "supersedes": null
+    }
+  ]
+}

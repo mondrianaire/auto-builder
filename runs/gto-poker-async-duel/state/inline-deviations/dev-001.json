@@ -1,0 +1,10 @@
+{
+  "id": "dev-001",
+  "category": "implementation_path_chosen",
+  "section": "section-3",
+  "summary": "Client-side VAPID signing for Web Push (vs. server-side push relay via Cloud Functions).",
+  "decision": "Implement Web Push delivery by signing the JWT for the VAPID Authorization header client-side using the configured VAPID private key, and POSTing directly to the recipient's pushSubscription.endpoint. Avoids requiring the user to deploy Cloud Functions, keeping the deliverable purely static.",
+  "rationale": "The briefing explicitly identifies this tradeoff and directs that the simplest path be taken: 'For this build, use the simplest path: client-side VAPID signing, and document the security tradeoff in the README. Log this as an inline-deviation implementation_path_chosen with rationale.' The known cost: anyone who reads the published source can read the VAPID private key and use it to sign push notifications to the small set of friends-and-family subscribers. For the stated two-person use case (the user + his mom), this is acceptable. The README calls this out so the user makes an informed choice.",
+  "nested_equivalent": "Under nested dispatch, the Coordinator would have surfaced the secret-in-static-code tradeoff to TD as a Sev 2b consult; TD would have weighed the alternative (require Cloud Functions, +1 setup step) against the user's stated 'fully hostable on github pages' constraint and likely selected the client-only path with the same README disclosure. The briefing pre-resolved this question, so the deviation is to record the choice was made, not to ask permission for it.",
+  "logged_at": "2026-05-14T01:01:35Z"
+}

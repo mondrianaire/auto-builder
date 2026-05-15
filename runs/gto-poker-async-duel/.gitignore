@@ -1,0 +1,7 @@
+# Deployment-staging artifacts from the failed first-attempt commit-to-github.bat.
+# Kept out of the AutoBuilder run substrate — they're not part of the architecture
+# deliverable.
+_deploy/
+top-level-readme.md
+commit-to-github.bat
+commit-to-autobuilder.bat

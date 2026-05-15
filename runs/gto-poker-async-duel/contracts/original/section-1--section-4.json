@@ -1,0 +1,23 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-1",
+  "consumer_section": "section-4",
+  "interface_kind": "data_types_and_static_api",
+  "exposed_by_producer": {
+    "exports": [
+      {"name": "Scenario", "kind": "type", "ref": "see section-1--section-2.json"},
+      {"name": "PlayerSubmission", "kind": "type", "ref": "see section-1--section-2.json"},
+      {"name": "GameConfig", "kind": "type", "ref": "see section-1--section-2.json"},
+      {"name": "GameDocument", "kind": "type", "ref": "see section-1--section-2.json"},
+      {"name": "getScenarioById", "kind": "function", "signature": "(scenario_id: string) -> Scenario | null"},
+      {"name": "listScenarios", "kind": "function", "signature": "() -> Scenario[]"}
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_types": ["Scenario", "PlayerSubmission", "GameConfig", "GameDocument"],
+    "uses_functions": ["getScenarioById"]
+  },
+  "invariants": [
+    "Section-4 reads scenarios via getScenarioById using IDs found in GameDocument.rounds[].scenarioIds; it never picks scenarios itself (section-2 picks at createGame and submitHandful time via sampleNScenarios)."
+  ]
+}

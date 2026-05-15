@@ -1,0 +1,26 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-4",
+  "consumer_section": "section-6",
+  "interface_kind": "component_mount_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "mountInGameView",
+        "kind": "function",
+        "signature": "(container: HTMLElement, gameId: string) -> { unmount: () -> void }; mounts the in-game UI for the given gameId; returns an unmount handle"
+      },
+      {
+        "name": "mountWrapUpView",
+        "kind": "function",
+        "signature": "(container: HTMLElement, gameId: string) -> { unmount: () -> void }; mounts the end-of-game wrap-up screen"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["mountInGameView", "mountWrapUpView"]
+  },
+  "invariants": [
+    "Section-6's router decides which view to mount based on the GameDocument's status (read via section-2). Section-4 does not own routing."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "builder_id": "builder-3a",
+  "section_id": "section-3",
+  "status": "completed",
+  "outputs": ["push.js"],
+  "exports": [
+    "platformSupportsPush",
+    "notificationStatus",
+    "registerServiceWorker",
+    "setActiveGameForPush",
+    "enableNotifications",
+    "sendTurnNotification"
+  ],
+  "notes": "Client-side VAPID signing per dev-001.json. Service worker registered at './sw.js' with explicit scope './' so it correctly scopes under the GitHub Pages project subpath. Notification.requestPermission() is called only inside enableNotifications, which is intended to be invoked from a click handler (section-4 / section-5 attach it to button onclick handlers)."
+}

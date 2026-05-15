@@ -1,0 +1,17 @@
+{
+  "section_id": "section-1",
+  "name": "Data and Scenarios",
+  "status": "verified",
+  "dispatch_mode": "inline",
+  "builders": [
+    { "builder_id": "builder-1a", "status": "completed" }
+  ],
+  "assertions_verified": [
+    { "id": "S1.A1", "verified": true, "evidence": "scenarios.json contains 20 entries; every entry has scenario_id, description, available_actions (length >= 2), gto_action (member of available_actions), gto_explanation (>= 100 chars), lesson_tag." },
+    { "id": "S1.A2", "verified": true, "evidence": "scenarios.js exports getScenarioById, listScenarios, sampleNScenarios. sampleNScenarios uses mulberry32 seeded by a hash of rngSeed; identical inputs produce identical outputs." },
+    { "id": "S1.A3", "verified": true, "evidence": "JSDoc typedefs for Scenario, PlayerSubmission, GameConfig, GameDocument, PushSubscriptionRecord declared here as the canonical types; consumed downstream by sections 2/3/4/5/6 by import of this module's API." },
+    { "id": "S1.A4", "verified": true, "evidence": "No 'gto-poker-trainer' string in scenarios.js or scenarios.json." },
+    { "id": "S1.A5", "verified": true, "evidence": "sampleNScenarios(5, 'seed-abc') is pure: mulberry32 seeded by hashStringToUint32('seed-abc') produces identical Fisher-Yates results across calls." }
+  ],
+  "verified_at": "2026-05-14T01:00:30Z"
+}

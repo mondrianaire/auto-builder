@@ -1,0 +1,621 @@
+{
+  "schema": "edge-case-test-report/v1",
+  "generated_at": "2026-05-14T20:44:06.968Z",
+  "integration_root": "/sessions/quirky-trusting-turing/mnt/Auto Builder/runs/gto-poker-async-duel/output/integration",
+  "counts": {
+    "total": 32,
+    "passed": 32,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "S1.A1",
+      "name": "Scenario library >=20 entries, all required fields present",
+      "pass": true,
+      "detail": "length=20 first_fail=null",
+      "evidence": {
+        "count": 20
+      }
+    },
+    {
+      "id": "S1.A5",
+      "name": "sampleNScenarios deterministic given same seed",
+      "pass": true,
+      "detail": "ids=calling-station-river-thin-call-015,mid-stack-utg-rfi-pocket-pair-004,small-blind-vs-button-srp-turn-overbet-003,co-open-blind-defense-002,river-overpair-vs-check-raise-017",
+      "evidence": {
+        "call_a": [
+          "calling-station-river-thin-call-015",
+          "mid-stack-utg-rfi-pocket-pair-004",
+          "small-blind-vs-button-srp-turn-overbet-003",
+          "co-open-blind-defense-002",
+          "river-overpair-vs-check-raise-017"
+        ],
+        "call_b": [
+          "calling-station-river-thin-call-015",
+          "mid-stack-utg-rfi-pocket-pair-004",
+          "small-blind-vs-button-srp-turn-overbet-003",
+          "co-open-blind-defense-002",
+          "river-overpair-vs-check-raise-017"
+        ]
+      }
+    },
+    {
+      "id": "S1.A2",
+      "name": "scenarios.js exports getScenarioById/listScenarios/sampleNScenarios",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "exports": [
+          "getScenarioById",
+          "listScenarios",
+          "loadScenarios",
+          "sampleNScenarioIds",
+          "sampleNScenarios"
+        ]
+      }
+    },
+    {
+      "id": "S2.A4",
+      "name": "Firestore rules: participants-only + 2-participant cap",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "has_participantUids": true,
+        "restricts_size_2": true,
+        "has_auth_check": true
+      }
+    },
+    {
+      "id": "S2.A5",
+      "name": "Only state.js imports from firebasejs CDN",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "leaks": []
+      }
+    },
+    {
+      "id": "S2.A3",
+      "name": "state.js exposes charter API; submitHandful uses runTransaction",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "missing": [],
+        "submits_in_transaction": true
+      }
+    },
+    {
+      "id": "S2.A3-overwrite",
+      "name": "submitHandful overwrites submissionsByUid[uid] (idempotent)",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "overwrite": true
+      }
+    },
+    {
+      "id": "S3.A1",
+      "name": "Service worker registered with relative URL and './' scope",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "matched": true
+      }
+    },
+    {
+      "id": "S3.A2",
+      "name": "manifest.json display:standalone; linked from index.html",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "display": "standalone",
+        "link_present": true
+      }
+    },
+    {
+      "id": "S3.A3",
+      "name": "requestPermission() only inside enableNotifications (one call site, inside the function)",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "call_sites": 1,
+        "in_enable_fn": true
+      }
+    },
+    {
+      "id": "S3.A6",
+      "name": "Graceful fallback when push is unsupported",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "matched": true
+      }
+    },
+    {
+      "id": "S4.A7",
+      "name": "rankedDisagreements orders by joint_confidence_min descending",
+      "pass": true,
+      "detail": "actual=btn-vs-bb-3bet-pot-c-bet-decision-001,mid-stack-utg-rfi-pocket-pair-004,co-open-blind-defense-002 expected=btn-vs-bb-3bet-pot-c-bet-decision-001,mid-stack-utg-rfi-pocket-pair-004,co-open-blind-defense-002",
+      "evidence": {
+        "actual": [
+          "btn-vs-bb-3bet-pot-c-bet-decision-001",
+          "mid-stack-utg-rfi-pocket-pair-004",
+          "co-open-blind-defense-002"
+        ],
+        "expected": [
+          "btn-vs-bb-3bet-pot-c-bet-decision-001",
+          "mid-stack-utg-rfi-pocket-pair-004",
+          "co-open-blind-defense-002"
+        ],
+        "minima": [
+          5,
+          3,
+          2
+        ]
+      }
+    },
+    {
+      "id": "IP8.A2",
+      "name": "(5,5) ranked above (5,2)",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "minima": [
+          5,
+          3,
+          2
+        ]
+      }
+    },
+    {
+      "id": "DCA.10",
+      "name": "Wrap-up highlights highest joint-confidence disagreements",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "actual": [
+          "btn-vs-bb-3bet-pot-c-bet-decision-001",
+          "mid-stack-utg-rfi-pocket-pair-004",
+          "co-open-blind-defense-002"
+        ]
+      }
+    },
+    {
+      "id": "DCA.30",
+      "name": "Confidence rating resolved as joint-confidence-min ranking",
+      "pass": true,
+      "detail": "",
+      "evidence": {}
+    },
+    {
+      "id": "stats.perPlayerAccuracy",
+      "name": "perPlayerAccuracy correct",
+      "pass": true,
+      "detail": "A=100 B=25",
+      "evidence": {
+        "uid-a": {
+          "correct": 4,
+          "total": 4,
+          "pct": 100
+        },
+        "uid-b": {
+          "correct": 1,
+          "total": 4,
+          "pct": 25
+        }
+      }
+    },
+    {
+      "id": "DCA.11",
+      "name": "Inter-player agreement metric correct",
+      "pass": true,
+      "detail": "same=1/4",
+      "evidence": {
+        "same": 1,
+        "total": 4,
+        "pct": 25
+      }
+    },
+    {
+      "id": "DCA.5",
+      "name": "After A submits: A.waiting=true, B.myTurn=true",
+      "pass": true,
+      "detail": "A.waiting=true B.myTurn=true",
+      "evidence": {
+        "aPhase": {
+          "gameComplete": false,
+          "currentRoundIndex": 0,
+          "currentRound": {
+            "roundIndex": 0,
+            "leaderUid": "uid-a",
+            "scenarioIds": [
+              "btn-vs-bb-3bet-pot-c-bet-decision-001",
+              "co-open-blind-defense-002",
+              "small-blind-vs-button-srp-turn-overbet-003",
+              "mid-stack-utg-rfi-pocket-pair-004"
+            ],
+            "submissionsByUid": {
+              "uid-a": [
+                {
+                  "scenario_id": "btn-vs-bb-3bet-pot-c-bet-decision-001",
+                  "action": "Check back",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "co-open-blind-defense-002",
+                  "action": "3-bet to 11bb",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "small-blind-vs-button-srp-turn-overbet-003",
+                  "action": "Check back",
+                  "confidence": 4,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "mid-stack-utg-rfi-pocket-pair-004",
+                  "action": "Fold",
+                  "confidence": 3,
+                  "note": null,
+                  "submitted_at": "now"
+                }
+              ]
+            }
+          },
+          "myTurn": false,
+          "opponentTurn": true,
+          "waitingForOpponent": true,
+          "revealReady": false
+        },
+        "bPhase": {
+          "gameComplete": false,
+          "currentRoundIndex": 0,
+          "currentRound": {
+            "roundIndex": 0,
+            "leaderUid": "uid-a",
+            "scenarioIds": [
+              "btn-vs-bb-3bet-pot-c-bet-decision-001",
+              "co-open-blind-defense-002",
+              "small-blind-vs-button-srp-turn-overbet-003",
+              "mid-stack-utg-rfi-pocket-pair-004"
+            ],
+            "submissionsByUid": {
+              "uid-a": [
+                {
+                  "scenario_id": "btn-vs-bb-3bet-pot-c-bet-decision-001",
+                  "action": "Check back",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "co-open-blind-defense-002",
+                  "action": "3-bet to 11bb",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "small-blind-vs-button-srp-turn-overbet-003",
+                  "action": "Check back",
+                  "confidence": 4,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "mid-stack-utg-rfi-pocket-pair-004",
+                  "action": "Fold",
+                  "confidence": 3,
+                  "note": null,
+                  "submitted_at": "now"
+                }
+              ]
+            }
+          },
+          "myTurn": true,
+          "opponentTurn": false,
+          "waitingForOpponent": false,
+          "revealReady": false
+        }
+      }
+    },
+    {
+      "id": "DCA.8",
+      "name": "After both submit final round, gameComplete=true",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "aFinal": {
+          "gameComplete": true,
+          "currentRoundIndex": 0,
+          "currentRound": {
+            "roundIndex": 0,
+            "leaderUid": "uid-a",
+            "scenarioIds": [
+              "btn-vs-bb-3bet-pot-c-bet-decision-001",
+              "co-open-blind-defense-002",
+              "small-blind-vs-button-srp-turn-overbet-003",
+              "mid-stack-utg-rfi-pocket-pair-004"
+            ],
+            "submissionsByUid": {
+              "uid-a": [
+                {
+                  "scenario_id": "btn-vs-bb-3bet-pot-c-bet-decision-001",
+                  "action": "Check back",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "co-open-blind-defense-002",
+                  "action": "3-bet to 11bb",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "small-blind-vs-button-srp-turn-overbet-003",
+                  "action": "Check back",
+                  "confidence": 4,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "mid-stack-utg-rfi-pocket-pair-004",
+                  "action": "Fold",
+                  "confidence": 3,
+                  "note": null,
+                  "submitted_at": "now"
+                }
+              ],
+              "uid-b": [
+                {
+                  "scenario_id": "btn-vs-bb-3bet-pot-c-bet-decision-001",
+                  "action": "Bet 7bb (~30% pot)",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "co-open-blind-defense-002",
+                  "action": "Fold",
+                  "confidence": 2,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "small-blind-vs-button-srp-turn-overbet-003",
+                  "action": "Check back",
+                  "confidence": 4,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "mid-stack-utg-rfi-pocket-pair-004",
+                  "action": "Open to 2.2bb",
+                  "confidence": 3,
+                  "note": null,
+                  "submitted_at": "now"
+                }
+              ]
+            }
+          },
+          "myTurn": false,
+          "opponentTurn": false,
+          "waitingForOpponent": false
+        },
+        "bFinal": {
+          "gameComplete": true,
+          "currentRoundIndex": 0,
+          "currentRound": {
+            "roundIndex": 0,
+            "leaderUid": "uid-a",
+            "scenarioIds": [
+              "btn-vs-bb-3bet-pot-c-bet-decision-001",
+              "co-open-blind-defense-002",
+              "small-blind-vs-button-srp-turn-overbet-003",
+              "mid-stack-utg-rfi-pocket-pair-004"
+            ],
+            "submissionsByUid": {
+              "uid-a": [
+                {
+                  "scenario_id": "btn-vs-bb-3bet-pot-c-bet-decision-001",
+                  "action": "Check back",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "co-open-blind-defense-002",
+                  "action": "3-bet to 11bb",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "small-blind-vs-button-srp-turn-overbet-003",
+                  "action": "Check back",
+                  "confidence": 4,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "mid-stack-utg-rfi-pocket-pair-004",
+                  "action": "Fold",
+                  "confidence": 3,
+                  "note": null,
+                  "submitted_at": "now"
+                }
+              ],
+              "uid-b": [
+                {
+                  "scenario_id": "btn-vs-bb-3bet-pot-c-bet-decision-001",
+                  "action": "Bet 7bb (~30% pot)",
+                  "confidence": 5,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "co-open-blind-defense-002",
+                  "action": "Fold",
+                  "confidence": 2,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "small-blind-vs-button-srp-turn-overbet-003",
+                  "action": "Check back",
+                  "confidence": 4,
+                  "note": null,
+                  "submitted_at": "now"
+                },
+                {
+                  "scenario_id": "mid-stack-utg-rfi-pocket-pair-004",
+                  "action": "Open to 2.2bb",
+                  "confidence": 3,
+                  "note": null,
+                  "submitted_at": "now"
+                }
+              ]
+            }
+          },
+          "myTurn": false,
+          "opponentTurn": false,
+          "waitingForOpponent": false
+        }
+      }
+    },
+    {
+      "id": "DCA.4",
+      "name": "joinGame rejects third participant with error:'game_full'",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "adapter_check": true,
+        "rules_check": true
+      }
+    },
+    {
+      "id": "IP1.A3",
+      "name": "Security Rules deny non-participant read/write",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "matched": true
+      }
+    },
+    {
+      "id": "IP2.A4",
+      "name": "Web App Manifest display:standalone",
+      "pass": true,
+      "detail": "display=standalone",
+      "evidence": {
+        "display": "standalone"
+      }
+    },
+    {
+      "id": "DCA.13",
+      "name": "No native build artifacts; only Web Push",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "native_files": [],
+        "no_fcm_server_api": true
+      }
+    },
+    {
+      "id": "DCA.16/IP3.A2",
+      "name": "No non-anonymous auth paths",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "leaks": []
+      }
+    },
+    {
+      "id": "DCA.20",
+      "name": "state.js redacts opponent submissions until viewer has submitted",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "redactGameForViewer_present": true
+      }
+    },
+    {
+      "id": "DCA.21/S6.A4",
+      "name": "README documents four-step user setup",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "create_firebase": true,
+        "paste_config": true,
+        "push_github": true,
+        "enable_pages": true
+      }
+    },
+    {
+      "id": "DCA.28/IP6.A1",
+      "name": "Create flow: rounds + handful 1-10",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "handful": true,
+        "rounds": true
+      }
+    },
+    {
+      "id": "IP7.A1/DCA.29",
+      "name": "Per-scenario note <= 280 chars, optional",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "maxlength": true,
+        "optional": true
+      }
+    },
+    {
+      "id": "DCA.32/DCA.37",
+      "name": "index.html uses only relative asset paths",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "no_abs_script": true,
+        "no_abs_link": true
+      }
+    },
+    {
+      "id": "DCA.25/IP3.A1",
+      "name": "Boot awaits loadScenarios -> initFirebase -> signInAnonymously",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "matched": true
+      }
+    },
+    {
+      "id": "IP4-share-join",
+      "name": "Share URL with ?join=; prefill; router reads URL",
+      "pass": true,
+      "detail": "",
+      "evidence": {
+        "share_url": true,
+        "prefill": true,
+        "router_reads": true
+      }
+    },
+    {
+      "id": "PNV.1",
+      "name": "PNV.1 structural clauses all pass",
+      "pass": true,
+      "detail": "Production-fidelity dynamic execution deferred to first deploy",
+      "evidence": {
+        "structural_clause_count": 10
+      }
+    }
+  ]
+}

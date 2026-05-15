@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "created_at": "2026-05-14T00:50:00Z",
+  "based_on": {
+    "prompt": "runs/gto-poker-async-duel/prompt.txt",
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections": "decisions/technical-discovery/sections-v1.json"
+  },
+  "verdict": "pass_with_recommendations",
+  "summary": "TD's plan is structurally sound. Discovery dispatched both high-importance IPs (IP1 state transport, IP2 push delivery) to Researcher; Probe 001 returned 6 verbatim citations from canonical sources covering GitHub Pages, Firestore, Apple WebKit Web Push, and Supabase auto-pause. TD sourced every external-system claim from canonical_evidence with citations_pointer and used td_plan only for internal UX/structure choices, which is correct discipline under Principle H. All 8 FC requirements have matching DCA assertions, and PNV.1 is a production-fidelity 2-profile play-through that literally exercises the prompt verb 'play (asynchronous head-to-head GTO duel)' end-to-end. Two structural lifecycle gaps in the proper-noun ledger (status fields never transitioned, no demotion-v{N}.json artifacts) are flagged below as low/medium because the substantive content (TD's citations for PN.2 and TD's reliance on the in-ledger demotion_note for PN.1) is present; the gaps are in Discovery's record-keeping, not in TD's compliance. The 'fully hostable on GitHub Pages' constraint is interpreted honestly — the deliverable itself is a static directory served by GitHub Pages, and Firebase is a free-tier backend the app calls (similar to any static SPA calling a third-party API). The setup burden is acknowledged in S6.A4 (README) and S5.A5 (onboarding copy) but the first-contact narrative could be tightened.",
+  "findings": [
+    {
+      "id": "F.1",
+      "check_id": "proper_noun_citation",
+      "severity": "medium",
+      "description": "PN.2 'GitHub Pages' is marked role: target_defining with verification_status: 'pending'. TD's downstream artifacts (probe-001 with CIT.1 verbatim_excerpt + DCA.32, DCA.37, IP1.A1) treat it as effectively verified via canonical evidence, and the citation chain is intact. Structurally, however, the ledger's verification_status was never transitioned to 'verified' to reflect that Researcher resolved it. This is a Discovery record-keeping gap, not a TD compliance gap: TD did dispatch a Researcher probe and TD's sourcing meets Principle E. Flag is low-severity and structural-only.",
+      "evidence": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.2].verification_status (value: 'pending'); research/probes/probe-001/findings.json#citations[id=CIT.1] (verbatim_excerpt present)",
+      "recommended_route": "Discovery (record-keeping update only)",
+      "recommended_action": "Discovery may update PN.2.verification_status to 'verified' and add citations[] pointer to research/probes/probe-001/findings.json#citations[id=CIT.1] in a ledger-v2 amendment. Non-blocking; TD's downstream artifacts already cite the verbatim excerpt where it matters."
+    },
+    {
+      "id": "F.2",
+      "check_id": "proper_noun_citation",
+      "severity": "low",
+      "description": "PN.1 'GTO Poker Training' is role: supportive with canonical_source_required: false but verification_status remains 'pending' and the four-guardrail rationale lives in an inline demotion_note rather than a separate decisions/discovery/demotion-v{N}.json record. The substance is fully documented (all four demotion guardrails — supportive role, internal ancestor not external system, telos expressible without it, no runtime linkage — are stated in demotion_note and reinforced in A20 and DCA.31/DCA.54). The structural gap is the absence of a status transition to 'demoted' and a standalone demotion artifact.",
+      "evidence": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1].verification_status (value: 'pending', not 'demoted'); .demotion_note (inline, satisfies all four guardrails)",
+      "recommended_route": "Discovery (record-keeping update only)",
+      "recommended_action": "Discovery may transition PN.1.verification_status to 'demoted' in a ledger-v2 amendment and emit a demotion-v1.json record citing the existing demotion_note text. Non-blocking; TD's plan correctly treats PN.1 as a non-target supportive noun (DCA.31 enforces that the new artifact does NOT present itself as the ancestor)."
+    },
+    {
+      "id": "F.3",
+      "check_id": "first_contact_coverage",
+      "severity": "medium",
+      "description": "FC.2 says 'no procedural setup required between landing and starting a game'. DCA.34 mirrors this and parenthetically adds 'assuming the user has already configured Firebase'. The four-step user onboarding (create Firebase project, paste config values, push to GitHub, enable Pages) is a real first-contact burden that lives BEFORE the published URL exists. The architecture is correct (it's the minimum-feasible cost of true out-of-app push on a static host per Probe 001), but the first-contact narrative could be tightened: the README (S6.A4) and inline onboarding copy (S5.A5) need to be load-bearing for the 'feels like a finished product' deliverability target, especially given the user's intended audience (his mom). This is not a coverage gap in TD's plan — both S5.A5 and S6.A4 exist and are asserted — but the severity of the dependency warrants explicit deliverability emphasis in the Build/Verifier phases.",
+      "evidence": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance_assertions[id=S5.A5]; .sections[id=section-6].acceptance_assertions[id=S6.A4]; .discovery_coverage_assertions[id=DCA.21]; #concerns_for_editor[0]",
+      "recommended_route": "recommendations (no route)",
+      "recommended_action": "During Build/Verification, require that the README's four-step setup be (a) ordered, (b) screenshot-illustrated where it crosses the Firebase console, and (c) include a 'paste this exact JSON shape' template for the config file. Verifier should treat README onboarding clarity as a load-bearing acceptance criterion (production-fidelity 'a non-developer can follow this' read-through), not a perfunctory presence check."
+    },
+    {
+      "id": "F.4",
+      "check_id": "telos_coherence",
+      "severity": "low",
+      "description": "Per Discovery's concerns_for_editor[0], the user's emotional context (playing with his mom long-distance) is load-bearing for deliverable value, not decoration. The telos and PNV.1 exercise the mechanical play loop end-to-end but do not specifically test the wrap-up reveal experience or the per-scenario note affordance as the value-defining moments. DCA.10 (joint-confidence-min ordering) and DCA.12 (per-scenario notes round-tripped) cover the mechanics, and IP7.A2 + S4.A3 cover the reveal panel structurally. No assertion is missing; the flag is that the verbal/textual quality of the reveal copy and the note round-trip (which is what makes the app 'feel like' the prior app) is not explicitly named as a deliverability criterion.",
+      "evidence": "decisions/discovery/ledger-v1.json#concerns_for_downstream.for_editor[0]; .first_contact_requirements[id=FC.8]; sections-v1.json#discovery_coverage_assertions[id=DCA.10,DCA.12]; .sections[id=section-4].acceptance_assertions[id=S4.A3,S4.A7]",
+      "recommended_route": "recommendations (no route)",
+      "recommended_action": "Verifier should weight the wrap-up screen's joint-confidence-min disagreement list and the per-scenario note reveal as deliverability-defining acceptance — not just 'list renders' but 'list reads as a conversation prompt the way the prior app's data summary did'. This is a copy/UX quality check, not a structural one, and lives in the Verifier's production-fidelity exercise."
+    }
+  ],
+  "routed_to": [],
+  "recommendations": [
+    "Treat the README onboarding (S6.A4, DCA.21) and the inline iOS Add-to-Home-Screen copy (S5.A5) as load-bearing deliverability artifacts. The 'fully hostable on GitHub Pages' constraint is honestly satisfied — Firebase is a backend service the app calls, not a self-hosted server — but the four-step setup IS the user's first-contact experience and must be polished accordingly. Recommend Verifier do an end-to-end 'non-developer follows the README' read-through as part of production fidelity.",
+    "Discovery may emit a ledger-v2 amendment to transition PN.2 verification_status: pending -> verified (citing probe-001 CIT.1) and PN.1 verification_status: pending -> demoted with a demotion-v1.json artifact preserving the existing demotion_note text. This is record-keeping cleanup, not a substantive change; non-blocking for Coordinator's first wave.",
+    "Verifier should explicitly assert that the wrap-up screen's highest-joint-confidence-disagreements list and the per-scenario note reveal feel conversation-provoking, not just structurally present. The user's anecdote (mom and son talking through hands) is the load-bearing emotional value Discovery flagged; structural assertions S4.A3, S4.A7, DCA.10, DCA.12 cover the mechanics but not the experiential quality.",
+    "Pick the new artifact's display name now (DCA.31 enforces it is NOT 'GTO Poker Training') so Build does not block on naming. Candidates already noted in TD's concerns_for_editor: 'GTO Duel', 'GTO Pair', 'GTO Head-to-Head'. Recommend 'GTO Duel' for tightness."
+  ]
+}

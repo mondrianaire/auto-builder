@@ -1,0 +1,21 @@
+{
+  "section_id": "section-4",
+  "name": "Game Flow and UI",
+  "status": "verified",
+  "dispatch_mode": "inline",
+  "builders": [
+    { "builder_id": "builder-4a", "status": "completed", "produced": "flow.js (state machine)" },
+    { "builder_id": "builder-4b", "status": "completed", "produced": "stats.js (accuracy/agreement/disagreement)" },
+    { "builder_id": "builder-4c", "status": "completed", "produced": "ui.js (in-game + reveal + wrap-up views)" }
+  ],
+  "assertions_verified": [
+    { "id": "S4.A1", "verified": true, "evidence": "mountInGameView renders the handful with per-scenario action buttons, 1-5 confidence buttons, and an optional 280-char note. Submit calls submitHandful via state.js." },
+    { "id": "S4.A2", "verified": true, "evidence": "After submit, computePhase returns waitingForOpponent=true and renderWaiting() is shown; no reveal or opponent data is rendered." },
+    { "id": "S4.A3", "verified": true, "evidence": "Once both have submitted, renderReveal renders per-scenario: both players' action, confidence, note (or omitted), plus gto_action and gto_explanation." },
+    { "id": "S4.A4", "verified": true, "evidence": "mountWrapUpView renders three sections: per-player accuracy (wrap-accuracy), inter-player agreement (wrap-agreement), ranked disagreements (wrap-disagreements)." },
+    { "id": "S4.A5", "verified": true, "evidence": "state.js readGame() applies redactGameForViewer which masks opponent submissions for any round where the viewer has not yet submitted. Firestore Security Rules separately deny direct opponent-data reads. computePhase respects the redaction and renderReveal only runs when both submissions are present." },
+    { "id": "S4.A6", "verified": true, "evidence": "submit handler validates that every scenario has action and confidence selected; rejects with inline error otherwise." },
+    { "id": "S4.A7", "verified": true, "evidence": "stats.rankedDisagreements sorts by joint_confidence_min desc (then by joint_confidence_sum, then scenario_id). A (5,5) disagreement (min=5) precedes a (5,2) disagreement (min=2)." }
+  ],
+  "verified_at": "2026-05-14T01:03:30Z"
+}

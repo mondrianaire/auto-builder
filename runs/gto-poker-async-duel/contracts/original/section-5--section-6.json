@@ -1,0 +1,36 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-5",
+  "consumer_section": "section-6",
+  "interface_kind": "component_mount_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "mountLandingView",
+        "kind": "function",
+        "signature": "(container: HTMLElement, onCreate: () -> void, onJoin: (autoCode?: string) -> void) -> { unmount: () -> void }"
+      },
+      {
+        "name": "mountCreateGameView",
+        "kind": "function",
+        "signature": "(container: HTMLElement, onCreated: (gameId: string) -> void) -> { unmount: () -> void }"
+      },
+      {
+        "name": "mountJoinGameView",
+        "kind": "function",
+        "signature": "(container: HTMLElement, prefilledCode: string | null, onJoined: (gameId: string) -> void) -> { unmount: () -> void }"
+      },
+      {
+        "name": "mountWaitingForOpponentView",
+        "kind": "function",
+        "signature": "(container: HTMLElement, gameId: string, shareCode: string, joinUrl: string) -> { unmount: () -> void }"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["mountLandingView", "mountCreateGameView", "mountJoinGameView", "mountWaitingForOpponentView"]
+  },
+  "invariants": [
+    "Section-6's router uses URL query (?join=<code>) and game-document status (read via section-2) to decide which of section-5's views to mount before any active gameId is known."
+  ]
+}

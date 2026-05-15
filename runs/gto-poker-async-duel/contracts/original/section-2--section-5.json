@@ -1,0 +1,32 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-2",
+  "consumer_section": "section-5",
+  "interface_kind": "service_adapter_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "createGame",
+        "kind": "function",
+        "signature": "(config: GameConfig, displayName: string) -> Promise<{gameId: string, shareCode: string, joinUrl: string}>; creates the Firestore game document with the creator as the first participant and returns the share code + a fully-qualified join URL anchored at the current location.origin + location.pathname plus ?join=<code>"
+      },
+      {
+        "name": "joinGame",
+        "kind": "function",
+        "signature": "(shareCode: string, displayName: string) -> Promise<{gameId: string} | {error: 'not_found' | 'game_full' | 'permission_denied'}>; appends the current UID to the game's participants array (subject to Security Rules); returns an error tagged with the failure mode"
+      },
+      {
+        "name": "getCurrentUid",
+        "kind": "function",
+        "signature": "() -> string"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["createGame", "joinGame", "getCurrentUid"]
+  },
+  "invariants": [
+    "joinUrl is computed at createGame time using window.location, so it correctly reflects whichever GitHub Pages URL the artifact is published under.",
+    "joinGame must surface 'game_full' distinctly so section-5 can render an appropriate error message rather than a generic 'permission denied'."
+  ]
+}

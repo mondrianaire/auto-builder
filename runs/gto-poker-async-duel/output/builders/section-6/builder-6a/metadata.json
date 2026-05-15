@@ -1,0 +1,13 @@
+{
+  "builder_id": "builder-6a",
+  "section_id": "section-6",
+  "status": "completed",
+  "outputs": [
+    "index.html",
+    "app.js",
+    "config.js",
+    "app.css",
+    "README.md"
+  ],
+  "notes": "Top-level shell. index.html references ./manifest.json, ./styles/app.css, ./src/app.js — all relative. app.js boot order: loadScenarios -> initFirebase -> signInAnonymously -> registerServiceWorker -> router. config.js holds Firebase + VAPID placeholders. README documents the four canonical steps (create Firebase project, paste config, push to GitHub, enable Pages) plus auxiliary steps (Firestore rules paste, VAPID keys, iOS Add-to-Home-Screen)."
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "created_at": "2026-05-14T01:00:00Z",
+  "dispatch_mode": "inline",
+  "nodes": [
+    { "id": "section-1", "name": "Data and Scenarios", "depends_on": [], "wave": 1, "estimated_builders": 1 },
+    { "id": "section-2", "name": "State and Backend Adapter", "depends_on": ["section-1"], "wave": 2, "estimated_builders": 2 },
+    { "id": "section-3", "name": "Notifications and Service Worker", "depends_on": ["section-1", "section-2"], "wave": 3, "estimated_builders": 2 },
+    { "id": "section-5", "name": "Pairing and Onboarding", "depends_on": ["section-2"], "wave": 3, "estimated_builders": 1 },
+    { "id": "section-4", "name": "Game Flow and UI", "depends_on": ["section-1", "section-2", "section-3"], "wave": 4, "estimated_builders": 3, "depends_on_note": "section-4 declares ['section-1','section-2'] explicitly but consumes section-3's API per contract section-3--section-4.json; building section-3 first satisfies the contract." },
+    { "id": "section-6", "name": "Controller and Shell", "depends_on": ["section-1", "section-2", "section-3", "section-4", "section-5"], "wave": 5, "estimated_builders": 1 },
+    { "id": "integrator", "name": "Integrator (pseudo-node)", "depends_on": ["section-1", "section-2", "section-3", "section-4", "section-5", "section-6"], "wave": 6, "estimated_builders": 1, "is_pseudo_node": true },
+    { "id": "section-7", "name": "Edge-Case Testing", "depends_on": ["integrator"], "wave": 7, "estimated_builders": 1 }
+  ],
+  "waves": {
+    "wave_1": ["section-1"],
+    "wave_2": ["section-2"],
+    "wave_3": ["section-3", "section-5"],
+    "wave_4": ["section-4"],
+    "wave_5": ["section-6"],
+    "wave_6": ["integrator"],
+    "wave_7": ["section-7"]
+  }
+}

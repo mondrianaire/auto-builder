@@ -1,0 +1,31 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-2",
+  "consumer_section": "section-6",
+  "interface_kind": "service_adapter_api",
+  "exposed_by_producer": {
+    "exports": [
+      {
+        "name": "initFirebase",
+        "kind": "function",
+        "signature": "(config: object) -> Promise<void>; idempotent; called once at boot"
+      },
+      {
+        "name": "signInAnonymously",
+        "kind": "function",
+        "signature": "() -> Promise<{uid: string}>; called at boot, blocks until UID is available"
+      },
+      {
+        "name": "getCurrentUid",
+        "kind": "function",
+        "signature": "() -> string"
+      }
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["initFirebase", "signInAnonymously", "getCurrentUid"]
+  },
+  "invariants": [
+    "Section-6's boot sequence awaits initFirebase, then awaits signInAnonymously, then mounts the router. The router never mounts before a UID is available."
+  ]
+}

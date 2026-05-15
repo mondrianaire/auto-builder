@@ -1,0 +1,365 @@
+{
+  "version": 1,
+  "created_at": "2026-05-14T00:00:00Z",
+  "project_name": "gto-poker-async-duel",
+  "telos": "Build a GitHub-Pages-hostable web application that lets two users play an asynchronous head-to-head GTO poker quiz, submit per-decision confidence ratings, and receive a post-game summary highlighting their highest-confidence disagreements.",
+  "restatement": "An asynchronous two-player head-to-head GTO poker quiz game, hostable in full on GitHub Pages. Each round, one user receives a 'handful' of identical GTO 'gotcha' scenarios, selects an action for each, and indicates a confidence rating per decision; once submitted, the opponent receives the same handful and answers reciprocally. The exchange continues for a configured number of rounds. After the final round, both users see end-of-game statistics covering individual performance against the GTO-verified action and agreement between the two players, with the post-game wrap-up explicitly highlighting the scenarios where the two users disagreed at the highest joint confidence. An opt-in notification function uses mobile/desktop notification APIs to alert the opposing player that it is their turn. The build extends the earlier 'GTO Poker Training' single-player work conceptually but is a new, standalone artifact; the prior application's gotcha/scenario library may be reused as content but is not a dependency the user requires to be linked at runtime.",
+  "execution_context_observed": {
+    "platform_hints": ["windows"],
+    "path_evidence": ["C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\gto-poker-async-duel\\"]
+  },
+  "proper_nouns": [
+    {
+      "id": "PN.1",
+      "surface": "GTO Poker Training",
+      "lexical_context": "Previously you created an application called \"GTO Poker Training\" that was a proof of concept...",
+      "lexical_marker_weakening": null,
+      "role": "supportive",
+      "canonical_source_required": false,
+      "verification_status": "pending",
+      "demotion_note": "Names the ancestor single-player build (runs/gto-poker-trainer/), not the target of this build. The new artifact is named in the prompt as 'an asynchronous multiplayer GTO Poker head to head quiz game' — a separate deliverable. Telos is expressible without this noun. Demotion guardrails satisfied: noun is in supportive role naming a prior internal artifact, not an external system whose properties constrain the build."
+    },
+    {
+      "id": "PN.2",
+      "surface": "GitHub Pages",
+      "lexical_context": "It is imperative that this application fully can be hosted on github pages, that the game fully functions asynchronously...",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "demotion_note": "Atomic identifier — a specific hosting platform (github.com/pages) with documented technical constraints (static-file-only hosting, no server-side execution, custom-domain rules, build-action mechanics). Cannot be substituted with 'a static host' without violating user intent. Researcher must verify current GitHub Pages constraints (especially around custom 404, asset paths under project pages, and HTTPS behavior) against canonical docs."
+    }
+  ],
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The deliverable is a single self-contained static web application served by GitHub Pages — no companion server, no backend that the user is expected to deploy, and no build step the user must run.",
+      "confidence": "high",
+      "rationale": "Prompt: 'It is imperative that this application fully can be hosted on github pages'. GitHub Pages is documented static-only; 'fully' rules out any user-deployed backend.",
+      "what_breaks_if_wrong": "If the user actually anticipated running a separate server, the architecture's BaaS-only design for state exchange would be wasted effort, but the static-only build still functions."
+    },
+    {
+      "id": "A2",
+      "assumption": "Exactly two players participate per game session. The app is a head-to-head duel, not an N-player tournament or open lobby.",
+      "confidence": "high",
+      "rationale": "Prompt: 'head to head quiz game' and references to 'the other user', 'the opposing player' (singular). Bot-vs-human is not implied.",
+      "what_breaks_if_wrong": "If the user later expects 3+ players, the round-rotation model and disagreement UI must be re-templated."
+    },
+    {
+      "id": "A3",
+      "assumption": "The game is fully asynchronous: each player's submission is independent in time; neither player needs to be online when the other plays.",
+      "confidence": "high",
+      "rationale": "Prompt: 'fully functions asynchronously' and 'build up a handful of answers before they must wait for the other user to submit'.",
+      "what_breaks_if_wrong": "If user actually wants synchronous head-to-head (both online together), the entire shared-state model and notification UX would be different."
+    },
+    {
+      "id": "A4",
+      "assumption": "Within one round, both players see the same set of GTO 'gotcha' scenarios — i.e., scenarios are shared per round, not independently sampled per player.",
+      "confidence": "high",
+      "rationale": "Prompt: 'identical GTO gotchas'. This is the explicit basis for the disagreement/confidence-gap measurement.",
+      "what_breaks_if_wrong": "If scenarios were independent per player, agreement/disagreement comparisons would be meaningless."
+    },
+    {
+      "id": "A5",
+      "assumption": "Each player answers a 'handful' of scenarios per turn before passing control to the opponent. A 'handful' is finite and bounded (heuristic: ~3-8 scenarios per turn) and is either fixed by the app or user-configurable per game.",
+      "confidence": "medium",
+      "rationale": "Prompt uses 'handful' colloquially (small batch). Magnitude is unspecified; downstream IP.",
+      "what_breaks_if_wrong": "Wrong handful size would cause either too-rapid turn churn or fatiguing batches; downstream balancing only, not structural."
+    },
+    {
+      "id": "A6",
+      "assumption": "A game is played for a set number of rounds, configured at game-creation time, after which end-of-game statistics are presented to both players.",
+      "confidence": "high",
+      "rationale": "Prompt: 'This rotation goes for a set number of rounds and then statistics ... is shown to both users'.",
+      "what_breaks_if_wrong": "If round count is meant to be open-ended or dynamic, end-of-game logic would need a different terminating condition."
+    },
+    {
+      "id": "A7",
+      "assumption": "Each decision carries a per-decision confidence rating supplied by the user at submission time.",
+      "confidence": "high",
+      "rationale": "Prompt: 'in addition to a selection of a correct answer, it would be neat to implement a confidence function where users indicate how sure they are of their decisions'.",
+      "what_breaks_if_wrong": "Removing confidence breaks the entire post-game 'highest confidence-gap disagreements' wrap-up, which is a named requirement."
+    },
+    {
+      "id": "A8",
+      "assumption": "The post-game wrap-up explicitly highlights the scenarios where the two players' chosen actions differed AND both players reported high confidence — i.e., highest joint-confidence disagreements bubble to the top.",
+      "confidence": "high",
+      "rationale": "Prompt: 'highlighted the GTO gotchas that showed the highest confidence gap between differing answers'. 'Differing answers' + 'highest confidence gap' = both confident but disagreeing.",
+      "what_breaks_if_wrong": "Misreading 'confidence gap' as 'one confident, one not' would surface a different (and less interesting) subset; would not match user mental model from playing with their mom."
+    },
+    {
+      "id": "A9",
+      "assumption": "End-of-game statistics include both individual performance metrics (e.g., agreement with the GTO-verified action) and inter-player agreement metrics (e.g., how often the two players chose the same action).",
+      "confidence": "high",
+      "rationale": "Prompt: 'statistics regarding player performance and player agreement is shown to both users'. Explicitly names both axes.",
+      "what_breaks_if_wrong": "Missing either axis would violate a stated requirement."
+    },
+    {
+      "id": "A10",
+      "assumption": "There is some mechanism for in-app discussion or disagreement signaling between the two players regarding the GTO-verified action — even if asynchronous (e.g., per-scenario comments, reactions, or notes that surface to the opponent in the wrap-up).",
+      "confidence": "medium",
+      "rationale": "Prompt: 'some type of communication either direct or in game to discuss or disagree with the GTO verified action'. 'Some type' is vague; 'direct or in game' suggests in-game async comments are acceptable.",
+      "what_breaks_if_wrong": "Missing communication entirely would violate the stated requirement; over-investing in real-time chat would contradict A3 (async). Async per-scenario notes is the simplest defensible interpretation."
+    },
+    {
+      "id": "A11",
+      "assumption": "Opt-in notifications use a web-standard notification mechanism (browser/PWA notification APIs) — i.e., no native iOS/Android app build, and the user must explicitly grant permission per browser session/device.",
+      "confidence": "high",
+      "rationale": "Prompt: 'opt in notification function that will use mobile or desktop notification libraries'. 'Opt in' is the standard pattern for browser notification permission; 'mobile or desktop' covers both surfaces a web app reaches.",
+      "what_breaks_if_wrong": "If the user actually expected a native push-notification app, the artifact would not satisfy intent; however, no native build is mentioned, and 'libraries' (plural, generic) does not name one."
+    },
+    {
+      "id": "A12",
+      "assumption": "Game variant is No-Limit Texas Hold'em, inheriting from the ancestor 'GTO Poker Training' build.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on variant; context_pointer to the ancestor build (gto-poker-trainer) establishes Hold'em as the prior convention. Simplest-within-reason continuity.",
+      "what_breaks_if_wrong": "If user expected to choose variant per game, variant selector and per-variant scenario libraries would be needed; not stated."
+    },
+    {
+      "id": "A13",
+      "assumption": "GTO 'gotcha' scenarios are precomputed/curated content (range-based reference answers, not live-solved per scenario), conceptually consistent with the ancestor build's authored library.",
+      "confidence": "medium",
+      "rationale": "Continuity with ancestor build; live-solver is an order-of-magnitude larger build the prompt does not request. Simplest-within-reason.",
+      "what_breaks_if_wrong": "If user expects fresh procedurally-generated GTO scenarios with live solver output, the content layer is undersized."
+    },
+    {
+      "id": "A14",
+      "assumption": "The two players are identified by a lightweight, non-account identifier (e.g., a player name + a game/share code) — no email/password account system, no OAuth, no server-side user records.",
+      "confidence": "medium",
+      "rationale": "GitHub Pages constraint forbids server-side identity infra. Simplest-within-reason on a static site: per-game share code + display name. Backend services like Firebase Auth are a separate IP.",
+      "what_breaks_if_wrong": "If user expected persistent cross-game accounts and history, identity layer would need expansion (probably via the chosen BaaS in IP1)."
+    },
+    {
+      "id": "A15",
+      "assumption": "A game is created by one player and joined by the other via some shared identifier (code or link); both players must use the same identifier to be paired.",
+      "confidence": "medium",
+      "rationale": "Standard pattern for backend-light async two-player games. Pairing mechanism is an IP (link vs short code), but the existence of a pairing step is implied by 'opposing player'.",
+      "what_breaks_if_wrong": "Without a pairing mechanism, players cannot be matched; the game cannot start."
+    },
+    {
+      "id": "A16",
+      "assumption": "Game state (current round, both players' submitted answers, confidence values, scenario IDs, configuration) persists between sessions for the duration of a game, since both players are not online together.",
+      "confidence": "high",
+      "rationale": "Direct consequence of A3 (async): the app must remember state across player absences. Where the state lives (localStorage of an originator, URL-encoded payload, external BaaS, gist) is IP1.",
+      "what_breaks_if_wrong": "Without persistence, async play is impossible."
+    },
+    {
+      "id": "A17",
+      "assumption": "Order-of-play within a round is well-defined: one player (e.g., the round's initiator, or alternating per round) submits their handful before the opponent sees that round's scenarios.",
+      "confidence": "medium",
+      "rationale": "Prompt: 'build up a handful of answers before they must wait for the other user to submit their answers and then create more for the opposing player'. The phrase 'and then create more for the opposing player' implies player A also generates/queues the next set for player B, which suggests A leads, B follows, then alternates. Sequencing precise mechanics is downstream of TD.",
+      "what_breaks_if_wrong": "Misordering would let one player see the other's answers before answering, breaking blind-comparison integrity."
+    },
+    {
+      "id": "A18",
+      "assumption": "Answer blindness is preserved: neither player sees the other's chosen action or confidence until both have submitted for that scenario (or until the wrap-up phase).",
+      "confidence": "high",
+      "rationale": "Required for confidence-gap and agreement measurements to be meaningful. The user's anecdote ('we would guess to each other ... when we entered it and saw the actual data') models this: hidden until reveal.",
+      "what_breaks_if_wrong": "Visible answers would let the second player anchor, invalidating disagreement statistics."
+    },
+    {
+      "id": "A19",
+      "assumption": "The application is hosted at a GitHub Pages URL the user controls (project page or user page). The build deliverable includes the static assets ready to deploy; the user is the one who pushes/enables Pages.",
+      "confidence": "high",
+      "rationale": "Standard GitHub Pages workflow; the architecture cannot deploy on the user's behalf without their account credentials, which are not in scope.",
+      "what_breaks_if_wrong": "If user expected automated deployment, that requires GitHub Actions config (not impossible to ship), but no live URL is producible without user credentials."
+    },
+    {
+      "id": "A20",
+      "assumption": "The build does not need to import or runtime-link the ancestor 'GTO Poker Training' application. The scenario content can be ported/copied as data, but the new app is structurally independent.",
+      "confidence": "high",
+      "rationale": "Prompt frames this as a separate 'extrapolation' of the prior build, not an extension of it. PN.1 is demoted to supportive on this basis.",
+      "what_breaks_if_wrong": "If user expected the new app to live inside the prior repo and share runtime state, integration work would be needed; not requested."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Async-multiplayer state transport on GitHub Pages (static-only)",
+      "choices": [
+        "External free-tier BaaS (Firebase Realtime DB / Firestore, Supabase, etc.) — server-stored shared game state, real-time-capable, requires SDK and project setup",
+        "URL/code-shared payload exchange — full game state encoded into a shareable link/code; players take turns by sending the link back and forth (no third-party service)",
+        "Third-party storage API used as a free key-value store (GitHub Gist API, JSONBin, similar) — shared state lives in a remote document the app reads/writes",
+        "Peer-to-peer (WebRTC) with a signaling fallback — only works when both online simultaneously, contradicts async, ruled out"
+      ],
+      "default_branch": "External free-tier BaaS (specifically a free-tier Firebase or Supabase free project) — closest match to the stated requirements (async + notifications + persistence) without forcing the user to copy-paste links every turn, and avoids URL-length and re-encryption complexity",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "GitHub Pages canonical docs (https://docs.github.com/en/pages) forbid server-side code. Async multiplayer with opt-in cross-user notifications and persisted game state across sessions requires durable, addressable shared storage that either player can read and write while the other is offline. Free-tier feasibility of Firebase/Supabase free projects, plus the security-rules story for client-only auth, and the alternative cost/complexity of Gist-as-backend are not training-data-certain at the current date and materially fork the technical plan. Researcher should verify: (1) GitHub Pages static-only constraints and CSP implications for third-party JS SDKs as of 2026; (2) Firebase free-tier limits and the documented client-only security-rules pattern; (3) Supabase free-tier equivalents; (4) GitHub Gist API as a backend (rate limits, anonymous write availability, auth needs); (5) Web Push delivery: which of these backends offers free push delivery vs requires a separate push relay.",
+      "why_inflection": "Static hosting + async multiplayer + cross-user notifications is the structural tension named in the prompt. The choice forks the entire architecture: data layer, notification delivery mechanism, identity model, and the user's required setup (does the user need to create their own Firebase project? must they manage API keys?). Reversibility is medium — a data-access abstraction can keep the rest of the app stable while the backend swaps, but identity and notification delivery are coupled to the choice."
+    },
+    {
+      "id": "IP2",
+      "topic": "Cross-user notification delivery mechanism",
+      "choices": [
+        "Web Push API + service worker + a push relay (FCM via Firebase Cloud Messaging, or a Supabase/Edge function relay) — notifications fire even when neither tab is open, true 'your turn' alerts",
+        "Browser Notification API only — fires only when the recipient has the page open; effectively just an in-tab toast, not a true async ping",
+        "Email-based notification via a free transactional email service triggered by the BaaS on state change — works without service workers but adds a dependency"
+      ],
+      "default_branch": "Web Push API + service worker + push relay tied to the IP1-selected BaaS",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "The prompt explicitly requires 'opt in notification function that will use mobile or desktop notification libraries to notify the opposing player that it is their turn'. 'It is their turn' implies the recipient is NOT currently using the app, which rules out the bare Notification API (which only works when the page is open). True out-of-app notifications on the web require Web Push API + a service worker + a push service (FCM, APNs-via-relay, or Web Push protocol endpoint). The viable provider depends on IP1. Researcher should verify: (1) Web Push API browser support coverage for the user's targets (likely Chrome/Edge desktop + Android Chrome — iOS Safari Web Push availability and PWA-installation requirement); (2) whether the IP1-chosen backend offers push delivery natively or requires a separate FCM project; (3) any free-tier limits on push message volume.",
+      "why_inflection": "If the chosen mechanism is bare Notification API, the requirement is technically met by API name but functionally fails ('your turn' alerts when the recipient already has the page open are useless). This is a deliverability concern, not just a feature concern."
+    },
+    {
+      "id": "IP3",
+      "topic": "Player identity / authentication model",
+      "choices": [
+        "Anonymous + per-game share code (no accounts; identity is 'whoever has this code', display name optional)",
+        "BaaS anonymous auth (Firebase/Supabase anonymous sessions; gives stable per-device identity tokens for security rules without a sign-up flow)",
+        "Email magic-link or OAuth via BaaS (persistent cross-device accounts; heaviest)"
+      ],
+      "default_branch": "BaaS anonymous auth (assumes IP1 lands on a BaaS) — gives the security-rules predicate required to lock a game's state to its two participants without forcing the user through a sign-up flow",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Resolvable downstream once IP1 lands. The default is consistent with A14 (lightweight identity) and the user's frictionless mom-and-son use case.",
+      "why_inflection": "Authentication choice affects how 'opt-in notifications' bind to a player (you need to know whose device to ping). Tightly coupled to IP1."
+    },
+    {
+      "id": "IP4",
+      "topic": "Pairing / game-creation flow",
+      "choices": [
+        "One player creates a game and shares a join URL/code with the other (one-time pairing)",
+        "Pre-bound 'friend' relationship: both players sign in once, then create new games with that friend without re-sharing",
+        "Open lobby / matchmaking"
+      ],
+      "default_branch": "One player creates a game and shares a join URL/code with the other — simplest, matches the user's stated relationship (one specific opponent: his mom)",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Open lobby is ruled out by the personal nature of the prompt (specific opponent: his mom). Pre-bound friend list adds a contacts layer not requested. Simplest-within-reason: per-game pairing.",
+      "why_inflection": "Affects UX flow and whether identity persists across games."
+    },
+    {
+      "id": "IP5",
+      "topic": "Scenario source for the new build",
+      "choices": [
+        "Port the ancestor 'gto-poker-trainer' scenario library into this build as static data",
+        "Author a new scenario set specifically for the duel format (potentially tuned for ambiguity / high disagreement potential)",
+        "Both: reuse ancestor library AND add new duel-tuned scenarios"
+      ],
+      "default_branch": "Port the ancestor library as static data — fastest path, preserves the user's familiarity from playing with his mom",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Continuity with the ancestor build (which the user explicitly references as the 'extrapolation' source). Authoring new scenarios is additive and can happen later.",
+      "why_inflection": "Content scope. TD should treat scenarios as static JSON content of a known shape so swapping/extending the library is trivial."
+    },
+    {
+      "id": "IP6",
+      "topic": "'Handful' size per turn batch",
+      "choices": [
+        "Fixed handful size (e.g., 5 scenarios per turn) chosen by the build",
+        "Game-creator-configurable handful size at game-creation time",
+        "Per-game adaptive (e.g., 3 in round 1, growing as the game progresses)"
+      ],
+      "default_branch": "Game-creator-configurable handful size at game-creation time, alongside round count — matches the prompt's explicit 'set number of rounds' configurability for the symmetric axis",
+      "importance": "low",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Magnitude-only choice. Does not fork architecture.",
+      "why_inflection": "Pure UX tuning; flagged only because 'handful' is colloquial and the prompt does not state a number."
+    },
+    {
+      "id": "IP7",
+      "topic": "Asynchronous in-game communication mechanism (A10)",
+      "choices": [
+        "Per-scenario async note/comment: each player can attach a short freeform note to their answer, revealed to the other during/after that scenario's reveal",
+        "Per-scenario reaction emoji/tag: structured short reactions (agree / disagree / 'this is GTO bullshit') without freeform text",
+        "Full async chat thread per game",
+        "No in-game communication — disagreement is implicit in the action+confidence diff"
+      ],
+      "default_branch": "Per-scenario async note/comment — matches the user's anecdote (mom and son talking through hands), preserves async, light to build",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "The prompt says 'some type of communication either direct or in game to discuss or disagree'. Per-scenario async note satisfies 'in game' and supports the disagreement use case directly. Full chat is heavier than the use case requires.",
+      "why_inflection": "Affects data model (per-scenario message attached to a player's submission), UI surface (where the note appears in the reveal/wrap-up), and moderation/safety considerations (low here, but exists)."
+    },
+    {
+      "id": "IP8",
+      "topic": "Confidence rating granularity",
+      "choices": [
+        "Discrete Likert scale (e.g., 1-5 stars or low/med/high)",
+        "Continuous slider (0-100%)",
+        "Bucketed text (Guess / Lean / Confident / Sure)"
+      ],
+      "default_branch": "Discrete 1-5 scale — simplest input, comparable across scenarios for the confidence-gap computation, familiar UI vocabulary",
+      "importance": "low",
+      "importance_action": "n/a",
+      "importance_action_evidence": "All choices satisfy the requirement; differences are UX-only.",
+      "why_inflection": "Affects the 'highest confidence-gap' computation: continuous gives finer ordering; discrete gives ties. Flagged but not architecturally load-bearing."
+    }
+  ],
+  "first_contact_requirements": [
+    {
+      "id": "FC.1",
+      "description": "The deliverable produces a working set of static files (HTML/CSS/JS plus any service worker and manifest) that, when committed to the docs/ directory or gh-pages branch of a GitHub repo with Pages enabled, serve a loadable application at the GitHub Pages URL with no 404s on first navigation.",
+      "artifact_type_basis": "static web app on GitHub Pages"
+    },
+    {
+      "id": "FC.2",
+      "description": "Opening the published URL in a modern desktop browser (Chrome/Edge/Firefox) loads the application's start screen without console errors; the user can see a 'create a new game' affordance immediately, with no procedural setup required between landing and starting a game.",
+      "artifact_type_basis": "static web app on GitHub Pages"
+    },
+    {
+      "id": "FC.3",
+      "description": "Creating a new game produces a shareable identifier (URL or short code) on the creator's screen that the creator can copy. Opening that identifier in a second browser profile / device joins the game as the second player.",
+      "artifact_type_basis": "static web app on GitHub Pages"
+    },
+    {
+      "id": "FC.4",
+      "description": "On the first scenario screen, the user sees: the scenario description, the available actions, and a confidence input. Submitting without selecting an action and confidence is prevented (cannot accidentally submit an empty answer).",
+      "artifact_type_basis": "static web app on GitHub Pages"
+    },
+    {
+      "id": "FC.5",
+      "description": "Asset paths resolve correctly under a GitHub Pages project subpath (e.g., username.github.io/repo-name/) — no absolute root-anchored asset URLs that 404 when not at a user-page root.",
+      "artifact_type_basis": "static web app on GitHub Pages"
+    },
+    {
+      "id": "FC.6",
+      "description": "Opt-in notifications: clicking the in-app 'enable notifications' affordance triggers the browser's standard permission prompt. After granting, the recipient receives a notification when their opponent submits a turn — including when the recipient does not have the application tab open (true out-of-app push).",
+      "artifact_type_basis": "static web app on GitHub Pages (Web Push-capable)"
+    },
+    {
+      "id": "FC.7",
+      "description": "Mobile first-contact: opening the published URL on a recent mobile browser (Chrome Android, Safari iOS) renders an interactive, touch-usable game screen — actions are tappable, confidence input is usable, no horizontal scroll required to read a scenario.",
+      "artifact_type_basis": "static web app on GitHub Pages"
+    },
+    {
+      "id": "FC.8",
+      "description": "End-of-game wrap-up: after the configured final round is submitted by both players, both players see (on next open / via notification) an end-of-game screen that includes individual performance stats, agreement stats, and an explicit highlighted list of the scenarios with the largest joint-confidence disagreements.",
+      "artifact_type_basis": "static web app on GitHub Pages"
+    }
+  ],
+  "out_of_scope": [
+    "Real-money play, deposits, wagering, or any gambling integration",
+    "Variants other than No-Limit Texas Hold'em (inheriting from the ancestor build's variant scope)",
+    "More than two players per game session (N-player tournaments, brackets, leaderboards across users)",
+    "Synchronous real-time multiplayer (both players online together with live action turn timers)",
+    "Native iOS/Android application builds (web/PWA only)",
+    "Email/password accounts, OAuth providers, cross-game persistent profiles beyond what an anonymous BaaS auth token provides",
+    "Live GTO solver computation for arbitrary spots (precomputed/curated scenarios per A13)",
+    "User-authored custom scenarios at v1",
+    "Hand-history importing from PokerStars/GGPoker/etc.",
+    "Coaching, community, public sharing, social feeds, public leaderboards",
+    "Spectator mode or replay-sharing to non-participants",
+    "Moderation tooling for the in-game communication channel beyond basic local-only blocking (low-risk use case: known two-person games)",
+    "Server-side deployment, custom domains setup, DNS work, CDN configuration (user handles GitHub Pages enablement on their own repo per A19)",
+    "Backwards integration with the ancestor 'GTO Poker Training' application's saved data (per A20 — scenario data may be ported, but no runtime linkage)"
+  ],
+  "concerns_for_downstream": {
+    "for_technical_discovery": [
+      "IP1 (state transport) and IP2 (notification delivery) are tightly coupled — choosing Firebase makes FCM-based Web Push the natural pair; choosing Supabase makes Edge-Function-driven Web Push the pair; choosing Gist-as-backend leaves notification delivery without a native partner and may force a separate push relay. TD should resolve IP1 and IP2 together, not independently.",
+      "The 'fully can be hosted on github pages' constraint is total: no companion server the user must deploy. Any backend dependency must be either (a) a free-tier external service the build connects to via client-side SDK, or (b) avoided entirely. TD should explicitly verify that the chosen approach does not require the user to deploy code outside their GitHub Pages repo.",
+      "Service worker registration under a GitHub Pages project subpath (username.github.io/repo/) has known scope-restriction gotchas — the service worker can only control pages under its registration scope. TD should plan SW path and scope deliberately and Researcher should verify against current GitHub Pages docs.",
+      "BaaS API keys in client-side static assets are unavoidable on GitHub Pages — security must rely on the BaaS's security-rules layer (Firestore rules, Supabase RLS), not on secrecy. TD must design the data model so each game's documents are readable/writable only by its two participants (anonymous-auth-bound)."
+    ],
+    "for_editor": [
+      "The user's emotional context (playing with his mom long-distance) is load-bearing for the deliverable's value, not just decoration. The build's success criterion includes 'feels like the prior app felt, but together' — Editor should weight the wrap-up reveal experience and the per-scenario discussion affordance accordingly when evaluating telos coherence.",
+      "Naming the new artifact: the prompt does not name the new app. Editor / TD should choose a name that distinguishes this from the ancestor 'GTO Poker Training' to avoid PN.1 ambiguity."
+    ],
+    "researcher_dispatch_recommended": [
+      "IP1: BaaS feasibility on GitHub Pages — verify current GitHub Pages CSP/static constraints, Firebase free-tier limits, Supabase free-tier limits, Gist API as backend",
+      "IP2: Web Push delivery — verify iOS Safari Web Push status as of 2026 (PWA-install requirement may have changed), free-tier push message limits across candidate providers"
+    ]
+  }
+}

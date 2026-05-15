@@ -1,0 +1,8 @@
+{
+  "builder_id": "builder-5a",
+  "section_id": "section-5",
+  "status": "completed",
+  "outputs": ["onboarding.js"],
+  "exports": ["mountLandingView", "mountCreateGameView", "mountJoinGameView", "mountWaitingForOpponentView"],
+  "notes": "Vanilla DOM, no framework. The landing screen exposes both Create and Join paths. Create-game flow exposes rounds (1-10), handful_size (1-10), and display-name inputs. Join flow accepts a share code; if section-6 routes here with ?join=<code> the code is pre-filled. Waiting view shows code + join URL with copy-to-clipboard. iOS Add-to-Home-Screen instructions surface when notificationStatus().ios_requires_home_screen_install is true."
+}

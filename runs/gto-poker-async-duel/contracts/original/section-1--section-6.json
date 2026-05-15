@@ -1,0 +1,17 @@
+{
+  "contract_version": 1,
+  "producer_section": "section-1",
+  "consumer_section": "section-6",
+  "interface_kind": "data_types_and_static_api",
+  "exposed_by_producer": {
+    "exports": [
+      {"name": "listScenarios", "kind": "function", "signature": "() -> Scenario[]; called at boot to verify the library loaded"}
+    ]
+  },
+  "consumed_by_consumer": {
+    "uses_functions": ["listScenarios"]
+  },
+  "invariants": [
+    "Section-6's boot sequence calls listScenarios() and refuses to proceed if it returns an empty array (defensive: catches a misconfigured build)."
+  ]
+}

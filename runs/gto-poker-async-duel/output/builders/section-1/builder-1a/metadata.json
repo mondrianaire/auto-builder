@@ -1,0 +1,27 @@
+{
+  "builder_id": "builder-1a",
+  "section_id": "section-1",
+  "status": "completed",
+  "outputs": [
+    "scenarios.json",
+    "scenarios.js"
+  ],
+  "exports": [
+    "loadScenarios",
+    "listScenarios",
+    "getScenarioById",
+    "sampleNScenarios",
+    "sampleNScenarioIds"
+  ],
+  "types_documented": [
+    "Scenario",
+    "PlayerSubmission",
+    "GameConfig",
+    "Participant",
+    "Round",
+    "GameDocument",
+    "PushSubscriptionRecord"
+  ],
+  "library_size": 20,
+  "scenario_id_set": "btn-vs-bb-3bet-pot-c-bet-decision-001 .. limp-reraise-trap-020"
+}

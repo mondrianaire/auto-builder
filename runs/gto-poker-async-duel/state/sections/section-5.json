@@ -1,0 +1,18 @@
+{
+  "section_id": "section-5",
+  "name": "Pairing and Onboarding",
+  "status": "verified",
+  "dispatch_mode": "inline",
+  "builders": [
+    { "builder_id": "builder-5a", "status": "completed", "produced": "onboarding.js (landing + create + join + waiting views)" }
+  ],
+  "assertions_verified": [
+    { "id": "S5.A1", "verified": true, "evidence": "mountLandingView renders both 'Create a new game' and 'Join a game' buttons." },
+    { "id": "S5.A2", "verified": true, "evidence": "mountCreateGameView renders rounds (1-10), handful (1-10), and display-name inputs." },
+    { "id": "S5.A3", "verified": true, "evidence": "mountWaitingForOpponentView renders the share code and join URL with Copy buttons that use navigator.clipboard (fallback to execCommand)." },
+    { "id": "S5.A4", "verified": true, "evidence": "mountJoinGameView accepts a prefilledCode argument; section-6's router reads ?join=<code> from URL and passes it. The join input is populated from prefilledCode." },
+    { "id": "S5.A5", "verified": true, "evidence": "Landing 'How it works' explains share. Waiting view explains share methods. iOS Add-to-Home-Screen instruction renders when notificationStatus().ios_requires_home_screen_install is true. Reveal/in-game notification-enable copy comes from section-4." },
+    { "id": "S5.A6", "verified": true, "evidence": "createGame() and joinGame() (in state.js) write {uid, displayName, joinedAt} to game.participants; reveal panel and wrap-up in section-4 render displayName from this field." }
+  ],
+  "verified_at": "2026-05-14T01:02:45Z"
+}

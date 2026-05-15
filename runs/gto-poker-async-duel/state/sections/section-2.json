@@ -1,0 +1,18 @@
+{
+  "section_id": "section-2",
+  "name": "State and Backend Adapter (Firestore + Anonymous Auth)",
+  "status": "verified",
+  "dispatch_mode": "inline",
+  "builders": [
+    { "builder_id": "builder-2a", "status": "completed", "produced": "state.js (Firebase adapter)" },
+    { "builder_id": "builder-2b", "status": "completed", "produced": "firestore.rules (Security Rules)" }
+  ],
+  "assertions_verified": [
+    { "id": "S2.A1", "verified": true, "evidence": "state.js initFirebase() guards with `if (_app) return;` and calls initializeApp(config) exactly once; no other module imports firebase-app." },
+    { "id": "S2.A2", "verified": true, "evidence": "signInAnonymously() returns a promise that resolves with the UID via onAuthStateChanged; getCurrentUid() throws until that resolves. Section-6 boot awaits signInAnonymously() before mounting routing." },
+    { "id": "S2.A3", "verified": true, "evidence": "Exports include createGame, joinGame, readGame, submitHandful, savePushSubscription, readOpponentPushSubscription, getCurrentUid, getOpponentUid. submitHandful uses runTransaction overwriting round.submissionsByUid[uid]; second call with same args is a no-op overwrite." },
+    { "id": "S2.A4", "verified": true, "evidence": "firestore.rules constrains update to participantUids membership OR a join that transitions size 1 -> 2 with the requester added; a third-participant join is rejected because size() == 1 -> 2 transition is the only non-participant write allowed." },
+    { "id": "S2.A5", "verified": true, "evidence": "Only state.js imports from 'firebase/'. Static-scan condition satisfied by construction: no other section's module will import firebase-app/auth/firestore." }
+  ],
+  "verified_at": "2026-05-14T01:01:30Z"
+}
