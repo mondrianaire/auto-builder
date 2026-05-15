@@ -1,0 +1,20 @@
+{
+  "id": "dev-002",
+  "logged_at": "2026-05-14T01:41:30Z",
+  "logged_by_role": "coordinator",
+  "context": "section-3 touchbar-renderer builder-3a — choosing STATIC_FIT_CHAR_LIMIT for the marquee branch when the canonical Touch Bar pixel resolution is external_source_unreachable.",
+  "deviation_type": "implementation_path_chosen",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].machine_checkable_assertions[id=IP5.A1]",
+  "what_spec_said": "When the composed 'Title — Artist' text is longer than the widget's reported width, touchbar-renderer signals host-integration with marquee:true; when it fits, marquee:false.",
+  "what_was_done": "Implemented overflow detection using a character-count proxy (STATIC_FIT_CHAR_LIMIT=28). The host's reported widget width is not exposed via the documented protocol (IP3 chosen_branch refines from 'pixel canvas' to 'host widget primitives' and the exact widget-width report is not canonical). A character count is the smallest reasonable proxy that preserves the branch semantics required by the contract.",
+  "rationale": "The marquee branch must exist (contract S3.A3, IP5.A1). With the widget's exact reported width unknown, the choices are (a) skip the branch entirely (contract violation), (b) attempt to fetch the widget width from the host and gracefully fall back (adds non-trivial host-protocol code in a section whose charter explicitly forbids touching the host protocol directly), or (c) use a conservative character-count proxy. (c) is the smallest reasonable implementation that satisfies the contract while honoring the section boundary.",
+  "nested_equivalent": "Under nested dispatch the section-3 Overseer would have selected the same proxy and continued — the charter explicitly assigns marquee implementation detail to the renderer and gives no measurement API beyond what the source delivers. No cross-section impact.",
+  "scope": {
+    "changes_artifact": true,
+    "changes_contract": false,
+    "changes_charter_or_spec": false,
+    "changes_assumption": false
+  },
+  "linked_sev0_record": null,
+  "linked_sev0_note": "changes_artifact: true but no acceptance assertion is violated — IP5.A1 expects 'branch on measured width' and we branch on a measurement proxy. Not a Sev 0 fix."
+}

@@ -1,0 +1,124 @@
+{
+  "integrator_version": 1,
+  "completed_at": "2026-05-14T01:52:00Z",
+  "dispatch_mode": "inline",
+  "assembled_artifact": {
+    "type": "directory_bundle",
+    "name": "com.autobuilder.applemusic-now-playing.sdPlugin",
+    "root_path": "output/integration/com.autobuilder.applemusic-now-playing.sdPlugin/"
+  },
+  "assembly_actions": [
+    {
+      "action": "copy",
+      "from": "output/builders/packaging/builder-4a/manifest.json",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/manifest.json"
+    },
+    {
+      "action": "copy",
+      "from": "output/builders/packaging/builder-4a/index.js",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/index.js"
+    },
+    {
+      "action": "copy_to_js_subdir",
+      "from": "output/builders/host-integration/builder-1a/output.js",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/js/host.js"
+    },
+    {
+      "action": "copy_to_js_subdir",
+      "from": "output/builders/host-integration/builder-1b/output.js",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/js/process-utils.js"
+    },
+    {
+      "action": "copy_to_js_subdir",
+      "from": "output/builders/now-playing-source/builder-2b/output.js",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/js/source.js"
+    },
+    {
+      "action": "copy_to_sidecar_subdir",
+      "from": "output/builders/now-playing-source/builder-2a/output.ps1",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/sidecar/smtc-reader.ps1"
+    },
+    {
+      "action": "copy_to_js_subdir",
+      "from": "output/builders/touchbar-renderer/builder-3a/output.js",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/js/renderer.js"
+    },
+    {
+      "action": "generate",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/package.json",
+      "rationale": "Declares the 'ws' dependency the host's Node.js 20 runtime needs. Production build should run `npm install --omit=dev` inside the .sdPlugin before zipping; this build does not bundle node_modules (host bundles core Node, but 'ws' is a userland dep)."
+    },
+    {
+      "action": "copy",
+      "from": "output/builders/packaging/builder-4a/README.md",
+      "to": "README.md (alongside the .sdPlugin directory, also referenced in the bundled .sdPlugin)"
+    },
+    {
+      "action": "placeholder",
+      "to": "com.autobuilder.applemusic-now-playing.sdPlugin/images/icon.txt",
+      "rationale": "Icon assets are not produced by this text-only build. Production should add 72x72 and 144x144 PNGs. Documented in run-report Uncertainty Manifest."
+    }
+  ],
+  "seam_resolutions": [
+    {
+      "seam": "host.spawnSidecar wiring",
+      "resolution": "index.js sets host.spawnSidecar = procUtils.spawnSidecar after both modules are loaded, so source.js sees a single host object satisfying both contracts (touchbar-renderer's host surface AND now-playing-source's host surface). No section had visibility into both surfaces; index.js owns the wiring."
+    },
+    {
+      "seam": "Renderer startup ordering",
+      "resolution": "renderer.start is registered inside host.onStartup so it runs after WebSocket open; an idempotent setImmediate fallback covers the case where the startup hook is missed."
+    },
+    {
+      "seam": "Sidecar script path resolution",
+      "resolution": "source.js uses path.resolve(__dirname, '..', 'sidecar', 'smtc-reader.ps1'). __dirname is js/, so .. + sidecar/smtc-reader.ps1 \u2192 the plugin root's sidecar/ directory, matching where the integrator placed the .ps1."
+    }
+  ],
+  "false_alarm_check": {
+    "performed": true,
+    "method": "Visual review of host.js, source.js, renderer.js, smtc-reader.ps1 for obvious syntax errors or buffer/encoding artifacts. No discrepancies found."
+  },
+  "sev0_fixes_applied": [],
+  "missing_or_known_gaps": [
+    "Icon PNG assets are not produced by this text-only build (see images/icon.txt placeholder).",
+    "node_modules/ws is not bundled. The plugin requires 'npm install --omit=dev' to be run inside the .sdPlugin directory before distribution to a user, OR the host's bundled Node may already provide 'ws' as a built-in (the host's manifest doc enumerates Nodejs.Version:'20' but does not list bundled modules). If 'ws' is missing at runtime the plugin will throw 'Cannot find module ws' on startup."
+  ],
+  "zip_distribution": {
+    "intent": "Production should produce com.autobuilder.applemusic-now-playing.sdPlugin.zip at the root of output/integration/ containing the .sdPlugin directory.",
+    "status": "produced_post_critic_sev1",
+    "filename": "com.autobuilder.applemusic-now-playing.sdPlugin.zip",
+    "path": "output/integration/com.autobuilder.applemusic-now-playing.sdPlugin.zip",
+    "size_bytes": 11562,
+    "produced_at": "2026-05-14T11:05:00Z",
+    "rationale": "Original text-only build skipped zip production. Sev 1 escalation esc-001 (S4.A4 acceptance violation) was raised by Critic at final-sweep and routed by Arbiter back to Coordinator. Zip was produced from the already-assembled .sdPlugin directory via Python zipfile with the .sdPlugin directory preserved at the zip root, satisfying S4.A4's 'extractable, contains the .sdPlugin directory at its root' requirement. No section outputs were modified."
+  },
+  "rationale": "Integrator copied each builder output into its production-layout location inside the .sdPlugin directory and wrote the package.json + icon placeholder. No section outputs were modified; only paths were assigned. The two known gaps (icon, node_modules) are documented and carried into the run-report's Uncertainty Manifest.",
+  "files": [
+    {
+      "path": "output/integration/README.md",
+      "kind": "install_readme"
+    },
+    {
+      "path": "output/integration/manifest.json",
+      "kind": "integration_manifest"
+    },
+    {
+      "path": "output/integration/com.autobuilder.applemusic-now-playing.sdPlugin/",
+      "kind": "plugin_directory_bundle"
+    },
+    {
+      "path": "output/integration/com.autobuilder.applemusic-now-playing.sdPlugin.zip",
+      "kind": "plugin_zip_distribution",
+      "size_bytes": 11562,
+      "added_by": "coordinator_sev1_resolution_esc-001"
+    }
+  ],
+  "issues_resolved_during_integration": [
+    {
+      "issue_id": "esc-001",
+      "issue": "S4.A4 zip-distribution acceptance assertion unsatisfied at final-sweep (Critic-raised, Arbiter-routed as Sev 1, returned to Coordinator).",
+      "resolution": "Produced com.autobuilder.applemusic-now-playing.sdPlugin.zip alongside the assembled .sdPlugin directory using Python zipfile.ZIP_DEFLATED with the .sdPlugin directory preserved at the zip root.",
+      "resolved_at": "2026-05-14T11:05:00Z",
+      "scope": "packaging section only; no other section outputs touched, no decisions amended, no final/ contents altered."
+    }
+  ]
+}

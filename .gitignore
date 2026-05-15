@@ -18,6 +18,12 @@ pnpm-debug.log*
 
 # Vendored dependencies under any plugin bundle
 **/*.sdPlugin/plugin/node_modules/
+**/*.sdPlugin/node_modules
+**/*.sdPlugin/node_modules/
+
+# Broken NTFS junctions left by old sandbox builds (cannot be removed via standard ops; safe to ignore)
+runs/streamdock-apple-music-touchbar/output/final/com.autobuilder.applemusic-now-playing.sdPlugin/node_modules
+runs/streamdock-apple-music-touchbar/output/integration/com.autobuilder.applemusic-now-playing.sdPlugin/node_modules
 
 # Python ecosystem
 __pycache__/

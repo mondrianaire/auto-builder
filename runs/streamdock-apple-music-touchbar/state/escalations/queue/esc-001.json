@@ -1,0 +1,26 @@
+{
+  "id": "esc-001",
+  "created_at": "2026-05-14T02:15:00Z",
+  "from_overseer": "critic",
+  "section_id": "section-4",
+  "severity_estimate": "local",
+  "type": "acceptance_violation_unsatisfied",
+  "summary": "Section-4 acceptance assertion S4.A4 ('A zip of the .sdPlugin directory is present alongside') is not satisfied at final-sweep time. Integration manifest's zip_distribution.status is 'not_produced_by_text_only_build'. Coordinator nevertheless marked section-4 verified. Verifier for S4.A4 is critic_final_sweep, which is firing this escalation as the violation surface.",
+  "blocked_work": [],
+  "evidence": {
+    "assertion": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance_assertions[id=S4.A4]",
+    "assertion_scenario": "ls output/final/*.sdPlugin.zip OR *.zip alongside the directory.",
+    "actual_state": "find output/ -name '*.zip' returns no matches; output/integration/manifest.json explicitly: 'status: not_produced_by_text_only_build, rationale: This Coordinator run cannot reliably produce binary zip files; the README documents how to install from the unzipped directory directly.'",
+    "section_4_acceptance_excerpt": "A zip of the .sdPlugin directory is present alongside.",
+    "uncertainty_manifest_already_lists": "node_modules/ws gap and field-name unreachables, but NOT the missing zip explicitly"
+  },
+  "proposed_resolution": {
+    "type": "arbiter_route",
+    "options": [
+      "Sev 0 trivial-fix: have Integrator or Coordinator produce a zip via shell. Likely ineligible since the text-only build environment was the original blocker, but worth verifying in a real environment.",
+      "Amend section-4 acceptance to make zip-distribution optional with documented unzipped-directory install (current README already documents the unzipped flow).",
+      "Carry forward into the run-report's Uncertainty Manifest as a documented artifact gap so the user knows to expect the directory-form distribution."
+    ]
+  },
+  "rationale_for_severity": "Local: scope is confined to section-4's packaging deliverable; no contract impact; no cross-section drift."
+}

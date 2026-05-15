@@ -1,0 +1,44 @@
+{
+  "probe_id": "probe-ip4",
+  "completed_at": "2026-05-14T00:45:00Z",
+  "citations": [
+    {
+      "id": "C.4.1",
+      "url_or_path": "https://sdk.key123.vip/en/guide/get-started.html",
+      "fetched_at": "2026-05-14T00:18:00Z",
+      "verbatim_excerpt": "Getting Started ... 2. Refactor Unique Identifier — Modify the folder name and the UUID in manifest.json. 3. Add the Plugin to Stream Dock — If it is a Vue template, npm run build or npm run dev will automatically add the plug-in to Stream Dock. For non-Vue templates, you need to manually add the plug-in to Stream Dock. Manual addition example: Move the com.example.my-plugin.sdPlugin plugin to the C:\\Users\\{username}\\AppData\\Roaming\\HotSpot\\StreamDock\\plugins folder. 4. Debugging — You will need to restart Stream Dock after adding a plugin to the plugins folder for the first time. A list of plugins for debugging is accessible from your browser. Refresh a plugin or the Property Inspector at any time by reloading its page (changes to plugins require restarting Stream Dock). Debugging URL http://localhost:23519/",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.4.2",
+      "url_or_path": "https://github.com/MiraboxSpace/StreamDock-Plugins/tree/main/Plugins/com.mirabox.streamdock.spotify.sdPlugin",
+      "fetched_at": "2026-05-14T00:19:00Z",
+      "verbatim_excerpt": "[Repository directory listing showing an official MiraboxSpace example plugin named com.mirabox.streamdock.spotify.sdPlugin — confirming the .sdPlugin directory-name convention with a reverse-DNS UUID prefix is the deployable plugin shape; the directory contains the manifest.json plus code/assets layout matching the SDK template structure described at sdk.key123.vip.]",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    }
+  ],
+  "options": [
+    {
+      "id": "opt-A",
+      "summary": "Package the plugin as a directory named '{reverse-DNS-UUID}.sdPlugin' containing manifest.json at the root and all code/assets. Distribute the directory (optionally as a zip the user unpacks). Install on Windows by copying/moving the .sdPlugin directory into %APPDATA%\\HotSpot\\StreamDock\\plugins (canonically: C:\\Users\\{username}\\AppData\\Roaming\\HotSpot\\StreamDock\\plugins) and restarting the Stream Dock application. After restart, the plugin appears in the Stream Dock host application's action list and can be dragged onto the Touch Bar slot of the active scene.",
+      "pros": [
+        "Canonical install path documented at sdk.key123.vip/en/guide/get-started.html (C.4.1).",
+        "Confirmed structural convention via MiraboxSpace's own example plugin (C.4.2).",
+        "No signing/notarization requirements documented for Windows third-party plugins — install is a directory-copy.",
+        "User-visible install steps are minimal: (1) close Stream Dock, (2) copy folder, (3) reopen Stream Dock."
+      ],
+      "cons": [
+        "Manual install (no installer wrapper, no marketplace). Documented A9 / out-of-scope item: 'An installer wrapper beyond the host application's documented third-party plugin installation flow' — i.e., we do not build one, we ship the folder.",
+        "Activation in Touchbar Mode (FC.2) depends on the host's UI affordance for placing a plugin onto the Touch Bar slot of a scene; this affordance is described in the VSDinside setup material but is not invoked by the installer (the user does it interactively, which matches A9's 'No user configuration UI is required beyond what is needed to make the plugin installable and selectable')."
+      ],
+      "impact": {},
+      "confidence": "high",
+      "supporting_citations": ["C.4.1", "C.4.2"]
+    }
+  ],
+  "recommended": "opt-A",
+  "rationale": "MiraboxSpace's canonical SDK getting-started page (C.4.1) documents the exact Windows install path verbatim: copy the .sdPlugin folder into C:\\Users\\{username}\\AppData\\Roaming\\HotSpot\\StreamDock\\plugins and restart Stream Dock. MiraboxSpace's own example plugin repository (C.4.2) confirms the directory-name convention ({reverse-DNS-UUID}.sdPlugin) and the manifest-at-root layout. No signing requirement is documented. The delivered artifact is therefore a .sdPlugin directory (optionally packaged as a zip the user extracts) plus a short README with three steps.",
+  "framing_concern": null
+}

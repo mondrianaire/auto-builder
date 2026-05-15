@@ -1,0 +1,26 @@
+{
+  "builder_id": "builder-2a",
+  "section_id": "section-2",
+  "status": "completed",
+  "completed_at": "2026-05-14T01:36:30Z",
+  "output_files": ["output.ps1"],
+  "produces": "smtc-reader.ps1 — PowerShell SMTC sidecar emitting line-delimited JSON.",
+  "assertion_coverage": [
+    {
+      "id": "IP2.A2",
+      "satisfied": true,
+      "evidence": "Script contains both literal strings 'Windows.Media.Control' and 'GlobalSystemMediaTransportControlsSessionManager' on the WinRT assembly load line."
+    },
+    {
+      "id": "IP2.A3",
+      "satisfied": "best_effort",
+      "evidence": "Filter uses case-insensitive regex match -match 'AppleMusic' against SourceAppUserModelId. Per assertion source: external_source_unreachable, the exact AppId is not canonically published; this is the documented best-effort heuristic."
+    },
+    {
+      "id": "IP2.A4",
+      "satisfied": true,
+      "evidence": "Register-ObjectEvent call sites present for SessionsChanged, CurrentSessionChanged, MediaPropertiesChanged, PlaybackInfoChanged."
+    }
+  ],
+  "rationale": "Pure WinRT via PowerShell — no native module, no NodeRT dependency. PowerShell is preinstalled on every supported Windows version (per probe-ip2 rationale)."
+}

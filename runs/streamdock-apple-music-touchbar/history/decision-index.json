@@ -1,0 +1,97 @@
+{
+  "updated_at": "2026-05-14T02:00:00Z",
+  "decisions": [
+    {
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "version": 1,
+      "produced_by": "discovery",
+      "trigger": { "type": "initial", "from_prompt": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro..." },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-ip1/findings.json",
+      "version": 1,
+      "produced_by": "researcher",
+      "trigger": { "type": "td_planning_dispatch", "ip_id": "IP1", "topic": "SDK identity (MiraboxSpace canonical vs. Elgato)" },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-ip2/findings.json",
+      "version": 1,
+      "produced_by": "researcher",
+      "trigger": { "type": "td_planning_dispatch", "ip_id": "IP2", "topic": "Apple Music now-playing data source on Windows" },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-ip3/findings.json",
+      "version": 1,
+      "produced_by": "researcher",
+      "trigger": { "type": "td_planning_dispatch", "ip_id": "IP3", "topic": "Touchbar Mode geometry and addressing model" },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-ip4/findings.json",
+      "version": 1,
+      "produced_by": "researcher",
+      "trigger": { "type": "td_planning_dispatch", "ip_id": "IP4", "topic": "Install / distribution flow" },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery_with_research", "researchers_returned": 4 },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/host-integration--touchbar-renderer.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "td_contract_drafting" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/host-integration--now-playing-source.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "td_contract_drafting" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/now-playing-source--touchbar-renderer.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "td_contract_drafting" },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/editor/review-v1.json",
+      "version": 1,
+      "produced_by": "editor",
+      "trigger": { "type": "post_td_pre_build_audit" },
+      "supersedes": null,
+      "verdict": "pass_with_recommendations"
+    },
+    {
+      "artifact": "state/inline-deviations/dev-001.json",
+      "version": 1,
+      "produced_by": "coordinator_inline",
+      "trigger": { "type": "implementation_path_chosen", "context": "drawText dual-send (setTitle + setFeedback) when S1.A3 host-protocol field is external_source_unreachable" },
+      "supersedes": null
+    },
+    {
+      "artifact": "state/inline-deviations/dev-002.json",
+      "version": 1,
+      "produced_by": "coordinator_inline",
+      "trigger": { "type": "implementation_path_chosen", "context": "STATIC_FIT_CHAR_LIMIT=28 proxy for marquee branch when widget width is not canonically reported" },
+      "supersedes": null
+    },
+    {
+      "artifact": "state/inline-deviations/dev-003.json",
+      "version": 1,
+      "produced_by": "coordinator_inline",
+      "trigger": { "type": "implementation_path_chosen", "context": "manifest Controllers/Type/TargetDevice literal values for IP3.A1 external_source_unreachable" },
+      "supersedes": null
+    }
+  ]
+}

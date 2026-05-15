@@ -1,0 +1,22 @@
+{
+  "probe_id": "probe-ip4",
+  "created_at": "2026-05-14T00:00:00Z",
+  "phase": "planning",
+  "dispatched_by": "technical-discovery",
+  "question": "How does an end user install a third-party plugin into the MiraboxSpace StreamDock host application on Windows? Specifically: (a) packaging format (file extension, archive structure, required manifest at root); (b) install target directory or install method (drag-and-drop onto the host, copy into a host plugins directory, install via in-host marketplace, sideload via developer mode); (c) signing or notarization requirements, if any; (d) user-facing steps to install and to activate the plugin in Touchbar Mode.",
+  "context_pointers": [
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP4]",
+    "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.1]",
+    "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.2]"
+  ],
+  "constraints": [
+    "Cite canonical MiraboxSpace developer / user documentation. If documentation is unreachable, set external_source_unreachable: true.",
+    "FC.1 (plugin appears in host's plugin list after install) and FC.2 (user can activate in Touchbar Mode) depend on this answer. A correctly-coded plugin in the wrong package format is indistinguishable to the user from a broken plugin.",
+    "Do not assume the Elgato Stream Deck plugin package format. MiraboxSpace may or may not use a similar format; that is a finding to verify, not a default to assume."
+  ],
+  "optimization_criterion": "fit_to_project_goals",
+  "preserve_sections": null,
+  "questioning_authority": false,
+  "budget_minutes": 10,
+  "max_options": 4
+}

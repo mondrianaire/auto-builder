@@ -1,0 +1,74 @@
+{
+  "probe_id": "probe-ip1",
+  "completed_at": "2026-05-14T00:30:00Z",
+  "citations": [
+    {
+      "id": "C.1.1",
+      "url_or_path": "https://sdk.key123.vip/en/guide/overview.html",
+      "fetched_at": "2026-05-14T00:15:00Z",
+      "verbatim_excerpt": "Stream Dock is a USB peripheral that offers multiple dedicated programmable buttons. ... Stream Dock N4 Pro ... The Stream Dock application is simple and intuitive. You can assign actions to buttons and customize them with icons and labels. ... The SDK is designed to be: Powerful: Execute code using key events Simple: Communication uses JSON Language-Agnostic: While you can use any programming language that can connect to WebSocket to create plugins, we recommend using JavaScript Secure: Each plugin runs in a separate process Cross-Platform: The SDK is available for macOS and Windows. ... Plugin Template: https://github.com/MiraboxSpace/StreamDock-Plugin-SDK",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.1.2",
+      "url_or_path": "https://sdk.key123.vip/en/guide/architecture.html",
+      "fetched_at": "2026-05-14T00:16:00Z",
+      "verbatim_excerpt": "Stream Dock software loads all custom plugins when the application starts. The WebSocket API allows bidirectional communication between plugins and the Stream Dock application using JSON. ... Each plugin communicates with the Stream Dock application via a dedicated WebSocket on a port specified by the Stream Dock application. Plugins must follow the registration process for this communication to work correctly. ... Stream Dock supports cross-platform plugins for Windows and macOS. Besides supporting a JavaScript SDK, there are also third-party plugin libraries for many other programming languages. ... Plugins consist of four elements: Manifest: Describes the plugin (name, author, icon, etc.) and defines actions. Code: The code executed at startup, when a key is pressed, etc. Property Inspector: The user interface displayed when a key is selected in the canvas. Assets: Images, localization, etc.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.1.3",
+      "url_or_path": "https://sdk.key123.vip/en/guide/manifest.html",
+      "fetched_at": "2026-05-14T00:17:00Z",
+      "verbatim_excerpt": "Each plugin has a manifest that provides information to the Stream Dock application and the Stream Dock store. ... Required fields: Actions, Author, CodePath, Description, Icon, Name, Version, SDKVersion, OS. SDKVersion: The current SDK version, which is 1. OS: The list of supported operating systems and versions for the plugin. Platform: The name of the platform: mac or windows. MinimumVersion: ... for Windows 7, you can use 7 ... Software MinimumVersion required for the plugin. This value should be set to support Stream Dock 2.10.179.426 or higher. Nodejs (optional): Indicates that the plugin requires Node.js. Version: Node.js version (currently only version 20 is provided). For plugins that depend on Node.js, we have built Node.js into the software. Windows: Requires software version 3.10.188.226 or higher. ... Controllers valid values: 'Keypad', 'Information', 'SecondaryScreen', 'Knob'. Keypad for normal buttons, Information for view-only without touch or button events, SecondaryScreen for secondary screen display, Knob for rotary controls.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.1.4",
+      "url_or_path": "https://sdk.key123.vip/en/guide/get-started.html",
+      "fetched_at": "2026-05-14T00:18:00Z",
+      "verbatim_excerpt": "Manual addition example: Move the com.example.my-plugin.sdPlugin plugin to the C:\\Users\\{username}\\AppData\\Roaming\\HotSpot\\StreamDock\\plugins folder. You will need to restart Stream Dock after adding a plugin to the plugins folder for the first time. ... Debugging URL http://localhost:23519/",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    }
+  ],
+  "options": [
+    {
+      "id": "opt-A",
+      "summary": "Use the MiraboxSpace Stream Dock Plugin SDK (canonical, documented at sdk.key123.vip and github.com/MiraboxSpace/StreamDock-Plugin-SDK). Plugin is a directory bundle with extension .sdPlugin containing a manifest.json (SDKVersion: 1) plus code/assets. Runtime communicates with the Stream Dock host application via a per-plugin WebSocket on a port the host assigns at registration; messages are JSON. Each plugin runs in a separate process. Recommended runtime language: JavaScript (HTML+JS, optionally Node.js 20 via the host's built-in Node module, manifest 'Nodejs.Version': '20', requires host >= 3.10.188.226 on Windows). The host is the 'Stream Dock' Windows application from MiraboxSpace.",
+      "pros": [
+        "Canonical, documented SDK — Principle F-clean.",
+        "JavaScript/HTML runtime is the most cross-platform and best documented in the SDK; built-in Node.js 20 obviates a separate runtime install on the user's machine.",
+        "Same WebSocket+JSON shape across all six supported language SDKs, so language choice is reversible.",
+        "Plugin runs in a separate process (sandboxed from host crashes)."
+      ],
+      "cons": [
+        "Touchbar Mode draw API for the N4 Pro is not fully documented on the SDK's manifest page (Controllers enumerated are Keypad/Information/SecondaryScreen/Knob; 'TouchBar' is not in that list). N4 Pro touchbar plugin draw model must be confirmed via additional N4-Pro-specific docs (see probe-ip3 — this is a real gap).",
+        "Host minimum version requirement: Stream Dock app 2.10.179.426 (3.10.188.226 if using built-in Node.js)."
+      ],
+      "impact": {},
+      "confidence": "high",
+      "supporting_citations": ["C.1.1", "C.1.2", "C.1.3", "C.1.4"]
+    },
+    {
+      "id": "opt-B",
+      "summary": "Use the Elgato Stream Deck SDK on the assumption that the MiraboxSpace Stream Dock host accepts Elgato-format plugins.",
+      "pros": [
+        "Familiar from training data.",
+        "Some third-party reports (VSDinside porting guide) describe the StreamDock SDK as 'built on the same WebSocket event-driven model used by Elgato's Stream Deck platform' with 'most Stream Deck plugins can be ported with only small adjustments' — i.e., similar but not identical."
+      ],
+      "cons": [
+        "EXPLICITLY DISALLOWED by Discovery's ledger (IP1 choices, third bullet). MiraboxSpace has its own published SDK with its own manifest schema and its own host install path (C:\\Users\\{username}\\AppData\\Roaming\\HotSpot\\StreamDock\\plugins, NOT Elgato's C:\\ProgramData\\Elgato path). Selecting Elgato's SDK is the documented v1.8 first-contact failure mode."
+      ],
+      "impact": {},
+      "confidence": "high",
+      "supporting_citations": ["C.1.4"]
+    }
+  ],
+  "recommended": "opt-A",
+  "rationale": "MiraboxSpace publishes a canonical Stream Dock Plugin SDK with English documentation at sdk.key123.vip and a GitHub template at github.com/MiraboxSpace/StreamDock-Plugin-SDK. The plugin runtime is WebSocket+JSON, the package format is a directory with .sdPlugin extension, the manifest is manifest.json with SDKVersion: 1 and an OS array including Windows (MinimumVersion: 7+), and on Windows the plugin is installed by moving the .sdPlugin directory into %APPDATA%\\HotSpot\\StreamDock\\plugins followed by a host restart. The host's bundled Node.js 20 runtime (requires host >= 3.10.188.226 on Windows) is the recommended runtime path because it removes a separate Node install from the user's environment, satisfying the v1.6 self-contained-deps preference. The base SDK manifest's Controllers enum (Keypad, Information, SecondaryScreen, Knob) does NOT include a 'TouchBar' controller — this is a gap canonical-docs-on-the-base-SDK do not close, and is the subject of probe-ip3.",
+  "framing_concern": null
+}

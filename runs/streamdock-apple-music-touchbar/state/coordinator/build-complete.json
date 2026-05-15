@@ -1,0 +1,44 @@
+{
+  "signaled_at": "2026-05-14T02:00:00Z",
+  "all_sections_verified": true,
+  "integrator_verified": true,
+  "edge_case_testing_executed": true,
+  "ready_for_final_verification": true,
+  "dispatch_mode": "inline",
+  "sections_summary": {
+    "host-integration": "verified",
+    "now-playing-source": "verified",
+    "touchbar-renderer": "verified",
+    "packaging": "verified",
+    "edge-case-testing": "verified"
+  },
+  "integration_artifact": "output/integration/com.autobuilder.applemusic-now-playing.sdPlugin/",
+  "edge_case_report": "output/builders/edge-case-testing/builder-5a/report.json",
+  "inline_deviations_logged": [
+    "state/inline-deviations/dev-001.json",
+    "state/inline-deviations/dev-002.json",
+    "state/inline-deviations/dev-003.json"
+  ],
+  "escalations_filed": [],
+  "sev0_fixes_applied": [],
+  "history_artifacts_ready": {
+    "log": "history/log.jsonl",
+    "build_summary": "history/build-summary.md",
+    "decision_index": "history/decision-index.json"
+  },
+  "uncertainty_manifest_for_run_report": [
+    "IP3.A1 (manifest Touch Bar Action field name) — external_source_unreachable; Builder chose Controllers:['TouchBar','Information'] + Type:'TouchBar' + TargetDevice:'streamdock-n4-pro'.",
+    "S1.A3 (host-protocol message for Touch Bar text) — external_source_unreachable; Builder sends both setTitle and setFeedback.",
+    "IP2.A3 (Apple Music SourceAppUserModelId) — external_source_unreachable; Builder uses case-insensitive substring match on 'AppleMusic'.",
+    "PNV.1 + DCA.FC.1-DCA.FC.6 — cannot exercise without user-side hardware (Stream Dock host + N4 Pro + Apple Music + Windows). 6 of 9 edge-case tests recorded as unverifiable_without_hardware.",
+    "Icon PNG assets not produced (text-only build).",
+    "node_modules/ws not bundled; install or host-provision required."
+  ],
+  "next_steps_required": [
+    "critic_final_sweep",
+    "convergence_verifier",
+    "delivery_to_final_directory",
+    "run_report"
+  ],
+  "summary": "All sections verified, Integrator complete, edge-case-testing complete. Awaiting Orchestrator's final-verification dispatch (Critic in final-sweep mode, then Convergence Verifier, then output/final/ copy + run-report). Three inline-deviations logged, all implementation_path_chosen on external_source_unreachable assertions. Zero escalations. Zero Sev 0 fixes."
+}

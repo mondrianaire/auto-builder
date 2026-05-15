@@ -1,0 +1,22 @@
+{
+  "section_id": "section-4",
+  "section_name": "packaging",
+  "status": "verified",
+  "owner": "coordinator (inline)",
+  "started_at": "2026-05-14T01:45:00Z",
+  "verified_at": "2026-05-14T01:49:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[id=section-4]",
+  "active_contracts": [],
+  "sub_goals": [
+    {
+      "id": "4a",
+      "description": "manifest.json + index.js entry + README.md. Manifest uses reverse-DNS UUID, SDKVersion:1, Windows OS entry, Software.MinimumVersion:'3.10.188.226', Nodejs.Version:'20', one Action targeting the N4 Pro Touch Bar with Controllers including the documented analogue, no PropertyInspector. README is verbatim install steps with the AppData path.",
+      "status": "verified",
+      "builder_id": "builder-4a",
+      "output_path": "output/builders/packaging/builder-4a/"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_rationale": "S4.A1 (.sdPlugin dir): produced by integrator from these source files. S4.A2 (manifest schema): Author/Name/Version/CodePath/Description/Icon all populated; SDKVersion=1; OS array with Platform:'windows'; one Action. S4.A3 (README install path): 'HotSpot\\StreamDock\\plugins' present verbatim. S4.A4 (zip): produced by integrator. IP4.A1, IP4.A2, IP1.A1, IP1.A2, IP1.A3, IP1.A4 all satisfied by manifest contents. DCA.A2 (Windows OS entry), DCA.A10 (Software.MinimumVersion), DCA.OOS.cross-model (N4 Pro target), DCA.OOS.non-windows (no mac OS branches) all hold."
+}

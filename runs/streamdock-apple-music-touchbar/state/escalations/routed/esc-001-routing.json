@@ -1,0 +1,10 @@
+{
+  "escalation_id": "esc-001",
+  "routed_at": "2026-05-14T02:18:00Z",
+  "classified_severity": "1",
+  "routing_decision": "return_to_coordinator_for_local_fix",
+  "dispatched_to": "coordinator",
+  "rationale": "Classification by escalation shape (Arbiter does not read content for decisioning): severity_estimate='local'; type='acceptance_violation_unsatisfied' is section-scoped (no contract_data_shape, no contract_semantics, no approach_conflict, no assumption_violated, no unresolvable); proposed_resolution.type='arbiter_route' lists a Sev 0 trivial-fix as its first option; blocked_work is empty; scope is confined to section-4's packaging deliverable per the from_overseer's own rationale_for_severity. By the Arbiter charter's classification ladder this is Sev 1 (local; Overseer-fixable within section) that escaped Overseer attention because Coordinator was operating in inline mode and there was no separately-dispatched Overseer to catch the gap before final-sweep. Per routing rule (Sev 1 -> return to Coordinator), the Coordinator owns the fix. Arbiter does not prescribe the fix shape; Coordinator selects among the proposed_resolution.options (the directory is already on disk, so option 1 — produce the zip from the existing .sdPlugin directory — is the smallest-scope remedy and remains within section-4's boundary).",
+  "research_dispatched": false,
+  "expected_resolution_path": "Coordinator picks up this routing record, selects a resolution from esc-001.proposed_resolution.options (Sev 0 zip production, or section-4 acceptance amendment to make zip optional, or Uncertainty Manifest carry-forward), executes within section-4 scope, and updates audit/flags.jsonl plus integration manifest accordingly. If the chosen path qualifies as a Sev 0 trivial fix (single file/artifact, no interface change, fixes the acceptance violation), Coordinator writes state/escalations/sev0-fixes/sev0-{nnn}.json per the v1.3 schema."
+}

@@ -1,0 +1,953 @@
+{
+  "version": 1,
+  "created_at": "2026-05-14T00:50:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "source": "discovery",
+      "resolved_via": "research",
+      "chosen_branch": "MiraboxSpace's own first-party Stream Dock Plugin SDK (canonical, documented at sdk.key123.vip; template at github.com/MiraboxSpace/StreamDock-Plugin-SDK). Host application: 'Stream Dock' Windows desktop application from MiraboxSpace (HotSpot brand directory; plugins live at %APPDATA%\\HotSpot\\StreamDock\\plugins). Plugin runtime: JavaScript (HTML+JS) using the host's built-in Node.js 20 (manifest 'Nodejs': { 'Version': '20' }), requiring host application >= 3.10.188.226 on Windows. Plugin-to-host communication: WebSocket+JSON on a per-plugin port supplied at registration. Manifest format: manifest.json at the root of a directory named {reverse-DNS-UUID}.sdPlugin with required fields Actions, Author, CodePath, Description, Icon, Name, Version, SDKVersion (=1), and OS array including {Platform: 'windows', MinimumVersion: '7'}.",
+      "rationale": "Canonical evidence per probe-ip1/findings.json citations C.1.1–C.1.4. Elgato Stream Deck SDK was explicitly disallowed by Discovery's IP1 third bullet and is the documented v1.8 first-contact failure. JavaScript+Node.js was selected over the C++/Qt/Python templates because the host bundles a Node.js 20 runtime, eliminating the need to ship a separate runtime in the .sdPlugin (Principle: production-fidelity-at-design-time / self-contained-deps).",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "The delivered plugin directory ends with the literal extension .sdPlugin.",
+          "check_type": "presence",
+          "target_module": "output/final/{plugin-dir}",
+          "target_symbol": "directory name suffix",
+          "expected_value": ".sdPlugin",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.4]"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "manifest.json at the root of the plugin directory parses as valid JSON and contains 'SDKVersion': 1.",
+          "check_type": "constant_value",
+          "target_module": "output/final/{plugin-dir}/manifest.json",
+          "target_symbol": "$.SDKVersion",
+          "expected_value": 1,
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.3]"
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "manifest.json contains an OS array entry with Platform 'windows' and a MinimumVersion (string).",
+          "check_type": "structural",
+          "target_module": "output/final/{plugin-dir}/manifest.json",
+          "target_symbol": "$.OS[?(@.Platform=='windows')]",
+          "expected_value": "object with MinimumVersion field of type string",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.3]"
+        },
+        {
+          "id": "IP1.A4",
+          "statement": "manifest.json contains a Software.MinimumVersion >= '3.10.188.226' if Nodejs is declared.",
+          "check_type": "constant_value",
+          "target_module": "output/final/{plugin-dir}/manifest.json",
+          "target_symbol": "$.Software.MinimumVersion",
+          "expected_value": "string '>=3.10.188.226' when $.Nodejs is present",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.3]"
+        },
+        {
+          "id": "IP1.A5",
+          "statement": "The plugin opens a WebSocket connection to ws://localhost:{port}/ on the port number passed in the host's --port registration argument and sends a 'registerPlugin' message containing the plugin's UUID.",
+          "check_type": "behavior",
+          "target_module": "output/final/{plugin-dir}/{CodePath}",
+          "target_symbol": "startup sequence",
+          "expected_value": "WebSocket connect to host port, then JSON registerPlugin message",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.2]"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "source": "discovery",
+      "resolved_via": "research",
+      "chosen_branch": "Read now-playing Title and Artist via Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager (SMTC). Concrete invocation path: a PowerShell sidecar process (powershell.exe, present on every Windows install) loads the Windows.Media.Control WinRT assembly, awaits GlobalSystemMediaTransportControlsSessionManager.RequestAsync(), iterates GetSessions() and filters for the Apple Music session by SourceAppUserModelId substring match on 'AppleMusic' (case-insensitive), calls session.TryGetMediaPropertiesAsync() to read Title and Artist, and emits a JSON line on stdout. The sidecar subscribes to MediaPropertiesChanged and PlaybackInfoChanged on the selected session and to CurrentSessionChanged / SessionsChanged on the manager; emits a new JSON line on each event. now-playing-source consumes those lines and pushes TrackState updates to subscribers.",
+      "rationale": "Canonical evidence per probe-ip2/findings.json. Microsoft Learn (C.2.1) documents the WinRT class and its events. 9to5Mac archived report (C.2.2) confirms Apple Music Preview on Windows participates in Windows media controls (i.e., SMTC) since April 2023. PowerShell sidecar is preferred over a Node-WinRT native module because PowerShell is preinstalled on every Windows host — no native binary in the .sdPlugin, no architecture-specific compilation, production-fidelity-clean.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "The plugin spawns powershell.exe as a sidecar process during startup.",
+          "check_type": "behavior",
+          "target_module": "output/final/{plugin-dir}/{CodePath}",
+          "target_symbol": "now-playing-source startup",
+          "expected_value": "child_process.spawn called with 'powershell.exe' (or absolute path equivalent) on Windows",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip2/findings.json#citations[id=C.2.1]"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "The sidecar PowerShell script loads the Windows.Media.Control WinRT assembly and calls GlobalSystemMediaTransportControlsSessionManager.RequestAsync().",
+          "check_type": "presence",
+          "target_module": "output/final/{plugin-dir}/sidecar/smtc-reader.ps1",
+          "target_symbol": "script source",
+          "expected_value": "contains both 'Windows.Media.Control' and 'GlobalSystemMediaTransportControlsSessionManager' literal substrings",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip2/findings.json#citations[id=C.2.1]"
+        },
+        {
+          "id": "IP2.A3",
+          "statement": "The sidecar filters sessions by SourceAppUserModelId containing 'AppleMusic' (case-insensitive).",
+          "check_type": "presence",
+          "target_module": "output/final/{plugin-dir}/sidecar/smtc-reader.ps1",
+          "target_symbol": "session filter expression",
+          "expected_value": "matches Apple Music session by substring (canonical SourceAppUserModelId for the Microsoft Store Apple Music package contains 'AppleMusic')",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "external_source_unreachable",
+          "citations_pointer": null,
+          "rationale_for_source": "Apple Music's exact SourceAppUserModelId / Package Family Name on Windows is not published in Apple's or Microsoft's canonical documentation we could reach; community implementations report 'AppleInc.AppleMusicWin_*' patterns but a verbatim_excerpt from a canonical source was not located. Implementation MUST therefore tolerate the AppId being unknown until runtime (a substring/heuristic match), and the build must surface a Sev 4 to the user if the filter never matches in production — this assertion's expected value cannot be verified pre-runtime."
+        },
+        {
+          "id": "IP2.A4",
+          "statement": "The sidecar subscribes to MediaPropertiesChanged / PlaybackInfoChanged and CurrentSessionChanged / SessionsChanged (event-driven, not polling).",
+          "check_type": "presence",
+          "target_module": "output/final/{plugin-dir}/sidecar/smtc-reader.ps1",
+          "target_symbol": "Register-ObjectEvent or .add_*Changed call sites",
+          "expected_value": "at least one event-subscription call site per event name",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip2/findings.json#citations[id=C.2.1]"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "source": "discovery",
+      "resolved_via": "research",
+      "chosen_branch": "REFINED from Discovery's IP3 default ('Single contiguous full-width canvas addressed in pixels'). Per probe-ip3 findings: the N4 Pro Touch Bar is addressed via the host's documented Touch Bar widget primitives (the same surface that powers the host's existing 'lyric display' mode), not a raw bitmap. The plugin occupies the single Touch Bar slot of the active scene (C.3.2: 'Only one Touchbar can be set for each scene') by registering an Action whose manifest declares a Touch Bar action type with Target device 'streamdock-n4-pro'. Drawing happens by sending host messages updating the action's title/text content; the host renders the text across the full Touch Bar width. EXACT pixel resolution and the verbatim manifest field name for declaring 'Touch Bar' as a controller are NOT canonically documented and are marked external_source_unreachable for assertion-source purposes.",
+      "rationale": "Canonical MiraboxSpace SDK manifest documentation (C.3.3) enumerates Controllers values [Keypad, Information, SecondaryScreen, Knob] WITHOUT 'TouchBar'. VSDinside porting guide (C.3.1) names 'Touch Bar' as an action type and 'touchBarTap'/'touchBarSlide' as events but is not the canonical SDK doc. The product page (C.3.2) confirms the Touch Bar is a single touchscreen strip with documented text-display use cases (lyric display). The 'entire length' constraint from FC.3 is satisfiable by occupying the single Touch Bar widget slot — there is no architectural way to occupy more or less than the bar's full width with one widget per scene. Pixel-exact geometry assertions are unreachable; widget-occupancy assertions are reachable.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "manifest.json declares exactly one Action whose Controllers / action-type field indicates a Touch Bar (or N4-Pro-Touch-Bar-equivalent) slot.",
+          "check_type": "structural",
+          "target_module": "output/final/{plugin-dir}/manifest.json",
+          "target_symbol": "$.Actions[*].Controllers OR $.Actions[*].{N4-Pro-touchbar-field}",
+          "expected_value": "at least one Action whose declared controller targets the Touch Bar slot; exact field name is established by Builder against the SDK template",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].chosen_branch",
+          "source": "external_source_unreachable",
+          "citations_pointer": "research/probes/probe-ip3/findings.json#citations[id=C.3.3]",
+          "rationale_for_source": "The canonical MiraboxSpace manifest documentation we could reach does NOT enumerate a 'TouchBar' controller value, but the VSDinside porting guide and N4 Pro product page both confirm the device has a Touch Bar with documented event types and a Touch Bar widget API. The exact verbatim manifest field name and value to declare a Touch Bar action type must be located by Builder from the live SDK template repository at github.com/MiraboxSpace/StreamDock-Plugin-SDK (Builder reads the template's example manifests and SDPythonSDK/SDjsSDK examples for the exact field name). Until the Builder reads the live template, this assertion cannot be made source: canonical_evidence."
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "The plugin's Action declared in IP3.A1 is the only Action in its category (the plugin contributes exactly one Touch Bar action) so the 'entire length' constraint is satisfied by occupying the single per-scene Touch Bar slot.",
+          "check_type": "structural",
+          "target_module": "output/final/{plugin-dir}/manifest.json",
+          "target_symbol": "$.Actions[*] filtered to Touch-Bar-targeting actions",
+          "expected_value": "length == 1",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]",
+          "source": "td_plan",
+          "citations_pointer": null,
+          "rationale_for_source": "Internal-consistency check on the manifest shape, not an external-system property. td_plan is permitted here per Principle H."
+        }
+      ]
+    },
+    {
+      "ip_id": "IP4",
+      "source": "discovery",
+      "resolved_via": "research",
+      "chosen_branch": "Package as a directory named '{reverse-DNS-UUID}.sdPlugin' containing manifest.json at the root plus code/assets/sidecar subdirectories. Distribute as a zip the user unpacks. Install on Windows by copying the .sdPlugin directory into C:\\Users\\{username}\\AppData\\Roaming\\HotSpot\\StreamDock\\plugins (canonical path per C.4.1) and restarting the Stream Dock host application. No signing or notarization is documented as required for third-party plugins.",
+      "rationale": "Canonical evidence per probe-ip4/findings.json (C.4.1 verbatim quote of the install path; C.4.2 the .sdPlugin directory convention demonstrated in MiraboxSpace's own example plugin repo).",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.A1",
+          "statement": "The delivered artifact contains a README.md (or INSTALL.md) at the top level of output/final/ documenting the three-step install: (1) close Stream Dock, (2) copy the .sdPlugin directory into %APPDATA%\\HotSpot\\StreamDock\\plugins, (3) reopen Stream Dock.",
+          "check_type": "presence",
+          "target_module": "output/final/README.md",
+          "target_symbol": "install instructions",
+          "expected_value": "README contains the literal path substring 'HotSpot\\\\StreamDock\\\\plugins' (or 'HotSpot/StreamDock/plugins') and references restarting Stream Dock",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip4/findings.json#citations[id=C.4.1]"
+        },
+        {
+          "id": "IP4.A2",
+          "statement": "The plugin's UUID (declared at the top level of manifest.json and matching the directory-name prefix) follows the reverse-DNS UTI format (lowercase alphanumeric, hyphens, periods).",
+          "check_type": "structural",
+          "target_module": "output/final/{plugin-dir}/manifest.json",
+          "target_symbol": "$.Actions[*].UUID and directory-name prefix",
+          "expected_value": "regex matches ^[a-z0-9.-]+$ with at least one period, no consecutive periods at edges",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.3]"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP5",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Marquee scroll horizontally when 'Title — Artist' content exceeds visible width; static display when it fits.",
+      "rationale": "Discovery's default; no canonical Touch-Bar pixel resolution available so the renderer cannot pre-compute fit at build time. Implementation measures text width against the host's reported widget bounds at draw time and toggles marquee.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP5.A1",
+          "statement": "When the composed 'Title — Artist' text is longer than the widget's reported width, touchbar-renderer signals host-integration with marquee:true; when it fits, marquee:false.",
+          "check_type": "behavior",
+          "target_module": "output/builders/touchbar-renderer/*/output.js",
+          "target_symbol": "drawText invocation",
+          "expected_value": "branch on measured width: marquee param toggled per overflow check",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5].default_branch",
+          "source": "td_plan",
+          "citations_pointer": null
+        }
+      ]
+    },
+    {
+      "ip_id": "IP6",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Event-driven via SMTC events (MediaPropertiesChanged, PlaybackInfoChanged, CurrentSessionChanged, SessionsChanged) per IP2. Polling fallback at 1Hz only if event subscription fails to attach.",
+      "rationale": "IP2's resolution selects SMTC; SMTC's events are documented per C.2.1.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP6.A1",
+          "statement": "Steady-state CPU usage of the now-playing-source sidecar while Apple Music is paused is below 1% on the verifying machine.",
+          "check_type": "behavior",
+          "target_module": "running plugin process",
+          "target_symbol": "CPU samples over 30 seconds with paused track",
+          "expected_value": "mean CPU < 1%",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP6].default_branch",
+          "source": "td_plan",
+          "citations_pointer": null
+        }
+      ]
+    }
+  ],
+  "prompt_verb_analysis": {
+    "candidate_verbs": ["build", "utilize", "display"],
+    "chosen_verb": "display",
+    "rationale": "The prompt names three verbs: 'Build me a plugin' (instrumental — TD describes what to build, not what the deliverable does), 'Utilizes the Touchbar Mode' (instrumental — names the mechanism), and 'display the currently playing song and artist' (load-bearing — names what the user sees as the result of running the artifact). 'display' is the verb that, when exercised against the integrated artifact under production fidelity, answers the user's literal question. The FC.3 constraint 'take up the entire length' qualifies HOW the display is sized; it is a constraint on 'display', not a separate verb."
+  },
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "display the currently playing song and artist from Apple Music Desktop Application on the VSD N4 Pro touch bar, taking up the entire length of the touch bar",
+    "scenario": "Production-fidelity setup on the user's Windows PC: (1) Stream Dock host application is installed at the canonical Windows install location and is running. (2) Apple Music Desktop Application from the Microsoft Store is installed and signed-in, with a track playing (e.g., 'Bohemian Rhapsody — Queen'). (3) The delivered .sdPlugin has been copied into %APPDATA%\\HotSpot\\StreamDock\\plugins and the Stream Dock host has been restarted. (4) The user has placed this plugin's action onto the Touch Bar slot of the active scene via the Stream Dock host UI. EXERCISE: Observe the VSD N4 Pro hardware's touch bar in Touchbar Mode. EXPECTED: The touch bar displays a textual rendering of the current track's title and artist (containing the literal substrings 'Bohemian Rhapsody' and 'Queen'); the rendered text occupies the full length of the Touch Bar (no other visible content on the bar). When the user switches to a different track in Apple Music, the touch bar text updates within a few seconds to the new track's title and artist.",
+    "expected_result": "Touch bar visibly shows the current Apple Music track's title and artist, spanning the full length, and updates reactively on track change.",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "covers": "decisions/technical-discovery/sections-v1.json#prompt_verb_analysis.chosen_verb",
+    "source": "prompt",
+    "production_fidelity_environment_note": "This assertion requires the actual VSD N4 Pro hardware AND the actual MiraboxSpace Stream Dock host application AND the actual Apple Music Windows app, all on the user's Windows PC. Per CV Tier 2 (Principle G): NO modeled-component substitution of any of these is permitted. If CV cannot exercise this assertion because the hardware or host is not present in CV's environment, CV MUST flag Sev 4 to Orchestrator surfacing 'PNV.1 unverifiable under production fidelity without user-side hardware exercise' — this is the architecture working as designed, not a TD defect."
+  },
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.restatement",
+      "covers": "decisions/discovery/ledger-v1.json#restatement",
+      "statement": "Restatement coverage: 'Build a plugin for the MiraboxSpace StreamDock VSD N4 Pro ... renders the currently playing song title and artist name on the device's touch bar, with the rendered region spanning the entire length of the touch bar.'",
+      "check_type": "user_flow",
+      "scenario": "Same as PNV.1.",
+      "expected_result": "Same as PNV.1 (the restatement is the prose form of the same end-to-end behavior PNV.1 names).",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.telos",
+      "covers": "decisions/discovery/ledger-v1.json#telos",
+      "statement": "Telos coverage: the deliverable, when exercised on the user's Windows PC with the StreamDock host running and Apple Music playing, shows the song and artist on the VSD N4 Pro's Touchbar Mode occupying its entire length.",
+      "check_type": "user_flow",
+      "scenario": "Same as PNV.1.",
+      "expected_result": "Same as PNV.1.",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A1",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A1].assumption",
+      "statement": "Deliverable is a single plugin (one installable .sdPlugin directory), not a suite.",
+      "check_type": "presence",
+      "scenario": "Inspect output/final/ — exactly one *.sdPlugin directory at top level.",
+      "expected_result": "Exactly one .sdPlugin directory.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A2",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A2].assumption",
+      "statement": "Host OS is Windows per execution_context_observed.",
+      "check_type": "presence",
+      "scenario": "Inspect manifest.json — $.OS contains a Platform: 'windows' entry; absence of macOS-only paths or dylibs in the plugin tree.",
+      "expected_result": "Windows entry present; no .dylib / .app / /System/Library references.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "decisions/discovery/ledger-v1.json#execution_context_observed"
+    },
+    {
+      "id": "DCA.A3",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A3].assumption",
+      "statement": "Display shows title and artist as text.",
+      "check_type": "presence",
+      "scenario": "Inspect touchbar-renderer source — composes title + artist into a text payload, not into an image-of-album-art.",
+      "expected_result": "drawText call receives string fields; no album-art image fetch.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A4",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A4].assumption",
+      "statement": "Rendered region spans the entire length of the touch bar.",
+      "check_type": "structural",
+      "scenario": "Same as IP3.A2 (single Touch-Bar Action, occupying the per-scene Touch Bar slot).",
+      "expected_result": "Manifest declares one Touch-Bar-targeting Action.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.A5",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A5].assumption",
+      "statement": "Updates are reactive on track change.",
+      "check_type": "user_flow",
+      "scenario": "Same as PNV.1's 'track-change' step.",
+      "expected_result": "Touch bar text updates within a few seconds of track change.",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A6",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A6].assumption",
+      "statement": "Idle state when Apple Music is closed or has no current track is non-crashing.",
+      "check_type": "user_flow",
+      "scenario": "With Stream Dock running and Apple Music NOT running, observe the touch bar.",
+      "expected_result": "Touch bar shows a sensible idle state (blank or 'Not Playing' placeholder); host application does not crash; plugin process remains alive.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A7",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7].assumption",
+      "statement": "Single-user / single-machine; no cloud, no Apple ID.",
+      "check_type": "absence",
+      "scenario": "Grep entire plugin tree for: 'apple-music-api', 'developer.apple.com/music', 'oauth', 'client_id', 'fetch(' against external hosts, network calls to anything other than ws://localhost.",
+      "expected_result": "Zero matches for cloud-auth or external HTTP/HTTPS calls.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A8",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8].assumption",
+      "statement": "Plugin lifecycle is bounded by host lifecycle.",
+      "check_type": "absence",
+      "scenario": "Grep for: Windows service install, scheduled task install, registry Run keys, startup folder writes.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A9",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A9].assumption",
+      "statement": "No user configuration UI beyond installation; if a Property Inspector page is required by the host schema, it is minimal (text-only, no settings).",
+      "check_type": "structural",
+      "scenario": "Inspect PropertyInspectorPath target if present.",
+      "expected_result": "Either absent OR contains no user-settable fields (no color picker, no font picker, no scroll-speed slider).",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A10",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A10].assumption",
+      "statement": "Plugin runs under the official MiraboxSpace Stream Dock host.",
+      "check_type": "presence",
+      "scenario": "Inspect manifest.json — Software.MinimumVersion targets the documented MiraboxSpace host version family; no reference to alternative hosts.",
+      "expected_result": "$.Software.MinimumVersion set per IP1 chosen_branch.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.3]"
+    },
+    {
+      "id": "DCA.OOS.album-art",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Album art or any image-of-the-track rendering]",
+      "statement": "No album-art rendering.",
+      "check_type": "absence",
+      "scenario": "Grep for: 'album.art', 'artwork', 'thumbnail', SMTC's Thumbnail / GetThumbnailAsync calls.",
+      "expected_result": "Zero matches in the renderer; absent from manifest payload.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.controls",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Playback controls on the touch bar]",
+      "statement": "No playback control buttons on the touch bar.",
+      "check_type": "absence",
+      "scenario": "Grep for: handlers on touchBarTap / touchBarSlide that issue SMTC TrySendCommandAsync or media-key events.",
+      "expected_result": "Zero matches; the plugin treats taps as no-ops.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.other-sources",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Support for music sources other than the Apple Music Desktop Application]",
+      "statement": "Only the Apple Music SMTC session is consumed.",
+      "check_type": "presence",
+      "scenario": "Inspect sidecar filter — by SourceAppUserModelId substring 'AppleMusic'.",
+      "expected_result": "Filter is explicit; non-matching sessions are ignored.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.OOS.non-windows",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Support for non-Windows host operating systems]",
+      "statement": "No macOS or Linux runtime branches.",
+      "check_type": "absence",
+      "scenario": "Grep for: process.platform checks branching to mac/linux code paths; AppleScript invocation; dbus.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "decisions/discovery/ledger-v1.json#execution_context_observed"
+    },
+    {
+      "id": "DCA.OOS.cross-model",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Support for any MiraboxSpace StreamDock device other than the VSD N4 Pro for this run]",
+      "statement": "Plugin targets only the VSD N4 Pro.",
+      "check_type": "presence",
+      "scenario": "Inspect manifest.json — Target device or equivalent field names N4 Pro.",
+      "expected_result": "Manifest declares N4 Pro as target (per probe-ip3 / VSDinside porting guide 'Target device: streamdock-n4-pro').",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-ip3/findings.json#citations[id=C.3.1]"
+    },
+    {
+      "id": "DCA.OOS.touch-handling",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Touch-interaction handling on the touch bar]",
+      "statement": "No side-effects on touch.",
+      "check_type": "absence",
+      "scenario": "Grep handlers for touchBarTap / touchBarSlide.",
+      "expected_result": "Either no handlers registered, or registered handlers contain only logging.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.cloud",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Cloud/Apple Music Web API integration]",
+      "statement": "Subsumed by DCA.A7 (same constraint).",
+      "check_type": "absence",
+      "scenario": "Same as DCA.A7.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.bg-service",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=A standalone background service that runs when the StreamDock host application is not running]",
+      "statement": "Subsumed by DCA.A8.",
+      "check_type": "absence",
+      "scenario": "Same as DCA.A8.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.config-ui",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=User-facing configuration UI beyond what is forced by the host's plugin model]",
+      "statement": "Subsumed by DCA.A9.",
+      "check_type": "structural",
+      "scenario": "Same as DCA.A9.",
+      "expected_result": "Same as DCA.A9.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.extra-metadata",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Lyrics, song progress bar, elapsed/remaining time, BPM, genre, or any track metadata beyond title and artist]",
+      "statement": "No extra metadata rendered.",
+      "check_type": "absence",
+      "scenario": "Grep for: lyrics, progress, BPM, genre, elapsed in renderer payload.",
+      "expected_result": "Zero matches in render payload composition.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.self-update",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Automatic update / self-update of the plugin]",
+      "statement": "No self-update logic.",
+      "check_type": "absence",
+      "scenario": "Grep for: update check URLs, github releases, version comparison.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.telemetry",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=Telemetry, analytics, or any network calls originating from the plugin]",
+      "statement": "No network calls outside ws://localhost (the host WebSocket).",
+      "check_type": "absence",
+      "scenario": "Grep for: http://, https://, fetch(, axios, sentry, mixpanel, segment, google-analytics.",
+      "expected_result": "Zero matches except possibly host documentation URLs in README.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS.installer-wrapper",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[item=An installer wrapper beyond the host application's documented third-party plugin installation flow]",
+      "statement": "No .exe/.msi installer wrapper; install is per IP4 (folder copy).",
+      "check_type": "absence",
+      "scenario": "Inspect output/final/ — no .msi, no setup.exe, no NSIS / WiX artifacts.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.IP1.topic",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP1].topic",
+      "statement": "IP1 topic was addressed: TD has a chosen_branch and machine_checkable_assertions for IP1.",
+      "check_type": "presence",
+      "scenario": "Inspect this file: inflection_resolutions[ip_id=IP1] exists with non-null chosen_branch and non-empty machine_checkable_assertions[].",
+      "expected_result": "Both fields present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.IP2.topic",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP2].topic",
+      "statement": "IP2 topic addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP2].",
+      "expected_result": "chosen_branch and assertions present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.IP3.topic",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP3].topic",
+      "statement": "IP3 topic addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP3].",
+      "expected_result": "chosen_branch and assertions present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.IP4.topic",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP4].topic",
+      "statement": "IP4 topic addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP4].",
+      "expected_result": "chosen_branch and assertions present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.IP5.topic",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5].topic",
+      "statement": "IP5 topic addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP5].",
+      "expected_result": "chosen_branch and assertions present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.IP6.topic",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP6].topic",
+      "statement": "IP6 topic addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP6].",
+      "expected_result": "chosen_branch and assertions present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan",
+      "citations_pointer": null
+    },
+    {
+      "id": "DCA.PN.1",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1].surface",
+      "statement": "PN.1 'MiraboxSpace StreamDock VSD N4 Pro' has canonical citation via probe-ip1 findings; verification_status forward-recorded as 'verified' here (TD does not amend the ledger).",
+      "check_type": "presence",
+      "scenario": "Inspect research/probes/probe-ip1/findings.json for citations[] with non-empty verbatim_excerpt.",
+      "expected_result": "At least one citation_class: static_canonical citation with non-empty verbatim_excerpt referencing MiraboxSpace canonical sources.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.1]"
+    },
+    {
+      "id": "DCA.PN.2",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.2].surface",
+      "statement": "PN.2 'Touchbar Mode' has canonical evidence via probe-ip3 findings, with the explicit caveat that exact pixel geometry is external_source_unreachable; verification_status forward-recorded as 'partially_verified' (verified that Touchbar Mode is a real named operating mode of the N4 Pro per C.3.1 and C.3.2; pixel resolution NOT verified).",
+      "check_type": "presence",
+      "scenario": "Inspect probe-ip3 findings.json.",
+      "expected_result": "Touchbar Mode named in citations; pixel resolution unreached.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-ip3/findings.json#citations[id=C.3.1]"
+    },
+    {
+      "id": "DCA.PN.3",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.3].surface",
+      "statement": "PN.3 'Apple Music Desktop Application' on Windows has canonical evidence via probe-ip2 findings: the app exists in the Microsoft Store, and the SMTC media-controls integration was added in April 2023 (C.2.2).",
+      "check_type": "presence",
+      "scenario": "Inspect probe-ip2 findings.",
+      "expected_result": "9to5Mac archived snapshot quote present; Microsoft Learn SMTC class doc present.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-ip2/findings.json#citations[id=C.2.2]"
+    },
+    {
+      "id": "DCA.PN.4",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.4].surface",
+      "statement": "PN.4 'VSD N4 Pro' shares canonical citations with PN.1 (same hardware referenced).",
+      "check_type": "presence",
+      "scenario": "Same as DCA.PN.1.",
+      "expected_result": "Same as DCA.PN.1.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.1]"
+    },
+    {
+      "id": "DCA.FC.1",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.1].description",
+      "statement": "After install per IP4.A1's documented steps, the plugin appears in the Stream Dock host's plugin/action list.",
+      "check_type": "user_flow",
+      "scenario": "1) Quit Stream Dock. 2) Copy .sdPlugin into %APPDATA%\\HotSpot\\StreamDock\\plugins. 3) Launch Stream Dock. 4) Open the action picker / available-actions catalog in the host UI. 5) Confirm the plugin's Name appears.",
+      "expected_result": "Plugin visible in the host's action list under the manifest-declared Category (or 'Custom' default).",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.2",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.2].description",
+      "statement": "User can place this plugin onto the Touch Bar slot of a scene.",
+      "check_type": "user_flow",
+      "scenario": "Continuing from DCA.FC.1: open a scene, switch to Touchbar Mode (swipe up/down on the device or via host UI), drag the plugin's action onto the Touch Bar slot.",
+      "expected_result": "Plugin occupies the Touch Bar slot; host accepts the placement without error.",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.3",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3].description",
+      "statement": "Activated plugin's rendered output occupies the entire length of the Touch Bar.",
+      "check_type": "user_flow",
+      "scenario": "Continuing from DCA.FC.2: with a track playing in Apple Music, observe the Touch Bar.",
+      "expected_result": "Rendered region spans the bar's full length (no other plugin or bar content beside it; the Touch-Bar slot is single-occupant per C.3.2).",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.4",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.4].description",
+      "statement": "Touch bar displays the currently playing song title and artist name.",
+      "check_type": "user_flow",
+      "scenario": "Continuing from DCA.FC.3: read the touch bar text.",
+      "expected_result": "Text contains both the title and the artist of the track Apple Music's own UI shows as playing.",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.5",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.5].description",
+      "statement": "Reactive update on track change.",
+      "check_type": "user_flow",
+      "scenario": "Continuing from DCA.FC.4: in Apple Music, click Next Track. Observe Touch Bar within ~3 seconds.",
+      "expected_result": "Touch bar text updates to the new track's title and artist.",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.6",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.6].description",
+      "statement": "Idle state when Apple Music not running.",
+      "check_type": "user_flow",
+      "scenario": "Close Apple Music. Observe Touch Bar.",
+      "expected_result": "Plugin remains loaded; touch bar shows blank or 'Not Playing' placeholder; host application does not crash.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    }
+  ],
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "host-integration",
+      "charter": "Implements the Stream Dock plugin host contract on Windows. Owns the WebSocket connection to ws://localhost:{port}/ on the port supplied by the host at registration (per the SDK's documented protocol), sends the 'registerPlugin' message with the manifest UUID, and dispatches received events (willAppear, willDisappear, keyDown, touchBarTap, etc.) to subscribers in the other sections. Provides drawText(context, payload) and spawnSidecar(command, args) as the only outward APIs; encapsulates all WebSocket and child_process plumbing so the other sections are testable in isolation. Provides log() routing into the host's plugin log channel.",
+      "acceptance": "Plugin connects to the host's WebSocket within 5 seconds of process startup; registers successfully; correctly dispatches onWillAppear / onWillDisappear callbacks when the host enables/disables the action; drawText messages reach the host and are reflected on the device (verified via the host's display-update echo); spawnSidecar starts and supervises the SMTC reader. Conforms to the interface contracts host-integration--touchbar-renderer.json and host-integration--now-playing-source.json.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "Plugin connects to the host's WebSocket within 5 seconds of process startup",
+          "check_type": "behavior",
+          "scenario": "Boot the plugin process under the host. Within 5 seconds, the WebSocket connection is established and the registerPlugin message has been sent.",
+          "expected_result": "WebSocket onopen fires; registerPlugin sent; host acknowledges (no immediate disconnect).",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.2]"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "correctly dispatches onWillAppear / onWillDisappear callbacks",
+          "check_type": "behavior",
+          "scenario": "Simulate a willAppear message from a fake-host harness (test-time only; production-fidelity exercise uses real host); confirm registered callback fires with the correct context.",
+          "expected_result": "Callback fires exactly once per host event; context passed through unchanged.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.2]"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "drawText messages reach the host and are reflected on the device",
+          "check_type": "user_flow",
+          "scenario": "Subsumed by PNV.1 — the full end-to-end exercise IS this acceptance check against the real host.",
+          "expected_result": "Touch bar visibly updates.",
+          "verifier": "prompt_named_verb",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "external_source_unreachable",
+          "citations_pointer": "research/probes/probe-ip3/findings.json#citations[id=C.3.3]",
+          "rationale_for_source": "The exact host-protocol message field name for updating Touch Bar widget text is not present in the canonical sdk.key123.vip documentation (which enumerates Keypad/Information/SecondaryScreen/Knob controllers but not TouchBar). Builder must derive the exact field name from the live SDK template; the verification IS the production-fidelity exercise per PNV.1."
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "spawnSidecar starts and supervises the SMTC reader",
+          "check_type": "behavior",
+          "scenario": "Call spawnSidecar('powershell.exe', [...]). Confirm child process starts, stdout pipe is readable, kill() terminates the child.",
+          "expected_result": "Child process lifecycle observable; orphaned children cleaned up on plugin exit.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance",
+          "source": "td_plan",
+          "citations_pointer": null
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "The drawing semantics on the Touch Bar (that's touchbar-renderer).",
+        "Reading Apple Music data (that's now-playing-source).",
+        "Packaging the .sdPlugin directory (that's packaging)."
+      ]
+    },
+    {
+      "id": "section-2",
+      "name": "now-playing-source",
+      "charter": "Reads the currently playing track's Title and Artist from the Windows-native Apple Music Desktop Application via the System Media Transport Controls (SMTC) API. Implementation spawns a PowerShell sidecar that loads the Windows.Media.Control WinRT assembly, obtains the GlobalSystemMediaTransportControlsSessionManager, filters sessions to the Apple Music session by SourceAppUserModelId substring match, reads MediaProperties.Title and MediaProperties.Artist, subscribes to MediaPropertiesChanged / PlaybackInfoChanged / CurrentSessionChanged / SessionsChanged events, and emits JSON-line TrackState updates on stdout. The Node-side consumer parses those lines and pushes TrackState (or null for idle) to subscribers per the contract.",
+      "acceptance": "When Apple Music on Windows is playing a track, subscribe(onTrack) receives a TrackState whose title and artist match Apple Music's own UI display within 2 seconds; on track change, onTrack receives the new TrackState within 3 seconds; when Apple Music is not running or has no current session, onTrack receives null. Conforms to the now-playing-source--touchbar-renderer.json interface contract.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "subscribe(onTrack) receives a TrackState whose title and artist match Apple Music's own UI display",
+          "check_type": "user_flow",
+          "scenario": "Subsumed by PNV.1. Production-fidelity exercise: a known track is playing in Apple Music; subscribe(onTrack) is called; the first onTrack invocation's track.title and track.artist equal the values Apple Music's UI shows.",
+          "expected_result": "Strings match (modulo whitespace normalization).",
+          "verifier": "prompt_named_verb",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip2/findings.json#citations[id=C.2.2]"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "on track change, onTrack receives the new TrackState within 3 seconds",
+          "check_type": "user_flow",
+          "scenario": "Subsumed by PNV.1's track-change step. With Apple Music playing track A, fire subscribe; press Next; assert onTrack fires with new track within 3s.",
+          "expected_result": "Delta time < 3s.",
+          "verifier": "prompt_named_verb",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip2/findings.json#citations[id=C.2.1]"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "when Apple Music is not running or has no current session, onTrack receives null",
+          "check_type": "user_flow",
+          "scenario": "Close Apple Music. subscribe. Assert onTrack(null) fires.",
+          "expected_result": "onTrack invoked with null.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip2/findings.json#citations[id=C.2.1]"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "Conforms to the now-playing-source--touchbar-renderer.json interface contract",
+          "check_type": "structural",
+          "scenario": "Compile-time / type-check assertion: exported subscribe function has signature (onTrack: (track: TrackState | null) => void) => { unsubscribe: () => void }; TrackState has fields title, artist, isPlaying, sourceAppId.",
+          "expected_result": "Signature matches; TrackState shape matches.",
+          "verifier": "critic_final_sweep",
+          "covers": "contracts/original/now-playing-source--touchbar-renderer.json#interface",
+          "source": "td_plan",
+          "citations_pointer": null
+        }
+      ],
+      "depends_on": ["section-1"],
+      "estimated_builders": 2,
+      "out_of_scope": [
+        "Rendering anything (that's touchbar-renderer).",
+        "Manipulating playback (only reads; no TrySendCommandAsync).",
+        "Sourcing tracks from any app other than Apple Music."
+      ]
+    },
+    {
+      "id": "section-3",
+      "name": "touchbar-renderer",
+      "charter": "Composes the TrackState into a display payload and dispatches it to host-integration's drawText. On every TrackState update from now-playing-source: if track is null or !isPlaying, sends an idle payload (blank or 'Not Playing'); otherwise composes 'title — artist' (em dash separator, fallback to ASCII '-' if needed for the host's font) and decides whether to set marquee:true based on whether the composed string overflows the host-reported widget width (IP5). Renderer never directly touches the WebSocket and never directly reads SMTC; it lives between the source and the host-integration's drawText surface.",
+      "acceptance": "Renderer is subscribed to now-playing-source's subscribe(); on every callback the renderer calls host-integration.drawText with a payload reflecting the current track. When the track is null, the payload is the idle string. When the composed text fits the widget, marquee:false; when it overflows, marquee:true. Conforms to both interface contracts.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "on every callback the renderer calls host-integration.drawText with a payload reflecting the current track",
+          "check_type": "behavior",
+          "scenario": "Mock subscribe to inject TrackState{title:'X', artist:'Y'}. Assert host-integration.drawText was called once with payload.title containing 'X' and payload.artist containing 'Y' (or composed text containing both).",
+          "expected_result": "Single drawText call per TrackState change, payload contains both fields.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "td_plan",
+          "citations_pointer": null
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "When the track is null, the payload is the idle string",
+          "check_type": "behavior",
+          "scenario": "Mock subscribe to inject null. Assert drawText called with idle payload (empty title or 'Not Playing').",
+          "expected_result": "Idle payload sent; no error thrown.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "prompt",
+          "citations_pointer": null
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "when it overflows, marquee:true",
+          "check_type": "behavior",
+          "scenario": "Inject a TrackState with a deliberately long title (e.g., 200 characters). Assert payload.marquee === true.",
+          "expected_result": "marquee:true.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance",
+          "source": "td_plan",
+          "citations_pointer": null
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "Conforms to both interface contracts",
+          "check_type": "structural",
+          "scenario": "Check that renderer's imports use only the surfaces defined in the two contracts.",
+          "expected_result": "No direct WebSocket, no direct child_process.spawn, no direct fs access to SMTC paths.",
+          "verifier": "critic_final_sweep",
+          "covers": "contracts/original/host-integration--touchbar-renderer.json#interface",
+          "source": "td_plan",
+          "citations_pointer": null
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Implementing the host-protocol message format (host-integration owns that).",
+        "Implementing SMTC reads (now-playing-source owns that).",
+        "Album art, lyrics, progress, any non-title-non-artist content."
+      ]
+    },
+    {
+      "id": "section-4",
+      "name": "packaging",
+      "charter": "Produces the installable .sdPlugin directory artifact and the user-facing install README. Directory name is '{reverse-DNS-UUID}.sdPlugin' with the manifest.json at the root, code under a subdirectory (e.g., js/), the PowerShell sidecar under sidecar/, and assets under images/. Manifest.json is generated to conform to the SDK schema (SDKVersion: 1; Actions array with one Touch-Bar-targeting Action; OS array with Windows entry; Software.MinimumVersion targeting the host version that includes built-in Node.js 20; Nodejs.Version: '20'). README documents the three-step install path verbatim per IP4. Zip the directory for distribution.",
+      "acceptance": "output/final/ contains exactly one *.sdPlugin directory and a README.md. The manifest.json validates against the SDK schema (SDKVersion:1, OS array with Windows, Actions non-empty). The README literally contains the install path 'HotSpot\\StreamDock\\plugins' (or the forward-slash variant) and instructs the user to close and reopen Stream Dock. A zip of the .sdPlugin directory is present alongside.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "output/final/ contains exactly one *.sdPlugin directory",
+          "check_type": "presence",
+          "scenario": "ls output/final/*.sdPlugin",
+          "expected_result": "Exactly one match.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip4/findings.json#citations[id=C.4.2]"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "manifest.json validates against the SDK schema",
+          "check_type": "structural",
+          "scenario": "Parse manifest.json; check $.SDKVersion==1, $.OS contains an entry with Platform=='windows', $.Actions length >= 1, $.Author/Name/Version/CodePath/Description/Icon all non-empty strings.",
+          "expected_result": "All required fields present and well-typed.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.3]"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "README literally contains the install path",
+          "check_type": "presence",
+          "scenario": "grep README.md for 'HotSpot' and 'StreamDock' and 'plugins'.",
+          "expected_result": "All three substrings present in the documented install instructions.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip4/findings.json#citations[id=C.4.1]"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "A zip of the .sdPlugin directory is present alongside",
+          "check_type": "presence",
+          "scenario": "ls output/final/*.sdPlugin.zip OR *.zip alongside the directory.",
+          "expected_result": "Zip file present, extractable, contains the .sdPlugin directory at its root.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance",
+          "source": "td_plan",
+          "citations_pointer": null
+        }
+      ],
+      "depends_on": ["section-1", "section-2", "section-3"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Writing the host-protocol code (section-1).",
+        "Writing the SMTC reader (section-2).",
+        "Writing the renderer (section-3).",
+        "An installer wrapper (out_of_scope per ledger)."
+      ]
+    },
+    {
+      "id": "section-5",
+      "name": "edge-case-testing",
+      "charter": "Covers every acceptance_assertion in this sections file whose verifier is 'edge_case_testing', exercised under the production-fidelity environment per CV charter §Production-fidelity exercise — no substitution of runtime dependencies the artifact loads in production. Specifically: spawns the integrated plugin process the way the Stream Dock host would (the PowerShell sidecar is invoked from the real Node.js 20 the host provides, not from a test-time Node; the WebSocket-host side is exercised against a documented-host-substitute that speaks the canonical Stream Dock host protocol per probe-ip1's citations, NOT against a hand-rolled stub that diverges from the protocol). Idle-state and track-change tests use the real Apple Music app and SMTC API; if Apple Music cannot be installed in CV's environment the test is reported as 'cannot_exercise_under_production_fidelity' rather than passed against a stub. The host-side end-to-end test (PNV.1, DCA.FC.* user flows) is NOT covered here — those run via the prompt_named_verb verifier against the user's actual hardware.",
+      "acceptance": "Covers every acceptance assertion with verifier 'edge_case_testing' from the section list (S1.A1, S1.A2, S1.A4, S2.A3, S3.A1, S3.A2, S3.A3, DCA.A6, DCA.FC.6), exercised under production-fidelity environment per CV charter §Production-fidelity exercise — no substitution of runtime dependencies the artifact loads in production.",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "Covers every acceptance assertion with verifier 'edge_case_testing' from the section list",
+          "check_type": "presence",
+          "scenario": "Inspect output/builders/edge-case-testing/*/output — every assertion id in the section list with verifier:edge_case_testing has a corresponding test case (named by id).",
+          "expected_result": "Set inclusion: edge_case_testing-tagged-assertion-ids ⊆ test-case-ids.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "td_plan",
+          "citations_pointer": null
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "exercised under production-fidelity environment",
+          "check_type": "absence",
+          "scenario": "Inspect test code — no occurrence of jest mock for child_process, no Node-WinRT stub, no in-memory WebSocket faking that replaces the canonical Stream Dock host protocol.",
+          "expected_result": "Zero matches; all dependencies are real or are documented-host-substitutes citing the canonical protocol.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-ip1/findings.json#citations[id=C.1.2]"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "PNV.1 and the DCA.FC.* user flows — those require the actual VSD N4 Pro hardware and run under prompt_named_verb verifier, not under edge-case-testing.",
+        "Album-art, lyrics, or any feature in out_of_scope."
+      ]
+    }
+  ],
+  "rationale": {
+    "for_historian": "v1.9 second-attempt TD output for the StreamDock + Apple Music touch-bar plugin. All four high-importance Discovery IPs were Researcher-probed and resolved with canonical citations: IP1 (SDK identity) → canonical MiraboxSpace Stream Dock SDK at sdk.key123.vip + github.com/MiraboxSpace/StreamDock-Plugin-SDK, NOT Elgato; IP2 (Apple Music → now-playing) → SMTC via PowerShell sidecar with Microsoft Learn canonical doc and 9to5Mac archived confirmation that Apple Music Preview participates in Windows media controls since April 2023; IP3 (Touchbar Mode geometry) → REFINED from 'pixel canvas' to 'single per-scene Touch Bar widget slot' per VSDinside porting guide and Nouvolo product page; EXACT pixel resolution and exact manifest field name for declaring a Touch Bar action are external_source_unreachable and the affected assertions (IP3.A1, S1.A3) are flagged accordingly; IP4 (install flow) → canonical install path verbatim from sdk.key123.vip/en/guide/get-started.html (%APPDATA%\\HotSpot\\StreamDock\\plugins + restart). The PNV scenario requires the user's actual Windows PC + actual VSD N4 Pro hardware + actual Stream Dock host + actual Apple Music app — under Principle G Tier 2, CV is expected to flag this as 'cannot exercise under production fidelity without user-side hardware' and surface Sev 4. That is the architecture working as designed. Five sections defined; three contracts written; every assertion has a source field per Principle H; external-system claims source canonical_evidence where citations were reachable, external_source_unreachable where they were not, td_plan only for internal-consistency checks.",
+    "principle_h_self_audit": "Every assertion's source field has been set explicitly. canonical_evidence assertions carry a citations_pointer to a Researcher findings entry with non-empty verbatim_excerpt. td_plan is used only for: section-conformance-to-contract checks (S2.A4, S3.A4), internal-consistency presence checks for IP-resolutions (DCA.IP*.topic), the overflow-branch behavior check in IP5/S3.A3 (the overflow logic is internal to the plugin), the zip-presence check (S4.A4), the spawnSidecar-supervision check (S1.A4), idle-payload (S3.A2 — wait, this is sourced to 'prompt' since the idle behavior derives from FC.6 which derives from the prompt-implicit requirement; left as prompt-sourced). external_source_unreachable is used for: IP3.A1 (exact manifest field name for declaring a Touch Bar action — must be Builder-located from the live SDK template at runtime, since canonical sdk.key123.vip doesn't enumerate it), S1.A3 (the exact host-protocol message field for updating Touch Bar widget text — same reason), and IP2.A3 (Apple Music's exact SourceAppUserModelId — substring match must be heuristic until runtime). Each external_source_unreachable assertion carries a rationale_for_source explaining why a canonical citation could not be obtained."
+  }
+}

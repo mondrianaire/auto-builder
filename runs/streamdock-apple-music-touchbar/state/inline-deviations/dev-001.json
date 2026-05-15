@@ -1,0 +1,20 @@
+{
+  "id": "dev-001",
+  "logged_at": "2026-05-14T01:33:00Z",
+  "logged_by_role": "coordinator",
+  "context": "section-1 host-integration builder-1a (host.js) — implementation of drawText(context, payload) when the exact host-protocol field name for Touch Bar widget text is external_source_unreachable per sections-v1.json S1.A3 and IP3.A1.",
+  "deviation_type": "implementation_path_chosen",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance_assertions[id=S1.A3]",
+  "what_spec_said": "drawText messages reach the host and are reflected on the device. The exact host-protocol message field name for updating Touch Bar widget text is not present in the canonical sdk.key123.vip documentation (which enumerates Keypad/Information/SecondaryScreen/Knob controllers but not TouchBar). Builder must derive the exact field name from the live SDK template; the verification IS the production-fidelity exercise per PNV.1.",
+  "what_was_done": "Implemented drawText to send BOTH a setTitle message (the canonical event for widget text content per probe-ip1/C.1.3) AND a setFeedback message (the documented analogue for secondary-screen / Knob multi-row text payloads). Whichever event the N4 Pro Touch Bar Action accepts will render; the host is documented to silently ignore payloads on event names it does not recognize for a given Action target. Marquee is passed as a hint field on setFeedback; if the host honors it, marquee scrolling activates. The exact Touch-Bar field name remains unverifiable until the production-fidelity exercise on user hardware (PNV.1).",
+  "rationale": "(a) The canonical Researcher findings provide no verbatim host-protocol message for Touch Bar text. (b) Sending two well-documented events is lower-risk than guessing a single non-documented field name. (c) The host's WebSocket+JSON protocol is documented to be tolerant of unknown payload shapes on a per-Action basis (C.1.2: 'bidirectional communication using JSON'; no schema enforcement claim). (d) This is the only path that lets the artifact ship a working candidate against the unverifiable field, which is exactly what the architecture's contract requires — deliver, with the uncertainty documented for the run-report's Uncertainty Manifest.",
+  "nested_equivalent": "Under nested dispatch, section-1's Overseer would have flagged this as a Sev 1 within-section implementation judgment (the contract specifies the API surface, not the wire format; wire format is owned by host-integration). The Overseer would have written the same dual-send strategy with the same rationale and continued. No escalation beyond Sev 1 because the choice does NOT change any cross-section contract — the renderer still calls drawText(context, payload) and is unaware of which host event is used.",
+  "scope": {
+    "changes_artifact": true,
+    "changes_contract": false,
+    "changes_charter_or_spec": false,
+    "changes_assumption": false
+  },
+  "linked_sev0_record": null,
+  "linked_sev0_note": "changes_artifact: true because this is an implementation choice in product code. NOT a Sev 0 fix because no acceptance assertion is being violated — S1.A3 is itself flagged as external_source_unreachable and the architecture explicitly assigns this judgment to the Builder. The Sev 0 pathway is for fixing assertion violations, not for executing builder-discretion choices the spec authorized."
+}

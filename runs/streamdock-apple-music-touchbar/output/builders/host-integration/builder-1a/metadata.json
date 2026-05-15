@@ -1,0 +1,15 @@
+{
+  "builder_id": "builder-1a",
+  "section_id": "section-1",
+  "status": "completed",
+  "completed_at": "2026-05-14T01:32:30Z",
+  "output_files": ["output.js"],
+  "produces": "host.js — Stream Dock host WebSocket client + event dispatcher",
+  "contract_compliance": [
+    {
+      "contract": "contracts/original/host-integration--touchbar-renderer.json",
+      "satisfies": ["onWillAppear", "onWillDisappear", "drawText", "ActionContext (opaque pass-through)"]
+    }
+  ],
+  "rationale": "Implements per probe-ip1 findings. Argument parsing follows the documented host-launch convention (--port/--pluginUUID/--registerEvent). drawText sends both setTitle and setFeedback because the exact host-protocol field for Touch Bar widget text is external_source_unreachable (S1.A3, IP3.A1); both event names are documented in the canonical SDK and the host silently ignores payloads it does not recognize on a given Action target. See state/inline-deviations/dev-001.json."
+}

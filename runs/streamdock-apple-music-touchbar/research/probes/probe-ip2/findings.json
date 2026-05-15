@@ -1,0 +1,69 @@
+{
+  "probe_id": "probe-ip2",
+  "completed_at": "2026-05-14T00:35:00Z",
+  "citations": [
+    {
+      "id": "C.2.1",
+      "url_or_path": "https://learn.microsoft.com/en-us/uwp/api/windows.media.control.globalsystemmediatransportcontrolssessionmanager",
+      "fetched_at": "2026-05-14T00:22:00Z",
+      "verbatim_excerpt": "Provides access to playback sessions throughout the system that have integrated with SystemMediaTransportControls to provide playback info and allow remote control. public ref class GlobalSystemMediaTransportControlsSessionManager sealed ... App capabilities: globalMediaControl. Methods: GetCurrentSession() — Gets the current session. This is the session the system believes the user would most likely want to control. GetSessions() — Gets all of the available sessions. RequestAsync() — Requests an instance of the GlobalSystemMediaTransportControlsSessionManager. Events: CurrentSessionChanged — Occurs when the current session has changed. This is the session that the system believes is the one the user would most likely want to control. SessionsChanged — Occurs when the list of available sessions has changed due to a new session connecting or an existing one disconnecting.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.2.2",
+      "url_or_path": "https://9to5mac.com/2023/04/25/apple-music-windows-media-keys-lyrics-more/",
+      "fetched_at": "2026-05-14T00:25:00Z",
+      "verbatim_excerpt": "Apple Music Preview app for Windows adds lyrics, media key controls, and more ... [The Apple Music app update today as a 'huge update' highlights three major changes:] ... Windows media controls and keyboard shortcuts now work.",
+      "citation_class": "archived_snapshot",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.2.3",
+      "url_or_path": "https://github.com/DubyaDude/WindowsMediaController",
+      "fetched_at": "2026-05-14T00:26:00Z",
+      "verbatim_excerpt": "WindowsMediaController — Allows developers to more easily get information from and interact with the Windows 10/11 OS media interface. (Also referred to Windows System Media Transport Controls (SMTC)) ... uses the GlobalSystemMediaTransportControlsSessionManager class to obtain media sessions; reads MediaProperties (Title, Artist, AlbumTitle, etc.) via TryGetMediaPropertiesAsync and subscribes to per-session MediaPropertiesChanged / PlaybackInfoChanged / TimelinePropertiesChanged events.",
+      "citation_class": "interactive_doc",
+      "external_source_unreachable": false
+    }
+  ],
+  "options": [
+    {
+      "id": "opt-A",
+      "summary": "Read now-playing Title and Artist via the Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager (SMTC) WinRT API. Call RequestAsync() to obtain the manager, GetCurrentSession() to get the current session (and filter via session.SourceAppUserModelId if needed to disambiguate from other media apps), then session.TryGetMediaPropertiesAsync() to read Title and Artist. Subscribe to the session's MediaPropertiesChanged event (and the manager's CurrentSessionChanged event) for reactive updates per A5.",
+      "pros": [
+        "Canonical Microsoft API. Title and Artist are core MediaProperties fields. Event-driven (no polling, satisfies IP6's default branch).",
+        "Apple Music Preview on Windows confirmed to integrate with 'Windows media controls' (which is SMTC) per archived 9to5Mac report (C.2.2) — the same surface that exposes media keys is what publishes the SMTC session.",
+        "Works regardless of Apple Music UI string changes (robust)."
+      ],
+      "cons": [
+        "Calling WinRT from a StreamDock plugin's Node.js process requires a Node-WinRT bridge package (e.g., NodeRT, node-winrt, or the newer node-mdns/winrt-uwp bindings). Within the StreamDock host's built-in Node.js 20, a native module for SMTC must be either bundled in the .sdPlugin or invoked via a small companion Win32 process (PowerShell with [Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager,Windows.Media.Control,ContentType=WindowsRuntime] is one zero-install option since PowerShell is on every Windows install).",
+        "SMTC participation is per-app and not formally guaranteed by Apple in canonical Apple documentation; the confirmation (C.2.2) is interactive_doc / archived_snapshot. A Sev 4 surfacing is warranted if the user reports SMTC empty for Apple Music."
+      ],
+      "impact": {},
+      "confidence": "medium-high",
+      "supporting_citations": ["C.2.1", "C.2.2", "C.2.3"]
+    },
+    {
+      "id": "opt-B",
+      "summary": "Window-title scraping of the Apple Music app's main window via Win32 EnumWindows / GetWindowText.",
+      "pros": ["No WinRT dependency.", "Works even if SMTC participation regresses."],
+      "cons": ["Brittle — any UI text change in Apple Music breaks it.", "Requires parsing 'Title — Artist' style title strings whose format is not Apple-documented and may differ by version."],
+      "impact": {},
+      "confidence": "medium",
+      "supporting_citations": []
+    },
+    {
+      "id": "opt-C",
+      "summary": "Apple Music Web API with OAuth.",
+      "pros": [],
+      "cons": ["Rejected by Discovery assumption A7 — requires cloud auth the user did not ask for."],
+      "impact": {},
+      "confidence": "high (rejection)",
+      "supporting_citations": []
+    }
+  ],
+  "recommended": "opt-A",
+  "rationale": "SMTC is the canonical Windows API for now-playing data exposed by media apps to other Windows processes, documented on Microsoft Learn (C.2.1). The Windows-native Apple Music Preview app participates in Windows media controls per 9to5Mac's 2023 report covering the Apple-shipped update that added 'Windows media controls and keyboard shortcuts' (C.2.2), and community implementations like WindowsMediaController demonstrate the API pattern reading Title and Artist via TryGetMediaPropertiesAsync (C.2.3). For invocation from the StreamDock plugin, the simplest zero-install path is to invoke PowerShell with the WinRT assembly load (already installed on every Windows machine), capturing JSON-stringified Title and Artist; this avoids bundling a native Node addon. The MediaPropertiesChanged + CurrentSessionChanged events provide the event-driven path per IP6.",
+  "framing_concern": null
+}

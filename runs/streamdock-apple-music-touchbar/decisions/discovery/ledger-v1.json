@@ -1,0 +1,271 @@
+{
+  "version": 1,
+  "created_at": "2026-05-14T00:00:00Z",
+  "project_name": "streamdock-apple-music-touchbar",
+  "telos": "A plugin that shows the user, on their MiraboxSpace StreamDock VSD N4 Pro's Touchbar Mode, the song and artist currently playing in the Apple Music Desktop Application on their Windows PC, occupying the entire length of the touch bar.",
+  "restatement": "Build a plugin for the MiraboxSpace StreamDock VSD N4 Pro (a physical hardware device with a Touchbar Mode display) which, when installed into the StreamDock host application on the user's Windows PC, listens to the Apple Music Desktop Application running on that same Windows PC and renders the currently playing song title and artist name on the device's touch bar, with the rendered region spanning the entire length of the touch bar.",
+  "execution_context_observed": {
+    "platform_hints": ["windows"],
+    "path_evidence": [
+      "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder",
+      "C:\\Users\\mondr\\AppData\\Roaming\\Claude\\local-agent-mode-sessions"
+    ],
+    "evidence_basis": "Briefing's execution_context exposes only Windows-style absolute paths (C:\\ drive letter, backslash separators, \\AppData\\Roaming\\ which is a Windows-only path) in both the working directory and session-storage location. No macOS/Linux path evidence is present. The user's host operating system is Windows. This is treated as decisive for all platform-dependent inflection points, per Principle E (Decision Grounding) and the documented v1.8 failure mode where a prior StreamDock run shipped a macOS-only plugin to this same Windows user by defaulting to training-data familiarity. All downstream roles MUST inherit Windows as the deployment platform from this ledger and MUST NOT re-derive platform from the prompt text or from training-data priors about which OS hosts macOS-style Touch Bars."
+  },
+  "proper_nouns": [
+    {
+      "id": "PN.1",
+      "surface": "MiraboxSpace StreamDock VSD N4 Pro",
+      "lexical_context": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that Utilizes the Touchbar Mode to display the currently playing song and artist from Apple Music Desktop Application.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "note_to_td": "This is the hardware device the plugin runs on. It is NOT an Elgato Stream Deck. The MiraboxSpace StreamDock product line is a separate vendor with its own host application and plugin SDK. The prior v1.8 run of this same project failed first-contact because TD selected the Elgato Stream Deck SDK from training-data familiarity rather than locating the MiraboxSpace StreamDock SDK from canonical evidence. Researcher MUST locate the actual MiraboxSpace StreamDock plugin SDK/host application and cite it with verbatim_excerpt per Principle F. Do not accept training-data summaries of similar-looking products."
+    },
+    {
+      "id": "PN.2",
+      "surface": "Touchbar Mode",
+      "lexical_context": "Utilizes the Touchbar Mode to display the currently playing song and artist ... The plugin should take up the entire length of the VSD N4 Pro touch bar for display.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "note_to_td": "Touchbar Mode is a named operating mode of the VSD N4 Pro hardware. Its specific properties (pixel resolution along the touch-bar axis, orientation, whether the touch bar is addressed as a single full-width canvas or as a row of virtual keys, the API by which a plugin paints to it, refresh cadence) are external-system properties that MUST be sourced from canonical MiraboxSpace documentation. Do not infer the touch bar's geometry or addressing model from analogies to the macOS MacBook Pro Touch Bar."
+    },
+    {
+      "id": "PN.3",
+      "surface": "Apple Music Desktop Application",
+      "lexical_context": "to display the currently playing song and artist from Apple Music Desktop Application",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "note_to_td": "Because the user is on Windows (see execution_context_observed), the Apple Music Desktop Application referenced here is the Windows-native Apple Music app distributed by Apple via the Microsoft Store (the iTunes successor on Windows; also known historically as 'Apple Music Preview'). It is NOT iTunes for Windows (legacy), and it is NOT the macOS Music.app. Researcher MUST cite canonical evidence on how the Windows Apple Music app exposes now-playing metadata to other Windows processes (candidate mechanisms include the Windows Media Control API / SMTC GlobalSystemMediaTransportControlsSessionManager, COM/automation, accessibility APIs, or window-title scraping). Selection of mechanism is a TD inflection point but the mechanism MUST be one that demonstrably works against the Windows Apple Music app."
+    },
+    {
+      "id": "PN.4",
+      "surface": "VSD N4 Pro",
+      "lexical_context": "The plugin should take up the entire length of the VSD N4 Pro touch bar for display.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "note_to_td": "Second reference to the same hardware as PN.1; included separately because the prompt uses the short model name 'VSD N4 Pro' here. Verification can share canonical sources with PN.1. The 'entire length of the VSD N4 Pro touch bar' constraint is load-bearing and depends on knowing the touch bar's actual addressable extent."
+    }
+  ],
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The deliverable is a single plugin (one installable package), not a suite of plugins or a separate companion application plus plugin.",
+      "confidence": "high",
+      "rationale": "Prompt: 'Build me a plugin' (singular).",
+      "what_breaks_if_wrong": "If the StreamDock host architecture requires a separate companion service to bridge to Apple Music, the build still delivers one user-installable artifact; the bridge is a packaging detail, not a second deliverable."
+    },
+    {
+      "id": "A2",
+      "assumption": "The host operating system on which the StreamDock host application and the Apple Music Desktop Application both run is Windows.",
+      "confidence": "high",
+      "rationale": "execution_context_observed evidence shows exclusively Windows paths in the dispatcher's environment. Per Principle E (Decision Grounding) this is decisive and is NOT to be re-derived by downstream roles. The prior v1.8 run's failure mode (shipping a macOS-only plugin) is the exact defense this assumption exists to prevent.",
+      "what_breaks_if_wrong": "If the user is actually on macOS, the entire plugin is unrunnable. Mitigation: TD/Researcher is instructed to verify that MiraboxSpace StreamDock provides a Windows host application, and that the Apple Music Desktop Application exists on Windows."
+    },
+    {
+      "id": "A3",
+      "assumption": "The plugin displays the currently playing song title and artist name as text (or text-with-light-glyphs) on the touch bar.",
+      "confidence": "high",
+      "rationale": "Prompt: 'display the currently playing song and artist'. The prompt's verb is 'display'; the data items are 'song' and 'artist'.",
+      "what_breaks_if_wrong": "If the user expected album art or a waveform instead, the deliverable misses intent. The literal prompt names song and artist; album art is not named and would be additive, not corrective."
+    },
+    {
+      "id": "A4",
+      "assumption": "The rendered region spans the entire length of the touch bar (the long axis of the VSD N4 Pro touch bar), not a single touch-bar key or a centered subregion.",
+      "confidence": "high",
+      "rationale": "Prompt: 'should take up the entire length of the VSD N4 Pro touch bar for display.' This is one of the most explicit constraints in the prompt.",
+      "what_breaks_if_wrong": "First-contact failure: a build that displays text only on one key, or only in a small centered region, demonstrably fails the explicit constraint. This assumption is what drives the touch-bar-geometry inflection point."
+    },
+    {
+      "id": "A5",
+      "assumption": "Updates are reactive: when the currently playing track in Apple Music changes (next track, pause/resume, track skip, app close), the touch bar display reflects that change without manual user action on the plugin.",
+      "confidence": "high",
+      "rationale": "'currently playing' is a time-varying property; static one-time display contradicts the natural reading of the prompt.",
+      "what_breaks_if_wrong": "If the plugin only shows the song that was playing at the moment of plugin start, it visibly fails for any user who changes tracks. The literal interpretation requires reactivity."
+    },
+    {
+      "id": "A6",
+      "assumption": "When nothing is playing in Apple Music (paused with no active track, or Apple Music not running), the plugin shows a sensible default state (e.g., blank or a 'Not Playing' placeholder) rather than crashing or showing stale data.",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason: the prompt is silent on this edge but a build that crashes when Apple Music is closed would fail first-contact for any user who launches the plugin before Apple Music.",
+      "what_breaks_if_wrong": "If the user actually wanted, say, the last-played track shown persistently, the default is wrong but easily amended; if the plugin crashes, the user can't reach the working path at all."
+    },
+    {
+      "id": "A7",
+      "assumption": "The plugin is single-user / single-machine: it runs on the user's PC, talks to the user's local Apple Music process and the user's local StreamDock device. No cloud service, no Apple Music account credentials, no Apple Music API key, no multi-device sync.",
+      "confidence": "high",
+      "rationale": "Simplest-within-reason. The data the user wants (now-playing) is available locally from the running Apple Music process on Windows via local OS-level APIs; reaching for the Apple Music Web API would require user authentication and account scope that the prompt does not request.",
+      "what_breaks_if_wrong": "None of the named user wants depend on cloud access. If the user wanted cloud sync they would have named it."
+    },
+    {
+      "id": "A8",
+      "assumption": "The plugin runs only while the StreamDock host application is running (i.e., it does not need to be a standalone background service that survives the host's exit).",
+      "confidence": "high",
+      "rationale": "Standard plugin lifecycle: a plugin is loaded by its host. The prompt asks for 'a plugin', not 'a system service that drives the touch bar even when the host is closed.'",
+      "what_breaks_if_wrong": "If the StreamDock host already runs as a tray daemon (likely), the plugin is effectively always-on whenever the user has the host installed, which matches the user's natural expectation."
+    },
+    {
+      "id": "A9",
+      "assumption": "No user configuration UI is required beyond what is needed to make the plugin installable and selectable in Touchbar Mode (e.g., 'pick Touchbar Mode, drag this plugin onto the touch bar slot').",
+      "confidence": "medium",
+      "rationale": "Simplest-within-reason: prompt names no settings (no color picker, no font choice, no scroll-speed control, no toggle for 'show album'). Add only what the host application's own plugin model forces.",
+      "what_breaks_if_wrong": "User can ask for configuration later; absence of a settings panel does not block first-contact."
+    },
+    {
+      "id": "A10",
+      "assumption": "The plugin is installed into and runs under the official MiraboxSpace StreamDock host application for Windows (the vendor-provided host that drives the VSD N4 Pro). No third-party reimplementation of the host is required.",
+      "confidence": "high",
+      "rationale": "A 'plugin for [hardware]' is conventionally installed into the hardware vendor's official host application. Building a competing host is out of scope and not asked for.",
+      "what_breaks_if_wrong": "If the vendor does not ship a Windows host application for the VSD N4 Pro, the build is blocked at a level that Discovery cannot resolve unilaterally; that contingency is handled by IP1 below."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "MiraboxSpace StreamDock plugin SDK identity and runtime format for the VSD N4 Pro on Windows: which host application loads VSD N4 Pro plugins on Windows, what is the manifest format, what runtime/language does the host accept (native binary, JavaScript bundle, Python, web-tech, other), and what API surface does the host expose to a plugin running in Touchbar Mode.",
+      "choices": [
+        "MiraboxSpace's own first-party StreamDock SDK/host (whatever name it has) on Windows -- to be located by Researcher from MiraboxSpace canonical sources.",
+        "An Elgato Stream Deck-compatible SDK (rejected default-from-training-data -- explicitly disallowed unless canonical MiraboxSpace evidence shows the VSD N4 Pro implements the Elgato plugin protocol natively).",
+        "No documented public SDK exists for the VSD N4 Pro on Windows (forces Sev 4 to user)."
+      ],
+      "default_branch": "MiraboxSpace's own first-party StreamDock SDK/host on Windows. Researcher MUST locate canonical MiraboxSpace documentation and cite it with verbatim_excerpt. Training-data familiarity with Elgato Stream Deck is NOT a citation and MUST NOT be substituted.",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "TD MUST dispatch a Researcher probe to locate MiraboxSpace StreamDock's canonical plugin SDK documentation for the VSD N4 Pro on Windows: host application name and Windows installer source, plugin manifest format and required fields, plugin runtime (binary/script/web/other), API for painting to Touchbar Mode, and plugin installation flow on Windows. Researcher findings.citations[] entries must be class static_canonical or archived_snapshot with verbatim_excerpt per Principle F. This is the load-bearing root cause of the prior v1.8 first-contact failure and is the primary thing v1.9 is being A/B tested on.",
+      "why_inflection": "Every other technical decision in the build (language, packaging, manifest, draw API, install path) is downstream of this. Picking wrong here invalidates the entire build, as the prior v1.8 run demonstrated. The two simplest readings of the prompt fork the build differently: one targets the actual MiraboxSpace host (correct), the other targets a similar-looking but distinct vendor's SDK that training data recognizes more easily (wrong, and the documented prior failure mode)."
+    },
+    {
+      "id": "IP2",
+      "topic": "Mechanism by which the plugin obtains the currently playing song and artist from the Apple Music Desktop Application on Windows.",
+      "choices": [
+        "Windows System Media Transport Controls (SMTC) via the Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager WinRT API, filtering for the Apple Music app's SourceAppUserModelId.",
+        "Window-title scraping of the Apple Music app's main window via Win32 EnumWindows/GetWindowText.",
+        "An Apple Music local automation/scripting interface (if one exists on Windows analogous to AppleScript on macOS).",
+        "The Apple Music Web API with OAuth (rejected by A7 -- requires cloud auth the user did not ask for)."
+      ],
+      "default_branch": "Windows System Media Transport Controls (SMTC) via GlobalSystemMediaTransportControlsSessionManager, filtering for the Apple Music app's media session. Researcher MUST verify that the Windows Apple Music app publishes a SMTC session and cite Microsoft documentation for the API and (ideally) a confirmation that Apple Music on Windows participates in SMTC.",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "TD MUST dispatch a Researcher probe to confirm (a) that the Windows-native Apple Music Desktop Application publishes a SMTC media session that exposes Title and Artist for the currently playing track, and (b) the canonical Microsoft documentation for the GlobalSystemMediaTransportControlsSessionManager API including how a plugin running under the StreamDock host's runtime can call into WinRT. If SMTC is not available for Apple Music on Windows, Researcher returns alternative options with cited evidence and TD picks among them via impact-analysis.",
+      "why_inflection": "The choice between SMTC and window-title scraping is the difference between a robust reactive plugin and a brittle one. The wrong choice may still pass internal gates but fail in practice when Apple Music updates its UI strings. The choice is also gated on the runtime selected in IP1: if IP1's runtime cannot call WinRT, IP2's default is unreachable from inside the plugin and may require a companion bridge process."
+    },
+    {
+      "id": "IP3",
+      "topic": "Touchbar Mode display geometry and full-length addressing model for the VSD N4 Pro: pixel dimensions, orientation, and whether 'the entire length of the touch bar' is addressed as a single contiguous canvas, as a horizontal row of virtual keys whose combined width spans the bar, or via some other model. This determines how the plugin satisfies the prompt's explicit 'entire length' constraint.",
+      "choices": [
+        "Single contiguous full-width canvas addressed in pixels (one bitmap or one drawing surface).",
+        "Row of N virtual keys that, in Touchbar Mode, render as a continuous strip (the plugin paints all keys with content that visually joins).",
+        "Some hybrid (e.g., a 'wide widget' slot type distinct from key slots).",
+        "The host application does not permit a single plugin to occupy the entire length (would force Sev 4 to user: the explicit constraint cannot be satisfied)."
+      ],
+      "default_branch": "Single contiguous full-width canvas. Researcher MUST locate canonical MiraboxSpace documentation for Touchbar Mode and report the actual model. Whichever model the host actually uses, the plugin must use the host-supported full-length addressing -- the user's literal 'entire length' constraint pins this to whichever real mechanism the host provides for spanning the bar.",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "TD MUST dispatch a Researcher probe to MiraboxSpace canonical sources for VSD N4 Pro Touchbar Mode specifications: pixel resolution (width and height in pixels along both axes), orientation, the host's API for declaring a full-width plugin in Touchbar Mode, and any constraints on draw cadence or content type (image vs. text vs. layered). If the host does not natively support a single full-width plugin slot, Researcher returns the closest supported model and TD evaluates whether the user's 'entire length' constraint is satisfiable; if it is not, the build escalates Sev 4 to the user (because this is an explicit prompt constraint, not a Discovery-defaulted assumption, demotion is not available).",
+      "why_inflection": "The user's explicit 'entire length' constraint is checked at first contact (FC.3 below). The implementation of that constraint is entirely host-determined. Without canonical documentation, TD will pick an addressing model from training-data analogy (e.g., macOS Touch Bar, which is a single contiguous canvas) -- which may or may not match the VSD N4 Pro. Wrong choice = visible first-contact failure."
+    },
+    {
+      "id": "IP4",
+      "topic": "Plugin installation flow on Windows for the MiraboxSpace StreamDock host application: how a user installs a plugin authored by a third party, what the installable package format is (a directory, a zip with a specific extension, a signed bundle), and what install steps the delivered artifact must support to be installable by an ordinary user without developer tooling.",
+      "choices": [
+        "Drag-and-drop a vendor-specific bundle file onto the host (e.g., a .streamDockPlugin or .vsdplugin or similarly named archive).",
+        "Copy a plugin folder into a host-defined plugins directory under %APPDATA% or %ProgramFiles%.",
+        "Install via an in-host plugin store/marketplace (rejected -- requires vendor account; not first-party for a one-off plugin).",
+        "Side-load via a developer mode flag (acceptable only if it is the host's documented installation path for third-party plugins)."
+      ],
+      "default_branch": "Whichever installation flow MiraboxSpace's official documentation specifies for third-party plugins on Windows. Researcher MUST locate and cite that documentation. The deliverable (output/final/) must be packaged in the format that flow requires.",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "TD MUST dispatch a Researcher probe to MiraboxSpace canonical sources documenting third-party plugin installation on Windows: the package format/extension, the install target directory (or drag-target behavior), any signing/notarization requirements, and the steps the end user takes. Without this, the delivered artifact may be technically correct but un-installable (FC.1 first-contact failure).",
+      "why_inflection": "First-contact requirement FC.1 (the plugin appears in the host's plugin list / Touchbar Mode picker after install) depends entirely on this. A correctly written plugin in the wrong packaging format is indistinguishable to the user from a broken plugin."
+    },
+    {
+      "id": "IP5",
+      "topic": "Behavior when the displayed text is longer than the touch bar can show in one screen-width (e.g., a long song title or 'Title -- Artist' composite that doesn't fit).",
+      "choices": [
+        "Truncate with ellipsis.",
+        "Marquee scroll horizontally.",
+        "Cycle / page between segments (e.g., show title for N seconds, then artist).",
+        "Shrink text to fit."
+      ],
+      "default_branch": "Marquee scroll horizontally when content exceeds the visible width; show static when it fits. This best honors 'display the currently playing song and artist' (no information dropped) under 'entire length of the touch bar' (the surface available for scrolling is the full bar).",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "",
+      "why_inflection": "Prompt is silent on overflow behavior. Picking a default lets the build proceed without surfacing to the user. Wrong default is cosmetically suboptimal but does not invalidate first contact."
+    },
+    {
+      "id": "IP6",
+      "topic": "Polling vs. event-driven track-change detection.",
+      "choices": [
+        "Event-driven via SMTC's MediaPropertiesChanged / PlaybackInfoChanged events (preferred if IP2 resolves to SMTC).",
+        "Periodic polling (e.g., every 500ms-1000ms) of current track."
+      ],
+      "default_branch": "Event-driven via SMTC events if available (per IP2 default); fall back to a low-frequency poll (~1s) if events are not available in the chosen runtime.",
+      "importance": "low",
+      "importance_action": "n/a",
+      "importance_action_evidence": "",
+      "why_inflection": "Both approaches satisfy A5 (reactive updates). Event-driven is more efficient; polling is simpler and more portable. Decision can be deferred to TD without surfacing."
+    }
+  ],
+  "first_contact_requirements": [
+    {
+      "id": "FC.1",
+      "description": "After the user follows the documented install steps for the delivered artifact on Windows, the plugin appears in the MiraboxSpace StreamDock host application's plugin list / available-actions catalog (under whatever name and category the host uses to enumerate installed plugins), without errors and without requiring the user to use developer tooling, recompile, or hand-edit configuration files.",
+      "artifact_type_basis": "plugin"
+    },
+    {
+      "id": "FC.2",
+      "description": "The user can select Touchbar Mode on the VSD N4 Pro via the StreamDock host application and assign / activate this plugin to occupy the touch bar, using whatever UI affordance the host provides for placing plugins in Touchbar Mode.",
+      "artifact_type_basis": "plugin"
+    },
+    {
+      "id": "FC.3",
+      "description": "Once activated, the plugin's rendered output occupies the entire length of the VSD N4 Pro touch bar (the long axis), not a single virtual key, not a centered subregion, and not only one segment of the bar. This is the prompt's explicit 'entire length' constraint and is checked as a literal first-contact requirement.",
+      "artifact_type_basis": "plugin"
+    },
+    {
+      "id": "FC.4",
+      "description": "With the Apple Music Desktop Application running on the same Windows PC and playing a track, the touch bar displays the currently playing song title and artist name (both, in some visually clear arrangement) corresponding to the track that the Apple Music app's own UI shows as playing.",
+      "artifact_type_basis": "plugin"
+    },
+    {
+      "id": "FC.5",
+      "description": "When the user changes tracks in Apple Music (next/previous, selects a different track, or playback advances to the next track in a queue), the touch bar updates within a few seconds to show the new track's title and artist without the user touching the plugin.",
+      "artifact_type_basis": "plugin"
+    },
+    {
+      "id": "FC.6",
+      "description": "When the Apple Music Desktop Application is not running or has nothing playing, the plugin remains loaded and shows a sensible idle state (blank, or a clearly non-erroneous placeholder), rather than crashing the host application or freezing the touch bar.",
+      "artifact_type_basis": "plugin"
+    }
+  ],
+  "out_of_scope": [
+    "Album art or any image-of-the-track rendering on the touch bar (prompt names song and artist only).",
+    "Playback controls on the touch bar (no play/pause/next/previous buttons rendered by this plugin -- the prompt asks for display, not control).",
+    "Support for music sources other than the Apple Music Desktop Application (Spotify, YouTube Music, browser audio, etc. -- explicitly not named).",
+    "Support for non-Windows host operating systems (the user is on Windows per execution_context_observed; macOS / Linux versions are not in scope for this build).",
+    "Support for any MiraboxSpace StreamDock device other than the VSD N4 Pro for this run (other models may share an SDK but cross-model compatibility is not a deliverable).",
+    "Touch-interaction handling on the touch bar (taps, swipes, gestures producing side effects -- the plugin is display-only).",
+    "Cloud/Apple Music Web API integration, Apple ID login, or any authenticated remote data fetching (A7).",
+    "A standalone background service that runs when the StreamDock host application is not running (A8).",
+    "User-facing configuration UI beyond what is forced by the host's plugin model (A9 -- no font, color, scroll-speed, or layout settings unless the host's plugin schema requires a settings panel to exist).",
+    "Lyrics, song progress bar, elapsed/remaining time, BPM, genre, or any track metadata beyond title and artist.",
+    "Automatic update / self-update of the plugin.",
+    "Telemetry, analytics, or any network calls originating from the plugin.",
+    "An installer wrapper beyond the host application's documented third-party plugin installation flow."
+  ],
+  "rationale": {
+    "for_historian": "This ledger is the second attempt at the StreamDock + Apple Music touch-bar plugin. The first attempt (v1.8 architecture, run name 'streamdock-applemusic-touchbar') failed first-contact because (a) TD locked the build to the Elgato Stream Deck SDK from training-data familiarity rather than verifying the MiraboxSpace StreamDock SDK, and (b) the build was delivered as a macOS-only artifact despite the user running Windows. This v1.9 ledger defends against both failure modes structurally rather than through prompting alone: (1) the three target_defining proper nouns (StreamDock VSD N4 Pro, Touchbar Mode, Apple Music Desktop Application) are enumerated with explicit no-substitution notes; (2) execution_context_observed locks the platform to Windows from briefing evidence, making it a Discovery-authoritative fact downstream roles cannot re-derive; (3) the four likely-load-bearing inflection points (SDK identity, Apple Music data source on Windows, touch bar geometry, install flow on Windows) are all marked importance: high with importance_action: researcher_dispatched, forcing TD to obtain canonical citations before locking technical choices, per Principle F.",
+    "telos_derivation": "Telos was written to be expressible while still naming the proper nouns (the proper nouns are all target_defining; none are demotable). The single sentence intentionally repeats the proper nouns rather than abstracting them away, because abstraction is exactly the failure mode that produced 'generic wide-display strip + generic Apple Music desktop client' in the prior run.",
+    "decision_grounding": "Per the v1.9 Decision Grounding rule and the user's standing memory note on environmental evidence, the Windows platform is treated as decisive evidence from the dispatcher's environment, not as one option among several. Downstream roles inherit Windows; they do not re-evaluate.",
+    "what_discovery_did_NOT_do": "Discovery did NOT pick the plugin's runtime language, did NOT pick the manifest format, did NOT name an SDK by URL, did NOT pick the data-source API by name with finality, and did NOT pick the install location. Those are TD decisions, each gated on canonical Researcher citations per IP1-IP4. Discovery's job here is to make those four IPs unavoidable and unmistakable."
+  }
+}

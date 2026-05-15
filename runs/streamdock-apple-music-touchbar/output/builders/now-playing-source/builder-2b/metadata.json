@@ -1,0 +1,19 @@
+{
+  "builder_id": "builder-2b",
+  "section_id": "section-2",
+  "status": "completed",
+  "completed_at": "2026-05-14T01:38:30Z",
+  "output_files": ["output.js"],
+  "produces": "source.js — Node consumer of the PowerShell SMTC sidecar; exposes subscribe(onTrack).",
+  "contract_compliance": [
+    {
+      "contract": "contracts/original/now-playing-source--touchbar-renderer.json",
+      "satisfies": ["subscribe(onTrack)", "{ unsubscribe }", "TrackState{title,artist,isPlaying,sourceAppId}", "idleState() → null", "150ms debounce"]
+    },
+    {
+      "contract": "contracts/original/host-integration--now-playing-source.json",
+      "satisfies": ["Uses host.spawnSidecar (does NOT call child_process directly)"]
+    }
+  ],
+  "rationale": "Pure consumer of the sidecar's stdout JSON-line protocol. Debounce is exactly the 150ms specified in the contract notes. Auto-restart on sidecar crash is deliberately NOT implemented because plugin lifecycle is bounded by host lifecycle (ledger A8); the host re-enables the action when needed."
+}

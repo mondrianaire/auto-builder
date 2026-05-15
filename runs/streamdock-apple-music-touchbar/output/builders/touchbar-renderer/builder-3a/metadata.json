@@ -1,0 +1,16 @@
+{
+  "builder_id": "builder-3a",
+  "section_id": "section-3",
+  "status": "completed",
+  "completed_at": "2026-05-14T01:41:30Z",
+  "output_files": ["output.js"],
+  "produces": "renderer.js — composes track state into drawText payloads with marquee overflow branch.",
+  "assertion_coverage": [
+    { "id": "S3.A1", "satisfied": true, "evidence": "Every onTrack call results in paintAll → host.drawText with payload.{title,artist,marquee}." },
+    { "id": "S3.A2", "satisfied": true, "evidence": "composePayload(null) returns { title: 'Not Playing', artist: '', marquee: false }." },
+    { "id": "S3.A3", "satisfied": true, "evidence": "composed.length > STATIC_FIT_CHAR_LIMIT toggles marquee:true; long titles → marquee:true." },
+    { "id": "S3.A4", "satisfied": true, "evidence": "Uses only host.drawText, host.onWillAppear, host.onWillDisappear, host.log, host.liveContexts and source.subscribe — no WebSocket, no child_process, no fs." },
+    { "id": "IP5.A1", "satisfied": true, "evidence": "marquee branch driven by composed-string length against STATIC_FIT_CHAR_LIMIT." }
+  ],
+  "rationale": "STATIC_FIT_CHAR_LIMIT=28 is a heuristic chosen because the exact Touch Bar pixel resolution is external_source_unreachable (sections-v1.json IP3). 28 char is a conservative point below which typical 'Title — Artist' strings reliably fit even in a wide font. See state/inline-deviations/dev-002.json."
+}

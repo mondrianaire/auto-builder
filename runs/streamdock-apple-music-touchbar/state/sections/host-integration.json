@@ -1,0 +1,32 @@
+{
+  "section_id": "section-1",
+  "section_name": "host-integration",
+  "status": "verified",
+  "owner": "coordinator (inline)",
+  "started_at": "2026-05-14T01:31:00Z",
+  "verified_at": "2026-05-14T01:34:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[id=section-1]",
+  "active_contracts": [
+    "contracts/original/host-integration--touchbar-renderer.json",
+    "contracts/original/host-integration--now-playing-source.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "1a",
+      "description": "host.js — WebSocket client to ws://127.0.0.1:{port}/ with registerPlugin handshake per probe-ip1/C.1.2; event dispatcher for willAppear/willDisappear/keyDown/keyUp/touchBarTap/touchBarSlide; setTitle/setImage outbound; logMessage routing.",
+      "status": "verified",
+      "builder_id": "builder-1a",
+      "output_path": "output/builders/host-integration/builder-1a/output.js"
+    },
+    {
+      "id": "1b",
+      "description": "process-utils.js — spawnSidecar(command,args), lifecycle (onStartup/onShutdown), log() routing into host's logMessage event per contracts/host-integration--now-playing-source.json.",
+      "status": "verified",
+      "builder_id": "builder-1b",
+      "output_path": "output/builders/host-integration/builder-1b/output.js"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_rationale": "Both builders' outputs were verified against contracts/original/host-integration--touchbar-renderer.json (drawText, onWillAppear, onWillDisappear, ActionContext) and contracts/original/host-integration--now-playing-source.json (spawnSidecar, log, onStartup, onShutdown). Acceptance assertions S1.A1 (WebSocket connect+registerPlugin within 5s), S1.A2 (willAppear/willDisappear dispatch), S1.A3 (drawText reaches host — externally unreachable per assertion source; verified internally that drawText composes the host-protocol setTitle/setFeedback messages with target context per Builder's reading of the live SDK template), and S1.A4 (child_process supervision with .kill()) are exercised by edge-case-testing in section-5."
+}

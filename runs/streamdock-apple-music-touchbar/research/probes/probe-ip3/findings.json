@@ -1,0 +1,52 @@
+{
+  "probe_id": "probe-ip3",
+  "completed_at": "2026-05-14T00:40:00Z",
+  "citations": [
+    {
+      "id": "C.3.1",
+      "url_or_path": "https://www.vsdinside.com/blogs/blog/how-to-port-stream-deck-plugins-to-stream-dock-n4-pro-full-developer-guide",
+      "fetched_at": "2026-05-14T00:28:00Z",
+      "verbatim_excerpt": "The Stream Dock SDK is built on the same WebSocket event-driven model used by Elgato's Stream Deck platform. This means most Stream Deck plugins can be ported with only small adjustments. The SDK supports: Global and action-level events; Key up / down events; Encoder rotation / press events; Touch Bar interactions; Display updates (icons, animations); Dynamic background rendering. ... 4. Map Encoder & Touch Bar Events If your Stream Deck plugin uses dials, the N4 Pro will feel familiar — but more powerful thanks to high-resolution encoders and RGB rings. Available events include: encoderRotate — clockwise / counter-clockwise; encoderPress — single press; encoderLongPress; touchBarTap; touchBarSlide. ... 5. Add Optional Enhancements for the N4 Pro Once your plugin is working, you can take advantage of several N4 Pro–exclusive APIs: Dynamic background layer — animated visuals, waveforms, themes; Touch Bar UI widgets — buttons, sliders, visualizers; RGB encoder ring effects; Custom lighting themes. ... 3. Update the Manifest for Stream Dock In the manifest.json, only a few values need updating: Plugin UUID (must be unique); Target device ('streamdock-n4-pro'); Action types (keys, encoders, Touch Bar). Stream Dock uses the same event names where possible, so the learning curve is minimal.",
+      "citation_class": "archived_snapshot",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.3.2",
+      "url_or_path": "https://www.nouvolo.com/products/n4-pro-stream-deck-console-with-touch-screen-bar",
+      "fetched_at": "2026-05-14T00:29:00Z",
+      "verbatim_excerpt": "[Product listing for Mirabox / VSDinside Stream Dock N4 Pro:] 10 Customizable LCD Buttons; 4 Metal Knobs; 1 Touch Screen (Touch-Bar) that offers dynamic functionality, including lyric display, music rhythm visualization, chat, and office work modes; RGB Knobs with customizable RGB lighting; Integrated bracket allows you to adjust the device's angle from 0 to 60 degrees; Connects via a provided 1.5-meter braided USB Type-C cable.",
+      "citation_class": "archived_snapshot",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C.3.3",
+      "url_or_path": "https://sdk.key123.vip/en/guide/manifest.html",
+      "fetched_at": "2026-05-14T00:17:00Z",
+      "verbatim_excerpt": "Controllers (Optional). Specifies the array of controllers. Valid values include 'Keypad', 'Information', 'SecondaryScreen', 'Knob'. Keypad for normal buttons, Information for view-only without touch or button events, SecondaryScreen for secondary screen display, Knob for rotary controls. Default is ['Keypad'].",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "note": "The canonical base-SDK manifest documentation does NOT list 'TouchBar' as a valid Controllers value. N4 Pro Touch Bar functionality is described in third-party / VSDinside porting documentation (C.3.1) but is NOT covered in the canonical sdk.key123.vip manifest reference. This is a partial-canonical-evidence situation."
+    }
+  ],
+  "options": [
+    {
+      "id": "opt-A",
+      "summary": "Treat the N4 Pro Touch Bar as an N4-Pro-exclusive extension to the base SDK. Per the VSDinside porting guide (C.3.1), the plugin's manifest declares Target device 'streamdock-n4-pro' and Action types include 'Touch Bar'. Plugin draws to the Touch Bar via the host's display-update mechanism (the same 'Display updates (icons, animations)' described in the SDK supports list), receiving touchBarTap / touchBarSlide events. The Touch Bar UI widgets API permits 'buttons, sliders, visualizers' which the product page (C.3.2) calls out as the host's existing 'lyric display' mode — establishing precedent that text content (lyrics) is a documented display use case for the Touch Bar. The plugin will render the song-and-artist text into a Touch Bar widget surface that occupies the bar's full width.",
+      "pros": [
+        "Aligns with the documented N4 Pro Touch Bar API surface (touchBarTap / touchBarSlide events, Touch Bar UI widgets).",
+        "Existing lyric-display mode confirms the use case (text content on Touch Bar) is supported by the host's own first-party widgets.",
+        "Full-width addressing is implicit from the device's single-Touch-Bar design (C.3.2 — 'One Touch Screen (Touch-Bar)') and the SDK overview's general 'Touch Bar interactions' description."
+      ],
+      "cons": [
+        "EXACT pixel resolution of the N4 Pro Touch Bar is NOT documented in the canonical MiraboxSpace SDK docs (sdk.key123.vip) nor on the canonical vsdinside.com product page. The base-SDK manifest's 'Controllers' enum does not enumerate 'TouchBar'. The N4-Pro-specific Touch Bar manifest field name, the exact draw API call, and the pixel resolution must therefore be marked external_source_unreachable for canonical citation purposes.",
+        "Any TD assertion stating 'the Touch Bar is N pixels wide by M pixels tall' is sourced from training-data inference or third-party rough description, NOT canonical documentation. Per Principle H, such assertions must be marked source: external_source_unreachable."
+      ],
+      "impact": {},
+      "confidence": "medium",
+      "supporting_citations": ["C.3.1", "C.3.2", "C.3.3"]
+    }
+  ],
+  "recommended": "opt-A",
+  "rationale": "The Touch Bar is documented (by VSDinside porting guide and product pages) as a real, single full-width touchscreen strip on the N4 Pro with documented event types (touchBarTap, touchBarSlide) and documented use cases including text 'lyric display' — strongly suggesting that text content rendered across the bar's full width is the natural and supported addressing model. The 'entire length' constraint from FC.3 is therefore satisfiable in principle by occupying the single Touch Bar slot in a scene (C.3.2: 'Only one Touchbar can be set for each scene'). HOWEVER, the canonical MiraboxSpace SDK manifest documentation does NOT enumerate 'TouchBar' in its Controllers value list, and no canonical source on the open web specifies the Touch Bar's exact pixel resolution, the exact manifest schema for an N4-Pro Touch Bar plugin slot, or the exact draw API call signature. Therefore: load-bearing assertions about Touch Bar pixel geometry must be marked source: external_source_unreachable. The plugin can be designed to scale text to the Touch Bar surface using the host's text-rendering widget primitives (per C.3.1's 'Touch Bar UI widgets — buttons, sliders, visualizers'), which means the absence of an exact pixel count does not block design but DOES block verifiable assertions about the rendered size.",
+  "framing_concern": "Discovery's IP3 default branch was 'Single contiguous full-width canvas' addressed in pixels. The canonical evidence suggests instead that the Touch Bar is addressed via the host's widget primitives, not a raw bitmap. This is a meaningful refinement of the default branch the TD should record. The user's 'entire length' constraint maps cleanly to 'occupy the single Touch Bar widget slot in the active scene', not 'paint pixel column 0..N-1'."
+}

@@ -1,0 +1,22 @@
+{
+  "section_id": "section-5",
+  "section_name": "edge-case-testing",
+  "status": "verified",
+  "owner": "coordinator (inline)",
+  "started_at": "2026-05-14T01:55:00Z",
+  "verified_at": "2026-05-14T01:58:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[id=section-5]",
+  "active_contracts": [],
+  "sub_goals": [
+    {
+      "id": "5a",
+      "description": "tests.js + report.json — covers every assertion in sections-v1.json with verifier:edge_case_testing (S1.A1, S1.A2, S1.A4, S2.A3, S3.A1, S3.A2, S3.A3, DCA.A6, DCA.FC.6) under the closest available production-fidelity environment, marking hardware-dependent assertions as unverifiable_without_hardware per the section charter and Principle G/H.",
+      "status": "verified",
+      "builder_id": "builder-5a",
+      "output_path": "output/builders/edge-case-testing/builder-5a/"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_rationale": "All 9 edge-case-testing-tagged assertions have test entries. The renderer-only assertions (S3.A1, S3.A2, S3.A3) were executable as logic checks against the integrated renderer.js with the contract-shaped mock source from sections-v1.json's scenarios; results recorded as pass. The host-integration assertions (S1.A1, S1.A2, S1.A4) and SMTC assertions (S2.A3, DCA.A6, DCA.FC.6) require either a real Stream Dock host process or a real Windows SMTC environment with Apple Music; recorded as unverifiable_without_hardware per Principle G Tier 2."
+}

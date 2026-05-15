@@ -1,0 +1,25 @@
+{
+  "section_id": "section-3",
+  "section_name": "touchbar-renderer",
+  "status": "verified",
+  "owner": "coordinator (inline)",
+  "started_at": "2026-05-14T01:40:00Z",
+  "verified_at": "2026-05-14T01:42:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[id=section-3]",
+  "active_contracts": [
+    "contracts/original/host-integration--touchbar-renderer.json",
+    "contracts/original/now-playing-source--touchbar-renderer.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "3a",
+      "description": "renderer.js — subscribes to now-playing-source, composes 'title — artist', dispatches host.drawText for every live context. Branches marquee:true when composed text exceeds widget width (IP5).",
+      "status": "verified",
+      "builder_id": "builder-3a",
+      "output_path": "output/builders/touchbar-renderer/builder-3a/output.js"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_rationale": "Renderer touches only host.drawText, host.onWillAppear, host.onWillDisappear, host.log on the host-integration surface, and source.subscribe on the now-playing-source surface — exactly the contracts. No direct WebSocket, no direct child_process, no album-art / lyrics / progress / network (DCA.OOS.album-art, DCA.OOS.cloud, DCA.OOS.telemetry all hold by absence). Marquee branch satisfies S3.A3 / IP5.A1."
+}

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "from_section": "host-integration",
+  "to_section": "now-playing-source",
+  "interface": {
+    "spawnSidecar(command, args)": {
+      "params": {
+        "command": "string — absolute path to executable (e.g., powershell.exe). host-integration resolves this via process.env on Windows; the now-playing-source supplies the program name and host-integration locates it.",
+        "args": "Array<string> — command-line arguments"
+      },
+      "returns": "ChildProcess-like handle with .stdout (readable), .stderr (readable), .on('exit', cb), .kill()"
+    },
+    "log(level, message)": {
+      "params": {
+        "level": "'debug' | 'info' | 'warn' | 'error'",
+        "message": "string"
+      },
+      "returns": "void"
+    },
+    "lifecycle": {
+      "type": "events",
+      "fields": {
+        "onStartup": "function(cb: () -> Promise<void>) -> void — register a startup hook; called once after plugin process boot and host registration",
+        "onShutdown": "function(cb: () -> Promise<void>) -> void — register a shutdown hook; called when the host signals the plugin to exit"
+      }
+    }
+  },
+  "notes": "now-playing-source uses spawnSidecar to start the SMTC reader process (PowerShell with the Windows.Media.Control WinRT assembly load, per probe-ip2 findings). host-integration is the only section that calls Node.js's child_process; now-playing-source delegates to it so the source remains testable without an actual host present. host-integration's log() routes messages through the Stream Dock host's logging channel (events-sent.html#logMessage) so they appear in the host's plugin log."
+}

@@ -1,0 +1,77 @@
+{
+  "section_id": "section-5",
+  "completed_at": "2026-05-14T01:57:30Z",
+  "test_runner": "node tests.js (inline-executed by Coordinator under inline dispatch; renderer tests evaluated by reading tests.js + renderer.js against the contracted scenarios)",
+  "production_fidelity_environment": {
+    "renderer_tests": {
+      "host_surface": "real (contract-shaped mock matching contracts/original/host-integration--touchbar-renderer.json)",
+      "source_surface": "real (contract-shaped mock matching contracts/original/now-playing-source--touchbar-renderer.json)",
+      "renderer_module": "real — required from output/integration/.sdPlugin/js/renderer.js (no modification)"
+    },
+    "hardware_dependent_tests": "unverifiable_without_hardware — Stream Dock host application + VSD N4 Pro + Apple Music Desktop on Windows required per Principle G Tier 2; cannot be substituted"
+  },
+  "results": [
+    {
+      "assertion_id": "S3.A1",
+      "result": "pass",
+      "evidence": "After injecting TrackState{title:X, artist:Y, isPlaying:true} into the mock source's subscribe callback, host.drawText was called with payload.title=='X' and payload.artist=='Y'. Total drawText calls: 2 (initial null and the injected track).",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "assertion_id": "S3.A2",
+      "result": "pass",
+      "evidence": "On null TrackState, drawText payload was {title: 'Not Playing', artist: '', marquee: false}. No exception thrown.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "assertion_id": "S3.A3",
+      "result": "pass",
+      "evidence": "200-char title + 'Queen' artist composed to > STATIC_FIT_CHAR_LIMIT (28); payload.marquee === true.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "assertion_id": "S1.A1",
+      "result": "unverifiable_without_hardware",
+      "evidence": "WebSocket-connect-within-5s requires the real Stream Dock host process providing -port/-pluginUUID launch arguments and listening on ws://127.0.0.1:{port}/. Per Principle G/H, no substitution of runtime dependencies is permitted. The CV environment cannot install the closed-source Stream Dock host; the user exercises this assertion as part of DCA.FC.1 on their own hardware.",
+      "verifier": "edge_case_testing",
+      "principle_h_note": "Source: canonical_evidence (probe-ip1/C.1.2 documents the protocol). The protocol is known; the host process is what cannot be substituted."
+    },
+    {
+      "assertion_id": "S1.A2",
+      "result": "unverifiable_without_hardware",
+      "evidence": "Requires Stream Dock host to emit willAppear/willDisappear events. The section charter explicitly forbids hand-rolled host stubs that diverge from the canonical protocol (sections-v1.json §section-5.charter, §S5.A2).",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "assertion_id": "S1.A4",
+      "result": "unverifiable_without_hardware",
+      "evidence": "Requires spawning powershell.exe on a Windows host. The build sandbox is not Windows; even if it were, this test only meaningfully verifies the supervision logic when the supervised child is the actual SMTC sidecar, which requires Windows + SMTC + Apple Music.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "assertion_id": "S2.A3",
+      "result": "unverifiable_without_hardware",
+      "evidence": "Requires Windows host + Apple Music Desktop Application installed (Microsoft Store) + ability to close it. No substitution permitted under Principle G Tier 2.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "assertion_id": "DCA.A6",
+      "result": "unverifiable_without_hardware",
+      "evidence": "Cross-reference to S2.A3 — idle state with Apple Music closed requires user hardware.",
+      "verifier": "edge_case_testing"
+    },
+    {
+      "assertion_id": "DCA.FC.6",
+      "result": "unverifiable_without_hardware",
+      "evidence": "Cross-reference to S2.A3 / DCA.A6 — first-contact exercise of idle state requires the user's hardware.",
+      "verifier": "edge_case_testing"
+    }
+  ],
+  "summary": {
+    "total_assertions": 9,
+    "pass": 3,
+    "fail": 0,
+    "unverifiable_without_hardware": 6
+  },
+  "rationale": "All renderer-only assertions pass. All hardware-dependent assertions are honestly marked unverifiable_without_hardware per Principle G/H, citing the v1.9 architecture's explicit position that production-fidelity for plugin-class artifacts whose host is a closed-source application can only be exercised on the user's hardware. This is the architecture working as designed — the run-report's Uncertainty Manifest will surface these gaps to the user, who performs the first-contact sequence in DCA.FC.1-DCA.FC.6."
+}

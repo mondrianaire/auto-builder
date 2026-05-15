@@ -1,0 +1,24 @@
+{
+  "probe_id": "probe-ip2",
+  "created_at": "2026-05-14T00:00:00Z",
+  "phase": "planning",
+  "dispatched_by": "technical-discovery",
+  "question": "What is the mechanism by which the Windows-native Apple Music Desktop Application exposes its currently-playing track metadata (title, artist) to other Windows processes? Confirm whether the Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager (SMTC) API can be used to obtain the Title, Artist, and a MediaPropertiesChanged event for the Apple Music app, and whether the Windows Apple Music app actually publishes an SMTC session. Cite (a) Microsoft documentation for GlobalSystemMediaTransportControlsSessionManager — class existence, properties, events; (b) any canonical confirmation (Microsoft, Apple, archived community report) that the Windows Apple Music app participates in SMTC.",
+  "context_pointers": [
+    "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.3]",
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP2]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7]"
+  ],
+  "constraints": [
+    "Target OS is Windows. The Apple Music referenced is the Apple-published Windows desktop application distributed via the Microsoft Store, NOT iTunes for Windows and NOT macOS Music.app.",
+    "Cloud / Apple Music Web API is explicitly out of scope per A7.",
+    "Findings about SMTC API capability come from Microsoft canonical docs (citation_class: static_canonical). Findings about whether the Apple Music app participates in SMTC may need archived_snapshot or interactive_doc citations from community reports if Microsoft/Apple don't directly document the participation.",
+    "If you find that Apple Music on Windows does NOT participate in SMTC, surface alternatives (window-title scraping, accessibility APIs, COM automation) with their own citation requirements.",
+    "Do not return findings as summaries of training-data familiarity. Actually fetch the Microsoft docs page and quote it."
+  ],
+  "optimization_criterion": "fit_to_project_goals",
+  "preserve_sections": null,
+  "questioning_authority": false,
+  "budget_minutes": 12,
+  "max_options": 4
+}

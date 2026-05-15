@@ -1,0 +1,50 @@
+{
+  "Name": "Apple Music Now Playing (Touch Bar)",
+  "Author": "Auto Builder v1.9",
+  "Version": "1.0.0",
+  "Description": "Shows the currently playing song and artist from the Apple Music Desktop Application on the VSD N4 Pro Touch Bar.",
+  "Icon": "images/icon",
+  "Category": "Music",
+  "CategoryIcon": "images/icon",
+  "URL": "https://github.com/MiraboxSpace/StreamDock-Plugin-SDK",
+  "CodePath": "index.js",
+  "SDKVersion": 1,
+  "Software": {
+    "MinimumVersion": "3.10.188.226"
+  },
+  "OS": [
+    { "Platform": "windows", "MinimumVersion": "10" }
+  ],
+  "Nodejs": {
+    "Version": "20"
+  },
+  "TargetDevice": "streamdock-n4-pro",
+  "Actions": [
+    {
+      "UUID": "com.autobuilder.applemusic-now-playing.touchbar",
+      "Name": "Apple Music Now Playing",
+      "Tooltip": "Display the currently playing Apple Music track on the Touch Bar.",
+      "Icon": "images/icon",
+      "PropertyInspectorPath": null,
+      "SupportedInMultiActions": false,
+      "Controllers": ["TouchBar", "Information"],
+      "TargetDevice": "streamdock-n4-pro",
+      "Type": "TouchBar",
+      "Encoder": {
+        "background": "images/icon",
+        "Icon": "images/icon",
+        "layout": "$X1",
+        "TouchBar": true
+      },
+      "States": [
+        {
+          "Image": "images/icon",
+          "TitleAlignment": "middle",
+          "FontSize": "16",
+          "ShowTitle": true,
+          "Title": "Not Playing"
+        }
+      ]
+    }
+  ]
+}

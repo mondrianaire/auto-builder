@@ -1,0 +1,15 @@
+Placeholder for icon.png / icon@2x.png
+
+The Stream Dock SDK manifest's Icon field expects an image asset (PNG)
+present at the path declared in manifest.Icon ("images/icon", with the
+host appending .png and @2x.png as needed). This build does not contain
+a binary icon because the build agent only produces text artifacts; a
+production deliverable should include a 72x72 PNG named icon.png and a
+144x144 PNG named icon@2x.png in this directory.
+
+If the icon is missing, the host typically falls back to a default icon
+and logs a warning to the plugin log channel; the plugin still loads and
+functions, but the action list entry uses a placeholder thumbnail.
+
+This is documented in the run-report's Uncertainty Manifest as the
+'missing icon assets' gap.

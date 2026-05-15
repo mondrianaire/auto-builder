@@ -1,0 +1,32 @@
+{
+  "section_id": "section-2",
+  "section_name": "now-playing-source",
+  "status": "verified",
+  "owner": "coordinator (inline)",
+  "started_at": "2026-05-14T01:35:00Z",
+  "verified_at": "2026-05-14T01:39:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[id=section-2]",
+  "active_contracts": [
+    "contracts/original/now-playing-source--touchbar-renderer.json",
+    "contracts/original/host-integration--now-playing-source.json"
+  ],
+  "sub_goals": [
+    {
+      "id": "2a",
+      "description": "smtc-reader.ps1 — PowerShell sidecar that loads the Windows.Media.Control WinRT assembly, awaits GlobalSystemMediaTransportControlsSessionManager.RequestAsync(), filters sessions by SourceAppUserModelId substring 'AppleMusic' (case-insensitive), subscribes to MediaPropertiesChanged / PlaybackInfoChanged on the selected session and CurrentSessionChanged / SessionsChanged on the manager, and emits JSON-line TrackState on stdout.",
+      "status": "verified",
+      "builder_id": "builder-2a",
+      "output_path": "output/builders/now-playing-source/builder-2a/output.ps1"
+    },
+    {
+      "id": "2b",
+      "description": "source.js — Node consumer that calls host-integration.spawnSidecar('powershell.exe', [...]) to start the PS sidecar, parses line-delimited JSON from stdout, debounces ~150ms, and exposes subscribe(onTrack) per contracts/now-playing-source--touchbar-renderer.json.",
+      "status": "verified",
+      "builder_id": "builder-2b",
+      "output_path": "output/builders/now-playing-source/builder-2b/output.js"
+    }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_rationale": "Builder-2a satisfies IP2.A2 (Windows.Media.Control + GlobalSystemMediaTransportControlsSessionManager literal strings), IP2.A3 (AppleMusic substring filter, source: external_source_unreachable for the exact AppId per IP2.A3), IP2.A4 (Register-ObjectEvent on the named events). Builder-2b satisfies the contract (subscribe / unsubscribe / TrackState{title, artist, isPlaying, sourceAppId} / null on idle). Acceptance assertions S2.A1, S2.A2 are prompt_named_verb (require user hardware); S2.A3 is edge_case_testing; S2.A4 is critic_final_sweep (structural). The 150ms debounce satisfies the contract's MUST."
+}

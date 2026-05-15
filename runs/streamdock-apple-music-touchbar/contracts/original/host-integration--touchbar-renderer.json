@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "from_section": "host-integration",
+  "to_section": "touchbar-renderer",
+  "interface": {
+    "onWillAppear(callback)": {
+      "params": {
+        "callback": "function(context: ActionContext) -> void; fired by the Stream Dock host (per architecture.html WebSocket events) when this plugin's action becomes visible on the device (i.e., the user has placed it on the Touch Bar of the active scene)"
+      },
+      "returns": "void"
+    },
+    "onWillDisappear(callback)": {
+      "params": {
+        "callback": "function(context: ActionContext) -> void; fired when the action is no longer visible (scene change, plugin removed, host closing)"
+      },
+      "returns": "void"
+    },
+    "drawText(context, payload)": {
+      "params": {
+        "context": "ActionContext (the host-supplied opaque identifier for this action instance)",
+        "payload": {
+          "title": "string — primary text (song title)",
+          "artist": "string — secondary text (artist name)",
+          "marquee": "bool — true if the renderer wants the host to scroll long content; false for static display"
+        }
+      },
+      "returns": "Promise<void> — resolves when the host has acknowledged the draw command"
+    },
+    "ActionContext": {
+      "type": "opaque-string",
+      "notes": "Host-issued context identifier per the SDK's registration protocol. Renderer never inspects it; only echoes it back to drawText."
+    }
+  },
+  "notes": "host-integration owns the WebSocket connection to the Stream Dock host on the port supplied at plugin registration. drawText composes the host-protocol message (setTitle / setImage / N4-Pro-specific Touch Bar widget update — exact wire format determined by host-integration internally per the SDK's documented events-sent.html). The renderer does not need to know whether the underlying mechanism is setTitle (text on a widget) or a rendered-bitmap setImage; host-integration encapsulates that detail. Per probe-ip3 findings, the precise N4-Pro Touch Bar widget API field names are not canonically documented; host-integration's choice of host call is therefore a builder-time decision documented in that section's output."
+}

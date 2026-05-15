@@ -1,0 +1,14 @@
+{
+  "name": "applemusic-now-playing-streamdock",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Apple Music Now Playing plugin for MiraboxSpace Stream Dock VSD N4 Pro (Touch Bar). Runs under the host's built-in Node.js 20.",
+  "main": "index.js",
+  "dependencies": {
+    "ws": "^8.16.0"
+  },
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  }
+}

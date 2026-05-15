@@ -1,0 +1,25 @@
+{
+  "id": "esc-002",
+  "created_at": "2026-05-14T02:15:00Z",
+  "from_overseer": "critic",
+  "section_id": null,
+  "severity_estimate": "cross-section-architectural",
+  "type": "schema_coverage_gap",
+  "summary": "Prose-coverage walk per file_schemas.md § Coverage-Required Fields finds that IP1.default_branch, IP2.default_branch, IP3.default_branch, and IP4.default_branch in decisions/discovery/ledger-v1.json have no assertions with a 'covers' field pointing at them directly. Coverage IS satisfied transitively (IPn.chosen_branch in sections-v1.json is itself coverage-required and is covered by machine_checkable_assertions), and IP5/IP6 default_branch is covered directly. The strict property check fails for IP1-IP4 default_branch.",
+  "blocked_work": [],
+  "evidence": {
+    "coverage_required_field": "decisions/discovery/ledger-v1.json#inflection_points[].default_branch",
+    "covered_directly": ["IP5.default_branch", "IP6.default_branch"],
+    "covered_only_transitively_via_chosen_branch": ["IP1.default_branch", "IP2.default_branch", "IP3.default_branch", "IP4.default_branch"],
+    "minor_anomaly": "DCA.FC.3 has covers='decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]' (omits '.description' suffix); all other FC DCAs use '.description'. Resolves to the same prose, but inconsistent with the coverage-required canonical path."
+  },
+  "proposed_resolution": {
+    "type": "v1_10_schema_clarification",
+    "options": [
+      "Codify in file_schemas.md that ledger#inflection_points[id=IPn].default_branch is satisfied transitively when sections-v1.json#inflection_resolutions[ip_id=IPn].chosen_branch is covered (since chosen_branch IS the resolution of default_branch).",
+      "Require TD to add explicit DCA entries that cover ledger#inflection_points[].default_branch alongside the existing chosen_branch coverage. Adds N more entries but makes the property check trivially satisfiable.",
+      "Normalize covers-pointer suffix conventions so the strict walker can resolve them without alias rules (e.g., always end with the canonical field name as listed in the coverage-required table)."
+    ]
+  },
+  "rationale_for_severity": "Cross-section-architectural: this is a schema-vs-implementation property mismatch, not a section-level defect. The underlying decisions ARE covered; the schema's strict reading just isn't met. v1.10 candidate."
+}

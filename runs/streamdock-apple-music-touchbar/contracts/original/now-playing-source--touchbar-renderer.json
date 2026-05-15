@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "from_section": "now-playing-source",
+  "to_section": "touchbar-renderer",
+  "interface": {
+    "subscribe(onTrack)": {
+      "params": {
+        "onTrack": "function(track: TrackState | null) -> void; called immediately with the current state (or null if unknown) and again on every change"
+      },
+      "returns": { "unsubscribe": "function() -> void" }
+    },
+    "TrackState": {
+      "type": "object",
+      "fields": {
+        "title": "string (non-empty; the song title as reported by SMTC's MediaProperties.Title for the active Apple Music session)",
+        "artist": "string (possibly empty if SMTC reports no artist; the artist as reported by SMTC's MediaProperties.Artist)",
+        "isPlaying": "bool (true if the SMTC playback status for the Apple Music session is Playing; false for Paused/Stopped/Closed/Changing/Opened)",
+        "sourceAppId": "string (the SMTC SourceAppUserModelId of the session being read; for the Windows Apple Music app this is the Microsoft Store package family name, expected to contain 'AppleMusic' substring)"
+      }
+    },
+    "idleState()": {
+      "params": {},
+      "returns": "TrackState | null — the well-defined idle state to be passed to onTrack when Apple Music is closed or has no current session. Implementation MUST return null in that case (not a fabricated track)."
+    }
+  },
+  "notes": "Subscription is push-based. Source implementation handles polling vs event-driven internally (per IP6); consumers see only the callback. The source MUST coalesce rapid changes (debounce ~150ms) so the renderer is not flooded during track scrubbing. The source MUST filter the SMTC sessions to the Apple Music session by SourceAppUserModelId; if multiple media apps publish sessions concurrently, the Apple Music one is the target even when it is not GetCurrentSession()."
+}

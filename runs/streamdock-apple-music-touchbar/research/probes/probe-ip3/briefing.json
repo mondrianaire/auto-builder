@@ -1,0 +1,23 @@
+{
+  "probe_id": "probe-ip3",
+  "created_at": "2026-05-14T00:00:00Z",
+  "phase": "planning",
+  "dispatched_by": "technical-discovery",
+  "question": "What is the display geometry and addressing model of the MiraboxSpace StreamDock VSD N4 Pro's Touchbar Mode? Specifically: (a) pixel resolution along the long axis and the short axis of the touch bar; (b) orientation; (c) addressing model — is it a single full-width canvas, a row of N virtual keys whose combined width spans the bar, a 'wide widget' / 'long key' slot type, or something else; (d) the host application's API for declaring or installing a plugin into a Touchbar Mode slot that spans the entire length; (e) any draw cadence / refresh constraints documented for Touchbar Mode draw.",
+  "context_pointers": [
+    "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.2]",
+    "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.4]",
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP3]",
+    "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]"
+  ],
+  "constraints": [
+    "Cite canonical MiraboxSpace sources (product page, SDK / developer documentation). Training-data analogies to the macOS MacBook Pro Touch Bar are NOT citations.",
+    "If MiraboxSpace's documentation is unreachable / does not document the touchbar geometry in canonical form, set external_source_unreachable: true and surface that the FC.3 'entire length' constraint cannot be verified without canonical evidence.",
+    "Distinguish carefully: 'Touchbar Mode' is a named operating mode of the VSD N4 Pro hardware, distinct from rows of keys."
+  ],
+  "optimization_criterion": "fit_to_project_goals",
+  "preserve_sections": null,
+  "questioning_authority": false,
+  "budget_minutes": 10,
+  "max_options": 4
+}

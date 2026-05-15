@@ -1,0 +1,41 @@
+{
+  "created_at": "2026-05-14T11:30:00Z",
+  "supersedes_integration_at": "2026-05-14T01:52:00Z",
+  "reason": "recovery_patch",
+  "trigger": {
+    "type": "cv_sandbox_artifact_cleanup",
+    "evidence_pointer": "output/verification/report.json#summary (CV-reported hygiene issue)",
+    "summary": "The Convergence Verifier wrote a one-line test artifact (cv-test.tmp) and a sidecar dependency symlink (node_modules -> /tmp/teststreamdock/node_modules) into the integrated .sdPlugin directory during its verification probes, then could not unlink them because the workspace mount denied delete operations. Both files are non-functional (the symlink target does not survive sandbox teardown) and would, if shipped, appear in the user-extracted plugin as foreign artifacts."
+  },
+  "added_files": [],
+  "modified_files": [
+    {
+      "path": "output/final/com.autobuilder.applemusic-now-playing.sdPlugin.zip",
+      "size_bytes": 11562,
+      "diff_summary": "Re-zipped from a clean staging tree (constructed in sandbox /tmp from the legitimate per-section builder outputs) so the canonical distribution artifact does not include cv-test.tmp or node_modules. The zip in output/integration/ was not overwritten; the Integrator's manifest still references its 11562-byte sibling produced post-Critic Sev 1. The two zips are intentionally byte-equivalent in content but produced at different times.",
+      "comparison": "Earlier-version zip in output/integration/ ALSO does not contain cv-test.tmp or node_modules (it was produced by Coordinator at 11:05 BEFORE CV's verification run at 11:11). So the canonical distribution surface (the zip) is consistent between integration/ and final/. The divergence is only in the expanded .sdPlugin/ directory."
+    }
+  ],
+  "removed_files": [],
+  "known_residual_artifacts_in_final_sdplugin_directory": [
+    {
+      "path": "output/final/com.autobuilder.applemusic-now-playing.sdPlugin/cv-test.tmp",
+      "size_bytes": 153,
+      "kind": "regular_file",
+      "origin": "Created by CV during verification; sandbox mount refused delete operation when Orchestrator attempted cleanup.",
+      "user_action": "Safe to delete manually after extracting the plugin. The file is excluded from the .sdPlugin.zip distribution; it only exists in the expanded directory form.",
+      "harm_if_not_deleted": "None functional. The Stream Dock host application will not interpret this file as a code or asset entry. It is foreign-looking clutter."
+    },
+    {
+      "path": "output/final/com.autobuilder.applemusic-now-playing.sdPlugin/node_modules",
+      "kind": "dangling_symbolic_link",
+      "symlink_target": "/tmp/teststreamdock/node_modules",
+      "origin": "Created by CV's PowerShell+Node probe environment; target was the verifier's sandbox temp dir which does not persist outside the verifier's session.",
+      "user_action": "Safe to delete manually after extracting the plugin. Excluded from the .sdPlugin.zip distribution.",
+      "harm_if_not_deleted": "If the user copies the directory directly (rather than extracting the zip) and runs from this location on their Windows PC, the dangling symlink is meaningless to Node on Windows and produces no behavior. If the user runs `npm install` inside the .sdPlugin to provide the 'ws' dep, the dangling link should be removed first so npm can create a real node_modules directory."
+    }
+  ],
+  "user_facing_canonical_artifact": "output/final/com.autobuilder.applemusic-now-playing.sdPlugin.zip — the user should distribute and install from the zip, not by copying the directory form, to avoid the two residual artifacts above.",
+  "approved_by_role": "orchestrator",
+  "rationale": "Sandbox-mount permission semantics blocked Orchestrator from unlinking the two CV-generated artifacts during the integration->final copy phase. Re-producing the canonical zip from a clean staging tree (sandbox /tmp, full permission control) and re-writing it into output/final/ via cp -f was sufficient to ensure the distribution artifact does not propagate the artifacts. The expanded directory form in output/final/ retains the two residuals as audit evidence; the divergence record above documents them explicitly per file_schemas.md § divergence-from-integration.json. This is a v1.10 architecture surface: sandbox-mount delete-permission limitations under inline dispatch should be either (a) detected pre-build and routed around, or (b) recognized in the divergence schema as a class of justified residuals."
+}

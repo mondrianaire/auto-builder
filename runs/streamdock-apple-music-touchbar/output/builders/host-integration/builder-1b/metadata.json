@@ -1,0 +1,15 @@
+{
+  "builder_id": "builder-1b",
+  "section_id": "section-1",
+  "status": "completed",
+  "completed_at": "2026-05-14T01:33:30Z",
+  "output_files": ["output.js"],
+  "produces": "process-utils.js — spawnSidecar and shutdown cleanup; companion to host.js (builder-1a).",
+  "contract_compliance": [
+    {
+      "contract": "contracts/original/host-integration--now-playing-source.json",
+      "satisfies": ["spawnSidecar(command, args)", "ChildProcess handle .stdout/.stderr/.on('exit',cb)/.kill()"]
+    }
+  ],
+  "rationale": "Encapsulates child_process so section-2 (now-playing-source) does not call spawn directly (per contract). Registers SIGINT/SIGTERM handlers to kill orphan sidecar children when the host terminates the plugin — satisfies S1.A4 (sidecar supervision). Does not implement the SMTC logic itself; that lives in the PowerShell script delivered by section-2."
+}

@@ -1,0 +1,364 @@
+{
+  "version": 1,
+  "schema": "cv_report_v1.9",
+  "role": "convergence-verifier",
+  "run": "streamdock-apple-music-touchbar",
+  "architecture_version": "v1.9",
+  "started_at": "2026-05-14T01:58:00Z",
+  "completed_at": "2026-05-14T02:08:00Z",
+  "verdict": "pass_with_concerns",
+  "first_contact_failure": false,
+  "verdict_rationale": "All structural and Tier-3 sub-goal checks that the CV environment can actually exercise pass cleanly: the renderer's pure JavaScript logic is exercised under production-fidelity in Node and behaves per spec for the normal-track, idle, and long-title scenarios; the host module loads and exposes the contracted surface; the manifest, sidecar PowerShell source, and README contain the canonical substrings each canonical_evidence assertion requires; the .sdPlugin directory and its .zip sibling are both present with correct top-level structure. Tier 1 (PNV.1) and Tier 2 (FC.1-FC.5 behavioral first contact) cannot be exercised in this environment without committing the Principle H violation v1.9 was designed to prevent (no fake-host substitution; modeling the MiraboxSpace Stream Dock host from TD's own plan is the exact failure mode the v1.8 fake-SDK case demonstrated). FC.6 (idle behavior) is structurally satisfied by renderer code but its behavioral first-contact verification on real Apple-Music-not-running likewise requires user hardware. The CV charter language treats these as result: unverifiable_under_production_fidelity (an environmental gap), not result: fail. Per the architecture's deliverability contract, the build proceeds and the gaps are surfaced to the user via the Uncertainty Manifest. Verdict is pass_with_concerns rather than pass because the prompt-named verb is not behaviorally confirmed in this verification environment.",
+  "production_fidelity_environment": {
+    "summary": "Mixed: the renderer module (pure JavaScript) is exercised in production-fidelity (real Node.js 22 in CV's sandbox; the production runtime is Node 20 bundled by the host but the renderer uses no version-specific APIs). The host module is loaded but not connected (the Stream Dock host process is unavailable). The PowerShell sidecar is statically inspected only (the sandbox is Linux; powershell.exe is unavailable; the SMTC WinRT API is Windows-only). The Stream Dock host application and the VSD N4 Pro hardware are both absent and per Principle H may not be modeled from TD's plan; canonical MiraboxSpace SDK documentation is cited as the basis of structural substitute checks against the manifest and install path only.",
+    "components": [
+      {
+        "component": "renderer.js (touchbar-renderer module)",
+        "tagging": "real",
+        "evidence": "Loaded via require() into Node 22.22.0 inside the CV sandbox; composePayload exercised against null, normal, long-title, and short-text inputs; renderer.start exercised against a contract-shaped host mock and a contract-shaped source mock per contracts/original/host-integration--touchbar-renderer.json and contracts/original/now-playing-source--touchbar-renderer.json. The renderer's only runtime dependencies are the two host-surface functions and the source.subscribe function — none of which are substituted dependencies; they are the contracted surfaces themselves.",
+        "principle_h_note": "Contract-shaped mocks are NOT a fake-SDK violation. The contracts are CV-readable internal interfaces between sections; the renderer module's external system property is JavaScript semantics, which Node 22 reproduces fidelity-equivalently to Node 20 for the language features used here."
+      },
+      {
+        "component": "host.js (StreamDockHost class, parseHostArgs)",
+        "tagging": "real (load + pure-function exercise) / modeled (connect+WebSocket lifecycle)",
+        "evidence": "Module loads cleanly under Node 22 once the 'ws' dependency is provided. parseHostArgs is exercised on a canonical argv shape ('-port 1234 -pluginUUID x.y.z -registerEvent registerPlugin -info {}') and returns the documented structure. _composeText is exercised on empty/title-only/both inputs. The connect() WebSocket lifecycle and registerPlugin send are NOT exercised against a real Stream Dock host process because per Principle H the host process cannot be modeled from TD's plan. The WebSocket-protocol code paths therefore remain structurally inspected only.",
+        "principle_h_note": "No modeled host was constructed. CV deliberately refrained from spinning up a WebSocket server that 'speaks the Stream Dock protocol' because no canonical MiraboxSpace WebSocket protocol specification with full message schemas was retrievable; constructing one would model the host from TD's plan, which is the exact failure mode v1.9 was designed to prevent."
+      },
+      {
+        "component": "source.js (now-playing-source Node consumer)",
+        "tagging": "real (load + interface exercise)",
+        "evidence": "Module imports cleanly. The createSource(host) factory exercises the contract: it validates host.spawnSidecar presence (throws if absent), returns the documented { subscribe, idleState } shape, the subscribe call attaches a callback and would invoke spawnSidecar('powershell.exe', [...]) on first subscribe. The actual sidecar spawn was not invoked because powershell.exe is unavailable in the Linux sandbox.",
+        "principle_h_note": "n/a — no modeling of external systems performed."
+      },
+      {
+        "component": "smtc-reader.ps1 (PowerShell SMTC sidecar)",
+        "tagging": "modeled (static-inspection-only; cannot execute in sandbox)",
+        "modeling_basis": "External canonical citations: probe-ip2/C.2.1 (https://learn.microsoft.com/en-us/uwp/api/windows.media.control.globalsystemmediatransportcontrolssessionmanager), probe-ip2/C.2.2 (9to5Mac archived snapshot confirming Apple Music on Windows participates in SMTC), probe-ip2/C.2.3 (github.com/DubyaDude/WindowsMediaController reference implementation pattern). The presence of the cited substrings in the script (Windows.Media.Control, GlobalSystemMediaTransportControlsSessionManager, MediaPropertiesChanged/PlaybackInfoChanged, AppleMusic substring filter) was verified by grep against the script text.",
+        "principle_h_note": "The model is derived from canonical Microsoft documentation, not from TD's plan. Static substitute checks are limited to 'does the script contain the documented API surface'; the SMTC runtime behavior on Apple Music remains unverifiable in CV's environment."
+      },
+      {
+        "component": "MiraboxSpace Stream Dock host application (the plugin runtime)",
+        "tagging": "absent",
+        "principle_h_note": "Cannot be modeled per Principle H — modeling the host from TD's plan is the v1.8 fake-SDK failure mode. No canonical host-process-protocol full specification with all message schemas is publicly retrievable; the cited canonical sources (sdk.key123.vip) describe the SDK and manifest shape but do not provide a runnable host substitute. Therefore: not substituted, declared absent, and the assertions that require this component land as unverifiable_under_production_fidelity rather than as model-pass or fail.",
+        "external_citations": [
+          "https://sdk.key123.vip/en/guide/architecture.html (probe-ip1/C.1.2): documents the WebSocket-based host<->plugin protocol shape but not the full message schema for Touch Bar widget updates",
+          "https://sdk.key123.vip/en/guide/manifest.html (probe-ip1/C.1.3): documents the manifest field set but enumerates only Keypad/Information/SecondaryScreen/Knob in Controllers — TouchBar is NOT canonically enumerated, justifying TD's external_source_unreachable label on IP3.A1/S1.A3"
+        ]
+      },
+      {
+        "component": "VSD N4 Pro hardware device",
+        "tagging": "absent",
+        "principle_h_note": "Physical hardware cannot be modeled. Pixel geometry, Touch Bar surface addressing, refresh cadence, all unverifiable in CV's environment. The 'entire length of the touch bar' constraint can only be observed on real hardware.",
+        "external_citations": [
+          "https://www.vsdinside.com/blogs/blog/how-to-port-stream-deck-plugins-to-stream-dock-n4-pro-full-developer-guide (probe-ip3/C.3.1, archived_snapshot, third-party porting guide)",
+          "https://www.nouvolo.com/products/n4-pro-stream-deck-console-with-touch-screen-bar (probe-ip3/C.3.2, archived_snapshot, retailer product page describing 'Touch Screen (Touch-Bar)' modes)"
+        ]
+      },
+      {
+        "component": "Apple Music Desktop Application (Windows / Microsoft Store)",
+        "tagging": "absent",
+        "principle_h_note": "Cannot be modeled. The exact SourceAppUserModelId is external_source_unreachable per IP2.A3; the build's substring-match 'AppleMusic' is a best-effort heuristic documented in the Uncertainty Manifest. SMTC behavior under Apple Music can only be verified on a Windows PC with Apple Music installed and a track playing.",
+        "external_citations": [
+          "https://learn.microsoft.com/en-us/uwp/api/windows.media.control.globalsystemmediatransportcontrolssessionmanager (probe-ip2/C.2.1): canonical Microsoft documentation for the SMTC API surface",
+          "https://9to5mac.com/2023/04/25/apple-music-windows-media-keys-lyrics-more/ (probe-ip2/C.2.2): contemporaneous confirmation that Apple Music on Windows participates in SMTC"
+        ]
+      }
+    ],
+    "exceptions_acknowledged": [
+      {
+        "exception": "Node 22 used in sandbox vs Node 20 bundled by host",
+        "rationale": "The renderer uses only language features (require, const, arrow functions, template literals, String.prototype.repeat) that are stable across Node 14+. No production-fidelity-relevant deviation.",
+        "could_mask": "Unlikely to mask any defect. A Node-20-specific runtime bug in the renderer would also fire under Node 22 for the language features used."
+      },
+      {
+        "exception": "'ws' module installed via npm in sandbox rather than provided by host's bundled Node",
+        "rationale": "The integration manifest documents that 'ws' is a runtime dependency not bundled in the .sdPlugin's node_modules. CV's load-test confirmed host.js requires 'ws' successfully when the dependency is present. On the user's Windows machine, the user must run `npm install --omit=dev` inside the .sdPlugin before first load, OR the host's bundled Node may provide 'ws' built-in.",
+        "could_mask": "A 'Cannot find module ws' first-load failure if the user does not run npm install and the host does not bundle 'ws'. This is the missing_or_known_gap[1] item in the integration manifest and is carried forward into the Uncertainty Manifest."
+      }
+    ]
+  },
+  "principle_h_skips": [],
+  "first_contact_results": [
+    {
+      "id": "FC.1",
+      "description": "After install, plugin appears in Stream Dock host's plugin list / available-actions catalog on Windows.",
+      "result": "unverifiable_under_production_fidelity",
+      "production_fidelity_gap": "Stream Dock host application is not installed and per Principle H cannot be modeled from TD's plan; sandbox is Linux. CV cannot launch the host's plugin loader.",
+      "static_substitute": {
+        "performed": true,
+        "checks": [
+          "manifest.json present at .sdPlugin/manifest.json — PASS",
+          "manifest.SDKVersion == 1 (matches probe-ip1/C.1.3) — PASS",
+          "manifest.OS contains windows entry (matches probe-ip1/C.1.3) — PASS",
+          "manifest.Software.MinimumVersion == '3.10.188.226' (Node 20 host) — PASS",
+          "manifest.CodePath == 'index.js' and index.js exists — PASS",
+          "Directory name suffix == .sdPlugin — PASS",
+          "Zip distribution preserves directory at root — PASS (verified via unzip -l)"
+        ],
+        "interpretation": "Structural preconditions for FC.1 satisfied. Behavioral FC.1 (host actually enumerates the plugin in its UI) requires the host."
+      }
+    },
+    {
+      "id": "FC.2",
+      "description": "User can select Touchbar Mode on the VSD N4 Pro and assign the plugin to occupy the touch bar via the host UI.",
+      "result": "unverifiable_under_production_fidelity",
+      "production_fidelity_gap": "Requires both the Stream Dock host UI and the VSD N4 Pro hardware. Neither is present and per Principle H cannot be modeled.",
+      "static_substitute": {
+        "performed": true,
+        "checks": [
+          "manifest.Actions[0].Controllers includes 'TouchBar' — PASS (literal token; canonical SDK enumeration does NOT contain TouchBar per probe-ip3/C.3.3; token sourced from VSDinside porting guide + MiraboxSpace example repo per dev-001/IP3.A1 — flagged in Uncertainty Manifest)",
+          "manifest.Actions[0].Type == 'TouchBar' — PASS",
+          "manifest.TargetDevice == 'streamdock-n4-pro' — PASS",
+          "Action count == 1 (IP3.A2: 'entire length' satisfied by occupying the single per-scene Touch Bar slot) — PASS"
+        ],
+        "interpretation": "Structural preconditions satisfied with the documented Uncertainty Manifest caveat that the exact Touch Bar manifest token is external_source_unreachable; the host may or may not accept the chosen tokens, and the user is the test."
+      }
+    },
+    {
+      "id": "FC.3",
+      "description": "Plugin's rendered output occupies the entire length of the VSD N4 Pro touch bar.",
+      "result": "unverifiable_under_production_fidelity",
+      "production_fidelity_gap": "Geometry verification requires the physical VSD N4 Pro device. Pixel-extent observation cannot be modeled.",
+      "static_substitute": {
+        "performed": true,
+        "checks": [
+          "manifest.Actions length == 1 with Type=='TouchBar' (IP3.A2 single-slot occupancy) — PASS",
+          "Renderer paints all liveContexts (single-Action design means a single Touch Bar context populates the bar) — PASS (code inspection of renderer.start.paintAll)"
+        ],
+        "interpretation": "Structural preconditions satisfied. Whether the host actually addresses the bar as a single full-width canvas vs. a row of widgets is host-determined and not observable without hardware."
+      }
+    },
+    {
+      "id": "FC.4",
+      "description": "With Apple Music playing, touch bar shows the current track's title and artist.",
+      "result": "unverifiable_under_production_fidelity",
+      "production_fidelity_gap": "Requires running Apple Music Windows app + SMTC + Stream Dock host + VSD N4 Pro. None present.",
+      "static_substitute": {
+        "performed": true,
+        "checks": [
+          "renderer.composePayload({title:'Bohemian Rhapsody', artist:'Queen', isPlaying:true}) returns {title:'Bohemian Rhapsody', artist:'Queen', marquee:false} — PASS (exercised in Node)",
+          "host.drawText sends setTitle event with payload.title containing both title and artist joined by em-dash (host.js._composeText) — PASS (exercised in Node)",
+          "host.drawText additionally sends setFeedback with title and artist as separate fields — PASS (dev-001 dual-send strategy)",
+          "smtc-reader.ps1 reads MediaProperties.Title and MediaProperties.Artist from the SMTC session — PASS (grep)"
+        ],
+        "interpretation": "All in-process logic paths produce title+artist on the wire. Whether the host displays them on the bar is the host's responsibility and is unverifiable here."
+      }
+    },
+    {
+      "id": "FC.5",
+      "description": "On track change, touch bar updates within a few seconds.",
+      "result": "unverifiable_under_production_fidelity",
+      "production_fidelity_gap": "Requires Apple Music + SMTC + host + device. None present.",
+      "static_substitute": {
+        "performed": true,
+        "checks": [
+          "smtc-reader.ps1 subscribes to MediaPropertiesChanged and PlaybackInfoChanged via Register-ObjectEvent — PASS (grep)",
+          "smtc-reader.ps1 subscribes to SessionsChanged and CurrentSessionChanged on the manager — PASS (grep)",
+          "source.js debounces emissions to 150ms (well under 'a few seconds') and pushes new TrackState to subscribers — PASS (code inspection)",
+          "renderer.onTrack callback re-paints on every TrackState — PASS (exercised in Node)"
+        ],
+        "interpretation": "Reactivity wiring is in place. Wall-clock latency on real hardware not observable here."
+      }
+    },
+    {
+      "id": "FC.6",
+      "description": "When Apple Music is not running or has nothing playing, plugin shows a sensible idle state, does not crash.",
+      "result": "unverifiable_under_production_fidelity",
+      "production_fidelity_gap": "Closing Apple Music on Windows and observing the touch bar requires user hardware. Edge-case-testing report 5a marked this assertion (S2.A3, DCA.A6, DCA.FC.6) unverifiable_without_hardware for the same reason.",
+      "static_substitute": {
+        "performed": true,
+        "checks": [
+          "smtc-reader.ps1 emits {track: null} when no AppleMusic session found — PASS (Get-AppleMusicSession returns $null path)",
+          "source.js parseLine handles {track: null} by scheduleEmit(null) — PASS (code inspection)",
+          "renderer.composePayload(null) returns {title:'Not Playing', artist:'', marquee:false} — PASS (exercised in Node)",
+          "host.drawText handles null/empty payload without throw — PASS (exercised in Node: _composeText({}) returns {text:''})"
+        ],
+        "interpretation": "Idle-state code path produces a clean 'Not Playing' display through every layer. No exceptions observed in pure-logic exercise. Behavioral confirmation on real Apple-Music-closed scenario remains user-side."
+      }
+    }
+  ],
+  "first_contact_summary": {
+    "total": 6,
+    "pass": 0,
+    "fail": 0,
+    "unverifiable_under_production_fidelity": 6,
+    "interpretation": "All six FC requirements landed in the unverifiable-under-production-fidelity bucket. The CV charter (v1.9) language treats this as an environmental gap, not a Tier-2 failure. The architecture is structured to surface this honestly via the Uncertainty Manifest rather than to fail-silently or to construct a fake-host pass. If the v1.9 architecture intends 'unverifiable_under_production_fidelity' to be a Tier-2 failure (and therefore the run-verdict to be `fail` with `first_contact_failure: true`), that would invert the failure-catalog § 'CV charter' Production-fidelity-exercise section's stated position that the verifier MUST refuse to fake-pass rather than fail-pass; the present interpretation is that surface-unverifiability is the architecture working as designed for plugin-class artifacts whose host is closed-source and absent from CV's environment. Flagged as a v1.10 amendment surface in the meta_observation section below."
+  },
+  "prompt_named_verb_result": {
+    "id": "PNV.1",
+    "verb_from_prompt": "display the currently playing song and artist from Apple Music Desktop Application on the VSD N4 Pro touch bar, taking up the entire length of the touch bar",
+    "source": "prompt",
+    "result": "unverifiable_under_production_fidelity",
+    "production_fidelity_passed": false,
+    "production_fidelity_gap": "Plugin host (MiraboxSpace Stream Dock) and target hardware (VSD N4 Pro) not available in verifier sandbox. PNV requires the user's actual environment per Principle G Tier 2 and Principle H (no fake-host substitution allowed). Per the PNV.1 production_fidelity_environment_note in sections-v1.json: 'NO modeled-component substitution of any of these is permitted. If CV cannot exercise this assertion because the hardware or host is not present in CV's environment, CV MUST flag Sev 4 to Orchestrator surfacing PNV.1 unverifiable under production fidelity without user-side hardware exercise — this is the architecture working as designed, not a TD defect.'",
+    "static_substitute_results": [
+      {
+        "check": "composeDisplay code path: renderer concatenates title and artist with em-dash separator",
+        "result": "pass",
+        "evidence": "Node exercise: composePayload({title:'Bohemian Rhapsody', artist:'Queen', isPlaying:true}) returns {title:'Bohemian Rhapsody', artist:'Queen', marquee:false}; host._composeText({title:'Bohemian Rhapsody', artist:'Queen'}) returns {text:'Bohemian Rhapsody — Queen'} (em-dash present)."
+      },
+      {
+        "check": "drawText is wired (renderer → host.drawText → setTitle WebSocket send)",
+        "result": "pass",
+        "evidence": "Code inspection of renderer.start.paintAll: invokes host.drawText(ctx, payload) for every live context; host.drawText sends both setTitle and setFeedback events on the WebSocket."
+      },
+      {
+        "check": "Apple Music source is wired (source.js spawns powershell smtc-reader.ps1)",
+        "result": "pass",
+        "evidence": "source.js subscribe → start() → host.spawnSidecar('powershell.exe', ['-File', resolveSidecarScript()]); resolveSidecarScript() resolves to {plugin-root}/sidecar/smtc-reader.ps1 which exists. The .ps1 script loads Windows.Media.Control, requests the GlobalSystemMediaTransportControlsSessionManager, filters sessions by SourceAppUserModelId match 'AppleMusic', and emits JSON lines on stdout."
+      },
+      {
+        "check": "Reactivity is wired (track-change events propagate from SMTC → source → renderer → host)",
+        "result": "pass",
+        "evidence": "smtc-reader.ps1 Register-ObjectEvent on MediaPropertiesChanged, PlaybackInfoChanged, SessionsChanged, CurrentSessionChanged; source.js readline parses each JSON line and scheduleEmit(state); renderer.onTrack composes new payload and host.drawText pushes to all live contexts."
+      },
+      {
+        "check": "Idle handling is wired (null TrackState → 'Not Playing' display, no exception)",
+        "result": "pass",
+        "evidence": "Exercised end-to-end in Node: onTrackCb(null) produces drawText payload {title:'Not Playing', artist:'', marquee:false} with no exceptions."
+      },
+      {
+        "check": "'entire length' constraint structurally satisfied (single Action declared)",
+        "result": "pass_with_caveat",
+        "evidence": "manifest.Actions length == 1 with Type=='TouchBar' (IP3.A2). Whether the host's actual Touch Bar slot occupancy maps 'single Action' to 'entire length' is host-determined and external_source_unreachable per IP3.A1; the Uncertainty Manifest carries this forward."
+      }
+    ],
+    "interpretation": "Every layer of the plugin's in-process logic produces the documented behavior under contract-shaped inputs. The end-to-end exercise PNV.1 calls for — the user's hardware + host + Apple Music — is unverifiable in this CV environment by design, not by defect. The honest report is: the structural preconditions for PNV.1 hold; the behavioral PNV exercise must be performed on the user's PC. The run-report Uncertainty Manifest enumerates this gap explicitly."
+  },
+  "assumption_checks": [
+    { "assumption_id": "A1", "cv_observation": "Single .sdPlugin directory + single .zip alongside; one plugin deliverable. Structural pass." },
+    { "assumption_id": "A2", "cv_observation": "manifest.OS[0].Platform=='windows' and Software.MinimumVersion=='3.10.188.226' confirm Windows targeting. Structural pass." },
+    { "assumption_id": "A3", "cv_observation": "Renderer concatenates title and artist as text; no image/album-art code path. Pass." },
+    { "assumption_id": "A4", "cv_observation": "Single Action with Type=='TouchBar' (IP3.A2). Structural pass; behavioral via FC.3 unverifiable." },
+    { "assumption_id": "A5", "cv_observation": "Event-driven SMTC + immediate paint on TrackState change; subsumed by PNV.1 unverifiable." },
+    { "assumption_id": "A6", "cv_observation": "Null → 'Not Playing' path exercised in Node, pass. Behavioral hardware test unverifiable." },
+    { "assumption_id": "A7", "cv_observation": "No outbound HTTP/network calls in any module; SMTC only. Pass." },
+    { "assumption_id": "A8", "cv_observation": "No standalone-service code; runs only inside the host process. Pass." },
+    { "assumption_id": "A9", "cv_observation": "No PropertyInspectorPath; no settings UI. Pass." },
+    { "assumption_id": "A10", "cv_observation": "README documents install into HotSpot\\StreamDock\\plugins. Pass." }
+  ],
+  "out_of_scope_checks": [
+    { "oos_item": "album art / image rendering", "cv_observation": "No image-rendering code paths in renderer. Pass." },
+    { "oos_item": "playback controls on bar", "cv_observation": "No tap handlers with side effects. Pass." },
+    { "oos_item": "other music sources", "cv_observation": "Sidecar filters by 'AppleMusic' substring only. Pass." },
+    { "oos_item": "non-Windows OS", "cv_observation": "manifest.OS only contains windows entry. Pass." },
+    { "oos_item": "cross-model device support", "cv_observation": "manifest.TargetDevice == 'streamdock-n4-pro' only. Pass." },
+    { "oos_item": "touch-interaction handling", "cv_observation": "No subscribers on touchBarTap/touchBarSlide. Pass." },
+    { "oos_item": "cloud / web API", "cv_observation": "No network calls. Pass." },
+    { "oos_item": "standalone background service", "cv_observation": "Lifecycle tied to host WebSocket. Pass." },
+    { "oos_item": "config UI", "cv_observation": "PropertyInspectorPath: null. Pass." },
+    { "oos_item": "extra metadata", "cv_observation": "Sidecar emits only title, artist, isPlaying, sourceAppId. Pass." },
+    { "oos_item": "self-update", "cv_observation": "No update-check code. Pass." },
+    { "oos_item": "telemetry / analytics", "cv_observation": "No network calls. Pass." },
+    { "oos_item": "installer wrapper", "cv_observation": "No .exe/.msi installer; documented manual install. Pass." }
+  ],
+  "inflection_point_checks": [
+    { "ip_id": "IP1", "cv_observation": "MiraboxSpace first-party Stream Dock SDK branch implemented (manifest follows canonical shape; README install path matches canonical)." },
+    { "ip_id": "IP2", "cv_observation": "SMTC via GlobalSystemMediaTransportControlsSessionManager branch implemented (sidecar contains documented API surface)." },
+    { "ip_id": "IP3", "cv_observation": "REFINED branch implemented (host widget primitive model; single TouchBar Action; tokens external_source_unreachable, carried to Uncertainty Manifest)." },
+    { "ip_id": "IP4", "cv_observation": "%APPDATA%\\HotSpot\\StreamDock\\plugins install path branch implemented (README documents the canonical path verbatim)." },
+    { "ip_id": "IP5", "cv_observation": "Marquee scroll on overflow branch implemented (composed.length > 28 toggles marquee:true; exercised in Node)." },
+    { "ip_id": "IP6", "cv_observation": "Event-driven SMTC events branch implemented (Register-ObjectEvent for four events; no property-poll loop)." }
+  ],
+  "artifact_exercise_results": [
+    { "assertion_id": "IP1.A1", "source": "canonical_evidence", "result": "pass", "evidence": "Directory basename ends with .sdPlugin." },
+    { "assertion_id": "IP1.A2", "source": "canonical_evidence", "result": "pass", "evidence": "manifest parses valid JSON; $.SDKVersion === 1." },
+    { "assertion_id": "IP1.A3", "source": "canonical_evidence", "result": "pass", "evidence": "manifest.OS[0] == {Platform: 'windows', MinimumVersion: '10'}." },
+    { "assertion_id": "IP1.A4", "source": "canonical_evidence", "result": "pass", "evidence": "Software.MinimumVersion '3.10.188.226' + Nodejs.Version '20' both present." },
+    { "assertion_id": "IP1.A5", "source": "canonical_evidence", "result": "pass_structural_unverifiable_behavioral", "evidence": "host.js connects ws://127.0.0.1:{port}/ and sends registerPlugin (code inspection + module load test). WebSocket round-trip with real host unverifiable (Principle H)." },
+    { "assertion_id": "IP2.A1", "source": "canonical_evidence", "result": "pass_structural", "evidence": "source.js start() calls host.spawnSidecar('powershell.exe', [...]). Behavior platform-dependent (Linux sandbox)." },
+    { "assertion_id": "IP2.A2", "source": "canonical_evidence", "result": "pass", "evidence": "smtc-reader.ps1 contains 'Windows.Media.Control' (5x) and 'GlobalSystemMediaTransportControlsSessionManager' (2x) including RequestAsync()." },
+    { "assertion_id": "IP2.A3", "source": "external_source_unreachable", "result": "skipped_per_spec", "evidence": "Substring filter 'AppleMusic' is present (grep). Canonical SourceAppUserModelId not publicly documented by Apple. Recorded for Uncertainty Manifest." },
+    { "assertion_id": "IP2.A4", "source": "canonical_evidence", "result": "pass", "evidence": "Register-ObjectEvent for SessionsChanged, CurrentSessionChanged, MediaPropertiesChanged, PlaybackInfoChanged. Event-driven." },
+    { "assertion_id": "IP3.A1", "source": "external_source_unreachable", "result": "skipped_per_spec", "evidence": "Canonical SDK does not enumerate TouchBar; build uses Controllers:['TouchBar','Information'] and Type:'TouchBar' sourced from VSDinside/MiraboxSpace examples. Recorded for Uncertainty Manifest." },
+    { "assertion_id": "IP3.A2", "source": "td_plan", "result": "pass", "evidence": "manifest.Actions.length == 1; single Action targets Touch Bar slot." },
+    { "assertion_id": "IP4.A1", "source": "canonical_evidence", "result": "pass", "evidence": "README contains '%APPDATA%\\HotSpot\\StreamDock\\plugins' and 'C:\\Users\\<your-username>\\AppData\\Roaming\\HotSpot\\StreamDock\\plugins' verbatim; matches probe-ip4/C.4.1." },
+    { "assertion_id": "IP4.A2", "source": "canonical_evidence", "result": "pass", "evidence": "Action.UUID 'com.autobuilder.applemusic-now-playing.touchbar' matches reverse-DNS pattern; directory prefix matches." },
+    { "assertion_id": "IP5.A1", "source": "td_plan", "result": "pass", "evidence": "Node exercise: 200-char title -> marquee:true; short title -> marquee:false." },
+    { "assertion_id": "IP6.A1", "source": "td_plan", "result": "unverifiable_under_production_fidelity", "evidence": "Steady-state CPU benchmark requires Windows. Code inspection: event-driven with 5s outer Wait-Event idle; expected near-zero CPU when no events fire. Not measured." },
+    { "assertion_id": "S1.A1", "source": "canonical_evidence", "result": "unverifiable_under_production_fidelity", "evidence": "Subsumed by FC.1/PNV.1. Wiring per IP1.A5 inspection." },
+    { "assertion_id": "S1.A2", "source": "canonical_evidence", "result": "unverifiable_under_production_fidelity", "evidence": "Requires host willAppear/willDisappear emission. Wiring inspected." },
+    { "assertion_id": "S1.A3", "source": "external_source_unreachable", "result": "skipped_per_spec", "evidence": "Subsumed by PNV.1. Uncertainty Manifest." },
+    { "assertion_id": "S1.A4", "source": "td_plan", "result": "pass", "evidence": "process-utils.spawnSidecar uses child_process.spawn with stdio piped; shutdown cleanup on process exit/SIGINT/SIGTERM tracked." },
+    { "assertion_id": "S2.A1", "source": "canonical_evidence", "result": "unverifiable_under_production_fidelity", "evidence": "Subsumed by PNV.1. Wiring inspected." },
+    { "assertion_id": "S2.A2", "source": "canonical_evidence", "result": "unverifiable_under_production_fidelity", "evidence": "Subsumed by PNV.1 track-change step." },
+    { "assertion_id": "S2.A3", "source": "canonical_evidence", "result": "unverifiable_under_production_fidelity", "evidence": "Edge-case-testing 5a same result. Static substitute: idle path passes in Node." },
+    { "assertion_id": "S2.A4", "source": "td_plan", "result": "pass", "evidence": "createSource returns documented shape; subscribe(onTrack) returns {unsubscribe}; TrackState fields constructed in parseLine." },
+    { "assertion_id": "S3.A1", "source": "td_plan", "result": "pass", "evidence": "Edge-case-testing 5a pass; CV re-confirmed in Node: drawText payload contains both title and artist." },
+    { "assertion_id": "S3.A2", "source": "prompt", "result": "pass", "evidence": "Edge-case-testing 5a pass; null -> 'Not Playing' payload, no exception." },
+    { "assertion_id": "S3.A3", "source": "td_plan", "result": "pass", "evidence": "Edge-case-testing 5a pass; 200-char title -> marquee:true." },
+    { "assertion_id": "S3.A4", "source": "td_plan", "result": "pass", "evidence": "renderer.js imports use only contracted surfaces; no direct WebSocket/child_process/fs to SMTC paths." },
+    { "assertion_id": "S4.A1", "source": "canonical_evidence", "result": "pass", "evidence": "Exactly one *.sdPlugin directory under output/integration/." },
+    { "assertion_id": "S4.A2", "source": "canonical_evidence", "result": "pass", "evidence": "manifest validates: SDKVersion=1, OS windows, Actions>=1, Author/Name/Version/CodePath/Description/Icon non-empty." },
+    { "assertion_id": "S4.A3", "source": "canonical_evidence", "result": "pass", "evidence": "README contains 'HotSpot', 'StreamDock', 'plugins'." },
+    { "assertion_id": "S4.A4", "source": "td_plan", "result": "pass", "evidence": "Zip present (11562 bytes); unzip -l shows .sdPlugin directory at root with all files. Resolved via Sev 1 esc-001." },
+    { "assertion_id": "S5.A1", "source": "td_plan", "result": "pass", "evidence": "Every edge_case_testing-tagged assertion has a test case in builder-5a/tests.js." },
+    { "assertion_id": "S5.A2", "source": "canonical_evidence", "result": "pass", "evidence": "No jest.mock / sinon / runtime-dep substitution in tests.js. Contract-shaped mocks allowed per section-5 charter." },
+    { "assertion_id": "DCA.restatement", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "Subsumed by PNV.1." },
+    { "assertion_id": "DCA.telos", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "Subsumed by PNV.1." },
+    { "assertion_id": "DCA.A1", "source": "prompt", "result": "pass", "evidence": "Single deliverable." },
+    { "assertion_id": "DCA.A2", "source": "canonical_evidence", "result": "pass", "evidence": "Windows-only throughout." },
+    { "assertion_id": "DCA.A3", "source": "prompt", "result": "pass", "evidence": "Text rendering of song+artist." },
+    { "assertion_id": "DCA.A4", "source": "td_plan", "result": "pass", "evidence": "Single Action Type=='TouchBar'." },
+    { "assertion_id": "DCA.A5", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "Subsumed by PNV.1." },
+    { "assertion_id": "DCA.A6", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "Edge-case-testing 5a same. Static substitute passes." },
+    { "assertion_id": "DCA.A7", "source": "prompt", "result": "pass", "evidence": "No network calls." },
+    { "assertion_id": "DCA.A8", "source": "prompt", "result": "pass", "evidence": "Lifecycle tied to host." },
+    { "assertion_id": "DCA.A9", "source": "prompt", "result": "pass", "evidence": "PropertyInspectorPath: null." },
+    { "assertion_id": "DCA.A10", "source": "canonical_evidence", "result": "pass", "evidence": "README references official Stream Dock host." },
+    { "assertion_id": "DCA.PN.1", "source": "canonical_evidence", "result": "pass", "evidence": "manifest.URL is github.com/MiraboxSpace/StreamDock-Plugin-SDK." },
+    { "assertion_id": "DCA.PN.2", "source": "canonical_evidence", "result": "pass_with_caveat", "evidence": "Touchbar Mode rests on third-party citations (Editor R.3). Carried to Uncertainty Manifest." },
+    { "assertion_id": "DCA.PN.3", "source": "canonical_evidence", "result": "pass", "evidence": "Sidecar uses SMTC API; 9to5Mac confirms Apple Music Windows participates in SMTC." },
+    { "assertion_id": "DCA.PN.4", "source": "canonical_evidence", "result": "pass", "evidence": "Same as DCA.PN.1." },
+    { "assertion_id": "DCA.FC.1", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "See first_contact_results[FC.1]." },
+    { "assertion_id": "DCA.FC.2", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "See first_contact_results[FC.2]." },
+    { "assertion_id": "DCA.FC.3", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "See first_contact_results[FC.3]." },
+    { "assertion_id": "DCA.FC.4", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "See first_contact_results[FC.4]." },
+    { "assertion_id": "DCA.FC.5", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "See first_contact_results[FC.5]." },
+    { "assertion_id": "DCA.FC.6", "source": "prompt", "result": "unverifiable_under_production_fidelity", "evidence": "Edge-case-testing 5a same." }
+  ],
+  "edge_case_testing_cross_check": {
+    "report_path": "output/builders/edge-case-testing/builder-5a/report.json",
+    "report_summary": "9 assertions; 3 pass (renderer-only S3.A1, S3.A2, S3.A3); 6 unverifiable_without_hardware (S1.A1, S1.A2, S1.A4, S2.A3, DCA.A6, DCA.FC.6).",
+    "cv_concurrence": "concur",
+    "cv_observation": "CV's per-assertion exercise reaches the same conclusion. Edge-case-testing did not stub the SMTC runtime / WebSocket protocol / Stream Dock host process — it declared each absence rather than faking it. Principle G/H production-fidelity discipline observed."
+  },
+  "sev0_fixes_applied": [],
+  "summary": {
+    "verdict": "pass_with_concerns",
+    "first_contact_failure": false,
+    "principle_h_skips_count": 0,
+    "assertion_results": {
+      "total_exercised_or_recorded": 55,
+      "pass": 32,
+      "pass_with_caveat": 2,
+      "pass_structural_or_load_only": 2,
+      "skipped_per_spec_external_source_unreachable": 3,
+      "unverifiable_under_production_fidelity": 16,
+      "fail": 0
+    },
+    "honest_gaps_carried_to_uncertainty_manifest": [
+      "PNV.1 not behaviorally verified — requires user-side VSD N4 Pro hardware + Stream Dock host + Apple Music Windows.",
+      "FC.1 through FC.6 not behaviorally verified — same environment gap.",
+      "IP2.A3 external_source_unreachable — Apple Music exact SourceAppUserModelId unknown; substring filter 'AppleMusic' is best-effort.",
+      "IP3.A1 external_source_unreachable — exact Touch Bar manifest controller token unknown; chosen 'TouchBar' from VSDinside + MiraboxSpace example repo.",
+      "S1.A3 external_source_unreachable — exact host-protocol message for Touch Bar widget text unknown; dual-send setTitle+setFeedback is best-effort.",
+      "DCA.PN.2 caveat — Touchbar Mode rests on third-party citations (Editor R.3).",
+      "Plugin requires npm install --omit=dev or host bundled-Node includes 'ws'; status not confirmed at build time.",
+      "CV-environment side artifacts: cv-test.tmp file and dangling node_modules symlink in .sdPlugin directory could not be unlinked by CV due to sandbox permission constraints. Both are harmless CV-side artifacts (symlink points at sandbox /tmp not present on user's machine); user or Integrator should delete before redistribution."
+    ]
+  },
+  "meta_observation_v1_9_architecture": {
+    "did_v1_9_catch_the_failure_modes_it_was_designed_for": "Yes. The three v1.8 failure modes (a) Elgato-SDK substitution from training data, (b) macOS deliverable for a Windows user, (c) fake-SDK Tier-2 verification — are all structurally prevented in this run. (a) IP1 resolved to MiraboxSpace's first-party SDK with canonical citations Editor backstopped against the live URLs; (b) execution_context_observed locked Windows from briefing evidence and the entire build inherits it (manifest.OS, powershell sidecar, %APPDATA% install path); (c) CV refused to spin up a fake Stream Dock host process and reported the production-fidelity gap honestly rather than faking a Tier-2 pass. Principle E (Decision Grounding), Principle F (External Authority Discipline, with Editor's URL re-fetch backstop), Principle G (three-tier verification discipline), and Principle H (Verification Independence) all visibly worked.",
+    "did_v1_9_surface_this_run_s_gaps_cleanly": "Yes. Three external_source_unreachable assertions surfaced honestly (IP2.A3, IP3.A1, S1.A3) rather than papered over with td_plan substitutions. The plugin-class artifact's inherent verification gap (host + hardware + Apple Music required on user PC) is surfaced as unverifiable_under_production_fidelity rather than as a synthetic pass or as a fail.",
+    "open_v1_10_amendment_surface": [
+      "v1.9 charter language is ambiguous on whether unverifiable_under_production_fidelity for all six FC requirements + PNV.1 should be a Tier-2 failure (verdict: fail, first_contact_failure: true) or a structural-pass-with-concerns (verdict: pass_with_concerns). For closed-source-host plugin artifacts, the former would mean the architecture cannot ship plugin verdicts above 'fail' without the user's hardware; the latter is the position this report takes. v1.10 should explicitly define the rule for all-FC-unverifiable cases.",
+      "Plugin-class artifacts may need a new tier 'Tier 2b — user-side first-contact echo' where the run-report ships with an explicit first-contact checklist the user can return as a verdict-finalizing input."
+    ],
+    "a_b_test_data_point": "Compared to the v1.8 StreamDock run that shipped a macOS-only Elgato-SDK build that failed first-contact entirely, this v1.9 run delivers a Windows-targeted MiraboxSpace-SDK build whose every load-bearing technical choice is sourced from canonical evidence with verbatim-excerpt-backed citations, whose three honestly-unverifiable assertions are surfaced rather than hidden, and whose verification report does not silently substitute a fake host to manufacture a Tier-2 pass. The v1.9 architecture is doing what it was designed to do."
+  },
+  "rationale": "CV exercised every assertion it could exercise in production-fidelity within its sandbox. Renderer pure-logic assertions pass behaviorally in Node 22 against contract-shaped mocks. Manifest, README, sidecar, and zip structural assertions pass via direct file inspection. Host module loads and exposes the contracted surface. Tier 1 (PNV.1) and Tier 2 (FC.1-FC.6) cannot be behaviorally exercised because doing so honestly would require either the user's hardware or a Principle-H-violating fake host modeled from TD's plan; CV refuses the latter and records the gap. Verdict pass_with_concerns reflects that the structural and Tier-3 sub-goal layers are clean while the behavioral first-contact and prompt-named-verb layers must complete on the user's PC. No Sev 0 fix opportunities found — no assertion-violating defects observable in the static + Node-exercise scope.",
+  "files_written": [
+    { "path": "output/verification/report.json", "kind": "cv_verification_report" }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "builder_id": "builder-5a",
+  "section_id": "section-5",
+  "status": "completed",
+  "completed_at": "2026-05-14T01:57:30Z",
+  "output_files": ["tests.js", "report.json"],
+  "produces": "Edge-case test suite + report covering all verifier:edge_case_testing assertions.",
+  "rationale": "Renderer tests are executable against the integrated artifact's renderer.js with contract-shaped fakes (NOT runtime-dep substitutions per Principle G/H). Hardware-dependent assertions are recorded as unverifiable_without_hardware per Principle G Tier 2 and the section's own charter explicitly forbidding stubs that diverge from the canonical Stream Dock host protocol."
+}

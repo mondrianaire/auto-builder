@@ -1,0 +1,20 @@
+{
+  "builder_id": "builder-4a",
+  "section_id": "section-4",
+  "status": "completed",
+  "completed_at": "2026-05-14T01:48:30Z",
+  "output_files": ["manifest.json", "index.js", "README.md"],
+  "produces": "Plugin manifest, entry point glue, and install README.",
+  "assertion_coverage": [
+    { "id": "IP1.A2", "satisfied": true, "evidence": "manifest.SDKVersion === 1." },
+    { "id": "IP1.A3", "satisfied": true, "evidence": "manifest.OS contains {Platform:'windows', MinimumVersion:'10'}." },
+    { "id": "IP1.A4", "satisfied": true, "evidence": "manifest.Software.MinimumVersion === '3.10.188.226' (gates the bundled Node.js 20 runtime)." },
+    { "id": "IP3.A1", "satisfied": "best_effort", "evidence": "Action declares Controllers ['TouchBar','Information'] and Type:'TouchBar' AND TargetDevice:'streamdock-n4-pro'. Per assertion source: external_source_unreachable, the canonical SDK enumerates only [Keypad,Information,SecondaryScreen,Knob] but does not enumerate TouchBar; Builder chose 'TouchBar' as the literal value referenced by both the VSDinside porting guide (C.3.1) and the live SDK template's example plugins. Including 'Information' as a fallback gives the host a documented controller to fall back on if 'TouchBar' is rejected." },
+    { "id": "IP3.A2", "satisfied": true, "evidence": "manifest.Actions has length 1; the single Action occupies the per-scene Touch Bar slot." },
+    { "id": "IP4.A1", "satisfied": true, "evidence": "README contains 'HotSpot\\StreamDock\\plugins' verbatim with restart instructions." },
+    { "id": "IP4.A2", "satisfied": true, "evidence": "UUID 'com.autobuilder.applemusic-now-playing.touchbar' matches ^[a-z0-9.-]+$ with periods, no consecutive periods at edges. Plugin directory name 'com.autobuilder.applemusic-now-playing.sdPlugin' matches the same convention." },
+    { "id": "S4.A2", "satisfied": true, "evidence": "All required manifest fields present and non-empty." },
+    { "id": "S4.A3", "satisfied": true, "evidence": "README contains 'HotSpot' and 'StreamDock' and 'plugins' substrings." }
+  ],
+  "rationale": "Manifest chooses 'TouchBar' as the Controllers value per the VSDinside porting guide naming and includes 'Information' as a documented fallback. The exact Touch-Bar manifest field name is external_source_unreachable; this is the best-defensible choice given the available evidence. See state/inline-deviations/dev-003.json."
+}

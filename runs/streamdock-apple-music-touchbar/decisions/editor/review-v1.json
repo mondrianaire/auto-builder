@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "created_at": "2026-05-14T01:05:00Z",
+  "based_on": {
+    "prompt": "Build me a plugin for MiraboxSpace StreamDock VSD N4 Pro that Utilizes the Touchbar Mode to display the currently playing song and artist from Apple Music Desktop Application. The plugin should take up the entire length of the VSD N4 Pro touch bar for display.",
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections": "decisions/technical-discovery/sections-v1.json"
+  },
+  "verdict": "pass_with_recommendations",
+  "verdict_rationale": "All six structural checks pass. Every target_defining proper noun has researcher findings with non-empty verbatim_excerpt citations from canonical sources. All four importance:high IPs were researcher_dispatched and resolved with substantive citations. Every assertion in sections-v1.json carries a source field. Where canonical evidence is reachable, source: canonical_evidence is used with a citations_pointer resolving to a Researcher findings entry with verbatim_excerpt. Where canonical evidence could not be located (Apple Music's exact SourceAppUserModelId, the exact manifest field name for declaring an N4 Pro Touch Bar Action, the exact host-protocol message field for updating Touch Bar widget text), TD honestly used source: external_source_unreachable with rationale_for_source rather than silently using td_plan against an external-system property. td_plan is confined to internal-consistency checks on the plugin's own structure (manifest-shape counts, internal supervision, overflow-branch behavior). All six first_contact_requirements have corresponding acceptance or DCA assertions. The telos's load-bearing verb ('display' / 'show') is exercised by PNV.1 and the DCA.FC.* user-flow assertions. The two notable honest gaps -- (a) three external_source_unreachable assertions and (b) PNV.1's documented unverifiability under production fidelity without user-side hardware -- are the failure modes v1.9 was designed to surface transparently rather than the failure modes it was designed to prevent. They are recorded as recommendations for Critic / CV / the run-report's Uncertainty Manifest, not as routing triggers. The architecture's North Star (always deliver; surface honesty in the run-report; do not halt to ask the user) makes route_to_user out of scope; the build proceeds and the user receives a transparent record.",
+  "findings": [],
+  "checks_run": [
+    {
+      "check_id": "proper_noun_citation",
+      "principle": "E + F",
+      "status": "pass",
+      "detail": "PN.1, PN.2, PN.3, PN.4 are all role:target_defining with verification_status: pending in the ledger (Discovery writes once and cannot amend). TD forward-records verification status via discovery_coverage_assertions DCA.PN.1 through DCA.PN.4, each citing a Researcher findings entry with non-empty verbatim_excerpt. PN.1/PN.4 (StreamDock VSD N4 Pro): probe-ip1 citations C.1.1 (sdk.key123.vip overview), C.1.2 (architecture), C.1.3 (manifest), C.1.4 (get-started) -- all citation_class: static_canonical with non-empty verbatim_excerpts. PN.2 (Touchbar Mode): probe-ip3 citations C.3.1 (vsdinside porting guide), C.3.2 (nouvolo product page), C.3.3 (canonical SDK manifest -- confirms 'TouchBar' is NOT in the base SDK Controllers enum, justifying TD's external_source_unreachable label on touch-bar manifest-field-name assertions). PN.3 (Apple Music Desktop Application): probe-ip2 citations C.2.1 (Microsoft Learn SMTC), C.2.2 (9to5Mac archived snapshot confirming Apple Music on Windows participates in SMTC). All target_defining proper nouns have a citation chain with verbatim excerpts; no demotion records required because no proper noun was marked unreachable in the ledger."
+    },
+    {
+      "check_id": "discovery_high_importance_action",
+      "principle": "F",
+      "status": "pass",
+      "detail": "All four importance:high IPs (IP1 SDK identity, IP2 Apple Music data source, IP3 Touch Bar geometry, IP4 install flow) have importance_action: researcher_dispatched in the ledger. Each has a corresponding probe (research/probes/probe-ip1..ip4) with completed findings.json carrying citations[] entries with non-empty verbatim_excerpts. IP3 in particular: the Researcher honestly returned a framing_concern that Discovery's default ('Single contiguous full-width canvas') was a training-data analogy to macOS Touch Bar and the canonical evidence instead points to the host's widget primitives -- TD ingested this refinement, recorded it in inflection_resolutions[IP3].chosen_branch with REFINED prefix, and flagged the pixel-geometry-and-exact-manifest-field assertions as external_source_unreachable. This is the Discovery/Researcher feedback loop working as the architecture intends."
+    },
+    {
+      "check_id": "td_ip_source",
+      "principle": "H",
+      "status": "pass",
+      "detail": "Every entry in inflection_resolutions[].machine_checkable_assertions[] and every DCA / acceptance_assertion / PNV has a source field. canonical_evidence assertions (the majority) carry citations_pointer values resolving to Researcher findings entries with verbatim_excerpts. external_source_unreachable is used on exactly three assertions -- IP2.A3 (Apple Music SourceAppUserModelId), IP3.A1 (exact manifest field name to declare a Touch Bar action), and S1.A3 (exact host-protocol field for updating Touch Bar text) -- each with a rationale_for_source explaining why a canonical citation could not be obtained. These are precisely the cases the source field was designed to surface. td_plan is used only for internal-consistency checks: IP3.A2 (single-Touch-Bar-Action manifest count), IP5.A1 (overflow-branch logic internal to renderer), IP6.A1 (own-process CPU usage), S1.A4 (own spawnSidecar supervision), S2.A4 / S3.A4 / S4.A4 (own-code contract conformance), DCA.IP*.topic (own-file presence checks), DCA.OOS.other-sources (own sidecar filter expression), DCA.A4 (subsumed by IP3.A2 internal manifest count). NO assertion uses td_plan against an external-system property -- no Principle H violations detected."
+    },
+    {
+      "check_id": "first_contact_coverage",
+      "principle": "G Tier 2",
+      "status": "pass",
+      "detail": "All six first_contact_requirements (FC.1 plugin appears in host catalog, FC.2 user can place onto Touch Bar slot, FC.3 occupies entire length, FC.4 displays title+artist, FC.5 reactive on track change, FC.6 sensible idle when Apple Music not running) have corresponding assertions in sections-v1.json: DCA.FC.1 / DCA.FC.2 / DCA.FC.3 / DCA.FC.4 / DCA.FC.5 (all verifier: prompt_named_verb, source: prompt) and DCA.FC.6 (verifier: edge_case_testing). FC.3 additionally covered by IP3.A2 manifest-shape check; FC.6 additionally covered by S2.A3 and DCA.A6. The prompt_named_verb_assertion PNV.1 subsumes the FC.1-FC.5 chain as a single end-to-end production-fidelity exercise."
+    },
+    {
+      "check_id": "telos_coherence",
+      "principle": "G",
+      "status": "pass",
+      "detail": "Telos: 'A plugin that shows the user, on their MiraboxSpace StreamDock VSD N4 Pro's Touchbar Mode, the song and artist currently playing in the Apple Music Desktop Application on their Windows PC, occupying the entire length of the touch bar.' Load-bearing verb is 'show' / 'display'. TD's prompt_verb_analysis explicitly chose 'display' as the load-bearing verb (over 'build' and 'utilize'). The five sections map to the telos chain coherently: host-integration (plumbing to the device), now-playing-source (the data being shown), touchbar-renderer (composition of what is shown), packaging (delivery to the user so the showing can happen on their PC), edge-case-testing (defends reliability of the showing under idle/error states). No section is orphaned from the telos. The telos verb is exercised by PNV.1 (production-fidelity end-to-end), DCA.FC.3/4/5 (user_flow), DCA.telos and DCA.restatement (user_flow subsumed by PNV.1). Telos coherence holds."
+    },
+    {
+      "check_id": "principle_f_backstop_spot_check",
+      "principle": "F",
+      "status": "pass",
+      "detail": "Re-fetched the cited URL https://sdk.key123.vip/en/guide/get-started.html (the page underlying citations C.1.4 and C.4.1). The page is a VuePress SPA; the rendered content was retrieved by fetching the generated assets bundle /assets/get-started.html-DLU96_G9.js. The verbatim_excerpt 'Move the com.example.my-plugin.sdPlugin plugin to the C:\\\\Users\\\\{username}\\\\AppData\\\\Roaming\\\\HotSpot\\\\StreamDock\\\\plugins folder' is present verbatim in the live page bundle. The verbatim_excerpt 'You will need to restart Stream Dock after adding a plugin to the plugins folder for the first time' is also present verbatim. Re-fetched /assets/manifest.html-DTaMBhGf.js and confirmed the Controllers enum is verbatim 'Keypad','Information','SecondaryScreen','Knob' (NOT TouchBar) -- corroborating C.1.3 and the C.3.3 note that TouchBar is NOT enumerated in the canonical base SDK manifest, which is the structural basis for TD's external_source_unreachable label on the touch-bar manifest-field assertions. Also confirmed via api.github.com that the MiraboxSpace org and StreamDock-Plugin-SDK repo exist (HTTP 200, repo id 830773257). The Researcher findings for IP1/IP4 are NOT hallucinated; the citations resolve to live content. This is the Principle F backstop that the StreamDock v1.8 failure mode was supposed to be defended against -- the defense holds on this run."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "R.1",
+      "for_role": "critic",
+      "phase": "post_build",
+      "subject": "external_source_unreachable assertion handling",
+      "description": "Three machine_checkable assertions are marked source: external_source_unreachable: IP2.A3 (Apple Music SourceAppUserModelId substring match -- canonical SourceAppUserModelId not publicly documented by Apple), IP3.A1 (exact manifest field name to declare an N4-Pro Touch Bar Action -- canonical sdk.key123.vip enumerates Keypad/Information/SecondaryScreen/Knob but not TouchBar), S1.A3 (exact host-protocol message field for updating Touch Bar widget text). Per the file_schemas.md description of external_source_unreachable, CV records these in principle_h_skips[] and the run-report's Uncertainty Manifest documents that these properties were relied on without independent verification. Critic should verify post-build that (a) Builder did locate the actual field names from the live SDK template / runtime (per the rationale_for_source on IP3.A1: Builder reads the template's example manifests and SDPythonSDK/SDjsSDK examples for the exact field name), (b) the integrated artifact does NOT silently substitute training-data guesses for these unreachable values without documentation, and (c) the Uncertainty Manifest in the run-report enumerates these three skips with their rationale_for_source content verbatim so the user knows where the build is operating on best-effort heuristics. This is the architecture working as designed -- transparent surfacing of the cases where canonical evidence ran out -- and is not a defect to route on."
+    },
+    {
+      "id": "R.2",
+      "for_role": "cv",
+      "phase": "verification",
+      "subject": "PNV.1 production-fidelity exercise requires user-side hardware",
+      "description": "PNV.1's production_fidelity_environment_note explicitly states the assertion requires the actual VSD N4 Pro hardware AND the actual MiraboxSpace Stream Dock host application AND the actual Apple Music Windows app, all on the user's Windows PC. Per CV Tier 2 (Principle G), no modeled-component substitution of any of these is permitted. If CV cannot exercise PNV.1 because the hardware/host/Apple Music app is not present in CV's environment, CV MUST flag Sev 4 to Orchestrator with the message 'PNV.1 unverifiable under production fidelity without user-side hardware exercise' and the run-report MUST surface this gap to the user so the user can perform the first-contact exercise themselves and report success/failure. The same applies to DCA.FC.1 through DCA.FC.5 (all verifier: prompt_named_verb, subsumed by PNV.1). This is the failure-mode v1.9 expects to surface for plugin-class artifacts, not a defect of TD's plan."
+    },
+    {
+      "id": "R.3",
+      "for_role": "critic",
+      "phase": "post_build",
+      "subject": "PN.2 (Touchbar Mode) third-party citation caveat",
+      "description": "DCA.PN.2 forward-records PN.2 as 'partially_verified' citing C.3.1 (vsdinside.com porting guide, citation_class: archived_snapshot) and C.3.2 (nouvolo.com product page, archived_snapshot). Neither source is from MiraboxSpace itself; the canonical SDK doc (C.3.3 at sdk.key123.vip) does NOT mention 'Touchbar Mode' as a named concept. TD has handled this principle-cleanly by flagging touch-bar-specific manifest assertions (IP3.A1, S1.A3) as external_source_unreachable. The remaining structural concern: the very EXISTENCE of 'Touchbar Mode' as a named operating mode of the VSD N4 Pro rests on third-party archived snapshots, not on a MiraboxSpace primary source. The product page evidence (C.3.2: 'Touch Screen (Touch-Bar) that offers dynamic functionality, including lyric display, music rhythm visualization, chat, and office work modes') is strong but is a retailer/distributor page, not MiraboxSpace's own documentation. Critic should verify in final_sweep that the built manifest's target device / Action type values are derived from the live SDK template (per R.1), and flag for the user via the run-report that the Touch-Bar feature surface is documented by third-party porting guides rather than first-party MiraboxSpace canonical references. Low severity; the build proceeds, but the user should know that this build's confidence on touch-bar specifics is bounded by third-party evidence."
+    },
+    {
+      "id": "R.4",
+      "for_role": "cv",
+      "phase": "verification",
+      "subject": "Idle behavior assertion DCA.A6 / S2.A3 / FC.6",
+      "description": "FC.6 / DCA.A6 / S2.A3 / DCA.FC.6 collectively assert that when Apple Music is not running or has nothing playing, the plugin shows a sensible idle state (blank or 'Not Playing') rather than crashing. The verifier is edge_case_testing. Production-fidelity edge-case testing requires CV to be able to run the plugin against the real Stream Dock host (per section-5's acceptance: no substitution of runtime dependencies the artifact loads in production). If CV cannot install the real Stream Dock host on its environment, the idle test is reported as cannot_exercise_under_production_fidelity per section-5's charter. This is the architecture working as designed and should be surfaced to the user in the run-report rather than treated as a build failure."
+    },
+    {
+      "id": "R.5",
+      "for_role": "historian",
+      "phase": "run_report",
+      "subject": "v1.9 Editor gate -- StreamDock A/B test data point",
+      "description": "This run is the architecture's first exercise of the Editor role. The prior v1.8 StreamDock run failed because TD picked the Elgato Stream Deck SDK from training-data familiarity. This v1.9 run's TD did NOT make that mistake -- inflection_resolutions[IP1].chosen_branch explicitly cites canonical MiraboxSpace sources (sdk.key123.vip, github.com/MiraboxSpace/StreamDock-Plugin-SDK) and the rationale explicitly notes Elgato Stream Deck SDK was explicitly disallowed by Discovery's IP1 third bullet and is the documented v1.8 first-contact failure. Discovery's ledger.execution_context_observed locked the platform to Windows from briefing evidence; TD inherited Windows throughout without re-derivation. Editor's structural audit confirmed the chain: prompt -> Discovery ledger (proper nouns + execution context + high-importance IPs) -> Researcher probes with verbatim_excerpt citations -> TD inflection_resolutions sourcing canonical_evidence where reachable and external_source_unreachable where not. The v1.9 defenses (Principle E Decision Grounding, Principle F citation hygiene, Principle H source-field discipline, Editor structural audit) caught what they were supposed to catch and passed what they were supposed to pass. Historian should record this run as a positive A/B data point against the v1.8 failure."
+    }
+  ],
+  "routed_to": [],
+  "principle_f_backstop_evidence": {
+    "checked_at": "2026-05-14T01:00:00Z",
+    "method": "HTTP GET against cited URLs and their VuePress-generated asset bundles, comparing the verbatim_excerpt text in Researcher findings to the text actually present in the live page bundles.",
+    "url_samples_checked": [
+      {
+        "citation_id": "C.1.4 / C.4.1",
+        "url": "https://sdk.key123.vip/en/guide/get-started.html",
+        "result": "verbatim_excerpt phrase 'Move the com.example.my-plugin.sdPlugin plugin to the C:\\\\Users\\\\{username}\\\\AppData\\\\Roaming\\\\HotSpot\\\\StreamDock\\\\plugins folder' present in /assets/get-started.html-DLU96_G9.js; restart-Stream-Dock sentence also verbatim present"
+      },
+      {
+        "citation_id": "C.1.3 / C.3.3",
+        "url": "https://sdk.key123.vip/en/guide/manifest.html",
+        "result": "Controllers enum present verbatim as Keypad, Information, SecondaryScreen, Knob (TouchBar is NOT enumerated), corroborating both the C.1.3 manifest-fields citation and the C.3.3 framing rationale for external_source_unreachable on TouchBar assertions"
+      },
+      {
+        "citation_id": "C.1.1 reference",
+        "url": "https://github.com/MiraboxSpace/StreamDock-Plugin-SDK",
+        "result": "Repository exists per api.github.com response (HTTP 200, id 830773257, owner MiraboxSpace); referenced from the get-started page"
+      }
+    ],
+    "conclusion": "The Researcher findings for IP1 and IP4 are NOT training-data confabulations. The cited URLs are live and the verbatim excerpts appear in their actual content. This is the precise Principle F backstop the v1.9 architecture was designed to require, and on this run the backstop holds. probe-ip2 (Microsoft Learn) and probe-ip3 (vsdinside, nouvolo) were not re-fetched in this pass; Researcher's citation_class labels (static_canonical / archived_snapshot / interactive_doc) were taken at face value for those probes. If a deeper substantive verification of those is required, route to Researcher in re-verification mode."
+  },
+  "rationale": {
+    "for_historian": "Editor's first audit on the v1.9 architecture and on the second attempt of the StreamDock + Apple Music touch-bar project. All six structural checks pass. The plan honestly surfaces three external_source_unreachable assertions and one production-fidelity-requires-user-hardware PNV; these are documented as recommendations for Critic / CV / Uncertainty Manifest rather than as routing triggers, per the briefing's verdict guidance and the file_schemas note that the architecture's North Star contract overrides the gate: builds always deliver, never halt to ask the user. The Editor's Principle F backstop spot-check on the sdk.key123.vip cited URLs confirms the verbatim_excerpts are real -- the precise defense against the v1.8 failure mode where Researcher returns findings as if URLs had been read but actually summarizing from training-data familiarity. The defense holds. Verdict: pass_with_recommendations. Build proceeds to Coordinator wave dispatch.",
+    "for_critic": "Recommendations R.1-R.4 are post-build verification items for Critic and CV to revisit. R.5 is a Historian data-point note. None are blocking. The build proceeds.",
+    "what_editor_did_NOT_do": "Editor did NOT substantively verify any proper noun, IP, or external claim -- those remain Researcher's job. Editor did NOT amend the ledger, sections file, or contracts -- those remain Discovery's / TD's. Editor did NOT decide the build proceeds -- Orchestrator interprets the verdict. The Principle F backstop spot-check is structural (does the cited URL contain the cited text) not substantive (is the cited text technically correct about the external system); substantive verification of the SMTC API behavior, the .sdPlugin install path's continued validity on the user's specific Windows version, and the actual Touch Bar widget behavior all remain CV's / the user's territory.",
+    "what_surprised_editor": "Two positive surprises: (1) TD's prompt_verb_analysis explicitly enumerated candidate verbs and rationale rather than treating verb choice as a single point of failure -- this is exactly the v1.6 PNV defense working as designed. (2) The IP3 framing_concern from Researcher -- Discovery's IP3 default branch was Single contiguous full-width canvas. The canonical evidence suggests instead that the Touch Bar is addressed via the host's widget primitives, not a raw bitmap. This is a meaningful refinement of the default branch the TD should record. -- was actually ingested by TD, who recorded a REFINED chosen_branch reflecting the widget-primitive model rather than rubber-stamping Discovery's pixel-canvas default. The Researcher-to-TD feedback loop visibly worked. One mild concern (R.3): the structural existence of Touchbar Mode as a named operating mode rests on third-party archived snapshots; MiraboxSpace's own canonical SDK docs do not name Touchbar Mode as a concept. TD has handled this principle-cleanly by external_source_unreachable on the load-bearing specifics, but the user should know this in the run-report."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "probe_id": "probe-ip1",
+  "created_at": "2026-05-14T00:00:00Z",
+  "phase": "planning",
+  "dispatched_by": "technical-discovery",
+  "question": "What is the canonical MiraboxSpace StreamDock plugin SDK identity and Windows host application for the VSD N4 Pro? Specifically: (a) name and Windows installer source URL of the host application that loads VSD N4 Pro plugins; (b) plugin manifest format (file extension, schema, required fields); (c) plugin runtime (native binary / JavaScript bundle / Python / web-tech / other); (d) plugin API for drawing to Touchbar Mode (function names, draw model, lifecycle hooks); (e) the documented installation flow on Windows for a third-party plugin.",
+  "context_pointers": [
+    "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1]",
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP1]",
+    "architecture/principles.md (Principle F)",
+    "architecture/failure-catalog-streamdock.md"
+  ],
+  "constraints": [
+    "MiraboxSpace StreamDock is NOT the Elgato Stream Deck. They are distinct vendors. Do not substitute the Elgato Stream Deck SDK for canonical MiraboxSpace evidence under any circumstance. If your training-data familiarity strongly suggests the answer, that is a Principle F red flag — verify against canonical sources before reporting.",
+    "Every load-bearing finding MUST include citations[] with non-empty verbatim_excerpt from canonical sources (citation_class: static_canonical / archived_snapshot / interactive_doc). Training-data summaries are NOT citations.",
+    "If after thorough search no canonical source can be located for a load-bearing claim, set external_source_unreachable: true on the citation, and report the claim as unsupportable rather than fabricating.",
+    "Target OS is Windows. Inherit this from Discovery's execution_context_observed.",
+    "Use WebSearch and WebFetch to actually retrieve content. Do not return findings 'as if' a URL had been read."
+  ],
+  "optimization_criterion": "fit_to_project_goals",
+  "preserve_sections": null,
+  "questioning_authority": false,
+  "budget_minutes": 15,
+  "max_options": 5
+}

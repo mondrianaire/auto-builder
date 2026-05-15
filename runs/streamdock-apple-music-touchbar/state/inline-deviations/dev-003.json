@@ -1,0 +1,20 @@
+{
+  "id": "dev-003",
+  "logged_at": "2026-05-14T01:48:30Z",
+  "logged_by_role": "coordinator",
+  "context": "section-4 packaging builder-4a — choosing the literal value for the manifest's Action Controllers / Type to declare a Touch Bar action, when the canonical SDK enumerates only Keypad/Information/SecondaryScreen/Knob.",
+  "deviation_type": "implementation_path_chosen",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].machine_checkable_assertions[id=IP3.A1]",
+  "what_spec_said": "manifest.json declares exactly one Action whose Controllers / action-type field indicates a Touch Bar (or N4-Pro-Touch-Bar-equivalent) slot. ... Exact field name is established by Builder against the SDK template. ... source: external_source_unreachable.",
+  "what_was_done": "Manifest Action declares Controllers: ['TouchBar', 'Information'] AND Type: 'TouchBar' AND TargetDevice: 'streamdock-n4-pro'. Three signals are sent because the canonical sdk.key123.vip manifest documentation enumerates four Controllers (Keypad, Information, SecondaryScreen, Knob) and explicitly does NOT enumerate 'TouchBar'; the VSDinside porting guide (probe-ip3/C.3.1) names 'Touch Bar' as an action type; the host has documented analogues but no canonical TouchBar value. We send all three so the host can match against whichever it recognizes for the N4 Pro target device.",
+  "rationale": "The contract IP3.A1 explicitly tags this as external_source_unreachable and assigns the choice to Builder. Per the assertion's rationale_for_source, Builder is to consult the live SDK template repo at github.com/MiraboxSpace/StreamDock-Plugin-SDK. The repository's example plugins use the literal token 'TouchBar' in the porting guide and the example manifests demonstrate the Information controller as the closest documented analogue. Including both is the smallest reasonable approach that defends against either being the canonical token.",
+  "nested_equivalent": "Under nested dispatch section-4's Overseer would have made the same choice. Cross-section impact is zero; if a future Stream Dock host version standardizes the field name, the manifest can be amended without touching any other section.",
+  "scope": {
+    "changes_artifact": true,
+    "changes_contract": false,
+    "changes_charter_or_spec": false,
+    "changes_assumption": false
+  },
+  "linked_sev0_record": null,
+  "linked_sev0_note": "Not a Sev 0 fix; IP3.A1 is itself external_source_unreachable and the assertion gives Builder authority to pick the literal value."
+}

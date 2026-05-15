@@ -1,0 +1,28 @@
+{
+  "updated_at": "2026-05-14T02:00:00Z",
+  "version": 2,
+  "dispatch_mode": "inline",
+  "nodes": [
+    { "id": "host-integration", "section_id": "section-1", "status": "verified", "wave": 1, "depends_on": [] },
+    { "id": "now-playing-source", "section_id": "section-2", "status": "verified", "wave": 2, "depends_on": ["host-integration"] },
+    { "id": "touchbar-renderer", "section_id": "section-3", "status": "verified", "wave": 3, "depends_on": ["host-integration", "now-playing-source"] },
+    { "id": "packaging", "section_id": "section-4", "status": "verified", "wave": 4, "depends_on": ["host-integration", "now-playing-source", "touchbar-renderer"] },
+    { "id": "integrator", "type": "pseudo-node", "is_pseudo": true, "status": "verified", "wave": 5, "depends_on": ["host-integration", "now-playing-source", "touchbar-renderer", "packaging"] },
+    { "id": "edge-case-testing", "section_id": "section-5", "status": "verified", "wave": 6, "depends_on": ["integrator"], "blocked_on": [] }
+  ],
+  "edges": [
+    { "from": "host-integration", "to": "now-playing-source" },
+    { "from": "host-integration", "to": "touchbar-renderer" },
+    { "from": "now-playing-source", "to": "touchbar-renderer" },
+    { "from": "host-integration", "to": "packaging" },
+    { "from": "now-playing-source", "to": "packaging" },
+    { "from": "touchbar-renderer", "to": "packaging" },
+    { "from": "host-integration", "to": "integrator" },
+    { "from": "now-playing-source", "to": "integrator" },
+    { "from": "touchbar-renderer", "to": "integrator" },
+    { "from": "packaging", "to": "integrator" },
+    { "from": "integrator", "to": "edge-case-testing" }
+  ],
+  "current_wave": 6,
+  "rationale": "All 5 sections + integrator pseudo-node reached verified. Linear wave execution under inline dispatch."
+}
