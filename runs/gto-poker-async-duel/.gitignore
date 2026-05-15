@@ -5,3 +5,6 @@ _deploy/
 top-level-readme.md
 commit-to-github.bat
 commit-to-autobuilder.bat
+deploy-now.bat
+push-fix.bat
+push-fix-v2.bat
