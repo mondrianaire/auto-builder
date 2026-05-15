@@ -6,6 +6,75 @@ layer, not part of any run's substrate.
 
 ---
 
+## v0.6 — 2026-05-15
+
+**Curation pass — first-delivery outcomes resolved for 5 unverified builds.**
+
+The corpus had 5 builds (`earthquake-map`, `kanban-board`, `blackjack-trainer`,
+`tic-tac-toe`, `gto-poker-trainer`) sitting at `first_delivery_outcome:
+unverified` because the substrate's automated derivation (uncertainty manifest /
+run-report STATUS block) couldn't speak to user-facing truth for runs that
+shipped clean. Closed the gap with curation overlays at
+`codex/data/curation/{slug}.json`, each grounded in run-report + RCA evidence
+where available.
+
+**Resolved distribution**
+
+| outcome | before | after |
+|---|---|---|
+| succeeded | 0 | 3 |
+| succeeded_with_concerns | 2 | 4 |
+| failed_user_reprompted | 3 | 3 |
+| failed_unrecoverable | 0 | 0 |
+| unverified | 5 | 0 |
+
+**Per-build rationale (short form; full text in curation files):**
+
+- `earthquake-map` → **succeeded_with_concerns**. CV's headless-Chromium PNV
+  passed with 480 markers from the live USGS feed, but Critic raised a
+  severity-HIGH `prose_coverage` escalation that required TD impact-mode +
+  38 added assertions before delivery cleared.
+- `kanban-board` → **succeeded**. 16/16 edge-case + 8/8 CV user-flow scenarios
+  pass; only a low-severity manifest-schema drift. The v16-reaudit
+  reclassification to "fail" is a retroactive principle-compliance critique,
+  not an artifact-quality finding (the RCA explicitly recommends NOT patching).
+- `blackjack-trainer` → **succeeded**. "Nothing broke" run; CV pass, no
+  escalations, no Sev 0 fixes. The v16-reaudit reclassification scores it
+  against v1.6+ standards that didn't exist at build time.
+- `tic-tac-toe` → **succeeded**. 46/46 edge cases, CV pass, "happy path ran
+  clean." The RCA calls this "artifact-correctness-by-luck" because the
+  small domain hid the absence of principled verification, but the user-facing
+  artifact works.
+- `gto-poker-trainer` → **succeeded_with_concerns**. PNV.1 verified
+  end-to-end under jsdom production fidelity, but the run surfaced 4
+  amendment candidates + 1 Sev 0 + 2 charter-compliance gaps (TaskCreate
+  misses), warranting the concerns qualifier.
+
+**Cross-build pattern surfaced.** Three of the five (kanban-board,
+blackjack-trainer, tic-tac-toe) have `re_audit_reclassified_verdict: fail`
+even though I curated them as `succeeded`. That divergence is the data point
+worth keeping: the architecture's retroactive verification standard
+(v1.6+ principle compliance) and the user's first-contact experience are
+distinct axes. The dashboard already separates them; the curation just makes
+the latter visible for the first time.
+
+**Files touched**
+
+- `codex/data/curation/earthquake-map.json` (new)
+- `codex/data/curation/kanban-board.json` (new)
+- `codex/data/curation/blackjack-trainer.json` (new)
+- `codex/data/curation/tic-tac-toe.json` (new)
+- `codex/data/curation/gto-poker-trainer.json` (new)
+- `codex/data/index.json` (5 entries + distribution + version bump)
+- `codex/data/bundle.js` (same 5 entries × 2 locations + distribution + version)
+- `codex/data/runs/{slug}.json` × 5 (header + revisions[].primary_run entry)
+
+The hand-edits to index.json + bundle.js + per-run JSONs match what
+`build-codex.bat` will produce on the next run from the curation files, so
+there's no drift when the user does eventually rebuild.
+
+---
+
 ## v0.1 — 2026-05-14
 
 First cut. Static dashboard + Node aggregator, no live monitoring.

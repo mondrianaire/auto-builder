@@ -8,3 +8,10 @@ commit-to-autobuilder.bat
 deploy-now.bat
 push-fix.bat
 push-fix-v2.bat
+push-fix-v3.bat
+_deploy.ps1
+_deploy-log.txt
+_probe.txt
+_probe2.txt
+_deploy.bat
+.claude/worktrees/

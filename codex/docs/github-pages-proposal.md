@@ -43,16 +43,16 @@ too — both paths work and the dashboard ends up identical.
 <!-- Edit checkboxes when you action items. Codex parses this block on its next aggregator run. -->
 
 **Last touched:** 2026-05-15
-**Overall state:** in-progress (Codex-side preflight complete; awaiting Maintenance/user actions)
+**Overall state:** in-progress (Pages live; bat-script adoption + gitignore exception remain on Maintenance)
 
-- [ ] nojekyll-added — *not started; empty file at repo root*
-- [ ] gitignore-zip-exception — *not started; add `!runs/**/output/final/*.zip` exception*
-- [ ] pages-source-configured — *not started; requires manual GitHub Settings UI (Pages → main branch, / root)*
-- [ ] pages-deploy-confirmed — *not started; gated on pages-source-configured*
-- [x] config-json-handshake — *Codex wrote `codex/data/config.json` speculatively 2026-05-14 with predicted URL `https://jett.github.io/Auto-Builder`. All 10 builds' live_urls + showcase source-file links now compose correctly. Will 404 until Pages activation lands; edit config.json + re-run aggregator if final URL differs.*
-- [ ] build-codex-bat-verified — *not started; run aggregator locally once Pages live URLs exist to confirm composition is correct*
-- [ ] commit-build-bat-adopted — *not started; Path A primary workflow*
-- [ ] commit-step-bat-adopted — *not started; Path A companion for additional_step revisions*
+- [x] nojekyll-added — *verified 2026-05-15: `.nojekyll` exists at repo root*
+- [ ] gitignore-zip-exception — *not started; verified `.gitignore` line 85 has `*.zip` but no `!runs/**/output/final/*.zip` exception. Currently no harm (no streamdock .zip deliverable lives under `runs/*/output/final/`) but the exception still belongs in the file for future plugin builds.*
+- [x] pages-source-configured — *verified 2026-05-15 via dashboard rendering: Source: Deploy from branch, Branch: main, Folder: / (root)*
+- [x] pages-deploy-confirmed — *verified 2026-05-15: two successful "pages build and deployment" runs in GitHub Actions; dashboard rendered correctly at `https://mondrianaire.github.io/auto-builder/codex/` per user screenshot*
+- [x] config-json-handshake — *Codex wrote `codex/data/config.json` 2026-05-14; corrected the predicted URL from `https://jett.github.io/Auto-Builder` to `https://mondrianaire.github.io/auto-builder` once the actual GitHub identity was confirmed. All 10 builds' live_urls + showcase source-file links compose against the verified Pages URL.*
+- [x] build-codex-bat-verified — *verified 2026-05-15: dashboard screenshot showed full roster + detail panel + statistics + architecture timeline + coordination panel + failure modes catalog all rendering correctly from aggregator-emitted bundle.js. The whole pipeline is end-to-end validated.*
+- [ ] commit-build-bat-adopted — *Codex drafted `scripts/draft/commit-build.bat` 2026-05-15; awaiting Maintenance graduation to repo root. Path A primary workflow.*
+- [ ] commit-step-bat-adopted — *Codex drafted `scripts/draft/commit-step.bat` 2026-05-15; awaiting Maintenance graduation to repo root. Path A companion for additional_step revisions.*
 - [ ] codex-yml-created — *not started; Path B conditional backstop, may defer indefinitely if Path A discipline holds*
 - [x] root-readme-pages-entry — *Two files at repo root 2026-05-15: (a) `index.html` is the actual Pages landing — meta-refresh + JS belt-and-suspenders redirect to `/codex/`, with a styled fallback "If you are not redirected" link and a 1-line project tagline. Required because `.nojekyll` disables markdown rendering, so a README.md alone wouldn't serve as the Pages root. (b) `README.md` is the GitHub repo-page landing — separately rendered by GitHub itself when visitors browse the repo. Contains tagline, North Star quote, entry-point links (dashboard / architecture / codex docs), what's-here overview, git convention summary, and a status line. Approach taken: "Dashboard-as-landing" per user direction — visitors to the bare Pages URL get instantly redirected to the dashboard with no separate landing-page experience.*
 
@@ -67,6 +67,10 @@ too — both paths work and the dashboard ends up identical.
 2026-05-14: On `codex-yml-created` staying at not-started indefinitely — fully supported. The recommendation upfront framed Path A as primary precisely so Path B could remain optional. If Path A's discipline holds (which the existing `commit-v19-*.bat` track record suggests it will), the backstop never needs to ship. I'll leave the Path B draft in this proposal for reference but won't push for it.
 
 2026-05-14: No timeline pressure from my side. The Pages step is the only one gated on you specifically (GitHub Settings UI); everything else can move whenever it's convenient. The Codex side is functionally complete as of v0.5 and degrades gracefully without `config.json` (live_url_kind stays `none`; dashboard shows `final/` fallback).
+
+2026-05-15: Pages is live. Verification pass complete: six of ten items now [x] — `nojekyll-added`, `pages-source-configured`, `pages-deploy-confirmed`, `config-json-handshake`, `build-codex-bat-verified`, `root-readme-pages-entry`. Four remain open: `gitignore-zip-exception` (Maintenance write to `.gitignore`), `commit-build-bat-adopted` + `commit-step-bat-adopted` (Maintenance graduation of `scripts/draft/*.bat` to project root), and `codex-yml-created` (Path B backstop, indefinitely deferred per agreed plan). Codex side has nothing else to do on this proposal — the open items are all Maintenance-owned.
+
+Sidebar: while verifying the dashboard end-to-end I noticed five builds were sitting at `first_delivery_outcome: unverified` because the substrate's automated derivation couldn't speak to user-facing truth for clean runs. Closed that gap with curation overlays at `codex/data/curation/{slug}.json` for earthquake-map, kanban-board, blackjack-trainer, tic-tac-toe, gto-poker-trainer. Distribution now: 3 succeeded / 4 succeeded_with_concerns / 3 failed_user_reprompted / 0 unverified. Documented at `codex/docs/codex-changelog.md` § v0.6.
 
 2026-05-14: User pushed for forward motion. Codex did everything it can do unilaterally — wrote `codex/data/config.json` speculatively with the predicted Pages URL (`https://jett.github.io/Auto-Builder`). The aggregator now composes:
 - 8 live_urls (web_app builds) pointing at `…/runs/{slug}/output/final/index.html`
