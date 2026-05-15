@@ -91,3 +91,9 @@ scratch/
 
 # Don't ignore the snapshot dirs even though they look generated
 !architecture/v*-snapshot/
+
+# Plugin deliverables (e.g. StreamDock .sdPlugin bundles, Chrome extension packages)
+# packaged as .zip under runs/{slug}/output/final/ ARE tracked — they are the
+# delivered artifact for non-web-app builds. The blanket *.zip rule above still
+# excludes zips elsewhere (scratch dumps, build caches, etc.).
+!runs/**/output/final/*.zip
