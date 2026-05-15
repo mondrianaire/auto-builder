@@ -13,12 +13,12 @@ REM existing directory under runs\. Scope rule: this commit only touches
 REM files inside runs\^<slug^>\ -- nothing else. This is what keeps
 REM `git filter-repo --path runs/^<slug^>/` clean at promotion time.
 REM
-REM STATUS: DRAFT. Lives in scripts\draft\ until first end-to-end test.
-REM Move to project root for production use.
+REM Production location: project root (graduated from scripts\draft\ on 2026-05-15
+REM after retroactive-bootstrap.bat validated the same git-tag pattern end-to-end).
 REM ===========================================================================
 
 setlocal
-cd /d "%~dp0\..\.."
+cd /d "%~dp0"
 set "SLUG=%~1"
 
 if "%SLUG%"=="" goto :usage

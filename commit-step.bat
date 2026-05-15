@@ -12,11 +12,12 @@ REM The original delivery/^<slug^> tag remains pinned to the first-delivery
 REM commit per the cardinal rule (revisions never change first_delivery_outcome).
 REM Codex's revision lineage display will show both as separate cards.
 REM
-REM STATUS: DRAFT. Lives in scripts\draft\ until first end-to-end test.
+REM Production location: project root (graduated from scripts\draft\ on 2026-05-15
+REM alongside commit-build.bat; same git-tag pattern as retroactive-bootstrap.bat).
 REM ===========================================================================
 
 setlocal
-cd /d "%~dp0\..\.."
+cd /d "%~dp0"
 set "SLUG=%~1"
 set "REV=%~2"
 set "SUMMARY=%~3"
