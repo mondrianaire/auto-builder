@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T19:21:48.261Z",
+    "generated_at": "2026-05-16T19:25:51.271Z",
     "codex_version": "0.15",
     "architecture_versions_seen": [
       "v1.3",
@@ -361,10 +361,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-16T19:18:18.568Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -591,10 +591,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-16T19:18:47.106Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -3231,10 +3231,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-16T19:18:18.568Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -3470,8 +3470,8 @@ window.CODEX_BUNDLE = {
         "cv_tier1_pnv": "verified",
         "cv_tier2_first_contact": "not_run",
         "cv_tier3_subgoal": "verified",
-        "lifecycle_phase": "ready_to_ratify",
-        "ratified": false,
+        "lifecycle_phase": "ratified_awaiting_fork",
+        "ratified": true,
         "promoted": false,
         "promoted_to": null,
         "totals": {
@@ -3488,8 +3488,8 @@ window.CODEX_BUNDLE = {
           "build": "done",
           "verification": "done",
           "delivery": "done",
-          "ratification": "active",
-          "promoted": "pending"
+          "ratification": "done",
+          "promoted": "active"
         }
       },
       "history": {
@@ -5374,10 +5374,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": true,
         "re_audit_reclassified_verdict": "fail",
         "rca_present": true,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-16T19:18:47.106Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -5666,8 +5666,8 @@ window.CODEX_BUNDLE = {
         "cv_tier1_pnv": "verified",
         "cv_tier2_first_contact": "not_run",
         "cv_tier3_subgoal": "verified",
-        "lifecycle_phase": "ready_to_ratify",
-        "ratified": false,
+        "lifecycle_phase": "ratified_awaiting_fork",
+        "ratified": true,
         "promoted": false,
         "promoted_to": null,
         "totals": {
@@ -5684,8 +5684,8 @@ window.CODEX_BUNDLE = {
           "build": "done",
           "verification": "done",
           "delivery": "done",
-          "ratification": "active",
-          "promoted": "pending"
+          "ratification": "done",
+          "promoted": "active"
         }
       },
       "history": {
