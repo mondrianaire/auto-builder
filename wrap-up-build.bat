@@ -59,13 +59,19 @@ echo === Clearing any stuck git lock files ===
 if exist .git\index.lock del /f /q .git\index.lock
 
 echo === Staging wrap-up artifacts for %SLUG% ===
-git add "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json"
+REM Include completion-ratified.json in the stage so retroactive binding
+REM (where ratification itself happens out-of-band, e.g., for a build that
+REM was manually uploaded before AutoBuilder's git infrastructure existed)
+REM also gets shipped together in one [run:{slug}] commit. If
+REM completion-ratified.json is already on origin, `git add` is a no-op
+REM and the staged-changes check below handles it gracefully.
+git add "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json"
 if errorlevel 1 goto :err_git
 
-git diff --cached --quiet -- "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json"
+git diff --cached --quiet -- "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json"
 if errorlevel 1 (
     echo === Committing [run:%SLUG%] back-fill ===
-    git commit -m "[run:%SLUG%] wrap-up back-fill: PROJECT-OVERVIEW.md + sentinel" -m "Wrap-up routine run via wrap-up-build.bat (standalone back-fill of a build ratified before the wrap-up gate existed). Required by promote-build.bat + workflow #2 four-gate promotion model. See architecture/build-lifecycle.md § Promotion gates."
+    git commit -m "[run:%SLUG%] wrap-up back-fill: PROJECT-OVERVIEW.md + sentinel (+ completion-ratified.json if retroactive)" -m "Wrap-up routine run via wrap-up-build.bat (standalone back-fill of a build ratified before the wrap-up gate existed). Required by promote-build.bat + workflow #2 four-gate promotion model. See architecture/build-lifecycle.md § Promotion gates."
     if errorlevel 1 goto :err_git
     echo === Rebasing on top of origin/main ===
     git pull --rebase --autostash -X ours origin main
