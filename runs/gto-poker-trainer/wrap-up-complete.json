@@ -1,9 +1,11 @@
 {
   "schema_version": "0.1",
-  "completed_at": "2026-05-16T16:31:32.276Z",
+  "completed_at": "2026-05-16T17:17:03.383Z",
   "completed_by": "wrap-up-build.bat",
   "writer_version": "0.1",
   "artifacts": [
-    "PROJECT-OVERVIEW.md"
+    "PROJECT-OVERVIEW.md",
+    "decision-flowchart.html",
+    "decision-flowchart.svg"
   ]
 }

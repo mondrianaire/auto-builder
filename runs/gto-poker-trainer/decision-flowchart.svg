@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1758" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+    </marker>
+  </defs>
+
+  <text x="1000" y="40" text-anchor="middle" font-size="28" font-weight="bold">gto-poker-trainer — Decision Flowchart</text>
+
+  <rect x="625" y="60" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="625" y="60" width="360" height="5" fill="#3a6abf"/>
+  <text x="805" y="135" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">18</text>
+  <text x="805" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">DECISIONS</text>
+
+  <rect x="1015" y="60" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="1015" y="60" width="360" height="5" fill="#8a3aaf"/>
+  <text x="1195" y="135" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">7</text>
+  <text x="1195" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">AGENTS DEPLOYED</text>
+
+  <!-- Phase: PHASE 1 — DISCOVERY -->
+  <text x="80" y="273" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 1 — DISCOVERY</text>
+
+  <!-- Agent: discovery -->
+  <rect x="500" y="305" width="1400" height="174" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="305" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="328" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Discovery</text>
+  <text x="530" y="360" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-1: Restatement of the user prompt.</text>
+  <text x="530" y="390" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-2: Logged 12 assumptions (A1–A12).</text>
+  <text x="530" y="420" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-3: Surfaced 5 inflection points (IP1–IP5).</text>
+  <text x="530" y="450" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-4: Marked 11 items out-of-scope.</text>
+
+  <!-- Phase: PHASE 2 — TECHNICAL DISCOVERY -->
+  <text x="80" y="542" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 2 — TECHNICAL DISCOVERY</text>
+
+  <!-- Agent: td-initial -->
+  <rect x="500" y="574" width="1400" height="174" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="574" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="597" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Technical Discovery (initial)</text>
+  <text x="530" y="629" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-1: Prompt-verb selection.</text>
+  <text x="530" y="659" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-2: Resolved 5 inflection points.</text>
+  <text x="530" y="689" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-3: Section breakdown (7 sections).</text>
+  <text x="530" y="719" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-4: Coverage assertions.</text>
+
+  <!-- Phase: PHASE 3 — BUILD -->
+  <text x="80" y="811" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 3 — BUILD</text>
+
+  <!-- Agent: coordinator -->
+  <rect x="500" y="843" width="1400" height="174" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="843" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="866" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Coordinator (initial dispatch)</text>
+  <text x="530" y="898" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-1: Dispatch mode = inline.</text>
+  <text x="530" y="928" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-2: DAG construction (8 nodes, 6 waves).</text>
+  <text x="530" y="958" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-3: 18 dispatch entries logged.</text>
+  <text x="530" y="988" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-4: Logged inline-deviations (dev-001, dev-002, dev-003, dev-004).</text>
+
+  <!-- Agent: sections -->
+  <rect x="500" y="1042" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1042" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1065" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Sections</text>
+  <text x="530" y="1097" font-size="13" font-weight="bold" fill="#0a3a6a">D-SEC-1: 7 sections built + verified.</text>
+
+  <!-- Phase: PHASE 4 — INTEGRATION -->
+  <text x="80" y="1189" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 4 — INTEGRATION</text>
+
+  <!-- Agent: integrator -->
+  <rect x="500" y="1221" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1221" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1244" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Integrator</text>
+  <text x="530" y="1276" font-size="13" font-weight="bold" fill="#0a3a6a">D-INT-1: Assembled 13 integration files.</text>
+
+  <!-- Phase: PHASE 5 — VERIFICATION -->
+  <text x="80" y="1368" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 5 — VERIFICATION</text>
+
+  <!-- Agent: critic -->
+  <rect x="500" y="1400" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1400" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1423" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Critic (final sweep)</text>
+  <text x="530" y="1455" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRT-1: Raised 18 flags (0 medium/high).</text>
+
+  <!-- Agent: cv -->
+  <rect x="500" y="1509" width="1400" height="144" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1509" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1532" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Convergence Verifier</text>
+  <text x="530" y="1564" font-size="13" font-weight="bold" fill="#0a3a6a">D-CV-1: Verdict: pass.</text>
+  <text x="530" y="1594" font-size="13" font-weight="bold" fill="#0a3a6a">D-CV-2: 12/12 assumptions verified.</text>
+  <text x="530" y="1624" font-size="13" font-weight="bold" fill="#0a3a6a">D-CV-3: Production-fidelity gate cleared.</text>
+
+  <!-- Footer -->
+  <text x="1000" y="1733" text-anchor="middle" font-size="11" fill="#999">Auto-generated by architecture/scripts/decision-flowchart.mjs · verdict: pass · build: gto-poker-trainer</text>
+</svg>
