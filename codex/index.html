@@ -267,6 +267,97 @@
   .phase-pill.complete  { color: rgba(184,160,90,0.95);  border-color: rgba(184,160,90,0.55);  background: rgba(184,160,90,0.12); }
   .phase-pill.promoted  { color: rgba(220,180,80,0.95);  border-color: rgba(220,180,80,0.65);  background: rgba(220,180,80,0.16); }
   .phase-pill.pending   { color: var(--text-faint);      border-color: var(--border-soft); }
+  /* v0.13: ready-to-ratify pulse + chevron indicates user action available */
+  .phase-pill.ready { animation: ready-pulse 2.4s ease-in-out infinite; }
+  .phase-pill.ready::after { content: ' ▸'; font-size: 9px; opacity: 0.8; margin-left: 2px; }
+  @keyframes ready-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(110,201,122,0.0); }
+    50%      { box-shadow: 0 0 0 3px rgba(110,201,122,0.20); }
+  }
+  /* v0.13: ratification section in detail panel */
+  .rat-section {
+    margin: 12px 20px 0;
+    padding: 14px 16px;
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    background: var(--bg-elev);
+  }
+  .rat-section h3 {
+    margin: 0 0 8px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.6px;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .rat-section .rat-state {
+    font-size: 13px; margin-bottom: 10px;
+    color: var(--text);
+  }
+  .rat-cmd {
+    display: flex; align-items: stretch; gap: 0;
+    margin: 8px 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--bg-elev-2);
+  }
+  .rat-cmd code {
+    flex: 1; padding: 8px 12px;
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: 12px; color: var(--text);
+    background: transparent;
+    white-space: nowrap; overflow-x: auto;
+  }
+  .rat-cmd button {
+    border: none; border-left: 1px solid var(--border);
+    background: var(--bg-elev);
+    color: var(--text-dim);
+    padding: 0 14px; font-size: 11px; cursor: pointer;
+    font-family: inherit;
+    transition: color 120ms ease;
+  }
+  .rat-cmd button:hover { color: var(--text); }
+  .rat-cmd button.copied { color: rgba(110,201,122,0.95); }
+  .rat-checklist {
+    font-size: 11.5px; color: var(--text-dim);
+    margin: 8px 0;
+    line-height: 1.55;
+  }
+  .rat-checklist li { margin: 3px 0; }
+  .rat-meta {
+    font-size: 11px; color: var(--text-faint);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .rat-meta strong { color: var(--text-dim); font-weight: 600; }
+  /* v0.13: "Needs your action" callout */
+  .action-needed {
+    margin-bottom: 14px;
+    padding: 12px 16px;
+    border: 1px solid rgba(110,201,122,0.45);
+    border-radius: 6px;
+    background: rgba(110,201,122,0.08);
+    font-size: 12px;
+    color: var(--text);
+  }
+  .action-needed.hidden { display: none; }
+  .action-needed-header {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: rgba(110,201,122,0.95);
+    margin-bottom: 6px;
+  }
+  .action-needed-slugs {
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .action-needed-slugs .ans-slug {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: rgba(110,201,122,0.45);
+    text-underline-offset: 3px;
+  }
+  .action-needed-slugs .ans-slug:hover { text-decoration-color: rgba(110,201,122,0.95); }
 
   /* first-delivery pill — uses bolder treatment than composite */
   .fdo-pill {
@@ -601,6 +692,7 @@
           <th data-sort-key="architecture_version">Arch</th>
           <th data-sort-key="verdict">Verdict</th>
           <th data-sort-key="first_delivery_outcome">First delivery</th>
+          <th>Phase</th>
           <th data-sort-key="composite">Composite</th>
           <th>Tiers (1 / 2 / 3)</th>
           <th data-sort-key="sections">Sections</th>
@@ -821,35 +913,46 @@
   // surfaces that don't exist in today's data but will when ratification-UI
   // ships).
   function derivePhase(sum) {
-    if (!sum) return { cls: 'pending', label: 'lifecycle —' };
+    if (!sum) return { cls: 'pending', label: 'lifecycle —', ready: false };
     // Curation-overlay fields land via the aggregator's merge; safe-access.
     const promotedTo = sum.promoted_to;
     const ratifiedAt = sum.completion_ratified_at;
+    const verifPassed = sum.verification_passed === true;
     const outcome    = sum.first_delivery_outcome;
     const revs       = (sum.counts && sum.counts.revision_count) || 1;
 
     if (promotedTo) {
-      return { cls: 'promoted', label: 'Promoted ★', title: 'Forked to ' + promotedTo };
+      return { cls: 'promoted', label: 'Promoted ★', title: 'Forked to ' + promotedTo, ready: false };
     }
     if (ratifiedAt) {
-      return { cls: 'complete', label: 'Complete · awaiting fork', title: 'Ratified ' + ratifiedAt + '; fork ceremony pending' };
+      return { cls: 'complete', label: 'Complete · awaiting fork', title: 'Ratified ' + ratifiedAt + ' by ' + (sum.ratified_by || 'unknown') + '; fork ceremony pending', ready: false };
+    }
+    // v0.13: ready-to-ratify sub-state — verification passed + no ratification yet
+    if ((outcome === 'succeeded' || outcome === 'succeeded_with_concerns') && verifPassed) {
+      const baseLabel = outcome === 'succeeded' ? 'Phase 1 ✓' : 'Phase 1 ✓ (concerns)';
+      return {
+        cls: outcome === 'succeeded' ? 'p1ok ready' : 'p1concern ready',
+        label: baseLabel + ' · ready to ratify',
+        title: 'Verification passed + first delivery succeeded; run `ratify-build.bat ' + sum.slug + '` to mark complete and trigger fork ceremony',
+        ready: true
+      };
     }
     if (outcome === 'succeeded') {
-      return { cls: 'p1ok', label: 'Phase 1 ✓', title: 'Initial delivery succeeded; ratification UI pending' };
+      return { cls: 'p1ok', label: 'Phase 1 ✓', title: 'Initial delivery succeeded; verification report not yet PASS (ratification blocked)', ready: false };
     }
     if (outcome === 'succeeded_with_concerns') {
-      return { cls: 'p1concern', label: 'Phase 1 ✓ (concerns)', title: 'Initial delivery succeeded with documented concerns; ratification UI pending' };
+      return { cls: 'p1concern', label: 'Phase 1 ✓ (concerns)', title: 'Initial delivery succeeded with documented concerns; verification report not yet PASS (ratification blocked)', ready: false };
     }
     if (outcome === 'failed_user_reprompted') {
       if (revs > 1) {
-        return { cls: 'p2active', label: 'Phase 2 active', title: 'Initial delivery broken; rectification commits in revisions[]' };
+        return { cls: 'p2active', label: 'Phase 2 active', title: 'Initial delivery broken; rectification commits in revisions[]', ready: false };
       }
-      return { cls: 'p2closed', label: 'Phase 1 failed · user moved on', title: 'Initial delivery broken; user re-prompted into a different build rather than running Phase 2 rectification' };
+      return { cls: 'p2closed', label: 'Phase 1 failed · user moved on', title: 'Initial delivery broken; user re-prompted into a different build rather than running Phase 2 rectification', ready: false };
     }
     if (outcome === 'failed_unrecoverable') {
-      return { cls: 'p2broken', label: 'Phase 2 abandoned', title: 'Initial delivery broken; rectification arc closed without recovery' };
+      return { cls: 'p2broken', label: 'Phase 2 abandoned', title: 'Initial delivery broken; rectification arc closed without recovery', ready: false };
     }
-    return { cls: 'pending', label: 'lifecycle —', title: 'Outcome not yet curated; lifecycle phase indeterminate' };
+    return { cls: 'pending', label: 'lifecycle —', title: 'Outcome not yet curated; lifecycle phase indeterminate', ready: false };
   }
   function phasePill(sum) {
     const p = derivePhase(sum);
@@ -974,6 +1077,8 @@
       tr.appendChild(el('td', { class: 'arch' }, dash(r.architecture_version)));
       tr.appendChild(el('td', null, verdictPill(r.verdict)));
       tr.appendChild(el('td', null, firstDeliveryPill(r.first_delivery_outcome, r.first_delivery_outcome_source)));
+      // v0.13: phase chip on roster (was detail-only in v0.12)
+      tr.appendChild(el('td', null, phasePill(r)));
       tr.appendChild(el('td', null, compositePill(r.rating.composite)));
       tr.appendChild(el('td', null, tierGroup(r.rating.deliverability)));
       tr.appendChild(el('td', { class: 'counts' }, dash(r.counts.sections)));
@@ -1013,6 +1118,97 @@
 
       tbody.appendChild(tr);
     }
+  }
+
+  // ---------------------------------------------------------------- v0.13: ratification section
+  function renderRatificationSection(sum) {
+    const phase = derivePhase(sum);
+    const wrap = el('div', { class: 'rat-section' });
+    wrap.appendChild(el('h3', { text: 'Ratification & fork ceremony' }));
+
+    const stateLine = el('div', { class: 'rat-state' });
+    stateLine.appendChild(el('span', { text: 'Current phase: ' }));
+    stateLine.appendChild(phasePill(sum));
+    wrap.appendChild(stateLine);
+
+    // Promoted: show the forked repo link and nothing else
+    if (sum.promoted_to) {
+      const promotedLine = el('div', { class: 'rat-meta' });
+      promotedLine.appendChild(el('span', { text: 'Forked to ' }));
+      promotedLine.appendChild(el('a', {
+        href: sum.promoted_to,
+        target: '_blank',
+        text: sum.promoted_to.replace(/^https?:\/\//, '')
+      }));
+      if (sum.promoted_at) {
+        promotedLine.appendChild(el('span', { text: ' on ' + sum.promoted_at }));
+      }
+      wrap.appendChild(promotedLine);
+      return wrap;
+    }
+
+    // Ratified: show ratified-by/at + notes + "awaiting fork" status
+    if (sum.completion_ratified_at) {
+      wrap.appendChild(el('div', { style: 'font-size:12px;color:var(--text-dim);margin-bottom:8px;', text: 'Awaiting fork ceremony — the completion-triggered-fork.yml workflow (when shipped) fires on this push and creates mondrianaire/' + sum.slug + '-AB.' }));
+      const meta = el('div', { class: 'rat-meta' });
+      meta.appendChild(el('strong', { text: 'Ratified ' }));
+      meta.appendChild(el('span', { text: sum.completion_ratified_at }));
+      if (sum.ratified_by) {
+        meta.appendChild(el('span', { text: ' by ' + sum.ratified_by }));
+      }
+      if (sum.ratification_notes) {
+        meta.appendChild(el('br'));
+        meta.appendChild(el('em', { text: 'Notes: ' + sum.ratification_notes, style: 'color:var(--text-dim)' }));
+      }
+      wrap.appendChild(meta);
+      return wrap;
+    }
+
+    // Blocked (verification not green): explain
+    if (!phase.ready) {
+      const blockedNote = el('div', { style: 'font-size:12px;color:var(--text-dim);margin-bottom:4px;' });
+      if (sum.verification_passed === false) {
+        blockedNote.textContent = 'Verification has not passed for this build. Use commit-step.bat to enter Phase 2 rectification before ratification is available.';
+      } else if (sum.verification_passed === null) {
+        blockedNote.textContent = 'No verification report present — ratification unavailable.';
+      } else {
+        blockedNote.textContent = phase.title || 'Ratification not currently available for this build.';
+      }
+      wrap.appendChild(blockedNote);
+      return wrap;
+    }
+
+    // Ready to ratify: copy-paste command + checklist
+    wrap.appendChild(el('div', {
+      style: 'font-size:12px;color:var(--text-dim);margin-bottom:8px;',
+      text: 'This build has passed verification + first delivery. Run the command below from the project root to ratify and trigger the fork ceremony.'
+    }));
+
+    const cmdText = 'ratify-build.bat ' + sum.slug;
+    const cmdRow = el('div', { class: 'rat-cmd' });
+    cmdRow.appendChild(el('code', { text: cmdText }));
+    const copyBtn = el('button', { text: 'Copy' });
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(cmdText).then(() => {
+        copyBtn.classList.add('copied');
+        copyBtn.textContent = 'Copied';
+        setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.textContent = 'Copy'; }, 1600);
+      }).catch(() => {
+        copyBtn.textContent = 'Copy failed';
+      });
+    });
+    cmdRow.appendChild(copyBtn);
+    wrap.appendChild(cmdRow);
+
+    wrap.appendChild(el('div', { class: 'rat-checklist' },
+      el('div', { text: 'Before answering yes to the script’s two prompts, confirm:', style: 'margin-bottom:4px;color:var(--text)' }),
+      el('ul', { style: 'margin:0;padding-left:18px;' },
+        el('li', { text: 'You can actually follow the install instructions (don’t guess — try them)' }),
+        el('li', { text: 'You can actually access the deliverable as Discovery’s ledger described' }),
+        el('li', { text: 'Misalignment with what you originally wanted is a Phase 1 documented gap, not a block on ratification (per build-lifecycle.md)' })
+      )
+    ));
+    return wrap;
   }
 
   // ---------------------------------------------------------------- detail
@@ -1086,6 +1282,9 @@
       stripWrap.appendChild(strip);
       host.appendChild(stripWrap);
     }
+
+    // ---- v0.13: ratification section (per ratification-ui-proposal)
+    host.appendChild(renderRatificationSection(sum));
 
     // ---- body
     const body = el('div', { class: 'detail-body' });
@@ -1390,6 +1589,37 @@
     ];
     const total = outcomes.reduce((acc, [k]) => acc + (fdo[k] || 0), 0);
 
+    // v0.13: "Needs your action" callout — sits above the corpus widget,
+    // visible only when there are builds in the ready-to-ratify state.
+    const runs = idx.runs || [];
+    const readyBuilds = runs.filter(r => {
+      const p = derivePhase(r);
+      return p.ready === true;
+    });
+    if (readyBuilds.length > 0) {
+      const callout = el('div', { class: 'action-needed' });
+      callout.appendChild(el('div', { class: 'action-needed-header', text: '↳ Needs your action' }));
+      const line = el('div');
+      line.appendChild(el('span', {
+        text: readyBuilds.length + ' build' + (readyBuilds.length === 1 ? '' : 's') +
+              ' ready to ratify — run `ratify-build.bat <slug>` for: '
+      }));
+      const slugContainer = el('span', { class: 'action-needed-slugs' });
+      readyBuilds.forEach((r, i) => {
+        if (i > 0) slugContainer.appendChild(el('span', { text: ', ' }));
+        const slugSpan = el('span', {
+          class: 'ans-slug',
+          text: r.slug,
+          title: 'Open ' + r.slug + ' detail panel'
+        });
+        slugSpan.addEventListener('click', () => selectRun(r.slug));
+        slugContainer.appendChild(slugSpan);
+      });
+      line.appendChild(slugContainer);
+      callout.appendChild(line);
+      host.appendChild(callout);
+    }
+
     const corpus = el('div', { class: 'fdo-corpus' });
     corpus.appendChild(el('div', { class: 'fdo-corpus-header' },
       el('div', { class: 'fdo-corpus-title', text: 'first-delivery outcomes — ' + total + ' build' + (total === 1 ? '' : 's') }),
@@ -1444,7 +1674,8 @@
     // Count builds where verdict passes architecturally but re-audit reclassified as fail,
     // AND the curated first_delivery_outcome is succeeded* (i.e., user-facing truth differs
     // from retroactive principle-compliance).
-    const runs = idx.runs || [];
+    // (v0.13 note: `runs` already declared earlier in this function for the
+    // ready-to-ratify callout; reuse it here rather than redeclare.)
     const divergentBuilds = runs.filter(r => {
       const fdoOk = r.first_delivery_outcome === 'succeeded' || r.first_delivery_outcome === 'succeeded_with_concerns';
       const reauditFail = r.re_audit_present && r.re_audit_reclassified_verdict === 'fail';

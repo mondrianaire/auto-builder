@@ -444,6 +444,14 @@ async function aggregateRun(slug) {
     else if (contracts.length) sections = { sections: [], contracts, prompt_verb_chosen: null };
   }
 
+  // -- completion ratification (v0.13, per ratification-ui-proposal) -----
+  // Read runs/{slug}/completion-ratified.json if present. Written by
+  // ratify-build.bat after user confirms gates 1+2 (instructions + access).
+  // Presence of this file means the build is COMPLETE — all three
+  // completion gates per architecture/build-lifecycle.md are green and the
+  // fork-and-archive ceremony can fire.
+  const ratification = await readJson(path.join(runRoot, 'completion-ratified.json'));
+
   // -- verification report ------------------------------------------------
   const cv = await readJson(path.join(runRoot, 'output', 'verification', 'report.json'));
   const verification = cv ? {
@@ -625,6 +633,18 @@ async function aggregateRun(slug) {
     re_audit_present: !!reAudit,
     re_audit_reclassified_verdict: reAudit ? reAudit.reclassified_verdict : null,
     rca_present: !!rcaText,
+    // v0.13: completion ratification surface (per ratification-ui-proposal)
+    completion_ratified_at: ratification ? ratification.ratified_at : null,
+    ratified_by: ratification ? ratification.ratified_by : null,
+    ratification_notes: ratification ? (ratification.notes || null) : null,
+    ratification_writer_version: ratification ? ratification.writer_version : null,
+    // v0.13: verification-passed flag pulled forward so the dashboard can
+    // light up "READY TO RATIFY" without re-reading the CV report
+    verification_passed: cv ? (cv.passed === true) : null,
+    // v0.13: promoted_to is curation-overlay-only for now (set by workflow #2
+    // when it fires). Pass through if the curation overlay has it.
+    promoted_to: (curation && curation.promoted_to) || null,
+    promoted_at: (curation && curation.promoted_at) || null,
     links
   };
 
@@ -995,7 +1015,7 @@ async function main() {
   const index = {
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    codex_version: '0.12',
+    codex_version: '0.13',
     architecture_versions_seen: [...archVersionsSeen].sort(),
     run_count: summaries.length,
     runs: summaries,

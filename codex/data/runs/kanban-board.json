@@ -62,6 +62,13 @@
     "re_audit_present": true,
     "re_audit_reclassified_verdict": "fail",
     "rca_present": true,
+    "completion_ratified_at": null,
+    "ratified_by": null,
+    "ratification_notes": null,
+    "ratification_writer_version": null,
+    "verification_passed": false,
+    "promoted_to": null,
+    "promoted_at": null,
     "links": {
       "run_report": "runs/kanban-board/run-report.md",
       "verification": "runs/kanban-board/output/verification/report.json",

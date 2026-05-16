@@ -117,6 +117,13 @@
     "re_audit_present": false,
     "re_audit_reclassified_verdict": null,
     "rca_present": false,
+    "completion_ratified_at": null,
+    "ratified_by": null,
+    "ratification_notes": null,
+    "ratification_writer_version": null,
+    "verification_passed": false,
+    "promoted_to": null,
+    "promoted_at": null,
     "links": {
       "run_report": "runs/streamdock-apple-music-touchbar/run-report.md",
       "verification": "runs/streamdock-apple-music-touchbar/output/verification/report.json",

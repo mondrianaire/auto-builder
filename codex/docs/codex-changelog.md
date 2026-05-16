@@ -6,6 +6,38 @@ layer, not part of any run's substrate.
 
 ---
 
+## v0.13 — 2026-05-16 (ratification UI — 4 dashboard items + aggregator extension)
+
+Implements Codex's side of `codex/docs/maintenance-initiated/ratification-ui-proposal.md`. Six of the proposal's nine items closed by this commit (the seven Codex-owned items minus the workflow #2 item which is downstream Maintenance work).
+
+**Aggregator extension (~5 lines):** reads `runs/{slug}/completion-ratified.json` (written by Maintenance's `ratify-build.bat`) into the per-run summary as `completion_ratified_at` / `ratified_by` / `ratification_notes` / `ratification_writer_version`. Also surfaces `verification_passed` (pulled forward from CV report so the dashboard doesn't re-read) and `promoted_to` / `promoted_at` (curation-overlay passthrough for workflow #2).
+
+**Phase chip extension — `ready_to_ratify` sub-state:** when `verification_passed === true` AND outcome is succeeded* AND no `completion_ratified_at`, the chip renders `Phase 1 ✓ · ready to ratify` (or `concerns · ready to ratify`) with a subtle 2.4s pulse + chevron. Visual cue that user action is available without making it screamy.
+
+**Phase chip on the roster:** previously detail-only (v0.12). v0.13 adds a Phase column to the run roster between First delivery and Composite, so the chip is visible at-a-glance without drilling in. Column is non-sortable (derived value; sortValueFor would need to call derivePhase per row, and users can sort by first_delivery_outcome for adjacent grouping).
+
+**Detail-panel "Ratification & fork ceremony" section:** new block between revision strip and body. Rendering branches:
+
+- **Promoted:** click-through link to forked repo + promoted_at timestamp
+- **Ratified (awaiting fork):** ratified_at + ratified_by + notes (if present) + "awaiting fork ceremony" status line
+- **Ready to ratify:** copy-paste `ratify-build.bat {slug}` command with Copy button + checklist of what to verify before answering yes to the bat's prompts
+- **Blocked (verification not green):** explains why ratification isn't available + suggests `commit-step.bat` for Phase 2 rectification
+
+**"Needs your action" callout adjacent to corpus widget:** new green-accent panel that lights up above the first-delivery-outcomes widget when there are builds in the ready-to-ratify state. Lists slug count + clickable slug names that jump to the build's detail panel. Stays hidden when no builds are ready (zero ambient noise; only visible when there's actually something to do).
+
+**Forward-looking fields fully wired:** `completion_ratified_at`, `ratified_by`, `ratification_notes`, `promoted_to`, `promoted_at`, `verification_passed` all flow from substrate → aggregator → summary → chip + UI without further code changes. When Maintenance ships workflow #2 and it starts writing `promoted_to`, the chip flips automatically; same for any user running `ratify-build.bat`.
+
+**Today's corpus rendering after v0.13:** All 10 builds will need `verification_passed` populated from their CV reports to surface the ready-to-ratify state. Historical builds' CV reports may or may not have `passed` as a clean boolean (older reports used different field names); the aggregator's `cv.passed === true` check is permissive (only fires on exact match), so any non-boolean defaults to `null`/false and the build shows the existing v0.12 phase state. The chip will start lighting up as we run new builds or update old curation overlays.
+
+**Files touched:**
+
+- `codex/scripts/aggregate.mjs` — completion-ratified.json read + 6 new summary fields; codex_version 0.12 → 0.13
+- `codex/index.html` — derivePhase extended with ready sub-state; phase chip on roster (new Phase column); renderRatificationSection helper; needs-your-action callout in renderHeatmap; new CSS for `.ready` pulse, `.rat-section`, `.rat-cmd`, `.action-needed`
+- `codex/docs/codex-changelog.md` — this entry
+- `codex/docs/maintenance-initiated/ratification-ui-proposal.md` — 6 checkboxes ticked, overall_state updated to 8/9 closed
+
+---
+
 ## v0.12 — 2026-05-16 (lifecycle phase chip)
 
 **Adds a lifecycle phase indicator to each build's detail panel,**
