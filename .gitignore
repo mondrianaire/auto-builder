@@ -97,3 +97,14 @@ scratch/
 # delivered artifact for non-web-app builds. The blanket *.zip rule above still
 # excludes zips elsewhere (scratch dumps, build caches, etc.).
 !runs/**/output/final/*.zip
+
+# v0.15 session debug/verification artifacts — kept locally for reference but
+# excluded from git per user direction 2026-05-16. The .bat files were
+# one-time tools for working around the concurrent-session FS race during
+# v0.15 implementation (see codex/docs/concurrent-session-fs-race-finding.md);
+# the v0.15-preview.html + v0.15-snapshots/ are visual sign-off aids that can
+# be regenerated on demand from codex/topology.js. Not corpus artifacts.
+/restore-index-html.bat
+/apply-v0.15-dashboard.bat
+/codex/v0.15-preview.html
+/codex/v0.15-snapshots/
