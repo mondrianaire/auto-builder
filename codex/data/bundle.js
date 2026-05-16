@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T17:40:01.572Z",
+    "generated_at": "2026-05-16T17:40:11.697Z",
     "codex_version": "0.15",
     "architecture_versions_seen": [
       "v1.3",
@@ -995,49 +995,49 @@ window.CODEX_BUNDLE = {
       {
         "id": "A",
         "name": "Verification Fidelity",
-        "summary": "",
+        "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "B",
         "name": "Audit Completeness",
-        "summary": "",
+        "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "C",
         "name": "Spec-to-Test Coverage",
-        "summary": "",
+        "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "D",
         "name": "Path Coverage",
-        "summary": "",
+        "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "E",
         "name": "Atomic Lexical Anchors",
-        "summary": "",
+        "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
         "introduced_in": "v1.9"
       },
       {
         "id": "F",
         "name": "External Authority Discipline",
-        "summary": "",
+        "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
         "introduced_in": "v1.9"
       },
       {
         "id": "G",
         "name": "Deliverability Tier Discipline",
-        "summary": "",
+        "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
         "introduced_in": "v1.9"
       },
       {
         "id": "H",
         "name": "Verification Independence",
-        "summary": "",
+        "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
         "introduced_in": "v1.9"
       }
     ],
