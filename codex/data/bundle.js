@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T10:29:07.452Z",
+    "generated_at": "2026-05-16T10:38:33.283Z",
     "codex_version": "0.14",
     "architecture_versions_seen": [
       "v1.3",
@@ -80,8 +80,8 @@ window.CODEX_BUNDLE = {
         "ratification_notes": null,
         "ratification_writer_version": "0.2",
         "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
+        "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
+        "promoted_at": "2026-05-16T10:30:52Z",
         "links": {
           "run_report": "runs/gto-poker-async-duel/run-report.md",
           "verification": "runs/gto-poker-async-duel/output/verification/report.json",
@@ -1381,8 +1381,8 @@ window.CODEX_BUNDLE = {
         "ratification_notes": null,
         "ratification_writer_version": "0.2",
         "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
+        "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
+        "promoted_at": "2026-05-16T10:30:52Z",
         "links": {
           "run_report": "runs/gto-poker-async-duel/run-report.md",
           "verification": "runs/gto-poker-async-duel/output/verification/report.json",
