@@ -3,9 +3,9 @@
   "ab_pair": {
     "with": "blackjack-trainer",
     "role": "v1",
-    "trigger": "AutoBuilder data-interpretation amendments after v1 missed the mark",
-    "note": "First-attempt delivery. Re-run as blackjack-trainer."
+    "trigger": "AutoBuilder data-interp amendments",
+    "note": "Re-run as blackjack-trainer."
   },
   "lifecycle_state": "unratifiable-as-v1-of-pair",
-  "lifecycle_state_rationale": "v1 of A/B pair, plus reclassified-fail 2026-05-10 under v1.5 production-fidelity-exercise loophole closure. Two independent reasons; preserved as v1 measurement."
+  "lifecycle_state_rationale": "v1 of pair plus v1.5 reclassified-fail."
 }

@@ -3,9 +3,9 @@
   "ab_pair": {
     "with": "streamdock-applemusic-touchbar",
     "role": "v1",
-    "trigger": "AutoBuilder data-interpretation amendments after v1 missed the mark",
-    "note": "Re-run as streamdock-applemusic-touchbar (slug contraction)."
+    "trigger": "AutoBuilder data-interp amendments",
+    "note": "Re-run as streamdock-applemusic-touchbar."
   },
   "lifecycle_state": "unratifiable-as-v1-of-pair",
-  "lifecycle_state_rationale": "v1 of pair where user found delivery off and re-ran. Preserved as v1 measurement."
+  "lifecycle_state_rationale": "v1 of pair; preserved as v1 measurement."
 }
