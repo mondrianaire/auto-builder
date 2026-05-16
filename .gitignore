@@ -108,3 +108,6 @@ scratch/
 /apply-v0.15-dashboard.bat
 /codex/v0.15-preview.html
 /codex/v0.15-snapshots/
+
+/wrap-clean.bat
+/fix-wrap.bat
