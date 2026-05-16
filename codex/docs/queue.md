@@ -15,7 +15,7 @@ Items that someone is or could be working on right now.
 | Item | Owner | Priority | Depends on | Last touched | Status |
 |---|---|---|---|---|---|
 | `queue-md-drafted-if-B` (this file) | Maintenance | high | — | 2026-05-15 | **shipping** |
-| `github-actions-on-push-proposal` | Maintenance | high | — | 2026-05-15 | **drafting** |
+| `github-actions-on-push-proposal` | Maintenance | high | — | 2026-05-16 | **proposal accepted by Codex; workflows #1 + #3 YAML drafted at `.github/workflows/`; first real-run observability test pending** |
 | `codex-polling-convention-adopted` | Codex | high | — | 2026-05-15 | awaiting Codex declaration of cadence |
 | `ratification-ui-proposal` (filing) | Maintenance | medium | viz-proposal landed (done) | 2026-05-15 | drafted in TaskList #1; file as proposal next |
 | `discovery-misalignment-data-model` | Maintenance | medium | — | 2026-05-15 | open question in `architecture/build-lifecycle.md` |
