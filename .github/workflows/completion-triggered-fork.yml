@@ -33,7 +33,10 @@
 #       (under owner: mondrianaire)
 #     - "Administration: Read and write" (to create new repos)
 #     - "Contents: Read and write" (to push to new repos)
+#     - "Pages: Read and write" (to auto-enable Pages on web_app forks)
 #   Stored in: Repo Settings -> Secrets and variables -> Actions -> FORK_PAT
+#   NOTE: missing Pages scope is non-fatal — the fork still completes; only
+#   the auto-Pages-enable step warns and continues.
 #
 # Author: Maintenance, per github-actions-automation-proposal.md §2 +
 #         build-lifecycle.md (ratify/promote split).
@@ -317,7 +320,49 @@ jobs:
 
             echo "Pushed filtered output/final/ + README to https://github.com/$FULL_REPO"
 
-            # ----- (4) Update curation overlay -----
+            # ----- (5) Auto-enable GitHub Pages for web_app deliverables -----
+            # For web_app builds, the deliverable IS a deployable static site
+            # (index.html + assets at the repo root after filter-repo strip).
+            # Enabling Pages with source=main, path=/ gives the user a
+            # browser-openable URL the moment promotion finishes, with zero
+            # additional clicks. Non-web deliverables (plugin, cli, library,
+            # etc.) skip this step — there is nothing meaningful to serve.
+            #
+            # FORK_PAT must include "Pages: Read and write" scope. If missing,
+            # the API call returns 403 and we log a warning + continue (the
+            # fork itself is fine; the user can enable Pages manually).
+            PAGES_LIVE_URL=""
+            if [ "$DELIVERABLE_KIND" = "web_app" ]; then
+              echo "web_app deliverable detected — attempting to enable Pages on $FULL_REPO"
+              PAGES_HTTP=$(curl -s -o /tmp/pages_resp.json -w "%{http_code}" -X POST \
+                -H "Authorization: token $FORK_PAT" \
+                -H "Accept: application/vnd.github+json" \
+                -d '{"source":{"branch":"main","path":"/"}}' \
+                "https://api.github.com/repos/$FULL_REPO/pages" || echo "000")
+              case "$PAGES_HTTP" in
+                201|204)
+                  PAGES_LIVE_URL="https://${GH_OWNER}.github.io/${NEW_REPO}/"
+                  echo "Pages enabled: $PAGES_LIVE_URL (may take ~1 min for first deploy)"
+                  ;;
+                409)
+                  # Already enabled (re-promotion case). Treat as success.
+                  PAGES_LIVE_URL="https://${GH_OWNER}.github.io/${NEW_REPO}/"
+                  echo "Pages already enabled on $FULL_REPO; treating as success: $PAGES_LIVE_URL"
+                  ;;
+                403)
+                  echo "::warning::Pages enable returned 403 — FORK_PAT likely missing 'Pages: Read and write' scope. Fork is fine; user can enable Pages manually at https://github.com/$FULL_REPO/settings/pages"
+                  cat /tmp/pages_resp.json || true
+                  ;;
+                *)
+                  echo "::warning::Pages enable returned $PAGES_HTTP for $FULL_REPO. Fork is fine; user can enable Pages manually at https://github.com/$FULL_REPO/settings/pages"
+                  cat /tmp/pages_resp.json || true
+                  ;;
+              esac
+            else
+              echo "Deliverable kind '$DELIVERABLE_KIND' is not web_app — skipping Pages enable."
+            fi
+
+            # ----- (6) Update curation overlay -----
             CURATION="codex/data/curation/$SLUG.json"
             mkdir -p "$(dirname "$CURATION")"
             node -e "
@@ -326,9 +371,14 @@ jobs:
               const data = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, 'utf8')) : { slug: '$SLUG' };
               data.promoted_to = 'https://github.com/$FULL_REPO';
               data.promoted_at = new Date().toISOString();
+              const pagesUrl = process.argv[1] || '';
+              if (pagesUrl) {
+                data.live_url = pagesUrl;
+                data.live_url_source = 'github-pages-auto-enabled-at-promotion';
+              }
               fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
-              console.log('Updated', path);
-            "
+              console.log('Updated', path, pagesUrl ? '(with live_url='+pagesUrl+')' : '(no live_url)');
+            " "$PAGES_LIVE_URL"
           done
 
       - name: Commit curation updates
