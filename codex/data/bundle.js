@@ -995,49 +995,49 @@ window.CODEX_BUNDLE = {
       {
         "id": "A",
         "name": "Verification Fidelity",
-        "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "B",
         "name": "Audit Completeness",
-        "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "C",
         "name": "Spec-to-Test Coverage",
-        "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "D",
         "name": "Path Coverage",
-        "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "E",
         "name": "Atomic Lexical Anchors",
-        "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "F",
         "name": "External Authority Discipline",
-        "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "G",
         "name": "Deliverability Tier Discipline",
-        "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "H",
         "name": "Verification Independence",
-        "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+        "summary": "",
         "introduced_in": "v1.9"
       }
     ],
@@ -1139,6 +1139,30 @@ window.CODEX_BUNDLE = {
       "unverified": 1
     },
     "maintenance_handoffs": [
+      {
+        "slug": "promoted-row-action-buttons",
+        "title": "Promoted-row action buttons + status-prominence layout",
+        "origin": "maintenance-initiated",
+        "source_file": "codex/docs/maintenance-initiated/promoted-row-action-buttons.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "not-started",
+        "items_total": 3,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": true,
+        "maintenance_notes_count": 4,
+        "codex_acks_count": 1,
+        "maintenance_notes_latest": {
+          "date": null,
+          "excerpt": "Two reasons for the layout move: (1) for promoted builds the lifecycle-phase chip IS the headline — you've already decided this build is worth product-life, the date/architecture/verdict are now historical metadata. (2) keeps eye-track tight: slug → status → action affordances o…"
+        },
+        "codex_acks_latest": {
+          "date": null,
+          "excerpt": "*(Codex writes here in response.)*"
+        },
+        "parse_warnings": []
+      },
       {
         "slug": "claude-code-bootstrap-prompt-tier2-proposal",
         "title": "Claude Code post-promotion handoff — Tier 2 (bootstrap prompt template)",
