@@ -1,18 +1,30 @@
 # ============================================================================
 # completion-triggered-fork.yml
 #
-# Fires the Fork-and-Archive Ceremony from architecture/build-lifecycle.md
-# automatically when ratify-build.bat (or any other writer) lands a new
-# runs/{slug}/completion-ratified.json on main.
+# (NOTE: filename retained for git-history continuity. The workflow is now
+# "Promotion-Triggered Fork" — it fires on a separate user-initiated
+# promotion intent file, NOT on ratification. See build-lifecycle.md.)
+#
+# Fires the Fork ceremony from architecture/build-lifecycle.md when the user
+# explicitly elects to promote a previously-ratified build by writing
+# runs/{slug}/promoted.json (via promote-build.bat or equivalent).
+#
+# Ratification (completion-ratified.json) and promotion (promoted.json) are
+# now distinct events. Ratification is universal — every successful build
+# gets it. Promotion is opt-in and can be initiated at any time after
+# ratification + wrap-up. This workflow fires on promotion only.
 #
 # Sequence:
-#   1. Detect newly-added completion-ratified.json files in the push
-#   2. For each: verify CV report's verdict is acceptable (pass | pass_with_concerns)
-#   3. Use git filter-repo to extract just runs/{slug}/ history with all tags
+#   1. Detect newly-added promoted.json files in the push
+#   2. For each: verify the corresponding runs/{slug}/completion-ratified.json
+#      exists (refuse to promote unratified builds) AND that CV verdict was
+#      pass | pass_with_concerns
+#   3. Use git filter-repo to extract just runs/{slug}/output/final/ history
 #   4. Create mondrianaire/{slug}-AB if it doesn't exist (using FORK_PAT)
-#   5. Push the filtered history + tags to the new repo
-#   6. Write curation overlay update with promoted_to + promoted_at
-#   7. Commit the curation update; aggregator-on-push.yml re-fires and dashboard
+#   5. Generate README.md at the new repo root (build provenance + link to corpus)
+#   6. Push filtered history + tags to the new repo
+#   7. Write curation overlay update with promoted_to + promoted_at
+#   8. Commit the curation update; aggregator-on-push.yml re-fires and dashboard
 #      flips to "Promoted ★" badge
 #
 # REQUIRES SECRET: FORK_PAT
@@ -23,21 +35,22 @@
 #     - "Contents: Read and write" (to push to new repos)
 #   Stored in: Repo Settings -> Secrets and variables -> Actions -> FORK_PAT
 #
-# Author: Maintenance, per github-actions-automation-proposal.md §2.
+# Author: Maintenance, per github-actions-automation-proposal.md §2 +
+#         build-lifecycle.md (ratify/promote split).
 # Commit signature: [bot:fork] per the [bot:{workflow}] namespace.
 # ============================================================================
 
-name: Completion-Triggered Fork
+name: Promotion-Triggered Fork
 
 on:
   push:
     branches: [main]
     paths:
-      - 'runs/*/completion-ratified.json'
+      - 'runs/*/promoted.json'
   workflow_dispatch:
     inputs:
       slug:
-        description: 'Build slug to fork manually (skips diff detection; verifies the slug has a completion-ratified.json on main)'
+        description: 'Build slug to fork manually (skips diff detection; verifies the slug has a promoted.json AND completion-ratified.json on main)'
         required: true
         type: string
 
@@ -69,26 +82,29 @@ jobs:
           NEW_SLUGS=""
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # Manual trigger: use the supplied slug directly. Verify the
-            # completion-ratified.json exists on main before adding to the list.
+            # Manual trigger: use the supplied slug directly. Verify both
+            # completion-ratified.json AND promoted.json exist (promotion
+            # requires the build was already ratified).
             MANUAL_SLUG="${{ inputs.slug }}"
-            if [ -n "$MANUAL_SLUG" ] && [ -f "runs/$MANUAL_SLUG/completion-ratified.json" ]; then
-              NEW_SLUGS="$MANUAL_SLUG"
-              echo "Manual trigger: processing $MANUAL_SLUG"
-            else
-              echo "::error::Manual trigger requested slug '$MANUAL_SLUG' but runs/$MANUAL_SLUG/completion-ratified.json does not exist on main."
+            if [ -z "$MANUAL_SLUG" ]; then
+              echo "::error::Manual trigger requires a slug input."
               exit 1
             fi
+            if [ ! -f "runs/$MANUAL_SLUG/completion-ratified.json" ]; then
+              echo "::error::Cannot promote '$MANUAL_SLUG' — runs/$MANUAL_SLUG/completion-ratified.json missing on main. Build must be ratified first."
+              exit 1
+            fi
+            if [ ! -f "runs/$MANUAL_SLUG/promoted.json" ]; then
+              echo "::error::Cannot promote '$MANUAL_SLUG' — runs/$MANUAL_SLUG/promoted.json missing on main. Run promote-build.bat to record promotion intent first."
+              exit 1
+            fi
+            NEW_SLUGS="$MANUAL_SLUG"
+            echo "Manual trigger: processing $MANUAL_SLUG"
           else
             # Push trigger: diff the push range, not just HEAD~1..HEAD.
             # github.event.before is the commit SHA before the push started,
-            # so it correctly captures multi-commit pushes (which is exactly
-            # the case that broke the first time: ratification commit + a
-            # follow-on commit arrived as one push, head was the follow-on,
-            # HEAD~1..HEAD missed the ratification file entirely).
+            # so it correctly captures multi-commit pushes.
             BEFORE="${{ github.event.before }}"
-            # Defend against the all-zeros sentinel that GitHub sends on the
-            # very first push to a branch.
             if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
               BEFORE="HEAD~1"
             fi
@@ -96,11 +112,17 @@ jobs:
 
             while IFS= read -r f; do
               [ -z "$f" ] && continue
-              SLUG=$(echo "$f" | sed 's|runs/\([^/]*\)/completion-ratified\.json|\1|')
+              SLUG=$(echo "$f" | sed 's|runs/\([^/]*\)/promoted\.json|\1|')
               if [ -n "$SLUG" ] && [ -d "runs/$SLUG" ]; then
+                # Defense in depth: refuse to promote unratified builds even
+                # if a stray promoted.json appears
+                if [ ! -f "runs/$SLUG/completion-ratified.json" ]; then
+                  echo "::warning::Skipping $SLUG — promoted.json appeared without completion-ratified.json (unratified build). Ratify first via ratify-build.bat."
+                  continue
+                fi
                 NEW_SLUGS="$NEW_SLUGS $SLUG"
               fi
-            done < <(git diff --name-only --diff-filter=A "$BEFORE" HEAD -- 'runs/*/completion-ratified.json' 2>/dev/null || true)
+            done < <(git diff --name-only --diff-filter=A "$BEFORE" HEAD -- 'runs/*/promoted.json' 2>/dev/null || true)
           fi
 
           NEW_SLUGS_TRIM=$(echo "$NEW_SLUGS" | xargs)
