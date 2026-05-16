@@ -55,7 +55,7 @@
     "deliverable_index": "index.html",
     "deliverable_manifest": null,
     "showcase_assets": null,
-    "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-async-duel/output/final/index.html",
+    "live_url": "https://mondrianaire.github.io/gto-poker-async-duel-AB/",
     "live_url_kind": "artifact",
     "first_delivery_outcome": "succeeded_with_concerns",
     "first_delivery_outcome_source": "uncertainty_manifest",
@@ -68,7 +68,7 @@
     "ratification_writer_version": "0.2",
     "verification_passed": true,
     "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
-    "promoted_at": "2026-05-16T14:44:51.619Z",
+    "promoted_at": "2026-05-16T15:48:39.267Z",
     "links": {
       "run_report": "runs/gto-poker-async-duel/run-report.md",
       "verification": "runs/gto-poker-async-duel/output/verification/report.json",
