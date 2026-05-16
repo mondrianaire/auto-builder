@@ -26,10 +26,14 @@ REM          yet), falls back to `git pull` once real product-life commits
 REM          exist. Closes the merge-commit-on-force-push hole introduced by
 REM          workflow #2 re-derivation.
 REM   v0.4 — spawn Claude Code CLI in a NEW visible cmd window via `start`,
-REM          so the bat is invokable from Desktop Commander (or any hidden
-REM          shell) while still giving the user a visible interactive Claude
+REM          so the bat is invokable from Desktop Commander or any hidden
+REM          shell while still giving the user a visible interactive Claude
 REM          Code session. Working directory of the new window is set to the
 REM          fork root so Claude Code orients there.
+REM   v0.5 — pointer prompt. Instead of concatenating cc-launch-prompt.md
+REM          into a single 3.8KB argv string, pass a one-line pointer that
+REM          tells Claude Code to read the file itself. Avoids argv length
+REM          truncation that lost the FIRST ACTION instructions in v0.4.
 REM ===========================================================================
 
 setlocal EnableDelayedExpansion
@@ -170,34 +174,26 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Read cc-launch-prompt.md into a single string for the query argument.
-REM cmd's variable size limit is ~8KB which fits any reasonable bootstrap prompt.
-set "PROMPT="
-for /f "usebackq delims=" %%L in ("cc-launch-prompt.md") do (
-    if defined PROMPT (
-        set "PROMPT=!PROMPT! %%L"
-    ) else (
-        set "PROMPT=%%L"
-    )
-)
-
-if not defined PROMPT (
-    echo *** cc-launch-prompt.md is empty. Falling back to interactive open. ***
-    claude
-    exit /b 0
-)
+REM Construct a SHORT pointer prompt that tells Claude Code to read the
+REM full bootstrap from cc-launch-prompt.md itself. We used to concatenate
+REM the whole file into a single cmd argv string, but that hits Claude
+REM CLI's argv-handling limits and truncates mid-prompt — losing the
+REM FIRST ACTION instructions at the end. The pointer pattern delegates
+REM the full-text load to Claude's Read tool, which has no length issue.
+set "POINTER=You are picking up %SLUG% — a promoted AutoBuilder build. Read cc-launch-prompt.md in the current directory for your full briefing, then follow the FIRST ACTION instructions at the end of it."
 
 echo === Launching Claude Code CLI in a new window ===
 echo Working directory: %LOCAL_PATH%
 echo Window title:      Claude Code: %SLUG%
+echo Initial prompt:    Read cc-launch-prompt.md ^(pointer^) — %SLUG%
 echo.
 
 REM `start` opens a new visible cmd window so the bat is invokable from
-REM Desktop Commander (or any hidden shell) while still giving the user a
-REM real interactive Claude Code session. `/D` sets the new window's working
-REM directory; `/K` keeps the cmd shell open after claude exits so the user
-REM can see any final output and re-invoke if needed.
-start "Claude Code: %SLUG%" /D "%LOCAL_PATH%" cmd /K claude "!PROMPT!"
+REM Desktop Commander or any hidden shell while still giving the user a
+REM real interactive Claude Code session. `/D` sets the new window's
+REM working directory; `/K` keeps the cmd shell open after claude exits
+REM so the user can see any final output and re-invoke if needed.
+start "Claude Code: %SLUG%" /D "%LOCAL_PATH%" cmd /K claude "%POINTER%"
 
 echo === Spawned Claude Code window ===
 echo This launcher exits now; the new window will run independently.
