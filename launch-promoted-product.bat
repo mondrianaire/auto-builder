@@ -17,8 +17,14 @@ REM   - Git is on PATH
 REM   - Claude Code CLI (claude.exe) is on PATH — supports `claude "query"`
 REM     per https://code.claude.com/docs/en/cli-reference
 REM
-REM Author: Maintenance, 2026-05-16 (v0.2 — switched from clipboard-paste
-REM to direct query argument per Claude CLI `claude "query"` support).
+REM Author: Maintenance, 2026-05-16
+REM   v0.1 — clipboard-paste pattern (type ... | clip + interactive open)
+REM   v0.2 — switched to `claude "query"` per CLI reference (direct argv)
+REM   v0.3 — smart pull strategy: hard-reset against origin/main when local
+REM          fork has only [bot:fork] seed commits (no user product-life work
+REM          yet), falls back to `git pull` once real product-life commits
+REM          exist. Closes the merge-commit-on-force-push hole introduced by
+REM          workflow #2 re-derivation.
 REM ===========================================================================
 
 setlocal EnableDelayedExpansion
@@ -40,15 +46,72 @@ echo.
 REM Ensure parent dir exists
 if not exist "%PROJECTS_ROOT%" mkdir "%PROJECTS_ROOT%"
 
-REM Clone or pull
+REM Clone or sync
 if exist "%LOCAL_PATH%\.git" (
-    echo === Pulling latest from origin ===
     cd /d "%LOCAL_PATH%"
-    git pull
+    echo === Fetching origin ===
+    git fetch
     if errorlevel 1 (
-        echo *** git pull failed — see output above. ***
+        echo *** git fetch failed — see output above. ***
         pause
         exit /b 1
+    )
+
+    REM Detect product-life commits via TIMESTAMP, not subject.
+    REM
+    REM Workflow #2 creates the fork via filter-repo, which REPLAYS the
+    REM original AutoBuilder build commits into the fork's history. Those
+    REM replayed commits have author identities from the original build
+    REM (not github-actions[bot]) and subjects like "fix(...)", "Update X",
+    REM etc. — they look exactly like product-life work but they're not.
+    REM
+    REM The distinguishing fact is the timestamp: filter-repo preserves the
+    REM original author/committer timestamps, so build-replayed commits all
+    REM have timestamps BEFORE the [bot:fork] seed commits. Real product-life
+    REM commits will have timestamps AFTER. So we find the most-recent
+    REM [bot:fork] committer-timestamp and count any commit whose committer-
+    REM timestamp is strictly greater than that.
+    set "FORK_TS=0"
+    for /f "usebackq delims=" %%T in (`git log --pretty^=format:"%%ct %%s"`) do (
+        set "LINE=%%T"
+        for /f "tokens=1,*" %%A in ("!LINE!") do (
+            echo %%B | findstr /b /c:"[bot:fork]" >nul
+            if not errorlevel 1 (
+                if %%A GTR !FORK_TS! set "FORK_TS=%%A"
+            )
+        )
+    )
+
+    set "PRODUCT_LIFE_COUNT=0"
+    if !FORK_TS! GTR 0 (
+        for /f "usebackq delims=" %%C in (`git log --pretty^=format:"%%ct"`) do (
+            if %%C GTR !FORK_TS! set /a PRODUCT_LIFE_COUNT+=1
+        )
+    ) else (
+        REM No [bot:fork] commits found — treat every commit as product-life
+        REM (safer default; we'd rather do a merge-pull than nuke unknown work).
+        for /f "usebackq delims=" %%C in (`git log --pretty^=format:"%%h"`) do (
+            set /a PRODUCT_LIFE_COUNT+=1
+        )
+    )
+
+    if !PRODUCT_LIFE_COUNT! GTR 0 (
+        echo === !PRODUCT_LIFE_COUNT! product-life commit(s) detected — using safe pull ===
+        git pull
+        if errorlevel 1 (
+            echo *** git pull failed — fork has divergent product-life work. ***
+            echo *** Resolve manually, then re-run. ***
+            pause
+            exit /b 1
+        )
+    ) else (
+        echo === Only [bot:fork] seed commits locally — hard-resetting to origin/main ===
+        git reset --hard origin/main
+        if errorlevel 1 (
+            echo *** git reset --hard failed — see output above. ***
+            pause
+            exit /b 1
+        )
     )
 ) else (
     echo === Cloning %GITHUB_URL% ===
