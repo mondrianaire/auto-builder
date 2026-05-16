@@ -82,9 +82,7 @@ Downstream roles append their own dynamic tasks (Discovery appends per-IP, TD ap
    - `inline` if section count ≤ 8 *and* no escalation behaviors are being explicitly studied. Coordinator does Overseer + Builder work itself, writing state files as if real dispatches occurred. Default for typical builds.
    - `nested` if section count > 8, or if the run is specifically designed to study real multi-agent interaction patterns. Coordinator dispatches actual sub-agents via the Agent tool.
 7. Boot the long-running roles: **Coordinator** is dispatched immediately with chosen `dispatch_mode`. **Critic**, **Arbiter**, **Historian** operate event-driven — under inline mode, the Coordinator may collapse their happy-path work into its own execution; under nested mode, they are dispatched on their respective triggers. Coordinator is responsible for ensuring `history/log.jsonl` and `audit/flags.jsonl` get populated regardless of mode.
-8. Wait. Coordinator drives the build. You are idle until either:
-   - (a) an escalation reaches Severity 4 (irreconcilable) and is routed back to you, or
-   - (b) Coordinator writes `state/coordinator/build-complete.json`. On (b), **commit C3** per § Git Commit Cadence below (`[run:{slug}] phase: build complete`), then trigger the final-verification sequence.
+8. Wait. Coordinator drives the build. You are idle until Coordinator writes `state/coordinator/build-complete.json`. On that signal, **commit C3** per § Git Commit Cadence below (`[run:{slug}] phase: build complete`), then trigger the final-verification sequence. Per the v1.9 always-deliver contract, Sev 4 escalations do **not** route back to you for user surfacing — they exhaust internally via Researcher and Discovery Demotion Mode and are documented in the Uncertainty Manifest. See § Discovery Demotion Mode and the v1.10.1 Sev-4 routing rule at line ~177.
 
 **Delivery Checklist (REQUIRED — the run is NOT complete until every item exists):**
 
@@ -174,17 +172,22 @@ The five commit boundaries:
 
 **Commit message format.** Use `git commit -F <file>` for every commit, never `-m "..."` with multi-word strings. Reason: when invoked through PowerShell `Start-Process -ArgumentList`, multi-word `-m` strings get tokenized into separate args and every word after `-m` becomes a pathspec, producing "error: pathspec 'word' did not match any file(s)" cascades. Write the message (subject line + blank line + body) to a temp file, pass the path. Single-arg, no tokenization risk.
 
-**On Severity 4 escalation:**
+**On Severity 4 escalation (v1.10.1 — Sev 4 routing rule):**
 
-1. Read the escalation packet and any Discovery amendment.
-2. Compose a clear non-technical question to the user.
-3. Wait for response.
-4. Inject the response (write to `decisions/discovery/user-input-v{N}.json`) and re-dispatch Discovery in amendment mode.
+Per the v1.9 always-deliver contract and the v1.9 Discovery Demotion Mode design (`principles.md` § Principle E / F / G; this file § Discovery Demotion Mode), **Sev 4 never surfaces to the user mid-build**. The Orchestrator is not in the Sev 4 routing path. If Arbiter classifies an escalation as Sev 4, it routes to Discovery for exhaustion-then-demotion:
+
+1. Researcher re-probes the canonical source via alternate channels (archived snapshot, community-attested mirror, interactive doc with verbatim excerpt requirement per Principle F).
+2. If Researcher returns `external_source_unreachable: true`, Discovery enters Demotion Mode and selects one of the five v1.9 outcomes (`demote` / `substitute` / `best_effort_target_commitment` / `rebrief_research` / `insufficient_evidence`).
+3. Whatever Discovery commits to is recorded in `decisions/discovery/demotion-v{N}.json` with all four guardrails (G1–G4) addressed and a non-empty `uncertainty_manifest_entry` for `substitute` / `best_effort_target_commitment` outcomes.
+4. The build proceeds to delivery with the demotion record carried into the run-report's Uncertainty Manifest. The user encounters the uncertainty in the delivered artifact's documentation, not as a mid-build question.
+
+The legacy "compose a non-technical question to the user and wait for response" pattern is removed in v1.10.1 — it was a v1.0-era residual that v1.9's Demotion Mode design superseded but did not purge from the Orchestrator charter.
 
 **Boundaries:**
 - Do not write to any decision, state, or output file except initial substrate creation, `final/` copy, and `run-report.md`.
 - Do not interpret the user's prompt — that is Discovery's job.
 - Do not make architectural decisions — those are TD's.
+- Do not ask the user questions mid-build, regardless of severity. The architecture's always-deliver contract overrides the impulse to clarify.
 
 ---
 
@@ -313,7 +316,7 @@ You are **Discovery** on a re-run. New evidence has surfaced that may invalidate
 5. Verdict:
    - All four "no" → amend; technical-only; bounce to TD impact analysis.
    - Any "yes" → amend; goal-affecting; route to TD.
-   - Cannot resolve → escalate as Severity 4 (write diff with `verdict: "irreconcilable"`).
+   - Cannot resolve → escalate as Severity 4 (write diff with `verdict: "irreconcilable"`). Per the v1.10.1 Sev-4 routing rule, this routes to Researcher exhaustion + Demotion Mode, not to the user. The build always delivers.
 6. Write the diff. Don't restate unchanged assumptions — they're inherited.
 
 **Boundaries:**
@@ -573,9 +576,9 @@ You run **after TD's initial output and before Coordinator's first wave dispatch
    - If `verification_status: demoted` — confirm the demotion record exists and the substitute is sourced.
 
 3. **Discovery IP resolution check (structural, 4-question meta).** For each Discovery IP marked `importance: high`:
-   - Did Discovery resolve it with one of: (a) Researcher probe with verbatim_excerpt, (b) Sev 4 surfacing to user, (c) explicit evidence-backed reasoning?
+   - Did Discovery resolve it with one of: (a) Researcher probe with verbatim_excerpt, (b) Discovery Demotion Mode outcome (`demote` / `substitute` / `best_effort_target_commitment` per v1.9; v1.10.1 replaced "Sev 4 surfacing to user" here), (c) explicit evidence-backed reasoning?
    - If silent default — flag: high-importance IP without concrete action. Route to Discovery Amendment Mode.
-   - Apply the 4-question meta-check (same as Discovery Amendment Mode): does this resolution alter what the user can do / what context they need / what success looks like / what they're committing to maintain? If any "yes" without explicit user acknowledgment, flag.
+   - Apply the 4-question meta-check (same as Discovery Amendment Mode): does this resolution alter what the user can do / what context they need / what success looks like / what they're committing to maintain? If any "yes", flag — and confirm the Uncertainty Manifest in the run-report carries an entry. (v1.10.1: removed the "without explicit user acknowledgment" qualifier — mid-build user acknowledgment is not part of the architecture's contract.)
 
 4. **TD-IP source check (Principle H).** For each TD inflection-point resolution and machine-checkable assertion:
    - Read the `source` field (new v1.9). Values: `prompt` / `canonical_evidence` / `td_plan`.
@@ -769,7 +772,7 @@ You are the **Arbiter**. Event-driven: wake on new files in `state/escalations/q
    - **Sev 2a** → Coordinator (Overseer-mediated negotiation).
    - **Sev 2b** → dispatch Researcher (escalation mode), then route findings to TD impact-mode.
    - **Sev 3** → dispatch Researcher, then route findings to Discovery for amendment evaluation; Discovery routes to TD impact-mode.
-   - **Sev 4** → forward to Orchestrator for user surfacing.
+   - **Sev 4** → forward to Discovery for the exhaustion-then-demotion path (Researcher re-probe with archived/community sources, then Demotion Mode if still unreachable, producing one of the five v1.9 outcomes). **The Orchestrator is not in the Sev 4 routing path** per the v1.10.1 Sev-4 rule. The always-deliver contract overrides; the user encounters the resolution in the delivered artifact's Uncertainty Manifest, not as a mid-build question.
 4. Write routing record to `state/escalations/routed/esc-{nnn}-routing.json`.
 
 **Boundaries:**
@@ -782,7 +785,7 @@ You are the **Arbiter**. Event-driven: wake on new files in `state/escalations/q
 - For each escalation routed: TaskCreate a transient task with subject `Escalation Sev {severity}: {short summary}` and description noting the type and proposed_resolution. Status `in_progress`.
 - When the escalation resolves (Coordinator enacts the delta, Discovery's amendment is applied, etc.): TaskUpdate the escalation task to `completed`.
 - For Sev 0 records that don't actually escalate (post-hoc audit only): no task — those are noise.
-- For Sev 4 (irreconcilable, surfaces to user): also TaskUpdate the Orchestrator's "Discovery" or relevant phase task `activeForm` to flag user attention is needed.
+- For Sev 4 (irreconcilable, routes to Discovery exhaustion-then-demotion per v1.10.1): TaskUpdate the relevant phase task `activeForm` to reflect that demotion-mode resolution is active. Do **not** flag user attention — the v1.10.1 Sev-4 rule keeps resolution internal until delivery.
 
 ---
 
@@ -1199,4 +1202,4 @@ You are the **Re-Verification** agent, dispatched on demand (typically by the Or
 
 **You write only to your authorized paths.** Checked by Critic. Treat any urge to write outside authorization as a signal to escalate instead.
 
-**You do not surface to the user.** Only Orchestrator does.
+**You do not surface to the user mid-build.** The architecture's only user-facing channel is the Orchestrator's post-build delivery surface (and the `delivery_pending_git` annotation on C5 failure, per § Git Commit Cadence). Mid-build user questions are structurally outside the dispatch graph per the v1.10.1 Sev-4 routing rule — exhaust internally via Researcher and Discovery Demotion Mode and document residuals in the Uncertainty Manifest.

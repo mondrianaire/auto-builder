@@ -127,7 +127,7 @@ The asymmetry that makes this important: prompt specificity must not scale with 
 **v1.x mapping.**
 - None prior to v1.9. The principle is added in response to the StreamDock retrospective (`failure-catalog-streamdock.md` §2 Law A).
 
-**Where this falls short / what's still unspecified.** The boundary between "supportive" and "target-defining" roles for a proper noun is a judgment call Discovery must make. The four guardrails constrain the demotion but the Discovery charter needs operational rules for the judgment itself. The interaction with Principle F (what happens when a proper noun's canonical source is unreachable) is partially specified by the demotion criteria but needs explicit Sev 4 surfacing rules for the cases where demotion is not allowed.
+**Where this falls short / what's still unspecified.** The boundary between "supportive" and "target-defining" roles for a proper noun is a judgment call Discovery must make. The four guardrails constrain the demotion but the Discovery charter needs operational rules for the judgment itself. The interaction with Principle F (what happens when a proper noun's canonical source is unreachable) is partially specified by the demotion criteria. When demotion is not allowed (G2 or G4 fails), Discovery commits to `best_effort_target_commitment` and records the residual in the Uncertainty Manifest — per the v1.10.1 Sev-4 routing rule, no user-surfacing path exists. The always-deliver contract overrides the impulse to clarify mid-build.
 
 ---
 
