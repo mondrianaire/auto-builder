@@ -406,3 +406,23 @@ The plumbing (build_shape extractor + topology.js rendering pipeline + dashboard
 The live narrative renderer per the corrected direction. Polls `runs/{slug}/state/reports/` for incoming Completion Reports; appends to the canvas as each report lands; animates blurbs in with a brief fade-up; escalation rows materialize as their journey fires. Telos anchored at the top (the user's prompt verbatim); every blurb visually traces back to it. Real-world-speak enforced at the substrate level (the blurbs in the reports are already user-facing); no further translation needed at render-time.
 
 Concrete v0.16+ scope is specified in `codex/docs/role-completion-report-amendment.md` § "What this unblocks Codex to build". The Maintenance-Status checkboxes in THIS file (covering v0.15-v0.18 staging) remain valid for the rendering-pipeline + escalation-choreography + build-story-export increments; the per-version scope just narrows to "render the new substrate" rather than "render existing technical metadata."
+
+---
+
+## Cross-reference 2026-05-16: static wrap-up artifact (Maintenance-side)
+
+After the direction correction above, Maintenance filed a sibling proposal at `codex/docs/maintenance-initiated/decision-flowchart-wrap-up-artifact.md` formalizing the **static, frozen, archival** counterpart to the live narrative renderer Codex is building toward in v0.16+.
+
+The split:
+
+| Aspect | Codex's live view | Maintenance's wrap-up artifact |
+|---|---|---|
+| Audience experience | "Watch it happen" — animates as the build progresses | "Study what happened" — static, opens months later, still tells the story |
+| Lifecycle | Live during build; cleared after ratification | Generated AT ratification; lives in corpus forever |
+| Location | Dashboard widget (`codex/topology.js` substrate) | `runs/{slug}/decision-flowchart.html` (Cat 1, alongside PROJECT-OVERVIEW.md) |
+| Substrate | Role Completion Reports (v1.11 amendment) | Same Reports if v1.11 landed; mechanical fallback otherwise |
+| Visual reference | Same earthquake-map flowchart | Same earthquake-map flowchart |
+
+Both proposals reference the same earthquake-map `decision-flowchart.svg` as the visual target. The substrate work (Role Completion Reports) is the shared dependency that unblocks BOTH the polished-live and polished-static renderers. Whichever ships first benefits the other.
+
+**For Codex:** no action required from this cross-reference. Just a heads-up that the static-artifact half of the user's vision is being scoped on the Maintenance side; both proposals can iterate in parallel without stepping on each other.

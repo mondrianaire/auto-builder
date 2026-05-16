@@ -992,49 +992,49 @@
     {
       "id": "A",
       "name": "Verification Fidelity",
-      "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "B",
       "name": "Audit Completeness",
-      "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "C",
       "name": "Spec-to-Test Coverage",
-      "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "D",
       "name": "Path Coverage",
-      "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "E",
       "name": "Atomic Lexical Anchors",
-      "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+      "summary": "",
       "introduced_in": "v1.9"
     },
     {
       "id": "F",
       "name": "External Authority Discipline",
-      "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+      "summary": "",
       "introduced_in": "v1.9"
     },
     {
       "id": "G",
       "name": "Deliverability Tier Discipline",
-      "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+      "summary": "",
       "introduced_in": "v1.9"
     },
     {
       "id": "H",
       "name": "Verification Independence",
-      "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+      "summary": "",
       "introduced_in": "v1.9"
     }
   ],
@@ -1137,6 +1137,32 @@
   },
   "maintenance_handoffs": [
     {
+      "slug": "claude-code-bootstrap-prompt-tier2-proposal",
+      "title": "Claude Code post-promotion handoff — Tier 2 (bootstrap prompt template)",
+      "origin": "codex-initiated",
+      "source_file": "codex/docs/claude-code-bootstrap-prompt-tier2-proposal.md",
+      "last_touched": "2026-05-16",
+      "overall_state": "codex-filed",
+      "items_total": 5,
+      "items_done": 0,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 1,
+      "codex_acks_count": 3,
+      "maintenance_notes_latest": {
+        "date": null,
+        "excerpt": "*(Maintenance: add your review + decisions here.)*"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "This is filed as a separate proposal from Tier 1 (`claude-code-handoff-tier1-proposal.md`) because Tier 1 is shipped and the work surface for Tier 2 is distinct (template + wrap-up integration + dashboard button vs Tier 1's template + workflow-#2 amendment). Cross-reference from…"
+      },
+      "parse_warnings": [
+        "unrecognized overall_state value: codex-filed"
+      ]
+    },
+    {
       "slug": "claude-code-handoff-tier1-proposal",
       "title": "Claude Code post-promotion handoff — Tier 1 (seeded `.claude/CLAUDE.md` in forked repo)",
       "origin": "codex-initiated",
@@ -1180,6 +1206,32 @@
       },
       "parse_warnings": [
         "unrecognized overall_state value: finding"
+      ]
+    },
+    {
+      "slug": "cross-instance-fs-coordination-amendment",
+      "title": "Cross-instance FS coordination — v1.12-candidate amendment",
+      "origin": "codex-initiated",
+      "source_file": "codex/docs/cross-instance-fs-coordination-amendment.md",
+      "last_touched": "2026-05-16",
+      "overall_state": "codex-filed",
+      "items_total": 8,
+      "items_done": 0,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 1,
+      "codex_acks_count": 3,
+      "maintenance_notes_latest": {
+        "date": null,
+        "excerpt": "*(Maintenance: add your review + decisions here.)*"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "Live evidence collected during the active Maintenance session that produced this filing (Maintenance writing into `codex/data/curation/gto-poker-trainer.json` + adding cross-references to `codex/docs/live-build-visualization-proposal.md` under user clearance) is precisely the ki…"
+      },
+      "parse_warnings": [
+        "unrecognized overall_state value: codex-filed"
       ]
     },
     {
