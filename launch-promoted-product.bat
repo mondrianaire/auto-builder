@@ -121,7 +121,7 @@ if exist "%LOCAL_PATH%\.git" (
     )
 
     if !PRODUCT_LIFE_COUNT! GTR 0 (
-        echo === !PRODUCT_LIFE_COUNT! product-life commit(s) detected — using safe pull ===
+        echo === !PRODUCT_LIFE_COUNT! product-life commits detected, using safe pull ===
         git pull
         if errorlevel 1 (
             echo *** git pull failed — fork has divergent product-life work. ***
