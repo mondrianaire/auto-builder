@@ -72,9 +72,14 @@ REM Arch category covers architecture/ docs AND .github/ infrastructure
 REM (workflows are arch-layer per v1.10 scope rule — they implement the
 REM lifecycle defined in architecture/build-lifecycle.md and friends).
 echo.
-echo === Checking for architecture/ + .github/ changes ===
-git add architecture/ .github/ 2>nul
-git diff --cached --quiet -- architecture/ .github/
+echo === Checking for architecture/ + .github/ + repo-root config changes ===
+REM Stage architecture/ + .github/ + repo-root config files (.gitignore,
+REM .gitattributes). The repo-root configs are arch-layer in spirit (they
+REM define how the project is structured for git) and fell through the
+REM previous categorization gap. Closes the autostash-and-never-commit
+REM cycle observed 2026-05-16.
+git add architecture/ .github/ .gitignore .gitattributes 2>nul
+git diff --cached --quiet -- architecture/ .github/ .gitignore .gitattributes
 if errorlevel 1 (
     echo Staged arch/.github/ changes. Committing [arch]...
     if exist .commit-msg-arch.txt (
