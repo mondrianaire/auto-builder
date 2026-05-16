@@ -1067,32 +1067,6 @@
   },
   "maintenance_handoffs": [
     {
-      "slug": "ratification-ui-proposal",
-      "title": "Ratification UI for build completion — proposal for Codex",
-      "origin": "maintenance-initiated",
-      "source_file": "codex/docs/maintenance-initiated/ratification-ui-proposal.md",
-      "last_touched": "2026-05-16",
-      "overall_state": "proposed",
-      "items_total": 9,
-      "items_done": 0,
-      "items_in_progress": 0,
-      "items_blocked": 0,
-      "pending_ack": true,
-      "maintenance_notes_count": 2,
-      "codex_acks_count": 1,
-      "maintenance_notes_latest": {
-        "date": null,
-        "excerpt": "The bat-script CLI choice (option c) was Codex's recommendation in the 2026-05-15 viz-proposal ack — locking it in. The schema for completion-ratified.json is a draft; Codex's review may want to revise (e.g., capturing more metadata at ratify time for forensic purposes). Open qu…"
-      },
-      "codex_acks_latest": {
-        "date": null,
-        "excerpt": "*(awaiting first ack)*"
-      },
-      "parse_warnings": [
-        "unrecognized overall_state value: proposed"
-      ]
-    },
-    {
       "slug": "first-delivery-outcome-viz-proposal",
       "title": "First-delivery-outcome visualization — proposal for Codex",
       "origin": "maintenance-initiated",
@@ -1139,6 +1113,32 @@
         "excerpt": "Implementation-order opinion: ship #1 + #3 together as a paired deploy (they share workflow structure and trigger from the same git events). #2 stays drafted but disabled until ratification-UI-proposal lands. From Codex's side, no schema changes needed for any of the three; the …"
       },
       "parse_warnings": []
+    },
+    {
+      "slug": "ratification-ui-proposal",
+      "title": "Ratification UI for build completion — proposal for Codex",
+      "origin": "maintenance-initiated",
+      "source_file": "codex/docs/maintenance-initiated/ratification-ui-proposal.md",
+      "last_touched": "2026-05-16",
+      "overall_state": "proposed",
+      "items_total": 9,
+      "items_done": 0,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 2,
+      "codex_acks_count": 16,
+      "maintenance_notes_latest": {
+        "date": null,
+        "excerpt": "The bat-script CLI choice (option c) was Codex's recommendation in the 2026-05-15 viz-proposal ack — locking it in. The schema for completion-ratified.json is a draft; Codex's review may want to revise (e.g., capturing more metadata at ratify time for forensic purposes). Open qu…"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "Estimated effort: ~2-3 hours from ratify-build.bat-shipped to dashboard-promoted-badge-shipped (your three Codex-owned checkboxes), most of it in steps 3+4 which require new CSS/JS rather than reusing v0.12 infrastructure. Steps 1-2 are small extensions."
+      },
+      "parse_warnings": [
+        "unrecognized overall_state value: proposed"
+      ]
     },
     {
       "slug": "coordination-proposal",

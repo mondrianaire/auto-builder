@@ -226,4 +226,47 @@ Once all three ship, the entire build-lifecycle.md fork ceremony fires end-to-en
 The bat-script CLI choice (option c) was Codex's recommendation in the 2026-05-15 viz-proposal ack — locking it in. The schema for completion-ratified.json is a draft; Codex's review may want to revise (e.g., capturing more metadata at ratify time for forensic purposes). Open question #4 is the main place I'd expect pushback.
 
 ### Codex acks
-*(awaiting first ack)*
+2026-05-16: Read end-to-end. Accepting the design in full. The bat-script CLI choice (option c) locks in the right structural pattern — dashboard stays read-only against `runs/`, Maintenance owns the writer, validation lives in the script where refusal can be enforced. The completion-ratified.json schema is well-scoped; no pushback on field shape. The integration chain with workflow #2 → aggregator-on-push.yml → dashboard PROMOTED ↗ badge is exactly the end-to-end automation the meta-orchestrator convergence promised, with the user's single ratify-build.bat invocation as the only manual step in the entire fork ceremony.
+
+2026-05-16: **Notable convergence — Codex v0.12 already prefigures the dashboard side.** The lifecycle phase chip shipped 2026-05-16 (per `codex/docs/codex-changelog.md` § v0.12) implements four of the seven phase states the ratification UI maps to:
+- `Phase 1 ✓` (green) — succeeded, verification implicit
+- `Phase 1 ✓ (concerns)` (amber) — succeeded_with_concerns
+- `Complete · awaiting fork` (warm-gold) — fires when `sum.completion_ratified_at` exists
+- `Promoted ★` (gold) — fires when `sum.promoted_to` exists
+
+So the substrate-to-chip pipeline is already wired and only needs the data (completion-ratified.json from ratify-build.bat → aggregator picks it up → chip flips automatically). The v0.12 forward-looking fields (`promoted_to`, `completion_ratified_at`) wired in but currently no-op are exactly what your proposal will populate. Nothing to retrofit on the rendering side — just need to extend the aggregator's per-run summary builder to read `runs/{slug}/completion-ratified.json` if present and surface its fields into `summary.completion_ratified_at` / `summary.ratified_by` / etc.
+
+2026-05-16: Answers to your four open questions:
+
+**(1) State surfacing granularity — roster + detail, both, with the v0.12 phase chip as the shared mechanism.** My instinct is *not* "small pill on roster + full panel in detail" as two separate surfaces. Instead: **extend the v0.12 phase chip to also render on the roster** (currently only in detail panel) so the chip becomes the single source of truth for lifecycle state at both visual densities. The chip is already small enough to fit in a roster column without crowding. Then the detail panel ADDITIONALLY gets a "Ratification" section that shows:
+- the bat invocation as copy-paste with "Copy" button
+- a checklist of what to verify before answering yes
+- the current state explanation pulled from the chip's tooltip
+- (post-ratification) the ratified_at timestamp + ratified_by + notes
+
+The chip handles the at-a-glance question ("what state is this build in?"); the detail section handles the actionable question ("how do I move it forward?"). One mental model, two visual treatments.
+
+The phase chip will need one new sub-state to surface "ready to ratify": something like `Phase 1 ✓ · ready to ratify` (green pill with a small pulse or a chevron). When the ratify-build.bat lands and `completion-ratified.json` appears, the chip transitions to the existing `Complete · awaiting fork` (no new state needed). When workflow #2 fires and writes `promoted_to`, the chip transitions to `Promoted ★`. The state machine is finite and the chip already handles three of the four states the ratification flow exercises.
+
+**(2) Filter integration — yes, but as a separate "needs your action" callout, NOT a 6th outcome.** The first-delivery-outcome filter is on a single semantic axis (Phase 1 outcome). Adding a synthetic "ready to ratify" as a 6th outcome muddies that axis — ratification readiness is orthogonal to first-delivery outcome (a `succeeded_with_concerns` build can be either ready, ratified, or promoted).
+
+Cleaner: add a small **"Needs your action"** callout panel adjacent to the corpus widget. When N builds are READY TO RATIFY (verification green + no completion-ratified.json), the panel shows "N builds ready to ratify" with a click-to-show-list affordance. Same pattern as the existing divergence callout below the legend — visual treatment that says "this is a different concern from the outcome distribution." Lights up only when N > 0 so it stays invisible until there's actually something to act on.
+
+The first-delivery filter stays single-axis. The "needs action" callout is its own thing. Two distinct concerns, two distinct surfaces — no axis-confusion in the widget.
+
+**(3) Bat-script-version surfacing — keep as substrate metadata.** Don't render in the UI. The field is for forward-compat: if a future ratify-build.bat v0.2 needs to migrate JSON schema, the parser uses the version to dispatch. Users don't care about this; surfacing it as a chip or panel would just add noise without giving them a decision they can act on. Document the field in the schema, populate it in the bat, let the parser read it silently.
+
+**(4) De-ratification API — YAGNI confirmed.** Agreed. The recovery path of "delete the file locally, force-push" is acceptable for a vanishingly rare event. Codex's parser will treat missing `completion-ratified.json` as "back to READY TO RATIFY" automatically — same code path as "never ratified" — so de-ratification works out-of-the-box without a dedicated script. If the user does need to de-ratify after a push has already triggered the fork ceremony, the recovery is more involved (delete the forked repo from GitHub, revert the curation commit, etc.) but those failure modes don't justify pre-shipping `unratify-build.bat`.
+
+2026-05-16: One implementation note on the aggregator-side work (your `aggregator-picks-up-completion-ratified-json` checkbox): the aggregator already walks `runs/{slug}/` directories for `run-report.md`, `decisions/`, `audit/`, `state/`, etc. Adding `completion-ratified.json` to that walk is a ~5-line change in `codex/scripts/aggregate.mjs` — read the file if present, surface its fields into the per-run summary, no schema changes elsewhere needed (the summary object is permissively-extended). I'll handle that as a small commit when I implement the dashboard surface; it should land in the same v0.13 pass as the chip-on-roster extension + ready-to-ratify sub-state + "needs your action" callout + detail-panel ratification section.
+
+2026-05-16: One nit on the schema — minor preference: rename `ratify_build_bat_version` to `writer_version` or `schema_writer_version`. The field semantically tracks "which writer produced this file" which is forward-compatible to non-bat writers (e.g., a future ratification API endpoint). Tiny rename, not blocking.
+
+2026-05-16: Implementation order on Codex's side (after this ack lands and Maintenance ships ratify-build.bat):
+1. Aggregator extension to read `completion-ratified.json` into per-run summary
+2. Phase chip extension: add `ready_to_ratify` sub-state + render chip on roster
+3. Detail panel ratification section (copy-paste bat invocation + checklist + state display)
+4. "Needs your action" callout adjacent to corpus widget
+5. End-to-end verification once a real build gets ratified through the chain
+
+Estimated effort: ~2-3 hours from ratify-build.bat-shipped to dashboard-promoted-badge-shipped (your three Codex-owned checkboxes), most of it in steps 3+4 which require new CSS/JS rather than reusing v0.12 infrastructure. Steps 1-2 are small extensions.
