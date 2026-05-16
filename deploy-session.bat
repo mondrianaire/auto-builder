@@ -68,12 +68,15 @@ if exist .git\HEAD.lock  del /f /q .git\HEAD.lock
 set "COMMITTED_ANY="
 
 REM ---- Commit 1 of 3: [arch] ----
+REM Arch category covers architecture/ docs AND .github/ infrastructure
+REM (workflows are arch-layer per v1.10 scope rule — they implement the
+REM lifecycle defined in architecture/build-lifecycle.md and friends).
 echo.
-echo === Checking for architecture/ changes ===
-git add architecture/ 2>nul
-git diff --cached --quiet -- architecture/
+echo === Checking for architecture/ + .github/ changes ===
+git add architecture/ .github/ 2>nul
+git diff --cached --quiet -- architecture/ .github/
 if errorlevel 1 (
-    echo Staged architecture/ changes. Committing [arch]...
+    echo Staged arch/.github/ changes. Committing [arch]...
     if exist .commit-msg-arch.txt (
         git commit -F .commit-msg-arch.txt || goto :err
         del /f /q .commit-msg-arch.txt
