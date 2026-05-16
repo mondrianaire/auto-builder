@@ -173,15 +173,3 @@ export function render(layoutData) {
   return svg;
 }
 
-// CLI: render a slug to stdout
-const __thisFile = decodeURIComponent(new URL(import.meta.url).pathname);
-if (process.argv[1] && __thisFile.endsWith(process.argv[1].split('/').pop())) {
-  const slug = process.argv[2];
-  if (!slug) { console.error('Usage: node decision-flowchart-render.mjs <slug>'); process.exit(1); }
-  const path = await import('node:path');
-  const repoRoot = path.resolve(path.dirname(__thisFile), '..', '..');
-  const extract = await import('./decision-flowchart-extract.mjs');
-  const layoutMod = await import('./decision-flowchart-layout.mjs');
-  const graph = extract.extract(slug, path.join(repoRoot, 'runs', slug), repoRoot);
-  console.log(render(layoutMod.layout(graph)));
-}

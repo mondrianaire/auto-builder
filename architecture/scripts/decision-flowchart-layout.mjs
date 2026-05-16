@@ -259,16 +259,3 @@ export function layout(graph) {
   };
 }
 
-// CLI for testing
-const __thisFile = decodeURIComponent(new URL(import.meta.url).pathname);
-const __invokedAs = process.argv[1] ? new URL('file://' + (process.argv[1].startsWith('/') ? process.argv[1] : '/' + process.argv[1])).pathname : '';
-if (__thisFile.endsWith(process.argv[1] || '')) {
-  const slug = process.argv[2];
-  if (!slug) { console.error('Usage: node decision-flowchart-layout.mjs <slug>'); process.exit(1); }
-  const path = await import('node:path');
-  const __fn = decodeURIComponent(new URL(import.meta.url).pathname);
-  const repoRoot = path.resolve(path.dirname(__fn), '..', '..');
-  const extract = await import('./decision-flowchart-extract.mjs');
-  const graph = extract.extract(slug, path.join(repoRoot, 'runs', slug), repoRoot);
-  console.log(JSON.stringify(layout(graph), null, 2));
-}

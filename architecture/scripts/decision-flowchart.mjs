@@ -114,8 +114,8 @@ export function generate(slug, runDir, repoRoot) {
   const svg = renderSvg(layoutData);
   const html = HTML_TEMPLATE(slug, svg);
   // Write both .svg (raw asset) and .html (toolbar wrapper)
-  const svgPath = path.join(runDir, 'decision-flowchart.svg');
-  const htmlPath = path.join(runDir, 'decision-flowchart.html');
+  const svgPath = path.join(runDir, 'decision-flowchart-auto.svg');
+  const htmlPath = path.join(runDir, 'decision-flowchart-auto.html');
   fs.writeFileSync(svgPath, svg);
   fs.writeFileSync(htmlPath, html);
   return { svgPath, htmlPath, stats: graph.stats };
@@ -123,7 +123,7 @@ export function generate(slug, runDir, repoRoot) {
 
 // CLI
 const __thisFile = decodeURIComponent(new URL(import.meta.url).pathname);
-if (process.argv[1] && __thisFile.endsWith(process.argv[1].split('/').pop())) {
+if (process.argv[1] && __thisFile.endsWith(path.basename(process.argv[1]))) {
   const slug = process.argv[2];
   if (!slug) { console.error('Usage: node decision-flowchart.mjs <slug>'); process.exit(1); }
   const repoRoot = path.resolve(path.dirname(__thisFile), '..', '..');

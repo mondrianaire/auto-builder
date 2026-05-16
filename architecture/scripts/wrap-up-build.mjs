@@ -176,11 +176,6 @@ try {
   console.log(`[wrap-up] wrote ${path.relative(REPO_ROOT, result.svgPath)}`);
   // Patch sentinel artifacts[] to include the new files
   const s = JSON.parse(fs.readFileSync(sentinelPath, 'utf8'));
-  s.artifacts = Array.from(new Set([...(s.artifacts || []), 'decision-flowchart.html', 'decision-flowchart.svg']));
+  s.artifacts = Array.from(new Set([...(s.artifacts || []), 'decision-flowchart-auto.html', 'decision-flowchart-auto.svg']));
   fs.writeFileSync(sentinelPath, JSON.stringify(s, null, 2) + '\n');
-} catch (e) {
-  console.warn(`[wrap-up] decision-flowchart generation failed (non-fatal): ${e.message}`);
-}
-
-console.log(`[wrap-up] ${slug} is now promotion-eligible.`);
-process.exit(0);
+} catch

@@ -544,18 +544,3 @@ export function extract(slug, runDir, repoRoot) {
   };
 }
 
-// CLI entry — for testing during dev
-const __thisFile = decodeURIComponent(new URL(import.meta.url).pathname);
-const __invokedAs = process.argv[1] ? path.resolve(process.argv[1]) : '';
-if (__thisFile === __invokedAs) {
-  const slug = process.argv[2];
-  if (!slug) {
-    console.error('Usage: node decision-flowchart-extract.mjs <slug>');
-    process.exit(1);
-  }
-  const __filename = decodeURIComponent(new URL(import.meta.url).pathname);
-  const repoRoot = path.resolve(path.dirname(__filename), '..', '..');
-  const runDir = path.join(repoRoot, 'runs', slug);
-  const graph = extract(slug, runDir, repoRoot);
-  console.log(JSON.stringify(graph, null, 2));
-}
