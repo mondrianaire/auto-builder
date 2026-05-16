@@ -738,20 +738,20 @@ window.CODEX_BUNDLE = {
         "deliverable_index": "index.html",
         "deliverable_manifest": null,
         "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
+        "live_url": "https://mondrianaire.github.io/gto-poker-trainer/",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "succeeded_with_concerns",
-        "first_delivery_outcome_source": "curation",
+        "first_delivery_outcome": "unverified",
+        "first_delivery_outcome_source": "default",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
-        "ratification_notes": null,
-        "ratification_writer_version": null,
+        "completion_ratified_at": "2026-05-10T18:59:04Z",
+        "ratified_by": "Jett",
+        "ratification_notes": "Retroactive ratification 2026-05-16. Build was manually uploaded to mondrianaire/gto-poker-trainer on 2026-05-10 (before AutoBuilder git infrastructure existed); GitHub repo bytes are identical to corpus runs/gto-poker-trainer/repo/ + the gto-poker-trainer-v2.zip artifact (md5 verified). Pages live at https://mondrianaire.github.io/gto-poker-trainer/. CV verdict was clean pass at v1.8. Gates 1 + 2 confirmed implicitly: the artifact has been in use and the install path (open index.html) is trivially clear. No -AB rename — per user 2026-05-16 directive 'we will forgo the -AB to do option A just for this one'.",
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
+        "promoted_to": "https://github.com/mondrianaire/gto-poker-trainer",
+        "promoted_at": "2026-05-10T18:59:04Z",
         "links": {
           "run_report": "runs/gto-poker-trainer/run-report.md",
           "verification": "runs/gto-poker-trainer/output/verification/report.json",
@@ -1133,10 +1133,10 @@ window.CODEX_BUNDLE = {
     },
     "first_delivery_outcome_distribution": {
       "succeeded": 3,
-      "succeeded_with_concerns": 4,
+      "succeeded_with_concerns": 3,
       "failed_user_reprompted": 3,
       "failed_unrecoverable": 0,
-      "unverified": 0
+      "unverified": 1
     },
     "maintenance_handoffs": [
       {
@@ -6923,20 +6923,20 @@ window.CODEX_BUNDLE = {
         "deliverable_index": "index.html",
         "deliverable_manifest": null,
         "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/runs/gto-poker-trainer/output/final/index.html",
+        "live_url": "https://mondrianaire.github.io/gto-poker-trainer/",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "succeeded_with_concerns",
-        "first_delivery_outcome_source": "curation",
+        "first_delivery_outcome": "unverified",
+        "first_delivery_outcome_source": "default",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
-        "ratification_notes": null,
-        "ratification_writer_version": null,
+        "completion_ratified_at": "2026-05-10T18:59:04Z",
+        "ratified_by": "Jett",
+        "ratification_notes": "Retroactive ratification 2026-05-16. Build was manually uploaded to mondrianaire/gto-poker-trainer on 2026-05-10 (before AutoBuilder git infrastructure existed); GitHub repo bytes are identical to corpus runs/gto-poker-trainer/repo/ + the gto-poker-trainer-v2.zip artifact (md5 verified). Pages live at https://mondrianaire.github.io/gto-poker-trainer/. CV verdict was clean pass at v1.8. Gates 1 + 2 confirmed implicitly: the artifact has been in use and the install path (open index.html) is trivially clear. No -AB rename — per user 2026-05-16 directive 'we will forgo the -AB to do option A just for this one'.",
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
+        "promoted_to": "https://github.com/mondrianaire/gto-poker-trainer",
+        "promoted_at": "2026-05-10T18:59:04Z",
         "links": {
           "run_report": "runs/gto-poker-trainer/run-report.md",
           "verification": "runs/gto-poker-trainer/output/verification/report.json",
@@ -7276,10 +7276,10 @@ window.CODEX_BUNDLE = {
         "cv_tier1_pnv": "verified",
         "cv_tier2_first_contact": "not_run",
         "cv_tier3_subgoal": "verified",
-        "lifecycle_phase": "ready_to_ratify",
-        "ratified": false,
-        "promoted": false,
-        "promoted_to": null,
+        "lifecycle_phase": "promoted",
+        "ratified": true,
+        "promoted": true,
+        "promoted_to": "https://github.com/mondrianaire/gto-poker-trainer",
         "totals": {
           "sections": 7,
           "inflection_points": 5,
@@ -7294,8 +7294,8 @@ window.CODEX_BUNDLE = {
           "build": "done",
           "verification": "done",
           "delivery": "done",
-          "ratification": "active",
-          "promoted": "pending"
+          "ratification": "done",
+          "promoted": "done"
         }
       },
       "history": {
@@ -7400,7 +7400,7 @@ window.CODEX_BUNDLE = {
             "synthesized",
             "git"
           ],
-          "first_delivery_outcome": "succeeded_with_concerns",
+          "first_delivery_outcome": "unverified",
           "contributing_commits": [
             {
               "sha": "6aa4d8fa823112ce9b69baed99abd4055d017785",
@@ -7421,8 +7421,8 @@ window.CODEX_BUNDLE = {
         }
       },
       "first_delivery": {
-        "outcome": "succeeded_with_concerns",
-        "source": "curation"
+        "outcome": "unverified",
+        "source": "default"
       },
       "re_audit": null,
       "links": {

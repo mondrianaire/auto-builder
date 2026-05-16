@@ -1,10 +1,8 @@
 {
-  "_comment": "Curation overlay for gto-poker-trainer. Sets first_delivery_outcome based on run-report evidence.",
-
-  "first_delivery_outcome": "succeeded_with_concerns",
-  "first_delivery_outcome_rationale": "Artifact works: CV verdict pass with PNV.1 verified end-to-end under jsdom production fidelity (10 hands → reload → 5 hands, alltime_hands transitioning 0 → 10 → 10 (post-reload) → 15, zero network calls). However, the run surfaced four architectural amendment candidates and one Sev 0 fix (the quoted 'raise_3.5' key caught by Integrator's node --check), plus charter-compliance gaps where Discovery's per-IP TaskCreate and TD's Researcher TaskCreate did not fire as the v1.8 charters specify. The artifact is delivered and functional, but the run-report's own framing surfaces enough mid-build remediation to warrant 'concerns' rather than a clean ship. No user re-prompt occurred.",
-  "first_delivery_curated_by": "Codex",
-  "first_delivery_curated_at": "2026-05-15",
-
-  "notes": "Source: runs/gto-poker-trainer/run-report.md §What worked, §What broke/surprised, §Architectural amendment candidates. No RCA exists for this run; no v16-reaudit. The PNV pass under production-fidelity jsdom is meaningful evidence that the artifact does what the prompt asked for at first contact, but the four amendment candidates the run-report itself raises are the 'concerns' qualifier."
+  "slug": "gto-poker-trainer",
+  "promoted_to": "https://github.com/mondrianaire/gto-poker-trainer",
+  "promoted_at": "2026-05-10T18:59:04Z",
+  "live_url": "https://mondrianaire.github.io/gto-poker-trainer/",
+  "live_url_source": "pre-existing-manual-upload-no-AB-rename",
+  "notes": "Option A retroactive lifecycle binding per user 2026-05-16: 'we will forgo the -AB to do option A just for this one'. Build was manually uploaded to mondrianaire/gto-poker-trainer on 2026-05-10 before the AutoBuilder git infrastructure existed. GitHub repo bytes byte-identical to corpus runs/gto-poker-trainer/repo/ + gto-poker-trainer-v2.zip (md5 verified 2026-05-16). promoted_to points at the existing repo (no -AB suffix) instead of going through workflow #2's fork ceremony, since that ceremony would simply re-derive what's already there."
 }
