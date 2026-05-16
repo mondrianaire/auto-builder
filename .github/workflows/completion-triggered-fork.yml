@@ -227,8 +227,9 @@ jobs:
             DELIVERABLE_KIND=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.deliverable_kind?r.deliverable_kind:'unknown')}catch(e){process.stdout.write('unknown')}")
             LIVE_URL=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.live_url?r.live_url:'')}catch(e){process.stdout.write('')}")
 
-            # Read the Claude Code handoff template from architecture/ (Maintenance canon).
-            # Substituted into the new repo's .claude/CLAUDE.md per claude-code-handoff-tier1-proposal.
+            # Read templates from architecture/ (Maintenance canon).
+            # Substituted into the new repo at fork time.
+            README_TEMPLATE_PATH="$GITHUB_WORKSPACE/architecture/promoted-repo-readme-template.md"
             CLAUDE_TEMPLATE_PATH="$GITHUB_WORKSPACE/architecture/claude-code-handoff-template.md"
 
             # ----- (4) Filter-repo in a temp clone, narrowed to output/final/ -----
@@ -245,47 +246,29 @@ jobs:
               git filter-repo --path "runs/$SLUG/output/final/" --path-rename "runs/$SLUG/output/final/:" --force
 
               # Write the AutoBuilder-generated README at the new repo root.
-              cat > README.md <<EOF
-# $SLUG
-
-> $TELOS
-
-This standalone repository is the production deliverable from AutoBuilder run **\`$SLUG\`**, forked here on $(date -u +%Y-%m-%dT%H:%M:%SZ) for ongoing product development.
-
-## Original prompt
-
-\`\`\`
-$PROMPT_TEXT
-\`\`\`
-
-## Build provenance
-
-| Field | Value |
-|---|---|
-| AutoBuilder verdict | \`$VERDICT\` |
-| First-delivery outcome | \`$FDO\` |
-| Ratified | $RATIFIED_AT by **$RATIFIED_BY** |
-| Architecture version | \`$ARCH_VERSION\` |
-| Build wall-clock | $WALL_MIN minutes |
-
-## What's here
-
-This repository contains the production deliverable as built by AutoBuilder — the contents of \`runs/$SLUG/output/final/\` at the time of ratification. The build substrate (design decisions, audit logs, run report, state, etc.) lives in the AutoBuilder corpus and is not duplicated here.
-
-The entry point is typically \`index.html\` (for web apps) or the main script file for other deliverable kinds. See the build context link below for the run-report's full description of what this artifact is and how it was built.
-
-## Build context
-
-Full build provenance — design decisions, audit logs, run report, root-cause analysis if any — lives in the AutoBuilder corpus at:
-
-  https://github.com/mondrianaire/auto-builder/tree/main/runs/$SLUG
-
-That corpus entry is **frozen at the ratification commit** and will not change going forward. The build factory is done with this build; what you're looking at here is the product, free to evolve.
-
-## Continuing development
-
-This repository is yours to evolve. Future commits, refactors, features, bug fixes — all land here, not in the AutoBuilder repo. The AutoBuilder corpus measurement of this build does not change retroactively based on what happens here.
-EOF
+              # Template lives at architecture/promoted-repo-readme-template.md.
+              # Same node-substitution pattern as the CLAUDE.md generation below.
+              if [ -f "$README_TEMPLATE_PATH" ]; then
+                node -e "
+                  const fs = require('fs');
+                  const tpl = fs.readFileSync(process.argv[1], 'utf8');
+                  const out = tpl
+                    .replace(/\\{slug\\}/g, process.argv[2])
+                    .replace(/\\{telos\\}/g, process.argv[3])
+                    .replace(/\\{promoted_at\\}/g, process.argv[4])
+                    .replace(/\\{prompt\\}/g, process.argv[5])
+                    .replace(/\\{verdict\\}/g, process.argv[6])
+                    .replace(/\\{fdo\\}/g, process.argv[7])
+                    .replace(/\\{ratified_at\\}/g, process.argv[8])
+                    .replace(/\\{ratified_by\\}/g, process.argv[9])
+                    .replace(/\\{architecture_version\\}/g, process.argv[10])
+                    .replace(/\\{wall_min\\}/g, process.argv[11]);
+                  fs.writeFileSync('README.md', out);
+                " "$README_TEMPLATE_PATH" "$SLUG" "$TELOS" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$PROMPT_TEXT" "$VERDICT" "$FDO" "$RATIFIED_AT" "$RATIFIED_BY" "$ARCH_VERSION" "$WALL_MIN"
+              else
+                echo "::error::architecture/promoted-repo-readme-template.md not found at $README_TEMPLATE_PATH — cannot generate README."
+                exit 1
+              fi
 
               git add README.md
               git -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
