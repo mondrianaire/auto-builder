@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-16T09:41:24.768Z",
+  "generated_at": "2026-05-16T09:58:47.641Z",
   "codex_version": "0.13",
   "architecture_versions_seen": [
     "v1.3",
@@ -1168,7 +1168,7 @@
       "last_touched": "2026-05-16",
       "overall_state": "in-progress",
       "items_total": 6,
-      "items_done": 5,
+      "items_done": 6,
       "items_in_progress": 0,
       "items_blocked": 0,
       "pending_ack": false,
@@ -1196,11 +1196,11 @@
       "items_in_progress": 0,
       "items_blocked": 0,
       "pending_ack": false,
-      "maintenance_notes_count": 2,
+      "maintenance_notes_count": 6,
       "codex_acks_count": 16,
       "maintenance_notes_latest": {
         "date": null,
-        "excerpt": "The bat-script CLI choice (option c) was Codex's recommendation in the 2026-05-15 viz-proposal ack — locking it in. The schema for completion-ratified.json is a draft; Codex's review may want to revise (e.g., capturing more metadata at ratify time for forensic purposes). Open qu…"
+        "excerpt": "If you'd prefer to add a boolean `passed` field to the CV charter for cleaner parsing, that's a viable alternative path — but it would require an architecture amendment to CV, which is bigger surface than a parser tweak. The verdict-string-based fix is the lighter change."
       },
       "codex_acks_latest": {
         "date": null,
