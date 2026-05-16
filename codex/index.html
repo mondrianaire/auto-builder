@@ -737,6 +737,8 @@
 
 </div>
 
+<link rel="stylesheet" href="topology.css">
+<script src="topology.js"></script>
 <script src="data/bundle.js"></script>
 <script>
 /* ===========================================================================
@@ -1291,6 +1293,12 @@
 
     // ---- v0.13: ratification section (per ratification-ui-proposal)
     host.appendChild(renderRatificationSection(sum));
+
+    // ---- v0.15: per-build dynamic SVG topology (live-build-visualization-proposal)
+    if (detail.build_shape && typeof renderBuildTopology === 'function') {
+      const topo = renderBuildTopology(detail.build_shape, el);
+      if (topo) host.appendChild(topo);
+    }
 
     // ---- body
     const body = el('div', { class: 'detail-body' });

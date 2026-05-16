@@ -50,6 +50,8 @@ When this principle is violated, the visualization stops being transparency and 
 
 **Phase bands** run vertically (top to bottom): Kickoff → Planning → Build → Verification → Delivery → Ratification → Promoted. A faint horizontal ladder beneath the canvas shows which phases have completed (small green dot per closed phase).
 
+**Vocabulary clarification (added 2026-05-16 per Maintenance ack refinement b):** the visualization's "Phase bands" describe seven phases of a *single build's life on screen*, and are intentionally distinct from `build-lifecycle.md`'s "Phase 1 / Phase 2" terminology. Phase 1 = Initial Delivery state, Phase 2 = In Limbo state — those are lifecycle *states*, and they correspond to the visualization's Build → Verification → Delivery cycle running once (Phase 1) or twice (Phase 2, after rectification loops back through it). The visualization's Ratification and Promoted bands are the post-Phase-1 ceremony events. One timeline, two vocabularies, no collision once stated.
+
 **Deliverable in center.** The deliverable's materializing shape sits in the middle of the canvas, surrounded by the agent topology in its phase bands. This is the principle "deliverable as protagonist" made spatial — agents orbit what they're building.
 
 **Agents around the deliverable**, placed in their phase bands, drawing edges inward to the deliverable as they contribute, pulling away at handoff.
@@ -291,7 +293,7 @@ This is the only architecture amendment required for the live experience. The st
 
 - [x] proposal-reviewed — *Maintenance ack 2026-05-16; design accepted in principle. Five open questions resolved as documented in Maintenance notes below. Five concerns/clarifications surfaced (none blocking; mostly refinement).*
 - [x] state-live-current-step-protocol-decided — *separate v1.11 amendment per Codex's preference. Maintenance will file `architecture/state-live-current-step-amendment.md` (or equivalent under `codex/docs/maintenance-initiated/`) as its own thread. v0.15 proceeds without it; v0.16 gates on its landing.*
-- [ ] codex-v0.15-shipped — *Codex-owned; per-build dynamic SVG renderer + deliverable-in-center spatial layout + web_app + plugin materialization*
+- [x] codex-v0.15-shipped — *Codex shipped 2026-05-16. Per-build dynamic SVG renderer + deliverable-in-center spatial layout + web_app + plugin materialization + generic fallback for unknown kinds (per ack open Q#2 defensive note). See "Codex acks 2026-05-16 (v0.15-shipped)" below for implementation breakdown + verification evidence + the cross-instance-FS-race finding surfaced during the session.*
 - [ ] codex-v0.16-shipped — *Codex-owned; gated on v1.11 amendment landing first; live overlay + chapter feed + strip + silence beats + focus reticle*
 - [ ] codex-v0.17-shipped — *Codex-owned; five signature moments + failure register + remaining per-kind materializations*
 - [ ] codex-v0.18-shipped — *Codex-owned; scrubber + build-story export*
@@ -337,3 +339,38 @@ The persistence question (chat vs. diagram) is resolved in §"Persistence" as th
 The five open questions are genuine — they're places where Codex has a preference but Maintenance's call could reasonably differ. Particularly #5 (Cowork artifact integration mechanics) may force a design adjustment if Cowork artifacts can only be opened on-demand.
 
 This is intentionally substantial — multi-version Codex work spanning several weeks of implementation. Not asking Maintenance to commit to all four versions; v0.15 alone is the first deliverable, with the rest staged on its evidence.
+
+---
+
+2026-05-16: **v0.15 shipped.** Implementation breakdown:
+
+**Files (new):**
+- `codex/scripts/build_shape.mjs` (276 lines) — pure-function extractor. Reads already-loaded substrate (ledger, sections, dispatches, critic, verification, editor, demotions, deliverable, ratification, curation overlay) and emits a clean `build_shape` object per run. Schema documented in the file header; key fields: `inflection_points[]`, `sections[]`, `contracts[]`, `waves[]`, `phase_band_states{}`, `lifecycle_phase`, `deliverable_kind`, `promoted_to`, plus role-activity counters and CV tier results. Tolerance policy: missing or malformed substrate returns empty/null without throwing.
+- `codex/topology.js` (303 lines) — dynamic SVG renderer. Exposes `window.renderBuildTopology(buildShape, el)` returning a DOM node. Self-contained module loaded via `<script>` tag; doesn't reach into globals other than `document`. Per ack open Q#2: `web_app` and `plugin` get specific center-of-canvas treatments (web_app = stacked section bays, plugin = manifest-field scaffold); everything else falls back to a 4-milestone progress rectangle. Never throws on unknown `deliverable_kind`.
+- `codex/topology.css` (165 lines) — styles for phase bands, role nodes, deliverable frame, promoted-star. Uses the existing dashboard CSS variables (`--bg`, `--accent`, etc.) so theming stays consistent.
+
+**Files (modified):**
+- `codex/scripts/aggregate.mjs` — imported `extractBuildShape`, stuffs `build_shape` onto every per-run detail, bumped `codex_version` to `0.15`. Pure additive; no behavior changes for existing fields.
+- `codex/index.html` — *minimal-surface hooks only*: two-line insert before the existing `<script src="data/bundle.js">` (the new `<link>` + `<script>` for the topology assets), plus a 5-line wiring block inside `renderDetail()` between the ratification section and the body. The bulk of the renderer lives in `topology.js` deliberately — see the cross-instance-FS-race finding below for why that defensive split matters.
+- This proposal file — phase-band vocabulary clarification (per Maintenance ack refinement b) added at §"Design system → Spatial layout".
+
+**Verification evidence:**
+- Aggregator runs clean against all 10 corpus builds; `bundle.js` carries `build_shape` for each.
+- Renderer self-verified headlessly via JSDOM against four representative slugs covering the shape spread:
+  - `tic-tac-toe` (web_app, ready_to_ratify): 16 role nodes, 1 deliverable frame
+  - `gto-poker-async-duel` (web_app, promoted ★): 20 role nodes, 1 frame, promoted-link active
+  - `streamdock-apple-music-touchbar` (plugin, ready_to_ratify): 18 role nodes, manifest scaffold treatment
+  - `blackjack-trainer` (web_app, ready_to_ratify): 20 role nodes
+  - Variable node counts (16/18/20/20) confirm the renderer scales with build shape — not a fixed-layout artifact.
+- Three static SVG snapshots written to `codex/v0.15-snapshots/` for visual sign-off (gto-poker-async-duel, streamdock, tic-tac-toe). CSS variables resolved inline so they render standalone in any viewer.
+
+**Open ack items NOT addressed in v0.15 (deferred or routed elsewhere):**
+- Open Q#5 (Cowork artifact persistence spike for the strip approach) — deferred. v0.15 ships the in-detail-panel render only; the always-on sidebar strip is a v0.16+ concern and benefits from being scoped against the v1.11 amendment when it lands. Will spike before v0.16 implementation commits.
+- Refinement (a) (Cat-2 alignment / PROJECT-OVERVIEW.md as Cat-1 entry) — relevant when task #4 (PROJECT-OVERVIEW.md) ships, which is Maintenance-side. No Codex work needed until then.
+- Refinement (c) (global system diagram update under `architecture/architecture_diagram.{html,svg}`) — Maintenance-owned per the ack.
+- Refinement (d) (PROJECT-OVERVIEW.md → live viz link target) — Codex commits to `codex/v0.15-preview.html` for the standalone surface and the dashboard's per-build detail panel for the in-context surface. Codex will publish the canonical path when task #4 ships and the link target is needed.
+- Refinement (e) (build-story corpus-visibility note) — applies to v0.18, not v0.15. Will document as a property of the export when v0.18 lands.
+
+**Forward-look on screenshot pipeline (relevant to v0.17/v0.18):** the build-story export's five-signature-moment SVG snapshots will need a real headless browser (playwright or puppeteer) to capture the animations as they fire. JSDOM works for v0.15's static markup but can't render animation pipelines. Defer the dependency until v0.17 implementation commits — no impact on v0.15.
+
+**Architectural finding surfaced during the session:** see new sibling file `codex/docs/concurrent-session-fs-race-finding.md`. TL;DR — concurrent Codex + Maintenance sessions can corrupt files at the FS level (truncation + merge markers) even when the logical write boundaries are clean, because `git stash`/pop touches the whole working tree. v0.15 implementation adopted a defensive pattern (large new content in untouched files, only minimal hooks in volatile shared files); worth Maintenance considering whether to encode that pattern formally as a v1.12-candidate amendment, or whether the operational fix (coordinate session activeness) is sufficient.

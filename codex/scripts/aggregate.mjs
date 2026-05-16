@@ -45,6 +45,8 @@ import { detectDeliverableKind, composeLiveUrl, loadCodexConfig, walkFileTree } 
 import { writeAllShowcases } from './showcase.mjs';
 import { collectHandoffs } from './coordination.mjs';
 import { readGitLog } from './readGitLog.mjs';
+// v0.15: per-build dynamic-SVG topology shape extractor.
+import { extractBuildShape } from './build_shape.mjs';
 
 // ---------------------------------------------------------------------------
 // Path resolution
@@ -655,6 +657,31 @@ async function aggregateRun(slug) {
     links
   };
 
+  // v0.15: build shape for the per-build dynamic SVG renderer.
+  // Pure derivation pass over already-loaded substrate; no new file reads.
+  const contractFileNames = (sections && Array.isArray(sections.contracts))
+    ? sections.contracts.map(c => c + '.json')
+    : [];
+  const buildShape = extractBuildShape({
+    slug,
+    ledger,
+    sections,
+    contractFileNames,
+    dispatches,
+    critic,
+    verification,
+    editorIterations,
+    editorVerdicts,
+    demotionCount,
+    deliverable,
+    verdict,
+    completion_ratified_at: ratification ? ratification.ratified_at : null,
+    promoted_to: (curation && curation.promoted_to) || null,
+    promoted_at: (curation && curation.promoted_at) || null,
+    raw_project_name: ledger ? ledger.project_name : null,
+    rating
+  });
+
   const detail = {
     schema_version: SCHEMA_VERSION,
     slug,
@@ -664,6 +691,7 @@ async function aggregateRun(slug) {
     timeline: report ? report.phases : [],
     verification,
     critic,
+    build_shape: buildShape,
     history: historySummary,
     run_report_excerpts: report ? {
       what_worked: report.what_worked,
@@ -1022,7 +1050,7 @@ async function main() {
   const index = {
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    codex_version: '0.14',
+    codex_version: '0.15',
     architecture_versions_seen: [...archVersionsSeen].sort(),
     run_count: summaries.length,
     runs: summaries,

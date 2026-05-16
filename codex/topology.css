@@ -1,0 +1,165 @@
+/* codex/topology.css — v0.15
+ * Styles for the per-build dynamic SVG topology widget.
+ * Loaded by codex/index.html. Uses the same CSS variables (--bg, --accent,
+ * etc.) that the main dashboard stylesheet defines.
+ */
+
+.build-topo {
+  margin: 16px 20px 0 20px;
+  padding: 14px 16px 10px 16px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+.build-topo h3 {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.build-topo .topo-sub {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+}
+.build-topo svg.topo-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+/* Phase-band fills (one per band; opacity modulated by state). */
+.topo-band-kickoff      { fill: rgba(112,128,144,0.10); }
+.topo-band-planning     { fill: rgba(86,140,200,0.10); }
+.topo-band-build        { fill: rgba(220,140,80,0.10); }
+.topo-band-verification { fill: rgba(155,120,200,0.10); }
+.topo-band-delivery     { fill: rgba(212,163,90,0.10); }
+.topo-band-ratification { fill: rgba(212,163,90,0.16); }
+.topo-band-promoted     { fill: rgba(240,200,80,0.12); }
+.topo-band-active       { stroke: rgba(255,255,255,0.18); stroke-width: 1.2; }
+.topo-band-done         { opacity: 0.65; }
+.topo-band-pending      { opacity: 0.35; }
+
+/* Phase-band label in left gutter */
+.topo-band-label {
+  fill: var(--text-faint);
+  font-size: 10px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.topo-band-label.active { fill: var(--text);     font-weight: 600; }
+.topo-band-label.done   { fill: var(--text-dim); }
+
+/* Role node */
+.topo-role-bg {
+  fill: var(--bg-elev-2);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.topo-role-bg.active {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  fill: var(--bg-elev);
+}
+.topo-role-bg.done {
+  fill: var(--bg-elev);
+  opacity: 0.7;
+}
+.topo-role-bg.pending {
+  opacity: 0.45;
+  stroke-dasharray: 3,2;
+}
+.topo-role-bg.failed {
+  fill: rgba(80,80,80,0.4);
+  stroke: rgba(150,150,150,0.6);
+}
+.topo-role-label {
+  fill: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-anchor: middle;
+}
+.topo-role-sublabel {
+  fill: var(--text-dim);
+  font-size: 9px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-anchor: middle;
+}
+
+/* Contract edge (reserved for v0.16+; not drawn in v0.15) */
+.topo-edge { stroke: var(--border); stroke-width: 1; fill: none; opacity: 0.55; }
+.topo-edge-active { stroke: var(--accent); stroke-width: 1.5; opacity: 0.85; }
+
+/* Center-of-canvas deliverable */
+.topo-deliv-frame {
+  fill: var(--bg-elev-2);
+  stroke: var(--accent);
+  stroke-width: 1.2;
+}
+.topo-deliv-label {
+  fill: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-anchor: middle;
+}
+.topo-deliv-kind {
+  fill: var(--text-faint);
+  font-size: 9px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-anchor: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.topo-deliv-bay {
+  fill: var(--bg);
+  stroke: var(--border);
+  stroke-width: 0.7;
+}
+.topo-deliv-bay.filled {
+  fill: var(--bg-elev);
+  stroke: var(--accent);
+  stroke-opacity: 0.5;
+}
+.topo-deliv-bay-label {
+  fill: var(--text-dim);
+  font-size: 8px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-anchor: middle;
+}
+
+/* Promoted-band glyph + link */
+.topo-promoted-star {
+  fill: #f0c850;
+  stroke: #f0c850;
+  stroke-width: 0.5;
+}
+.topo-promoted-link {
+  fill: var(--accent);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-anchor: middle;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Meta strip beneath the diagram (text, accessible) */
+.build-topo .topo-meta {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+.build-topo .topo-meta b {
+  color: var(--text);
+  font-weight: 600;
+}

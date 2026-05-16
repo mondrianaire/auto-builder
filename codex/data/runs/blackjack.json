@@ -210,6 +210,109 @@
     "sev0_fixes": 0,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "blackjack",
+    "deliverable_kind": "web_app",
+    "deliverable_label": "blackjack-web-app",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "Betting model: fixed starting bankroll with reset, vs. no betting at all (pure rules play).",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "Hand actions surface: minimal (hit / stand only) vs. full table (hit / stand / double / split, with insurance/surrender omitted).",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-1",
+        "name": "section-1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-2",
+        "name": "section-2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-3",
+        "name": "section-3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-4",
+        "name": "section-4",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-5",
+        "name": "section-5",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "betting-and-bankroll",
+        "to": "controller-and-shell"
+      },
+      {
+        "from": "rules-engine",
+        "to": "controller-and-shell"
+      },
+      {
+        "from": "ui-render",
+        "to": "controller-and-shell"
+      }
+    ],
+    "waves": [],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 5,
+    "critic_high": 0,
+    "critic_medium": 0,
+    "critic_low": 4,
+    "editor_iterations": 0,
+    "editor_final_verdict": null,
+    "demotion_count": 0,
+    "cv_verdict": "pass_with_concerns",
+    "cv_tier1_pnv": "failed",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "verified",
+    "lifecycle_phase": "in_limbo",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 5,
+      "inflection_points": 2,
+      "builders": 0,
+      "waves": 0,
+      "escalations": 0,
+      "dispatches": 17
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "pending",
+      "ratification": "pending",
+      "promoted": "pending"
+    }
+  },
   "history": {
     "entry_count": 7,
     "earliest": "2026-05-09T00:00:00Z",

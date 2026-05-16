@@ -331,6 +331,260 @@
     "sev0_fixes": 2,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "gto-poker-async-duel",
+    "deliverable_kind": "web_app",
+    "deliverable_label": "gto-poker-async-duel",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "Async-multiplayer state transport on GitHub Pages (static-only)",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "Cross-user notification delivery mechanism",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP3",
+        "topic": "Player identity / authentication model",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP4",
+        "topic": "Pairing / game-creation flow",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP5",
+        "topic": "Scenario source for the new build",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP6",
+        "topic": "'Handful' size per turn batch",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP7",
+        "topic": "Asynchronous in-game communication mechanism (A10)",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP8",
+        "topic": "Confidence rating granularity",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-1",
+        "name": "section-1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-2",
+        "name": "section-2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-3",
+        "name": "section-3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-4",
+        "name": "section-4",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-5",
+        "name": "section-5",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-6",
+        "name": "section-6",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-7",
+        "name": "section-7",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "section-1",
+        "to": "section-2"
+      },
+      {
+        "from": "section-1",
+        "to": "section-4"
+      },
+      {
+        "from": "section-1",
+        "to": "section-6"
+      },
+      {
+        "from": "section-2",
+        "to": "section-3"
+      },
+      {
+        "from": "section-2",
+        "to": "section-4"
+      },
+      {
+        "from": "section-2",
+        "to": "section-5"
+      },
+      {
+        "from": "section-2",
+        "to": "section-6"
+      },
+      {
+        "from": "section-3",
+        "to": "section-4"
+      },
+      {
+        "from": "section-3",
+        "to": "section-6"
+      },
+      {
+        "from": "section-4",
+        "to": "section-6"
+      },
+      {
+        "from": "section-5",
+        "to": "section-6"
+      }
+    ],
+    "waves": [
+      {
+        "number": 1,
+        "sections": [
+          "section-1"
+        ],
+        "started_at": null,
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 2,
+        "sections": [
+          "section-2"
+        ],
+        "started_at": null,
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 3,
+        "sections": [
+          "section-3",
+          "section-5"
+        ],
+        "started_at": null,
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 4,
+        "sections": [
+          "section-4"
+        ],
+        "started_at": null,
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 5,
+        "sections": [
+          "section-6"
+        ],
+        "started_at": null,
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 6,
+        "sections": [
+          "integrator"
+        ],
+        "started_at": null,
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 7,
+        "sections": [
+          "section-7"
+        ],
+        "started_at": null,
+        "ended_at": null,
+        "builders": []
+      }
+    ],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 0,
+    "critic_high": 0,
+    "critic_medium": 0,
+    "critic_low": 0,
+    "editor_iterations": 1,
+    "editor_final_verdict": "pass_with_recommendations",
+    "demotion_count": 0,
+    "cv_verdict": "pass_with_concerns",
+    "cv_tier1_pnv": "verified",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "failed",
+    "lifecycle_phase": "promoted",
+    "ratified": true,
+    "promoted": true,
+    "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
+    "totals": {
+      "sections": 7,
+      "inflection_points": 8,
+      "builders": 0,
+      "waves": 7,
+      "escalations": 0,
+      "dispatches": 44
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "done",
+      "promoted": "done"
+    }
+  },
   "history": {
     "entry_count": 18,
     "earliest": "2026-05-14T00:00:00Z",

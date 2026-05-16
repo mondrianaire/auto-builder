@@ -154,6 +154,114 @@
     "sev0_fixes": 3,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "earthquake-map",
+    "deliverable_kind": "web_app",
+    "deliverable_label": "earthquake activity map",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "Live/refreshing data vs static snapshot at load time",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "Time-window control: fixed default window vs user-adjustable",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP3",
+        "topic": "Filtering controls (magnitude threshold, depth, region)",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-1",
+        "name": "section-1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-2",
+        "name": "section-2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-3",
+        "name": "section-3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-4",
+        "name": "section-4",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "integrator",
+        "to": "section-4"
+      },
+      {
+        "from": "section-1",
+        "to": "section-2"
+      },
+      {
+        "from": "section-1",
+        "to": "section-3"
+      },
+      {
+        "from": "section-2",
+        "to": "section-3"
+      }
+    ],
+    "waves": [],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 0,
+    "critic_high": 1,
+    "critic_medium": 0,
+    "critic_low": 0,
+    "editor_iterations": 0,
+    "editor_final_verdict": null,
+    "demotion_count": 0,
+    "cv_verdict": "pass",
+    "cv_tier1_pnv": "verified",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "failed",
+    "lifecycle_phase": "ready_to_ratify",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 4,
+      "inflection_points": 3,
+      "builders": 0,
+      "waves": 0,
+      "escalations": 0,
+      "dispatches": 19
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "active",
+      "promoted": "pending"
+    }
+  },
   "history": {
     "entry_count": 34,
     "earliest": "2026-05-10T00:00:00Z",

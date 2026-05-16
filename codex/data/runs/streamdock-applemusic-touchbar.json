@@ -216,6 +216,109 @@
     "sev0_fixes": 7,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "streamdock-applemusic-touchbar",
+    "deliverable_kind": "plugin",
+    "deliverable_label": "streamdock-applemusic-touchbar",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "Host OS for Apple Music data source",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "Album art on the touch bar",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP3",
+        "topic": "Interactivity on the touch bar",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "S1",
+        "name": "S1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S2",
+        "name": "S2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S3",
+        "name": "S3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S4",
+        "name": "S4",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S5",
+        "name": "S5",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S6",
+        "name": "S6",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [],
+    "waves": [],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 15,
+    "critic_high": 2,
+    "critic_medium": 4,
+    "critic_low": 4,
+    "editor_iterations": 0,
+    "editor_final_verdict": null,
+    "demotion_count": 0,
+    "cv_verdict": "pass",
+    "cv_tier1_pnv": "verified",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "not_run",
+    "lifecycle_phase": "ready_to_ratify",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 6,
+      "inflection_points": 3,
+      "builders": 0,
+      "waves": 0,
+      "escalations": 0,
+      "dispatches": 31
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "active",
+      "promoted": "pending"
+    }
+  },
   "history": {
     "entry_count": 18,
     "earliest": "2026-05-13T00:00:00Z",

@@ -215,6 +215,166 @@
     "sev0_fixes": 2,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "blackjack-trainer",
+    "deliverable_kind": "web_app",
+    "deliverable_label": "blackjack-trainer",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "Rules variant the encoded basic-strategy table targets",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "Mode structure: free play vs drill mode vs both",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP3",
+        "topic": "Granularity of post-hand suggestions",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP4",
+        "topic": "Hint presentation style",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP5",
+        "topic": "Whether to display the cheat-sheet chart in-app",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-1",
+        "name": "section-1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-2",
+        "name": "section-2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-3",
+        "name": "section-3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-4",
+        "name": "section-4",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-5",
+        "name": "section-5",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-6",
+        "name": "section-6",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-7",
+        "name": "section-7",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "section-1",
+        "to": "section-3"
+      },
+      {
+        "from": "section-2",
+        "to": "section-3"
+      },
+      {
+        "from": "section-2",
+        "to": "section-5"
+      },
+      {
+        "from": "section-3",
+        "to": "section-4"
+      },
+      {
+        "from": "section-3",
+        "to": "section-5"
+      },
+      {
+        "from": "section-3",
+        "to": "section-6"
+      },
+      {
+        "from": "section-4",
+        "to": "section-5"
+      },
+      {
+        "from": "section-4",
+        "to": "section-6"
+      },
+      {
+        "from": "section-5",
+        "to": "section-6"
+      }
+    ],
+    "waves": [],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 7,
+    "critic_high": 0,
+    "critic_medium": 0,
+    "critic_low": 0,
+    "editor_iterations": 0,
+    "editor_final_verdict": null,
+    "demotion_count": 0,
+    "cv_verdict": "pass",
+    "cv_tier1_pnv": "verified",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "verified",
+    "lifecycle_phase": "ready_to_ratify",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 7,
+      "inflection_points": 5,
+      "builders": 0,
+      "waves": 0,
+      "escalations": 0,
+      "dispatches": 17
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "active",
+      "promoted": "pending"
+    }
+  },
   "history": {
     "entry_count": 10,
     "earliest": "2026-05-09T00:45:00Z",

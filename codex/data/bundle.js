@@ -995,49 +995,49 @@ window.CODEX_BUNDLE = {
       {
         "id": "A",
         "name": "Verification Fidelity",
-        "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "B",
         "name": "Audit Completeness",
-        "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "C",
         "name": "Spec-to-Test Coverage",
-        "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "D",
         "name": "Path Coverage",
-        "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "E",
         "name": "Atomic Lexical Anchors",
-        "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "F",
         "name": "External Authority Discipline",
-        "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "G",
         "name": "Deliverability Tier Discipline",
-        "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "H",
         "name": "Verification Independence",
-        "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+        "summary": "",
         "introduced_in": "v1.9"
       }
     ],
@@ -1140,6 +1140,52 @@ window.CODEX_BUNDLE = {
     },
     "maintenance_handoffs": [
       {
+        "slug": "claude-code-handoff-tier1-proposal",
+        "title": "Claude Code post-promotion handoff — Tier 1 (seeded `.claude/CLAUDE.md` in forked repo)",
+        "origin": "codex-initiated",
+        "source_file": "codex/docs/claude-code-handoff-tier1-proposal.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "user-greenlit",
+        "items_total": 3,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 0,
+        "codex_acks_count": 0,
+        "maintenance_notes_latest": null,
+        "codex_acks_latest": null,
+        "parse_warnings": [
+          "unrecognized overall_state value: user-greenlit"
+        ]
+      },
+      {
+        "slug": "concurrent-session-fs-race-finding",
+        "title": "Concurrent-session FS-level race — finding from v0.15 implementation session",
+        "origin": "codex-initiated",
+        "source_file": "codex/docs/concurrent-session-fs-race-finding.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "finding",
+        "items_total": 3,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 1,
+        "codex_acks_count": 1,
+        "maintenance_notes_latest": {
+          "date": null,
+          "excerpt": "*(Maintenance: add your review/decision here when you action.)*"
+        },
+        "codex_acks_latest": {
+          "date": "2026-05-16",
+          "excerpt": "Filing this as a finding rather than a proposal because the right framing is \"here's what we observed, here are three response shapes, you choose.\" If Maintenance picks Option 2, Codex will adopt the convention immediately and propagate it to memory. If Option 1 or 3, Codex stil…"
+        },
+        "parse_warnings": [
+          "unrecognized overall_state value: finding"
+        ]
+      },
+      {
         "slug": "live-build-visualization-proposal",
         "title": "Live build visualization — proposal for AutoBuilder-Maintenance",
         "origin": "codex-initiated",
@@ -1147,19 +1193,19 @@ window.CODEX_BUNDLE = {
         "last_touched": "2026-05-16",
         "overall_state": "maintenance",
         "items_total": 6,
-        "items_done": 2,
+        "items_done": 3,
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": false,
         "maintenance_notes_count": 15,
-        "codex_acks_count": 4,
+        "codex_acks_count": 12,
         "maintenance_notes_latest": {
           "date": null,
           "excerpt": "**Bottom line:** v0.15 is unblocked; ship it. v1.11 amendment will follow from Maintenance side as its own filing. v0.16 starts gated on that landing. The proposal is a strong piece of design work and Maintenance has no fundamental objections — just the refinement/alignment note…"
         },
         "codex_acks_latest": {
           "date": null,
-          "excerpt": "This is intentionally substantial — multi-version Codex work spanning several weeks of implementation. Not asking Maintenance to commit to all four versions; v0.15 alone is the first deliverable, with the rest staged on its evidence."
+          "excerpt": "**Architectural finding surfaced during the session:** see new sibling file `codex/docs/concurrent-session-fs-race-finding.md`. TL;DR — concurrent Codex + Maintenance sessions can corrupt files at the FS level (truncation + merge markers) even when the logical write boundaries a…"
         },
         "parse_warnings": [
           "unrecognized overall_state value: maintenance"
@@ -1322,14 +1368,14 @@ window.CODEX_BUNDLE = {
         "items_blocked": 0,
         "pending_ack": false,
         "maintenance_notes_count": 20,
-        "codex_acks_count": 27,
+        "codex_acks_count": 31,
         "maintenance_notes_latest": {
           "date": null,
           "excerpt": "Saved on Maintenance side as `feedback_autobuilder_waiting_state_surfacing.md` for cross-session persistence. Recommend Codex adopt the symmetric rule and save it on their side too."
         },
         "codex_acks_latest": {
-          "date": "2026-05-15",
-          "excerpt": "This convention adoption answers your three \"Currently waiting on Frontend for ...\" items the user relayed today: (1) `codex-polling-convention-adopted` — declared above and saved to memory; (2) `filter-on-click` on the first-delivery-outcome viz — shipping in this same session,…"
+          "date": null,
+          "excerpt": "**One craft observation worth recording:** the failure mode wasn't \"the convention is wrong,\" it was \"polling at session-start isn't the same as polling at emit-time.\" A long session has many emit-times for every one session-start. Pulling the refresh closer to the emit point cl…"
         },
         "parse_warnings": [
           "unrecognized overall_state value: converged"
@@ -1670,6 +1716,260 @@ window.CODEX_BUNDLE = {
         "resolved": 0,
         "sev0_fixes": 2,
         "escalations_open": 0
+      },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "gto-poker-async-duel",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "gto-poker-async-duel",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Async-multiplayer state transport on GitHub Pages (static-only)",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Cross-user notification delivery mechanism",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Player identity / authentication model",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP4",
+            "topic": "Pairing / game-creation flow",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP5",
+            "topic": "Scenario source for the new build",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP6",
+            "topic": "'Handful' size per turn batch",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP7",
+            "topic": "Asynchronous in-game communication mechanism (A10)",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP8",
+            "topic": "Confidence rating granularity",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5",
+            "name": "section-5",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-6",
+            "name": "section-6",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-7",
+            "name": "section-7",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "section-1",
+            "to": "section-2"
+          },
+          {
+            "from": "section-1",
+            "to": "section-4"
+          },
+          {
+            "from": "section-1",
+            "to": "section-6"
+          },
+          {
+            "from": "section-2",
+            "to": "section-3"
+          },
+          {
+            "from": "section-2",
+            "to": "section-4"
+          },
+          {
+            "from": "section-2",
+            "to": "section-5"
+          },
+          {
+            "from": "section-2",
+            "to": "section-6"
+          },
+          {
+            "from": "section-3",
+            "to": "section-4"
+          },
+          {
+            "from": "section-3",
+            "to": "section-6"
+          },
+          {
+            "from": "section-4",
+            "to": "section-6"
+          },
+          {
+            "from": "section-5",
+            "to": "section-6"
+          }
+        ],
+        "waves": [
+          {
+            "number": 1,
+            "sections": [
+              "section-1"
+            ],
+            "started_at": null,
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 2,
+            "sections": [
+              "section-2"
+            ],
+            "started_at": null,
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 3,
+            "sections": [
+              "section-3",
+              "section-5"
+            ],
+            "started_at": null,
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 4,
+            "sections": [
+              "section-4"
+            ],
+            "started_at": null,
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 5,
+            "sections": [
+              "section-6"
+            ],
+            "started_at": null,
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 6,
+            "sections": [
+              "integrator"
+            ],
+            "started_at": null,
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 7,
+            "sections": [
+              "section-7"
+            ],
+            "started_at": null,
+            "ended_at": null,
+            "builders": []
+          }
+        ],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 0,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 1,
+        "editor_final_verdict": "pass_with_recommendations",
+        "demotion_count": 0,
+        "cv_verdict": "pass_with_concerns",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "failed",
+        "lifecycle_phase": "promoted",
+        "ratified": true,
+        "promoted": true,
+        "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
+        "totals": {
+          "sections": 7,
+          "inflection_points": 8,
+          "builders": 0,
+          "waves": 7,
+          "escalations": 0,
+          "dispatches": 44
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "done",
+          "promoted": "done"
+        }
       },
       "history": {
         "entry_count": 18,
@@ -2100,6 +2400,137 @@ window.CODEX_BUNDLE = {
         "sev0_fixes": 0,
         "escalations_open": 0
       },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "streamdock-apple-music-touchbar",
+        "deliverable_kind": "plugin",
+        "deliverable_label": "streamdock-apple-music-touchbar",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "MiraboxSpace StreamDock plugin SDK identity and runtime format for the VSD N4 Pro on Windows: which host application loads VSD N4 Pro plugins on Windows, what is the manifest format, what runtime/language does the host accept (native binary, JavaScript bundle, Python, web-tech, other), and what API surface does the host expose to a plugin running in Touchbar Mode.",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Mechanism by which the plugin obtains the currently playing song and artist from the Apple Music Desktop Application on Windows.",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Touchbar Mode display geometry and full-length addressing model for the VSD N4 Pro: pixel dimensions, orientation, and whether 'the entire length of the touch bar' is addressed as a single contiguous canvas, as a horizontal row of virtual keys whose combined width spans the bar, or via some other model. This determines how the plugin satisfies the prompt's explicit 'entire length' constraint.",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP4",
+            "topic": "Plugin installation flow on Windows for the MiraboxSpace StreamDock host application: how a user installs a plugin authored by a third party, what the installable package format is (a directory, a zip with a specific extension, a signed bundle), and what install steps the delivered artifact must support to be installable by an ordinary user without developer tooling.",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP5",
+            "topic": "Behavior when the displayed text is longer than the touch bar can show in one screen-width (e.g., a long song title or 'Title -- Artist' composite that doesn't fit).",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP6",
+            "topic": "Polling vs. event-driven track-change detection.",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5",
+            "name": "section-5",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "host-integration",
+            "to": "now-playing-source"
+          },
+          {
+            "from": "host-integration",
+            "to": "touchbar-renderer"
+          },
+          {
+            "from": "now-playing-source",
+            "to": "touchbar-renderer"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 5,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 1,
+        "editor_final_verdict": "pass_with_recommendations",
+        "demotion_count": 0,
+        "cv_verdict": "pass_with_concerns",
+        "cv_tier1_pnv": "unverifiable",
+        "cv_tier2_first_contact": "unverifiable",
+        "cv_tier3_subgoal": "failed",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 5,
+          "inflection_points": 6,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 7
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
+      },
       "history": {
         "entry_count": 25,
         "earliest": "2026-05-14T01:30:00Z",
@@ -2447,6 +2878,114 @@ window.CODEX_BUNDLE = {
         "sev0_fixes": 3,
         "escalations_open": 0
       },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "earthquake-map",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "earthquake activity map",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Live/refreshing data vs static snapshot at load time",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Time-window control: fixed default window vs user-adjustable",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Filtering controls (magnitude threshold, depth, region)",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "integrator",
+            "to": "section-4"
+          },
+          {
+            "from": "section-1",
+            "to": "section-2"
+          },
+          {
+            "from": "section-1",
+            "to": "section-3"
+          },
+          {
+            "from": "section-2",
+            "to": "section-3"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 0,
+        "critic_high": 1,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "pass",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "failed",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 4,
+          "inflection_points": 3,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 19
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
+      },
       "history": {
         "entry_count": 34,
         "earliest": "2026-05-10T00:00:00Z",
@@ -2727,6 +3266,153 @@ window.CODEX_BUNDLE = {
         "resolved": 0,
         "sev0_fixes": 0,
         "escalations_open": 0
+      },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "kanban-board",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "kanban-board",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Card data model: title-only vs. title + description (and possibly more fields)",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Whether lists themselves are draggable for reordering",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5",
+            "name": "section-5",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-6",
+            "name": "section-6",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-7",
+            "name": "section-7",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "dnd",
+            "to": "integration"
+          },
+          {
+            "from": "interactions",
+            "to": "integration"
+          },
+          {
+            "from": "persistence",
+            "to": "integration"
+          },
+          {
+            "from": "state-model",
+            "to": "dnd"
+          },
+          {
+            "from": "state-model",
+            "to": "integration"
+          },
+          {
+            "from": "state-model",
+            "to": "interactions"
+          },
+          {
+            "from": "state-model",
+            "to": "persistence"
+          },
+          {
+            "from": "state-model",
+            "to": "ui-render"
+          },
+          {
+            "from": "ui-render",
+            "to": "dnd"
+          },
+          {
+            "from": "ui-render",
+            "to": "integration"
+          },
+          {
+            "from": "ui-render",
+            "to": "interactions"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 0,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "pass",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "verified",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 7,
+          "inflection_points": 2,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 21
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
       },
       "history": {
         "entry_count": 11,
@@ -3328,6 +4014,120 @@ window.CODEX_BUNDLE = {
         "resolved": 0,
         "sev0_fixes": 1,
         "escalations_open": 0
+      },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "latex-equation-renderer",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "latex-equation-renderer",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Input model: single equation field vs. multi-equation editor",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Export / copy capability",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Quick-insert helpers (symbol palette, snippets, examples)",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1-renderer-core",
+            "name": "section-1-renderer-core",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2-input-ui",
+            "name": "section-2-input-ui",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3-output-and-errors",
+            "name": "section-3-output-and-errors",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4-page-shell-and-styling",
+            "name": "section-4-page-shell-and-styling",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5-edge-case-testing",
+            "name": "section-5-edge-case-testing",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "section-1-renderer-core",
+            "to": "section-3-output-and-errors"
+          },
+          {
+            "from": "section-2-input-ui",
+            "to": "section-3-output-and-errors"
+          },
+          {
+            "from": "section-2-input-ui",
+            "to": "section-4-page-shell-and-styling"
+          },
+          {
+            "from": "section-3-output-and-errors",
+            "to": "section-4-page-shell-and-styling"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 10,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "fail",
+        "cv_tier1_pnv": "failed",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "verified",
+        "lifecycle_phase": "in_limbo",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 5,
+          "inflection_points": 3,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 20
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "pending",
+          "ratification": "pending",
+          "promoted": "pending"
+        }
       },
       "history": {
         "entry_count": 25,
@@ -3958,6 +4758,109 @@ window.CODEX_BUNDLE = {
         "sev0_fixes": 0,
         "escalations_open": 0
       },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "blackjack",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "blackjack-web-app",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Betting model: fixed starting bankroll with reset, vs. no betting at all (pure rules play).",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Hand actions surface: minimal (hit / stand only) vs. full table (hit / stand / double / split, with insurance/surrender omitted).",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5",
+            "name": "section-5",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "betting-and-bankroll",
+            "to": "controller-and-shell"
+          },
+          {
+            "from": "rules-engine",
+            "to": "controller-and-shell"
+          },
+          {
+            "from": "ui-render",
+            "to": "controller-and-shell"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 5,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 4,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "pass_with_concerns",
+        "cv_tier1_pnv": "failed",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "verified",
+        "lifecycle_phase": "in_limbo",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 5,
+          "inflection_points": 2,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 17
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "pending",
+          "ratification": "pending",
+          "promoted": "pending"
+        }
+      },
       "history": {
         "entry_count": 7,
         "earliest": "2026-05-09T00:00:00Z",
@@ -4546,6 +5449,166 @@ window.CODEX_BUNDLE = {
         "resolved": 0,
         "sev0_fixes": 2,
         "escalations_open": 0
+      },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "blackjack-trainer",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "blackjack-trainer",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Rules variant the encoded basic-strategy table targets",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Mode structure: free play vs drill mode vs both",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Granularity of post-hand suggestions",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP4",
+            "topic": "Hint presentation style",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP5",
+            "topic": "Whether to display the cheat-sheet chart in-app",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5",
+            "name": "section-5",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-6",
+            "name": "section-6",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-7",
+            "name": "section-7",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "section-1",
+            "to": "section-3"
+          },
+          {
+            "from": "section-2",
+            "to": "section-3"
+          },
+          {
+            "from": "section-2",
+            "to": "section-5"
+          },
+          {
+            "from": "section-3",
+            "to": "section-4"
+          },
+          {
+            "from": "section-3",
+            "to": "section-5"
+          },
+          {
+            "from": "section-3",
+            "to": "section-6"
+          },
+          {
+            "from": "section-4",
+            "to": "section-5"
+          },
+          {
+            "from": "section-4",
+            "to": "section-6"
+          },
+          {
+            "from": "section-5",
+            "to": "section-6"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 7,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "pass",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "verified",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 7,
+          "inflection_points": 5,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 17
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
       },
       "history": {
         "entry_count": 10,
@@ -5241,6 +6304,185 @@ window.CODEX_BUNDLE = {
         "sev0_fixes": 0,
         "escalations_open": 0
       },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "tic-tac-toe",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "tic-tac-toe",
+        "inflection_points": [
+          {
+            "id": "I1",
+            "topic": "Computer opponent strength",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "I2",
+            "topic": "Visual style / presentation",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "rules-engine",
+            "name": "rules-engine",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "ai-opponent",
+            "name": "ai-opponent",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "ui-render",
+            "name": "ui-render",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "controller-and-shell",
+            "name": "controller-and-shell",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "edge-case-testing",
+            "name": "edge-case-testing",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "ai-opponent",
+            "to": "controller-and-shell"
+          },
+          {
+            "from": "rules-engine",
+            "to": "ai-opponent"
+          },
+          {
+            "from": "rules-engine",
+            "to": "controller-and-shell"
+          },
+          {
+            "from": "ui-render",
+            "to": "controller-and-shell"
+          }
+        ],
+        "waves": [
+          {
+            "number": 1,
+            "sections": [
+              "rules-engine",
+              "ui-render"
+            ],
+            "started_at": "2026-05-09T00:10:05Z",
+            "ended_at": "2026-05-09T00:10:50Z",
+            "builders": [
+              {
+                "builder_id": "builder-rules-engine-b1",
+                "section_id": "rules-engine",
+                "ts": "2026-05-09T00:10:06Z"
+              },
+              {
+                "builder_id": "builder-ui-render-b1",
+                "section_id": "ui-render",
+                "ts": "2026-05-09T00:10:06Z"
+              },
+              {
+                "builder_id": "builder-ui-render-b2",
+                "section_id": "ui-render",
+                "ts": "2026-05-09T00:10:06Z"
+              }
+            ]
+          },
+          {
+            "number": 2,
+            "sections": [
+              "ai-opponent"
+            ],
+            "started_at": "2026-05-09T00:10:51Z",
+            "ended_at": "2026-05-09T00:11:10Z",
+            "builders": [
+              {
+                "builder_id": "builder-ai-opponent-b1",
+                "section_id": "ai-opponent",
+                "ts": "2026-05-09T00:10:51Z"
+              }
+            ]
+          },
+          {
+            "number": 3,
+            "sections": [
+              "controller-and-shell"
+            ],
+            "started_at": "2026-05-09T00:11:11Z",
+            "ended_at": "2026-05-09T00:11:35Z",
+            "builders": [
+              {
+                "builder_id": "builder-controller-b1",
+                "section_id": "controller-and-shell",
+                "ts": "2026-05-09T00:11:11Z"
+              }
+            ]
+          },
+          {
+            "number": 4,
+            "sections": [
+              "edge-case-testing"
+            ],
+            "started_at": "2026-05-09T00:11:36Z",
+            "ended_at": "2026-05-09T21:21:01Z",
+            "builders": [
+              {
+                "builder_id": "builder-edge-b1",
+                "section_id": "edge-case-testing",
+                "ts": "2026-05-09T00:11:36Z"
+              }
+            ]
+          }
+        ],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 6,
+        "overseer_dispatch_count": 0,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "pass",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "failed",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 5,
+          "inflection_points": 2,
+          "builders": 6,
+          "waves": 4,
+          "escalations": 0,
+          "dispatches": 27
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
+      },
       "history": {
         "entry_count": 7,
         "earliest": "2026-05-09T00:00:00Z",
@@ -5818,6 +7060,218 @@ window.CODEX_BUNDLE = {
         "sev0_fixes": 4,
         "escalations_open": 0
       },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "gto-poker-trainer",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "gto-poker-trainer",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Application delivery surface",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "GTO data source",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Walkthrough mode interaction model",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP4",
+            "topic": "Archetype agent fidelity",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP5",
+            "topic": "Stats granularity and visualization",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5",
+            "name": "section-5",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-6",
+            "name": "section-6",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-7",
+            "name": "section-7",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "section-1",
+            "to": "section-3"
+          },
+          {
+            "from": "section-1",
+            "to": "section-4"
+          },
+          {
+            "from": "section-1",
+            "to": "section-5"
+          },
+          {
+            "from": "section-1",
+            "to": "section-6"
+          },
+          {
+            "from": "section-2",
+            "to": "section-3"
+          },
+          {
+            "from": "section-2",
+            "to": "section-4"
+          },
+          {
+            "from": "section-2",
+            "to": "section-5"
+          },
+          {
+            "from": "section-3",
+            "to": "section-6"
+          },
+          {
+            "from": "section-4",
+            "to": "section-5"
+          },
+          {
+            "from": "section-5",
+            "to": "section-6"
+          }
+        ],
+        "waves": [
+          {
+            "number": 1,
+            "sections": [
+              "section-1",
+              "section-2"
+            ],
+            "started_at": "2026-05-10T00:05:02Z",
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 2,
+            "sections": [
+              "section-3",
+              "section-4"
+            ],
+            "started_at": "2026-05-10T00:25:30Z",
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 3,
+            "sections": [
+              "section-5"
+            ],
+            "started_at": "2026-05-10T00:50:30Z",
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 4,
+            "sections": [
+              "section-6"
+            ],
+            "started_at": "2026-05-10T01:10:30Z",
+            "ended_at": null,
+            "builders": []
+          },
+          {
+            "number": 6,
+            "sections": [
+              "section-7"
+            ],
+            "started_at": "2026-05-10T01:25:30Z",
+            "ended_at": null,
+            "builders": []
+          }
+        ],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 0,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 2,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "pass",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "verified",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 7,
+          "inflection_points": 5,
+          "builders": 0,
+          "waves": 5,
+          "escalations": 0,
+          "dispatches": 18
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
+      },
       "history": {
         "entry_count": 18,
         "earliest": "2026-05-10T00:05:00Z",
@@ -6171,6 +7625,109 @@ window.CODEX_BUNDLE = {
         "resolved": 0,
         "sev0_fixes": 7,
         "escalations_open": 0
+      },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "streamdock-applemusic-touchbar",
+        "deliverable_kind": "plugin",
+        "deliverable_label": "streamdock-applemusic-touchbar",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Host OS for Apple Music data source",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Album art on the touch bar",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Interactivity on the touch bar",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "S1",
+            "name": "S1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "S2",
+            "name": "S2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "S3",
+            "name": "S3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "S4",
+            "name": "S4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "S5",
+            "name": "S5",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "S6",
+            "name": "S6",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 15,
+        "critic_high": 2,
+        "critic_medium": 4,
+        "critic_low": 4,
+        "editor_iterations": 0,
+        "editor_final_verdict": null,
+        "demotion_count": 0,
+        "cv_verdict": "pass",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "not_run",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 6,
+          "inflection_points": 3,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 31
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
       },
       "history": {
         "entry_count": 18,

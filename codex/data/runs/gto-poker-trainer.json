@@ -218,6 +218,218 @@
     "sev0_fixes": 4,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "gto-poker-trainer",
+    "deliverable_kind": "web_app",
+    "deliverable_label": "gto-poker-trainer",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "Application delivery surface",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "GTO data source",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP3",
+        "topic": "Walkthrough mode interaction model",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP4",
+        "topic": "Archetype agent fidelity",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP5",
+        "topic": "Stats granularity and visualization",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-1",
+        "name": "section-1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-2",
+        "name": "section-2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-3",
+        "name": "section-3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-4",
+        "name": "section-4",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-5",
+        "name": "section-5",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-6",
+        "name": "section-6",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-7",
+        "name": "section-7",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "section-1",
+        "to": "section-3"
+      },
+      {
+        "from": "section-1",
+        "to": "section-4"
+      },
+      {
+        "from": "section-1",
+        "to": "section-5"
+      },
+      {
+        "from": "section-1",
+        "to": "section-6"
+      },
+      {
+        "from": "section-2",
+        "to": "section-3"
+      },
+      {
+        "from": "section-2",
+        "to": "section-4"
+      },
+      {
+        "from": "section-2",
+        "to": "section-5"
+      },
+      {
+        "from": "section-3",
+        "to": "section-6"
+      },
+      {
+        "from": "section-4",
+        "to": "section-5"
+      },
+      {
+        "from": "section-5",
+        "to": "section-6"
+      }
+    ],
+    "waves": [
+      {
+        "number": 1,
+        "sections": [
+          "section-1",
+          "section-2"
+        ],
+        "started_at": "2026-05-10T00:05:02Z",
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 2,
+        "sections": [
+          "section-3",
+          "section-4"
+        ],
+        "started_at": "2026-05-10T00:25:30Z",
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 3,
+        "sections": [
+          "section-5"
+        ],
+        "started_at": "2026-05-10T00:50:30Z",
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 4,
+        "sections": [
+          "section-6"
+        ],
+        "started_at": "2026-05-10T01:10:30Z",
+        "ended_at": null,
+        "builders": []
+      },
+      {
+        "number": 6,
+        "sections": [
+          "section-7"
+        ],
+        "started_at": "2026-05-10T01:25:30Z",
+        "ended_at": null,
+        "builders": []
+      }
+    ],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 0,
+    "critic_high": 0,
+    "critic_medium": 0,
+    "critic_low": 2,
+    "editor_iterations": 0,
+    "editor_final_verdict": null,
+    "demotion_count": 0,
+    "cv_verdict": "pass",
+    "cv_tier1_pnv": "verified",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "verified",
+    "lifecycle_phase": "ready_to_ratify",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 7,
+      "inflection_points": 5,
+      "builders": 0,
+      "waves": 5,
+      "escalations": 0,
+      "dispatches": 18
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "active",
+      "promoted": "pending"
+    }
+  },
   "history": {
     "entry_count": 18,
     "earliest": "2026-05-10T00:05:00Z",

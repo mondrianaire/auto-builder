@@ -351,6 +351,137 @@
     "sev0_fixes": 0,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "streamdock-apple-music-touchbar",
+    "deliverable_kind": "plugin",
+    "deliverable_label": "streamdock-apple-music-touchbar",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "MiraboxSpace StreamDock plugin SDK identity and runtime format for the VSD N4 Pro on Windows: which host application loads VSD N4 Pro plugins on Windows, what is the manifest format, what runtime/language does the host accept (native binary, JavaScript bundle, Python, web-tech, other), and what API surface does the host expose to a plugin running in Touchbar Mode.",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "Mechanism by which the plugin obtains the currently playing song and artist from the Apple Music Desktop Application on Windows.",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP3",
+        "topic": "Touchbar Mode display geometry and full-length addressing model for the VSD N4 Pro: pixel dimensions, orientation, and whether 'the entire length of the touch bar' is addressed as a single contiguous canvas, as a horizontal row of virtual keys whose combined width spans the bar, or via some other model. This determines how the plugin satisfies the prompt's explicit 'entire length' constraint.",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP4",
+        "topic": "Plugin installation flow on Windows for the MiraboxSpace StreamDock host application: how a user installs a plugin authored by a third party, what the installable package format is (a directory, a zip with a specific extension, a signed bundle), and what install steps the delivered artifact must support to be installable by an ordinary user without developer tooling.",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP5",
+        "topic": "Behavior when the displayed text is longer than the touch bar can show in one screen-width (e.g., a long song title or 'Title -- Artist' composite that doesn't fit).",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP6",
+        "topic": "Polling vs. event-driven track-change detection.",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "section-1",
+        "name": "section-1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-2",
+        "name": "section-2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-3",
+        "name": "section-3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-4",
+        "name": "section-4",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "section-5",
+        "name": "section-5",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "host-integration",
+        "to": "now-playing-source"
+      },
+      {
+        "from": "host-integration",
+        "to": "touchbar-renderer"
+      },
+      {
+        "from": "now-playing-source",
+        "to": "touchbar-renderer"
+      }
+    ],
+    "waves": [],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 5,
+    "critic_high": 0,
+    "critic_medium": 0,
+    "critic_low": 0,
+    "editor_iterations": 1,
+    "editor_final_verdict": "pass_with_recommendations",
+    "demotion_count": 0,
+    "cv_verdict": "pass_with_concerns",
+    "cv_tier1_pnv": "unverifiable",
+    "cv_tier2_first_contact": "unverifiable",
+    "cv_tier3_subgoal": "failed",
+    "lifecycle_phase": "ready_to_ratify",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 5,
+      "inflection_points": 6,
+      "builders": 0,
+      "waves": 0,
+      "escalations": 0,
+      "dispatches": 7
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "active",
+      "promoted": "pending"
+    }
+  },
   "history": {
     "entry_count": 25,
     "earliest": "2026-05-14T01:30:00Z",

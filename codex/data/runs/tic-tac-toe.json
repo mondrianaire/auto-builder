@@ -202,6 +202,185 @@
     "sev0_fixes": 0,
     "escalations_open": 0
   },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "tic-tac-toe",
+    "deliverable_kind": "web_app",
+    "deliverable_label": "tic-tac-toe",
+    "inflection_points": [
+      {
+        "id": "I1",
+        "topic": "Computer opponent strength",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "I2",
+        "topic": "Visual style / presentation",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "rules-engine",
+        "name": "rules-engine",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "ai-opponent",
+        "name": "ai-opponent",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "ui-render",
+        "name": "ui-render",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "controller-and-shell",
+        "name": "controller-and-shell",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "edge-case-testing",
+        "name": "edge-case-testing",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "ai-opponent",
+        "to": "controller-and-shell"
+      },
+      {
+        "from": "rules-engine",
+        "to": "ai-opponent"
+      },
+      {
+        "from": "rules-engine",
+        "to": "controller-and-shell"
+      },
+      {
+        "from": "ui-render",
+        "to": "controller-and-shell"
+      }
+    ],
+    "waves": [
+      {
+        "number": 1,
+        "sections": [
+          "rules-engine",
+          "ui-render"
+        ],
+        "started_at": "2026-05-09T00:10:05Z",
+        "ended_at": "2026-05-09T00:10:50Z",
+        "builders": [
+          {
+            "builder_id": "builder-rules-engine-b1",
+            "section_id": "rules-engine",
+            "ts": "2026-05-09T00:10:06Z"
+          },
+          {
+            "builder_id": "builder-ui-render-b1",
+            "section_id": "ui-render",
+            "ts": "2026-05-09T00:10:06Z"
+          },
+          {
+            "builder_id": "builder-ui-render-b2",
+            "section_id": "ui-render",
+            "ts": "2026-05-09T00:10:06Z"
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "sections": [
+          "ai-opponent"
+        ],
+        "started_at": "2026-05-09T00:10:51Z",
+        "ended_at": "2026-05-09T00:11:10Z",
+        "builders": [
+          {
+            "builder_id": "builder-ai-opponent-b1",
+            "section_id": "ai-opponent",
+            "ts": "2026-05-09T00:10:51Z"
+          }
+        ]
+      },
+      {
+        "number": 3,
+        "sections": [
+          "controller-and-shell"
+        ],
+        "started_at": "2026-05-09T00:11:11Z",
+        "ended_at": "2026-05-09T00:11:35Z",
+        "builders": [
+          {
+            "builder_id": "builder-controller-b1",
+            "section_id": "controller-and-shell",
+            "ts": "2026-05-09T00:11:11Z"
+          }
+        ]
+      },
+      {
+        "number": 4,
+        "sections": [
+          "edge-case-testing"
+        ],
+        "started_at": "2026-05-09T00:11:36Z",
+        "ended_at": "2026-05-09T21:21:01Z",
+        "builders": [
+          {
+            "builder_id": "builder-edge-b1",
+            "section_id": "edge-case-testing",
+            "ts": "2026-05-09T00:11:36Z"
+          }
+        ]
+      }
+    ],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 6,
+    "overseer_dispatch_count": 0,
+    "critic_high": 0,
+    "critic_medium": 0,
+    "critic_low": 0,
+    "editor_iterations": 0,
+    "editor_final_verdict": null,
+    "demotion_count": 0,
+    "cv_verdict": "pass",
+    "cv_tier1_pnv": "verified",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "failed",
+    "lifecycle_phase": "ready_to_ratify",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 5,
+      "inflection_points": 2,
+      "builders": 6,
+      "waves": 4,
+      "escalations": 0,
+      "dispatches": 27
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "active",
+      "promoted": "pending"
+    }
+  },
   "history": {
     "entry_count": 7,
     "earliest": "2026-05-09T00:00:00Z",
