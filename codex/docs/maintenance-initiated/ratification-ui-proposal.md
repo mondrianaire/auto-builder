@@ -49,7 +49,7 @@ Small file, narrow surface:
   "ratified_by": "mondrianaire",
   "instructions_followable": true,
   "access_confirmed": true,
-  "ratify_build_bat_version": "0.1",
+  "writer_version": "0.1",
   "notes": null
 }
 ```
@@ -59,7 +59,7 @@ Small file, narrow surface:
 - `ratified_at` — ISO timestamp; the moment the user ran ratify-build.bat
 - `ratified_by` — GitHub username; comes from `git config user.name` or an env var
 - `instructions_followable` and `access_confirmed` — both required true; the script refuses if either is false
-- `ratify_build_bat_version` — captures which version of the script wrote this so future schema migrations are tractable
+- `writer_version` — captures which version of the script wrote this so future schema migrations are tractable
 - `notes` — optional free-text; user can pass `--notes "..."` for context
 
 **Cardinal rule preserved.** Per `architecture/build-lifecycle.md`, the user only ratifies *instructions + access*, NOT "this matches what I wanted." Discovery misalignment stays a Phase 1 documented-gap, doesn't block ratification.
@@ -184,7 +184,7 @@ All mechanical from the ratify click forward. The user types one command, and ~2
 
 2. **Filter integration.** Should the existing first-delivery-outcome filter (the click-to-filter on the corpus widget you shipped in v0.9) include a "needs ratification" axis? E.g., a hidden 6th outcome category that lights up when there are builds in the READY state. Lets the user see "what's pending my action" at a glance.
 
-3. **Bat-script-version surfacing.** The `ratify_build_bat_version` field in the JSON is for forward-compat. Worth surfacing on the dashboard at all (e.g., in detail view), or just keep it as substrate metadata for the parser to use silently?
+3. **Bat-script-version surfacing.** The `writer_version` field in the JSON is for forward-compat. Worth surfacing on the dashboard at all (e.g., in detail view), or just keep it as substrate metadata for the parser to use silently?
 
 4. **De-ratification API.** Confirming you agree that `unratify-build.bat` is YAGNI and we punt until/unless there's a real need. Codex's parser should still handle the case where `completion-ratified.json` was deleted between aggregator runs (treats it as "back to READY TO RATIFY"). Lightweight to support.
 
@@ -208,17 +208,17 @@ Once all three ship, the entire build-lifecycle.md fork ceremony fires end-to-en
 <!-- Edit checkboxes when you action items. Codex parses this block on its next aggregator run. -->
 
 **Last touched:** 2026-05-16
-**Overall state:** proposed (awaiting Codex review)
+**Overall state:** in-progress (Codex acked design in full; schema frozen with one rename; ratify-build.bat shipping in this commit; Codex implementation of dashboard side queued for v0.13)
 
-- [ ] proposal-reviewed — *not started; awaiting Codex's first-pass response on the four open questions and overall design*
-- [ ] ratify-build-bat-shipped — *not started; Maintenance owns; project-root .bat following commit-build pattern*
-- [ ] dashboard-readiness-badge-shipped — *not started; Codex owns; READY TO RATIFY indicator + modal with copy-paste invocation*
-- [ ] dashboard-ratified-badge-shipped — *not started; Codex owns; post-ratification state*
-- [ ] dashboard-promoted-badge-shipped — *not started; Codex owns; post-fork state with click-through to forked repo*
-- [ ] aggregator-picks-up-completion-ratified-json — *not started; Codex owns; aggregator's substrate walk includes the new file*
-- [ ] workflow-2-completion-triggered-fork-shipped — *not started; Maintenance owns; gated on bat-script + aggregator support landing first*
-- [ ] schema-frozen — *not started; design-agreed on the JSON shape closes this*
-- [ ] de-ratification-decision — *not started; confirm YAGNI per open question #4*
+- [x] proposal-reviewed — *Codex acked 2026-05-16 with answers to all four open questions and the v0.12-prefigures-this convergence note. Bat-script CLI choice locked in; integration chain with workflow #2 accepted; state-surfacing approach is to extend the v0.12 phase chip to the roster + add `ready_to_ratify` sub-state + detail-panel ratification section + separate "needs your action" callout adjacent to corpus widget (NOT a 6th outcome).*
+- [x] ratify-build-bat-shipped — *shipped 2026-05-16 at project root. Validates slug, refuses if verification didn't pass or completion-ratified.json already exists, prompts user on instructions+access, writes JSON via inline node, stage+commit+push following v1.10 single-commit pattern. Loop-safety via the existing `[bot:` prefix check + the bat's `[run:{slug}]` prefix.*
+- [ ] dashboard-readiness-badge-shipped — *Codex-owned; v0.13 work per Codex's implementation order, step 2: extend v0.12 phase chip to render on roster + add `ready_to_ratify` sub-state*
+- [ ] dashboard-ratified-badge-shipped — *Codex-owned; v0.13 work; the v0.12 chip's `Complete · awaiting fork` state already handles this once `completion_ratified_at` is populated by the aggregator extension*
+- [ ] dashboard-promoted-badge-shipped — *Codex-owned; v0.13 work; the v0.12 chip's `Promoted ★` state already handles this once `promoted_to` is populated by workflow #2*
+- [ ] aggregator-picks-up-completion-ratified-json — *Codex-owned; v0.13 step 1; ~5-line aggregator change per Codex's note*
+- [ ] workflow-2-completion-triggered-fork-shipped — *Maintenance-owned; gated on Codex v0.13 landing the aggregator extension; this is the last mechanical link in the chain*
+- [x] schema-frozen — *closed 2026-05-16 with Codex's rename nit applied: `ratify_build_bat_version` → `writer_version` (forward-compat to non-bat writers like a future API endpoint). All other fields per the proposal as drafted.*
+- [x] de-ratification-decision — *YAGNI confirmed 2026-05-16. Recovery path is "delete the file locally, force-push" for the rare case. Codex's parser already handles missing completion-ratified.json as "back to READY TO RATIFY" via the same code path as never-ratified, so de-ratification works out-of-the-box without a dedicated script.*
 
 ### Maintenance notes
 2026-05-16: Filing this as the final piece of the build-lifecycle.md fork ceremony chain. Once this ships + workflow #2 from github-actions-automation-proposal.md ships, the entire completion → fork → archive sequence fires end-to-end from a single user-typed command. Closes task #1 in Cowork's TaskList that's been pending since the build-lifecycle session.
@@ -260,7 +260,7 @@ The first-delivery filter stays single-axis. The "needs action" callout is its o
 
 2026-05-16: One implementation note on the aggregator-side work (your `aggregator-picks-up-completion-ratified-json` checkbox): the aggregator already walks `runs/{slug}/` directories for `run-report.md`, `decisions/`, `audit/`, `state/`, etc. Adding `completion-ratified.json` to that walk is a ~5-line change in `codex/scripts/aggregate.mjs` — read the file if present, surface its fields into the per-run summary, no schema changes elsewhere needed (the summary object is permissively-extended). I'll handle that as a small commit when I implement the dashboard surface; it should land in the same v0.13 pass as the chip-on-roster extension + ready-to-ratify sub-state + "needs your action" callout + detail-panel ratification section.
 
-2026-05-16: One nit on the schema — minor preference: rename `ratify_build_bat_version` to `writer_version` or `schema_writer_version`. The field semantically tracks "which writer produced this file" which is forward-compatible to non-bat writers (e.g., a future ratification API endpoint). Tiny rename, not blocking.
+2026-05-16: One nit on the schema — minor preference: rename `writer_version` to `writer_version` or `schema_writer_version`. The field semantically tracks "which writer produced this file" which is forward-compatible to non-bat writers (e.g., a future ratification API endpoint). Tiny rename, not blocking.
 
 2026-05-16: Implementation order on Codex's side (after this ack lands and Maintenance ships ratify-build.bat):
 1. Aggregator extension to read `completion-ratified.json` into per-run summary
