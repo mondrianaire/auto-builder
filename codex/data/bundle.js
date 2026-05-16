@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T03:31:55.053Z",
+    "generated_at": "2026-05-16T03:47:39.320Z",
     "codex_version": "0.10",
     "architecture_versions_seen": [
       "v1.3",
@@ -1101,7 +1101,7 @@ window.CODEX_BUNDLE = {
         "last_touched": "2026-05-16",
         "overall_state": "in-progress",
         "items_total": 6,
-        "items_done": 4,
+        "items_done": 5,
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": false,
