@@ -67,9 +67,9 @@ git clone --no-local "file://%CD%" "%EXTRACT_DIR%" || goto :err
 
 cd /d "%EXTRACT_DIR%"
 
-echo === Filtering history to only runs/%SLUG%/ ===
-echo (This rewrites history; only the build's commits and tags survive)
-git filter-repo --path "runs/%SLUG%/" --path-rename "runs/%SLUG%/:" || goto :err
+echo === Filtering history to only runs/%SLUG%/output/final/ (the deliverable) ===
+echo (This rewrites history; the build substrate stays in the AutoBuilder corpus)
+git filter-repo --path "runs/%SLUG%/output/final/" --path-rename "runs/%SLUG%/output/final/:" || goto :err
 
 echo === Removing AutoBuilder's origin (it was a local file:// clone) ===
 git remote remove origin 2>nul

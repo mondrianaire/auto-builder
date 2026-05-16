@@ -191,13 +191,80 @@ jobs:
               echo "Created $FULL_REPO."
             fi
 
-            # ----- (3) Filter-repo in a temp clone -----
+            # ----- (3) Pre-extract README context from the corpus before filtering -----
+            # Filter-repo strips everything outside output/final/, so we read the
+            # corpus data (prompt, run-report, ratification meta, index.json
+            # summary) BEFORE the filter and template a README from it.
+            PROMPT_TEXT=$(cat "runs/$SLUG/prompt.txt" 2>/dev/null || echo "(prompt.txt missing from corpus)")
+            RATIFIED_BY=$(node -e "try{const r=JSON.parse(require('fs').readFileSync('runs/$SLUG/completion-ratified.json','utf8'));process.stdout.write(r.ratified_by||'unknown')}catch(e){process.stdout.write('unknown')}")
+            RATIFIED_AT=$(node -e "try{const r=JSON.parse(require('fs').readFileSync('runs/$SLUG/completion-ratified.json','utf8'));process.stdout.write(r.ratified_at||'unknown')}catch(e){process.stdout.write('unknown')}")
+            TELOS=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.telos?r.telos:'(telos not surfaced in corpus index)')}catch(e){process.stdout.write('(telos lookup failed)')}")
+            ARCH_VERSION=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.architecture_version?r.architecture_version:'unknown')}catch(e){process.stdout.write('unknown')}")
+            WALL_MIN=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.counts&&r.counts.wall_clock_minutes?String(r.counts.wall_clock_minutes):'unknown')}catch(e){process.stdout.write('unknown')}")
+            FDO=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.first_delivery_outcome?r.first_delivery_outcome:'unknown')}catch(e){process.stdout.write('unknown')}")
+
+            # ----- (4) Filter-repo in a temp clone, narrowed to output/final/ -----
             TMPDIR=$(mktemp -d)
             EXTRACT_DIR="$TMPDIR/extracted"
             git clone --no-local "$GITHUB_WORKSPACE" "$EXTRACT_DIR"
             (
               cd "$EXTRACT_DIR"
-              git filter-repo --path "runs/$SLUG/" --path-rename "runs/$SLUG/:" --force
+              # Narrowed filter: only the production deliverable (output/final/),
+              # NOT the full build substrate. Per build-lifecycle.md § Fork Ceremony.
+              # The corpus metadata (audit/, decisions/, history/, state/, etc.)
+              # stays in the AutoBuilder repo and does not belong in the
+              # standalone product repo.
+              git filter-repo --path "runs/$SLUG/output/final/" --path-rename "runs/$SLUG/output/final/:" --force
+
+              # Write the AutoBuilder-generated README at the new repo root.
+              cat > README.md <<EOF
+# $SLUG
+
+> $TELOS
+
+This standalone repository is the production deliverable from AutoBuilder run **\`$SLUG\`**, forked here on $(date -u +%Y-%m-%dT%H:%M:%SZ) for ongoing product development.
+
+## Original prompt
+
+\`\`\`
+$PROMPT_TEXT
+\`\`\`
+
+## Build provenance
+
+| Field | Value |
+|---|---|
+| AutoBuilder verdict | \`$VERDICT\` |
+| First-delivery outcome | \`$FDO\` |
+| Ratified | $RATIFIED_AT by **$RATIFIED_BY** |
+| Architecture version | \`$ARCH_VERSION\` |
+| Build wall-clock | $WALL_MIN minutes |
+
+## What's here
+
+This repository contains the production deliverable as built by AutoBuilder — the contents of \`runs/$SLUG/output/final/\` at the time of ratification. The build substrate (design decisions, audit logs, run report, state, etc.) lives in the AutoBuilder corpus and is not duplicated here.
+
+The entry point is typically \`index.html\` (for web apps) or the main script file for other deliverable kinds. See the build context link below for the run-report's full description of what this artifact is and how it was built.
+
+## Build context
+
+Full build provenance — design decisions, audit logs, run report, root-cause analysis if any — lives in the AutoBuilder corpus at:
+
+  https://github.com/mondrianaire/auto-builder/tree/main/runs/$SLUG
+
+That corpus entry is **frozen at the ratification commit** and will not change going forward. The build factory is done with this build; what you're looking at here is the product, free to evolve.
+
+## Continuing development
+
+This repository is yours to evolve. Future commits, refactors, features, bug fixes — all land here, not in the AutoBuilder repo. The AutoBuilder corpus measurement of this build does not change retroactively based on what happens here.
+EOF
+
+              git add README.md
+              git -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                  -c user.name="github-actions[bot]" \
+                  commit -m "[bot:fork] AutoBuilder-generated README for $SLUG" \
+                         -m "Auto-generated by completion-triggered-fork.yml at fork time. Pulls from runs/$SLUG/prompt.txt, completion-ratified.json, and codex/data/index.json. See architecture/build-lifecycle.md for the full Fork Ceremony spec."
+
               git remote remove origin 2>/dev/null || true
               git remote add origin "https://x-access-token:$FORK_PAT@github.com/$FULL_REPO.git"
               git push -u origin main
@@ -205,7 +272,7 @@ jobs:
             )
             rm -rf "$TMPDIR"
 
-            echo "Pushed filtered history to https://github.com/$FULL_REPO"
+            echo "Pushed filtered output/final/ + README to https://github.com/$FULL_REPO"
 
             # ----- (4) Update curation overlay -----
             CURATION="codex/data/curation/$SLUG.json"
