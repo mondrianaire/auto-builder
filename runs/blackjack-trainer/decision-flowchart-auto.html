@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>blackjack-trainer Decision Flowchart</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #fafafa; font-family: Arial, Helvetica, sans-serif; overflow: hidden; }
+  #toolbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 44px;
+    background: #fff; border-bottom: 1px solid #ddd;
+    display: flex; align-items: center; padding: 0 14px; gap: 14px; z-index: 10;
+    font-size: 13px; color: #444;
+  }
+  #toolbar button { border: 1px solid #bbb; background: #fff; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  #toolbar button:hover { background: #f0f0f0; }
+  #toolbar .hint { color: #888; }
+  #stage { position: absolute; top: 44px; left: 0; right: 0; bottom: 0; overflow: hidden; }
+  #stage svg { display: block; width: 100%; height: 100%; user-select: none; }
+  #stage.panning { cursor: grabbing; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <strong>blackjack-trainer · Decision Flowchart</strong>
+  <span class="hint">scroll to zoom · click-drag to pan</span>
+  <button id="reset">Reset</button>
+  <button id="zoomin">+</button>
+  <button id="zoomout">−</button>
+  <span id="zoominfo" style="margin-left:auto; color:#888;"></span>
+</div>
+<div id="stage">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1529" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+    </marker>
+  </defs>
+
+  <text x="1000" y="40" text-anchor="middle" font-size="28" font-weight="bold">blackjack-trainer — Decision Flowchart</text>
+
+  <rect x="625" y="60" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="625" y="60" width="360" height="5" fill="#3a6abf"/>
+  <text x="805" y="135" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">13</text>
+  <text x="805" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">DECISIONS</text>
+
+  <rect x="1015" y="60" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="1015" y="60" width="360" height="5" fill="#8a3aaf"/>
+  <text x="1195" y="135" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">6</text>
+  <text x="1195" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">AGENTS DEPLOYED</text>
+
+  <!-- Phase: PHASE 1 — DISCOVERY -->
+  <text x="80" y="273" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 1 — DISCOVERY</text>
+
+  <!-- Agent: discovery -->
+  <rect x="500" y="305" width="1400" height="174" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="305" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="328" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Discovery</text>
+  <text x="530" y="360" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-1: Restatement of the user prompt.</text>
+  <text x="530" y="390" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-2: Logged 14 assumptions (A1–A14).</text>
+  <text x="530" y="420" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-3: Surfaced 5 inflection points (IP1–IP5).</text>
+  <text x="530" y="450" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-4: Marked 15 items out-of-scope.</text>
+
+  <!-- Phase: PHASE 2 — TECHNICAL DISCOVERY -->
+  <text x="80" y="542" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 2 — TECHNICAL DISCOVERY</text>
+
+  <!-- Agent: td-initial -->
+  <rect x="500" y="574" width="1400" height="114" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="574" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="597" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Technical Discovery (initial)</text>
+  <text x="530" y="629" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-1: Resolved 5 inflection points.</text>
+  <text x="530" y="659" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-2: Section breakdown (7 sections).</text>
+
+  <!-- Phase: PHASE 3 — BUILD -->
+  <text x="80" y="751" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 3 — BUILD</text>
+
+  <!-- Agent: coordinator -->
+  <rect x="500" y="783" width="1400" height="144" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="783" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="806" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Coordinator (initial dispatch)</text>
+  <text x="530" y="838" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-1: Dispatch mode = inline.</text>
+  <text x="530" y="868" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-2: DAG construction (8 nodes, 0 waves).</text>
+  <text x="530" y="898" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-3: 17 dispatch entries logged.</text>
+
+  <!-- Phase: PHASE 4 — INTEGRATION -->
+  <text x="80" y="990" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 4 — INTEGRATION</text>
+
+  <!-- Agent: integrator -->
+  <rect x="500" y="1022" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1022" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1045" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Integrator</text>
+  <text x="530" y="1077" font-size="13" font-weight="bold" fill="#0a3a6a">D-INT-1: Assembled 12 integration files.</text>
+
+  <!-- Phase: PHASE 5 — VERIFICATION -->
+  <text x="80" y="1169" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 5 — VERIFICATION</text>
+
+  <!-- Agent: critic -->
+  <rect x="500" y="1201" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1201" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1224" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Critic (final sweep)</text>
+  <text x="530" y="1256" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRT-1: Raised 10 flags (0 medium/high).</text>
+
+  <!-- Agent: cv -->
+  <rect x="500" y="1310" width="1400" height="114" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1310" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1333" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Convergence Verifier</text>
+  <text x="530" y="1365" font-size="13" font-weight="bold" fill="#0a3a6a">D-CV-1: Verdict: pass.</text>
+  <text x="530" y="1395" font-size="13" font-weight="bold" fill="#0a3a6a">D-CV-2: 14/14 assumptions verified.</text>
+
+  <!-- Footer -->
+  <text x="1000" y="1504" text-anchor="middle" font-size="11" fill="#999">Auto-generated by architecture/scripts/decision-flowchart.mjs · verdict: pass · build: blackjack-trainer</text>
+</svg>
+
+</div>
+<script>
+(function() {
+  const stage = document.getElementById('stage');
+  const svg = stage.querySelector('svg');
+  const zoomInfo = document.getElementById('zoominfo');
+  const vbAttr = svg.getAttribute('viewBox').split(/\s+/).map(Number);
+  const initialVB = { x: vbAttr[0], y: vbAttr[1], w: vbAttr[2], h: vbAttr[3] };
+  let vb = { ...initialVB };
+  function applyVB() {
+    svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+    const z = (initialVB.w / vb.w * 100).toFixed(0);
+    zoomInfo.textContent = z + '%';
+  }
+  applyVB();
+  // Wheel zoom
+  stage.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width;
+    const my = (e.clientY - rect.top) / rect.height;
+    const factor = e.deltaY > 0 ? 1.1 : 0.9;
+    const newW = vb.w * factor;
+    const newH = vb.h * factor;
+    vb.x += (vb.w - newW) * mx;
+    vb.y += (vb.h - newH) * my;
+    vb.w = newW;
+    vb.h = newH;
+    applyVB();
+  }, { passive: false });
+  // Click-drag pan
+  let panning = false; let startX, startY, startVB;
+  stage.addEventListener('mousedown', function(e) {
+    panning = true; stage.classList.add('panning');
+    startX = e.clientX; startY = e.clientY; startVB = { ...vb };
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!panning) return;
+    const rect = stage.getBoundingClientRect();
+    const dx = (e.clientX - startX) / rect.width * startVB.w;
+    const dy = (e.clientY - startY) / rect.height * startVB.h;
+    vb.x = startVB.x - dx;
+    vb.y = startVB.y - dy;
+    applyVB();
+  });
+  window.addEventListener('mouseup', function() { panning = false; stage.classList.remove('panning'); });
+  // Reset
+  document.getElementById('reset').addEventListener('click', function() { vb = { ...initialVB }; applyVB(); });
+  document.getElementById('zoomin').addEventListener('click', function() {
+    vb.w *= 0.8; vb.h *= 0.8; applyVB();
+  });
+  document.getElementById('zoomout').addEventListener('click', function() {
+    vb.w *= 1.25; vb.h *= 1.25; applyVB();
+  });
+})();
+</script>
+</body>
+</html>
