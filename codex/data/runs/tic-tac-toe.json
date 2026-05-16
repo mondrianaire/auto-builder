@@ -76,7 +76,8 @@
       "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/tic-tac-toe/output/final/",
       "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": "runs/tic-tac-toe/decision-flowchart-auto.html"
   },
   "ledger": {
     "restatement": "A single-page tic-tac-toe game where one human player plays against a computer opponent on the same device.",

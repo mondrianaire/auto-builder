@@ -76,7 +76,8 @@
       "sections": "runs/earthquake-map/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/earthquake-map/output/final/",
       "audit_flags": "runs/earthquake-map/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": "runs/earthquake-map/decision-flowchart.html"
   },
   "ledger": {
     "restatement": "A self-contained tool that displays earthquake events as markers on a geographic map, letting a single user see where earthquakes have occurred and get a sense of their distribution and intensity at a glance.",

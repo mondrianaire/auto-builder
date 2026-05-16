@@ -76,7 +76,8 @@
       "sections": "runs/blackjack/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/blackjack/output/final/",
       "audit_flags": "runs/blackjack/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": null
   },
   "ledger": {
     "restatement": "Build a single-page web application that lets a user play the card game blackjack against a computer dealer in their browser. The user prompt names blackjack as the game and 'web app' as the form factor; everything else (rules variant, visual style, persistence, multiplayer, accounts, money) is unspecified and will default to the simplest standalone single-player experience that demonstrably plays blackjack end-to-end.",

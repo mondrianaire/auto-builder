@@ -75,7 +75,8 @@
       "sections": "runs/blackjack-trainer/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/blackjack-trainer/output/final/",
       "audit_flags": "runs/blackjack-trainer/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": "runs/blackjack-trainer/decision-flowchart-auto.html"
   },
   "ledger": {
     "restatement": "A single-page web application that lets a user play hands of blackjack, request a hint before committing to an action (proactive guidance), and receive a post-hand review comparing the user's decisions against basic-strategy correct plays. Correctness is grounded in the standard basic-strategy cheat sheet referenced by URL in the prompt.",

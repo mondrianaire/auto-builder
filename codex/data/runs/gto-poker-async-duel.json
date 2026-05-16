@@ -76,7 +76,8 @@
       "sections": "runs/gto-poker-async-duel/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/gto-poker-async-duel/output/final/",
       "audit_flags": "runs/gto-poker-async-duel/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": "runs/gto-poker-async-duel/decision-flowchart.html"
   },
   "ledger": {
     "restatement": "An asynchronous two-player head-to-head GTO poker quiz game, hostable in full on GitHub Pages. Each round, one user receives a 'handful' of identical GTO 'gotcha' scenarios, selects an action for each, and indicates a confidence rating per decision; once submitted, the opponent receives the same handful and answers reciprocally. The exchange continues for a configured number of rounds. After the final round, both users see end-of-game statistics covering individual performance against the GTO-verified action and agreement between the two players, with the post-game wrap-up explicitly highligh…",

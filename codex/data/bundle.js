@@ -89,7 +89,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/gto-poker-async-duel/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/gto-poker-async-duel/output/final/",
           "audit_flags": "runs/gto-poker-async-duel/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/gto-poker-async-duel/decision-flowchart.html"
       },
       {
         "slug": "streamdock-apple-music-touchbar",
@@ -221,7 +222,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/streamdock-apple-music-touchbar/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/streamdock-apple-music-touchbar/output/final/",
           "audit_flags": "runs/streamdock-apple-music-touchbar/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": null
       },
       {
         "slug": "earthquake-map",
@@ -298,7 +300,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/earthquake-map/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/earthquake-map/output/final/",
           "audit_flags": "runs/earthquake-map/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/earthquake-map/decision-flowchart.html"
       },
       {
         "slug": "kanban-board",
@@ -375,7 +378,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/kanban-board/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/kanban-board/output/final/",
           "audit_flags": "runs/kanban-board/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/kanban-board/decision-flowchart-auto.html"
       },
       {
         "slug": "latex-equation-renderer",
@@ -452,7 +456,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/latex-equation-renderer/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/latex-equation-renderer/output/final/",
           "audit_flags": "runs/latex-equation-renderer/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": null
       },
       {
         "slug": "blackjack",
@@ -529,7 +534,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/blackjack/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/blackjack/output/final/",
           "audit_flags": "runs/blackjack/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": null
       },
       {
         "slug": "blackjack-trainer",
@@ -605,7 +611,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/blackjack-trainer/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/blackjack-trainer/output/final/",
           "audit_flags": "runs/blackjack-trainer/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/blackjack-trainer/decision-flowchart-auto.html"
       },
       {
         "slug": "tic-tac-toe",
@@ -682,7 +689,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/tic-tac-toe/output/final/",
           "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/tic-tac-toe/decision-flowchart-auto.html"
       },
       {
         "slug": "gto-poker-trainer",
@@ -759,7 +767,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/gto-poker-trainer/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/gto-poker-trainer/output/final/",
           "audit_flags": "runs/gto-poker-trainer/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/gto-poker-trainer/decision-flowchart.html"
       },
       {
         "slug": "streamdock-applemusic-touchbar",
@@ -886,7 +895,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/streamdock-applemusic-touchbar/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/streamdock-applemusic-touchbar/output/final/",
           "audit_flags": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/streamdock-applemusic-touchbar/decision-flowchart-auto.html"
       }
     ],
     "amendments": [
@@ -995,49 +1005,49 @@ window.CODEX_BUNDLE = {
       {
         "id": "A",
         "name": "Verification Fidelity",
-        "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "B",
         "name": "Audit Completeness",
-        "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "C",
         "name": "Spec-to-Test Coverage",
-        "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "D",
         "name": "Path Coverage",
-        "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "E",
         "name": "Atomic Lexical Anchors",
-        "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "F",
         "name": "External Authority Discipline",
-        "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "G",
         "name": "Deliverability Tier Discipline",
-        "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "H",
         "name": "Verification Independence",
-        "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+        "summary": "",
         "introduced_in": "v1.9"
       }
     ],
@@ -1564,7 +1574,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/gto-poker-async-duel/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/gto-poker-async-duel/output/final/",
           "audit_flags": "runs/gto-poker-async-duel/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/gto-poker-async-duel/decision-flowchart.html"
       },
       "ledger": {
         "restatement": "An asynchronous two-player head-to-head GTO poker quiz game, hostable in full on GitHub Pages. Each round, one user receives a 'handful' of identical GTO 'gotcha' scenarios, selects an action for each, and indicates a confidence rating per decision; once submitted, the opponent receives the same handful and answers reciprocally. The exchange continues for a configured number of rounds. After the final round, both users see end-of-game statistics covering individual performance against the GTO-verified action and agreement between the two players, with the post-game wrap-up explicitly highligh…",
@@ -2282,7 +2293,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/streamdock-apple-music-touchbar/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/streamdock-apple-music-touchbar/output/final/",
           "audit_flags": "runs/streamdock-apple-music-touchbar/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": null
       },
       "ledger": {
         "restatement": "Build a plugin for the MiraboxSpace StreamDock VSD N4 Pro (a physical hardware device with a Touchbar Mode display) which, when installed into the StreamDock host application on the user's Windows PC, listens to the Apple Music Desktop Application running on that same Windows PC and renders the currently playing song title and artist name on the device's touch bar, with the rendered region spanning the entire length of the touch bar.",
@@ -2902,7 +2914,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/earthquake-map/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/earthquake-map/output/final/",
           "audit_flags": "runs/earthquake-map/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/earthquake-map/decision-flowchart.html"
       },
       "ledger": {
         "restatement": "A self-contained tool that displays earthquake events as markers on a geographic map, letting a single user see where earthquakes have occurred and get a sense of their distribution and intensity at a glance.",
@@ -3269,7 +3282,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/kanban-board/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/kanban-board/output/final/",
           "audit_flags": "runs/kanban-board/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/kanban-board/decision-flowchart-auto.html"
       },
       "ledger": {
         "restatement": "A single-user, client-side kanban board web application with multiple named lists (columns), cards that can be created and moved between lists via drag-and-drop, and persistent state saved locally in the browser so the board survives page reloads. No backend, no authentication, no collaboration — just one person managing tasks across columns on their own machine.",
@@ -3984,7 +3998,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/latex-equation-renderer/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/latex-equation-renderer/output/final/",
           "audit_flags": "runs/latex-equation-renderer/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": null
       },
       "ledger": {
         "restatement": "A tool that takes LaTeX source as input and renders it as a visible mathematical equation. The user types/pastes LaTeX, the tool shows the typeset math.",
@@ -4726,7 +4741,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/blackjack/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/blackjack/output/final/",
           "audit_flags": "runs/blackjack/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": null
       },
       "ledger": {
         "restatement": "Build a single-page web application that lets a user play the card game blackjack against a computer dealer in their browser. The user prompt names blackjack as the game and 'web app' as the form factor; everything else (rules variant, visual style, persistence, multiplayer, accounts, money) is unspecified and will default to the simplest standalone single-player experience that demonstrably plays blackjack end-to-end.",
@@ -5412,7 +5428,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/blackjack-trainer/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/blackjack-trainer/output/final/",
           "audit_flags": "runs/blackjack-trainer/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/blackjack-trainer/decision-flowchart-auto.html"
       },
       "ledger": {
         "restatement": "A single-page web application that lets a user play hands of blackjack, request a hint before committing to an action (proactive guidance), and receive a post-hand review comparing the user's decisions against basic-strategy correct plays. Correctness is grounded in the standard basic-strategy cheat sheet referenced by URL in the prompt.",
@@ -6280,7 +6297,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/tic-tac-toe/output/final/",
           "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/tic-tac-toe/decision-flowchart-auto.html"
       },
       "ledger": {
         "restatement": "A single-page tic-tac-toe game where one human player plays against a computer opponent on the same device.",
@@ -7020,7 +7038,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/gto-poker-trainer/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/gto-poker-trainer/output/final/",
           "audit_flags": "runs/gto-poker-trainer/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/gto-poker-trainer/decision-flowchart.html"
       },
       "ledger": {
         "restatement": "A Texas Hold'em GTO training application for a semi-professional player who struggles to practice pure GTO play. Contains at least two modes: (1) a guided walkthrough of a curated hand library showcasing GTO edge cases, and (2) a fully functional 9-handed table populated with classic poker player archetypes that records per-session statistics across sessions.",
@@ -7638,7 +7657,8 @@ window.CODEX_BUNDLE = {
           "sections": "runs/streamdock-applemusic-touchbar/decisions/technical-discovery/sections-v1.json",
           "final_dir": "runs/streamdock-applemusic-touchbar/output/final/",
           "audit_flags": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl"
-        }
+        },
+        "decision_flowchart_path": "runs/streamdock-applemusic-touchbar/decision-flowchart-auto.html"
       },
       "ledger": {
         "restatement": "A StreamDock VSD N4 Pro plugin that uses the device's Touchbar Mode (the contiguous wide-display strip) to show the currently playing song and artist from the Apple Music desktop application, occupying the full length of the touch bar.",

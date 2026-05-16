@@ -657,6 +657,17 @@ async function aggregateRun(slug) {
     links
   };
 
+  // Decision-flowchart embed (per maintenance-initiated/decision-flowchart-dashboard-embed.md):
+  // detect which flowchart artifact exists on disk, prefer the canonical/hand-crafted
+  // version over the mechanical -auto one. Dashboard reads this field to decide
+  // whether to render the iframe section or a "not generated yet" stub.
+  const fcCanonical = path.join(runRoot, 'decision-flowchart.html');
+  const fcAuto = path.join(runRoot, 'decision-flowchart-auto.html');
+  let decisionFlowchartPath = null;
+  if (await exists(fcCanonical)) decisionFlowchartPath = `runs/${slug}/decision-flowchart.html`;
+  else if (await exists(fcAuto)) decisionFlowchartPath = `runs/${slug}/decision-flowchart-auto.html`;
+  summary.decision_flowchart_path = decisionFlowchartPath;
+
   // v0.15: build shape for the per-build dynamic SVG renderer.
   // Pure derivation pass over already-loaded substrate; no new file reads.
   const contractFileNames = (sections && Array.isArray(sections.contracts))

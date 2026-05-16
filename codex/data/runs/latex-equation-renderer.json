@@ -76,7 +76,8 @@
       "sections": "runs/latex-equation-renderer/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/latex-equation-renderer/output/final/",
       "audit_flags": "runs/latex-equation-renderer/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": null
   },
   "ledger": {
     "restatement": "A tool that takes LaTeX source as input and renders it as a visible mathematical equation. The user types/pastes LaTeX, the tool shows the typeset math.",

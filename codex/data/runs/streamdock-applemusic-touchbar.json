@@ -126,7 +126,8 @@
       "sections": "runs/streamdock-applemusic-touchbar/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/streamdock-applemusic-touchbar/output/final/",
       "audit_flags": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": "runs/streamdock-applemusic-touchbar/decision-flowchart-auto.html"
   },
   "ledger": {
     "restatement": "A StreamDock VSD N4 Pro plugin that uses the device's Touchbar Mode (the contiguous wide-display strip) to show the currently playing song and artist from the Apple Music desktop application, occupying the full length of the touch bar.",

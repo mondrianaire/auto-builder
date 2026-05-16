@@ -76,7 +76,8 @@
       "sections": "runs/gto-poker-trainer/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/gto-poker-trainer/output/final/",
       "audit_flags": "runs/gto-poker-trainer/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": "runs/gto-poker-trainer/decision-flowchart.html"
   },
   "ledger": {
     "restatement": "A Texas Hold'em GTO training application for a semi-professional player who struggles to practice pure GTO play. Contains at least two modes: (1) a guided walkthrough of a curated hand library showcasing GTO edge cases, and (2) a fully functional 9-handed table populated with classic poker player archetypes that records per-session statistics across sessions.",

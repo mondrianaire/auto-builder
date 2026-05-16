@@ -131,7 +131,8 @@
       "sections": "runs/streamdock-apple-music-touchbar/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/streamdock-apple-music-touchbar/output/final/",
       "audit_flags": "runs/streamdock-apple-music-touchbar/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": null
   },
   "ledger": {
     "restatement": "Build a plugin for the MiraboxSpace StreamDock VSD N4 Pro (a physical hardware device with a Touchbar Mode display) which, when installed into the StreamDock host application on the user's Windows PC, listens to the Apple Music Desktop Application running on that same Windows PC and renders the currently playing song title and artist name on the device's touch bar, with the rendered region spanning the entire length of the touch bar.",

@@ -683,6 +683,41 @@
   .row-action.live { color: var(--ok); }
   .row-action.launch { color: var(--accent); font-family: 'Consolas', monospace; }
   .row-action.launch.copied { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  /* ---- decision-flowchart embed (per maintenance-initiated/decision-flowchart-dashboard-embed.md) */
+  .decision-flowchart {
+    margin: 16px 20px 0 20px;
+    padding: 14px 16px 10px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+  }
+  .decision-flowchart h3 {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .decision-flowchart .flowchart-link {
+    margin-top: 6px;
+    text-align: right;
+    font-size: 11px;
+  }
+  .decision-flowchart .flowchart-link a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .decision-flowchart .flowchart-link a:hover { text-decoration: underline; }
+  .decision-flowchart .flowchart-stub {
+    padding: 18px;
+    color: var(--text-faint);
+    font-size: 12px;
+    font-style: italic;
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+  }
 </style>
 </head>
 <body>
@@ -1095,6 +1130,32 @@
   }
 
   // ---------------------------------------------------------------- run roster
+  // ---- Decision flowchart embed (per maintenance-initiated/decision-flowchart-dashboard-embed.md)
+  function renderDecisionFlowchart(detail) {
+    const path = detail.summary && detail.summary.decision_flowchart_path;
+    const wrap = el('div', { class: 'decision-flowchart' });
+    wrap.appendChild(el('h3', { text: 'Decision flowchart' }));
+    if (!path) {
+      wrap.appendChild(el('div', { class: 'flowchart-stub',
+        text: 'Decision flowchart will appear here once the wrap-up routine generates it for this build.' }));
+      return wrap;
+    }
+    const iframe = el('iframe', {
+      src: '../' + path,
+      width: '100%',
+      height: '600',
+      style: 'border:1px solid var(--border);border-radius:4px;background:#fafafa;display:block;',
+      title: detail.slug + ' decision flowchart',
+      loading: 'lazy'
+    });
+    wrap.appendChild(iframe);
+    const linkRow = el('div', { class: 'flowchart-link' },
+      el('a', { href: '../' + path, target: '_blank' }, 'Open full-screen ↗')
+    );
+    wrap.appendChild(linkRow);
+    return wrap;
+  }
+
   // ---- Promoted-row action buttons (per maintenance-initiated/promoted-row-action-buttons.md)
   function renderRowActions(sum) {
     const cell = el('td', { class: 'row-actions' });
@@ -1376,6 +1437,10 @@
       const topo = renderBuildTopology(detail.build_shape, el);
       if (topo) host.appendChild(topo);
     }
+
+    // ---- decision-flowchart embed (per maintenance-initiated/decision-flowchart-dashboard-embed.md)
+    const fc = renderDecisionFlowchart(detail);
+    if (fc) host.appendChild(fc);
 
     // ---- body
     const body = el('div', { class: 'detail-body' });

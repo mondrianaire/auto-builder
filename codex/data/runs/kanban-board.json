@@ -76,7 +76,8 @@
       "sections": "runs/kanban-board/decisions/technical-discovery/sections-v1.json",
       "final_dir": "runs/kanban-board/output/final/",
       "audit_flags": "runs/kanban-board/audit/flags.jsonl"
-    }
+    },
+    "decision_flowchart_path": "runs/kanban-board/decision-flowchart-auto.html"
   },
   "ledger": {
     "restatement": "A single-user, client-side kanban board web application with multiple named lists (columns), cards that can be created and moved between lists via drag-and-drop, and persistent state saved locally in the browser so the board survives page reloads. No backend, no authentication, no collaboration — just one person managing tasks across columns on their own machine.",
