@@ -10,18 +10,18 @@ This document is the architectural boundary between **AutoBuilder as a build fac
 
 Every file inside `runs/{slug}/` belongs to exactly one of three categories. This partition determines audience, lifecycle, and what gets included in promotion's fork ceremony.
 
-**Category 1 — Project metadata.** What this build is, what was asked of it, how it concluded. Short, human-readable, fast to scan.
-- `prompt.txt`, `run-report.md`, `completion-ratified.json`
-- `root-cause-analysis.md` (when Phase 2 occurred)
-- The verdict-summary portion of `output/verification/report.json` (`verdict`, `first_contact_failure`)
-- (Future) `RATIFICATION-RECAP.md` — single canonical summary written at ratification time
+**Category 1 — Project metadata.** Orientation for a brand-new reader (human or fresh agent) with **zero context about AutoBuilder or this specific build**. Plain-language, self-contained, comprehensive enough to understand what was asked, what was built, did it work, and how to use it — without ever needing to learn AutoBuilder vocabulary or internals.
+- `prompt.txt` — the user's verbatim ask
+- `completion-ratified.json` — timestamps + ratifier identity (the schema fields are minimal; no AutoBuilder concepts surface here)
+- (Future) `PROJECT-OVERVIEW.md` — the synthesized canonical Cat-1 document, written at ratification time. Distills information from Cat 2 sources into plain language for fresh readers. Answers: what was asked, what was built, did it work, how to use it, where to go next. Explicitly avoids role names (Discovery, TD, Critic, Editor, CV, Researcher), AutoBuilder verdict strings, dispatch counts, section names, principle references, Phase 2 / commit-step terminology, and architecture version numbers — those all belong in Cat 2.
 
-*Audience:* corpus readers (future humans/agents looking back at this build), the user re-discovering past work, the dashboard's per-build detail panel.
+*Audience:* corpus readers (future humans/agents looking back at this build), the user re-discovering past work, the dashboard's per-build detail panel, fresh-model agents reading the corpus cold.
 
-**Category 2 — Build byproduct data.** The structured substrate that informs the AutoBuilder system itself. Heavy, machine-readable, recorded for downstream analysis rather than for human consumption.
+**Category 2 — Build byproduct data.** The structured substrate that records *how* AutoBuilder built this artifact, in AutoBuilder's own vocabulary. Read by the system measuring itself; not user-facing.
 - `audit/`, `decisions/`, `state/`, `history/`, `research/`, `contracts/`
-- `output/builders/`, `output/integration/`
-- The detailed inspection portion of `output/verification/report.json` (per-component fidelity, principle-h skips, edge-case results)
+- `output/builders/`, `output/integration/`, `output/verification/`
+- `run-report.md` — the build's internal post-mortem, written in AutoBuilder vocabulary
+- `root-cause-analysis.md` (when Phase 2 occurred) — same vocabulary, deeper analysis
 
 *Audience:* the AutoBuilder system measuring itself (corpus statistics, re-audits, principle-amendment loop), root-cause analysts, the Codex aggregator generating dashboard data.
 
@@ -34,17 +34,29 @@ Every file inside `runs/{slug}/` belongs to exactly one of three categories. Thi
 
 | Event | Cat 1 | Cat 2 | Cat 3 |
 |---|---|---|---|
-| Phase 1 build | populated by Discovery/TD/Coordinator/Builders/CV | populated by every role's writes during the build | populated by Integrator → Orchestrator at final delivery |
-| Phase 2 rectification (if any) | RCA + run-report updated | new entries in audit/decisions/state | output/final updated to match the fix |
-| Ratification | `completion-ratified.json` added; (future) `RATIFICATION-RECAP.md` synthesized | frozen | frozen |
+| Phase 1 build start | `prompt.txt` written by Orchestrator at run init | empty; populated through the build by every role's writes (including `run-report.md` at end) | empty |
+| Phase 1 build end | unchanged from start | run-report.md, audit, decisions, state, history all populated; verification/report.json final | populated by Integrator → Orchestrator |
+| Phase 2 rectification (if any) | unchanged | new entries appended; root-cause-analysis.md may be written | output/final updated to match the fix |
+| Ratification | `completion-ratified.json` added; **`PROJECT-OVERVIEW.md` synthesized from Cat 2 sources** as the canonical plain-language summary | frozen | frozen |
 | Sealed state (post-ratification, in this repo) | frozen | frozen | frozen |
-| Promotion (opt-in) | stays in corpus | stays in corpus | **forked** to `mondrianaire/{slug}-AB` with auto-generated README |
+| Promotion (opt-in) | stays in corpus | stays in corpus | **forked** to `mondrianaire/{slug}-AB` with auto-generated `README.md` (Cat-3-audience product handoff — distinct from Cat-1 PROJECT-OVERVIEW.md which is the corpus-audience build summary) |
 
 The architectural reason the workflow #2 filter is `runs/{slug}/output/final/` rather than the broader `runs/{slug}/`: promotion extracts the **deliverable**, not the build's process records. Cat 1 and Cat 2 are corpus artifacts; only Cat 3 is a product.
 
-### Verification report is mixed-category
+### PROJECT-OVERVIEW.md vs the promoted-repo's README.md
 
-A note on the one file whose content spans two categories: `output/verification/report.json`. Its top-level `verdict` field and `first_contact_failure` flag are Cat 1 (the verdict is the single most-referenced field for corpus readers). Its `components[]`, `principle_h_skips[]`, `prompt_named_verb_result`, and per-tier inspection traces are Cat 2 (machine-readable detail for re-audits). The file isn't split because the verdict is derived from the inspection results and they have to be co-located for traceability — but readers should treat the verdict as the Cat-1 surface and everything below it as Cat-2 detail.
+Both are synthesized human-readable documents created at ratification / promotion time, but they serve different audiences and live in different places:
+
+| | `PROJECT-OVERVIEW.md` (Cat 1) | `README.md` (Cat 3, in promoted repo) |
+|---|---|---|
+| Lives in | `runs/{slug}/` in the AutoBuilder corpus | `mondrianaire/{slug}-AB/` standalone repo root |
+| Audience | Corpus readers — researchers, fresh agents looking back at this build cold | Product consumers — developers extending the app, users running it |
+| Tells you | What this build was, what was asked, did it work, why it's in the corpus | How to install, configure, run, contribute to this product |
+| Build analysis | Light, plain-language, included | Excluded (link back to the corpus entry covers it) |
+| Product setup | Excluded (that's the product's concern) | Detailed: prerequisites, install steps, first-time setup, how-to-use |
+| Vocabulary | Plain English; no AutoBuilder terms | Plain English; no AutoBuilder terms (both audiences are outsiders) |
+
+Both exist because a corpus reader and a product consumer need different things, even though neither audience knows AutoBuilder internals.
 
 ---
 

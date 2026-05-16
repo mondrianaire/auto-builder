@@ -42,17 +42,21 @@ Every file under `runs/{slug}/` belongs to exactly one of three categories. This
 
 | Category | What it is | Files | Audience |
 |---|---|---|---|
-| **1 — Project metadata** | Short, human-readable summary of what this build is and how it concluded | `prompt.txt`, `run-report.md`, `completion-ratified.json`, `root-cause-analysis.md` (when present), `output/verification/report.json#verdict` (top-level summary only) | Corpus readers, future humans/agents, the dashboard's per-build detail panel |
-| **2 — Build byproduct data** | Structured substrate that informs the AutoBuilder system itself | `audit/`, `decisions/`, `state/`, `history/`, `research/`, `contracts/`, `output/builders/`, `output/integration/`, the detailed body of `output/verification/report.json` (components[], principle_h_skips, per-tier inspection) | The AutoBuilder system measuring itself, corpus statistics, re-audits, principle-amendment loop |
+| **1 — Project metadata** | Plain-language orientation for a fresh reader with zero AutoBuilder context — what was asked, what was built, did it work, how to use it | `prompt.txt`, `completion-ratified.json`, (future) `PROJECT-OVERVIEW.md` — the synthesized canonical Cat-1 summary written at ratification | Corpus readers, future humans/agents reading the corpus cold, the dashboard's per-build detail panel |
+| **2 — Build byproduct data** | Records of how AutoBuilder built this artifact, in AutoBuilder's own vocabulary | `audit/`, `decisions/`, `state/`, `history/`, `research/`, `contracts/`, `output/builders/`, `output/integration/`, the full `output/verification/report.json`, `run-report.md`, `root-cause-analysis.md` (when present) | The AutoBuilder system measuring itself, corpus statistics, re-audits, principle-amendment loop |
 | **3 — The deliverable** | The production artifact, post-verification | `output/final/*` and nothing else | End users, Claude Code sessions for post-promotion product work, the user running the app |
 
-**At ratification:** all three categories freeze together in the AutoBuilder corpus.
+**Audience reframe for Cat 1:** the design target is a brand-new model with zero memory of AutoBuilder or this build. Cat 1 documents must be self-contained, written in plain English, and avoid all AutoBuilder vocabulary (role names, verdict strings, dispatch counts, section names, principle references, phase / commit-step terminology, architecture version numbers). Anything that would require explaining AutoBuilder internals belongs in Cat 2.
 
-**At promotion (opt-in):** ONLY Category 3 forks to the standalone repo. Categories 1 and 2 stay in the AutoBuilder corpus permanently as architectural measurement records.
+**Note on `run-report.md` and `root-cause-analysis.md`:** despite being human-readable Markdown, both are Cat 2 — they're written in AutoBuilder vocabulary and serve as internal post-mortems, not as fresh-reader orientation. The plain-language equivalent (PROJECT-OVERVIEW.md) is synthesized at ratification time *from* these Cat 2 sources, framed for the Cat 1 audience.
+
+**At ratification:** all three categories freeze together in the AutoBuilder corpus. PROJECT-OVERVIEW.md is the new Cat-1 artifact created at this event.
+
+**At promotion (opt-in):** ONLY Category 3 forks to the standalone repo. Categories 1 and 2 stay in the AutoBuilder corpus permanently as architectural measurement records. The promoted repo gets its own auto-generated `README.md` (a Cat-3-audience product handoff, distinct from Cat-1's PROJECT-OVERVIEW.md — both audiences are outsiders, but they need different things).
 
 This is the architectural reason workflow #2's filter is `runs/{slug}/output/final/` rather than the broader `runs/{slug}/` — the fork extracts the deliverable, not the build's process records.
 
-The Directory Layout below visually illustrates the partition: each top-level subdirectory of a run root belongs to exactly one category, except `output/` which itself partitions (`output/builders/` and `output/integration/` are Cat 2, `output/final/` is Cat 3, `output/verification/report.json` is the documented mixed-category exception).
+The Directory Layout below illustrates the partition: each top-level subdirectory of a run root belongs to exactly one category. The `output/` subtree partitions further (`output/builders/` and `output/integration/` are Cat 2; `output/verification/` is Cat 2; `output/final/` is Cat 3).
 
 ---
 
