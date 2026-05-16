@@ -97,6 +97,10 @@ jobs:
               echo "::error::Cannot promote '$MANUAL_SLUG' — runs/$MANUAL_SLUG/completion-ratified.json missing on main. Build must be ratified first."
               exit 1
             fi
+            if [ ! -f "runs/$MANUAL_SLUG/wrap-up-complete.json" ]; then
+              echo "::error::Cannot promote '$MANUAL_SLUG' — runs/$MANUAL_SLUG/wrap-up-complete.json missing on main. The wrap-up routine must complete first (run wrap-up-build.bat $MANUAL_SLUG, then deploy-session.bat)."
+              exit 1
+            fi
             if [ ! -f "runs/$MANUAL_SLUG/promoted.json" ]; then
               echo "::error::Cannot promote '$MANUAL_SLUG' — runs/$MANUAL_SLUG/promoted.json missing on main. Run promote-build.bat to record promotion intent first."
               exit 1
@@ -121,6 +125,14 @@ jobs:
                 # if a stray promoted.json appears
                 if [ ! -f "runs/$SLUG/completion-ratified.json" ]; then
                   echo "::warning::Skipping $SLUG — promoted.json appeared without completion-ratified.json (unratified build). Ratify first via ratify-build.bat."
+                  continue
+                fi
+                # Defense in depth: refuse to promote builds whose wrap-up
+                # routine hasn't completed (PROJECT-OVERVIEW.md + sentinel).
+                # promote-build.bat already enforces this, but workflow #2
+                # re-checks in case promoted.json was hand-written.
+                if [ ! -f "runs/$SLUG/wrap-up-complete.json" ]; then
+                  echo "::warning::Skipping $SLUG — promoted.json present but wrap-up-complete.json missing. Run wrap-up-build.bat $SLUG (+ deploy-session.bat) before promotion."
                   continue
                 fi
                 NEW_SLUGS="$NEW_SLUGS $SLUG"
