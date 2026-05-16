@@ -56,6 +56,11 @@ on:
         description: 'Build slug to fork manually (skips diff detection; verifies the slug has a promoted.json AND completion-ratified.json on main)'
         required: true
         type: string
+      overwrite_user_commits:
+        description: 'Force-push even if the fork has non-bot (user/product-life) commits. DEFAULT: false. Only set true when you explicitly want to wipe product-life work — e.g., during meta-construction iteration on a build whose fork you have not yet touched.'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -325,14 +330,46 @@ jobs:
 
               git remote remove origin 2>/dev/null || true
               git remote add origin "https://x-access-token:$FORK_PAT@github.com/$FULL_REPO.git"
+
+              # ----- Product-life-protection guard -----
+              # Before force-pushing, fetch the fork's current main and check
+              # whether it contains any commits NOT authored by github-actions[bot].
+              # If it does, the user has started product-life work in the fork
+              # and a force-push would clobber it. Refuse with a clear error
+              # unless the user explicitly set overwrite_user_commits=true on
+              # workflow_dispatch.
+              #
+              # Push-trigger path (auto-fire on new promoted.json) cannot
+              # bypass this guard — the override only exists on workflow_dispatch.
+              # This is intentional: an auto-fire that overwrites user work
+              # would be surprising; manual dispatch with explicit flag is fine.
+              OVERWRITE_FLAG="${{ github.event.inputs.overwrite_user_commits }}"
+              if git fetch origin main 2>/dev/null; then
+                NON_BOT_COMMITS=$(git log origin/main --pretty='%ae' 2>/dev/null | grep -v '41898282+github-actions\[bot\]@users.noreply.github.com' | wc -l | tr -d ' ' || echo "0")
+                echo "Fork $FULL_REPO has $NON_BOT_COMMITS non-bot commit(s) on origin/main."
+                if [ "$NON_BOT_COMMITS" -gt 0 ]; then
+                  if [ "$OVERWRITE_FLAG" = "true" ]; then
+                    echo "::warning::Fork $FULL_REPO has $NON_BOT_COMMITS user/product-life commit(s) but overwrite_user_commits=true was set — proceeding with force-push. User work will be wiped."
+                  else
+                    echo "::error::Fork $FULL_REPO has $NON_BOT_COMMITS user/product-life commit(s) on origin/main. Refusing force-push to protect product work."
+                    echo "::error::To override: re-trigger workflow_dispatch with overwrite_user_commits=true."
+                    echo "::error::To preserve product work: don't re-promote this slug. The fork is the canonical source from this point forward."
+                    continue
+                  fi
+                else
+                  echo "Fork contains only bot-authored commits; force-push is safe."
+                fi
+              else
+                echo "Fetch failed or fork has no main branch yet — first push will create it. Force-push is safe."
+              fi
+
               # Force-push: promotion is a re-derivation event. The AutoBuilder
               # corpus is canonical; the standalone fork is a derived artifact
               # of runs/$SLUG/output/final/. If the fork already exists with
               # divergent history (prior broken fork attempt, or re-promotion
               # after a curation overlay change), we overwrite it rather than
-              # try to merge. Users doing post-promotion product-life work
-              # should not re-trigger promotion on the same slug.
-              echo "Force-pushing filtered output/final/ history to $FULL_REPO (re-derivation semantics — see workflow comment)."
+              # try to merge. The guard above protects user/product-life work.
+              echo "Force-pushing filtered output/final/ history to $FULL_REPO."
               git push -u --force origin main
               git push --force origin --tags
             )
