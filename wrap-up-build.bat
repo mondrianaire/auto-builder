@@ -65,10 +65,10 @@ REM was manually uploaded before AutoBuilder's git infrastructure existed)
 REM also gets shipped together in one [run:{slug}] commit. If
 REM completion-ratified.json is already on origin, `git add` is a no-op
 REM and the staged-changes check below handles it gracefully.
-git add "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart.html" "runs/%SLUG%/decision-flowchart.svg"
+git add "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart-auto.html" "runs/%SLUG%/decision-flowchart-auto.svg"
 if errorlevel 1 goto :err_git
 
-git diff --cached --quiet -- "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart.html" "runs/%SLUG%/decision-flowchart.svg"
+git diff --cached --quiet -- "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart-auto.html" "runs/%SLUG%/decision-flowchart-auto.svg"
 if errorlevel 1 (
     echo === Committing [run:%SLUG%] back-fill ===
     git commit -m "[run:%SLUG%] wrap-up back-fill: PROJECT-OVERVIEW.md + sentinel (+ completion-ratified.json if retroactive)" -m "Wrap-up routine run via wrap-up-build.bat (standalone back-fill of a build ratified before the wrap-up gate existed). Required by promote-build.bat + workflow #2 four-gate promotion model. See architecture/build-lifecycle.md § Promotion gates."
@@ -94,5 +94,4 @@ echo Usage: wrap-up-build.bat ^<slug^>
 echo Example: wrap-up-build.bat gto-poker-async-duel
 echo.
 echo Pre-requisites:
-echo   - Build at runs/^<slug^>/ exists AND is ratified
-echo   - runs/^<slug^>/output/verification/report.json 
+echo   - Build 

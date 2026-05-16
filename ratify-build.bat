@@ -145,7 +145,7 @@ if exist .git\index.lock del /f /q .git\index.lock
 if exist .git\config.lock del /f /q .git\config.lock
 
 echo === Staging %RATIFIED% + wrap-up artifacts ===
-git add "%RATIFIED%" "runs\%SLUG%\PROJECT-OVERVIEW.md" "runs\%SLUG%\wrap-up-complete.json" "runs\%SLUG%\decision-flowchart.html" "runs\%SLUG%\decision-flowchart.svg"
+git add "%RATIFIED%" "runs\%SLUG%\PROJECT-OVERVIEW.md" "runs\%SLUG%\wrap-up-complete.json" "runs\%SLUG%\decision-flowchart-auto.html" "runs\%SLUG%\decision-flowchart-auto.svg"
 if errorlevel 1 goto :err_git
 
 echo === Showing what will be committed ===
@@ -300,11 +300,4 @@ exit /b 1
 :err_git
 echo *** Git stage or commit failed. See output above.
 echo *** Note: %RATIFIED% may have been written but not committed.
-echo *** Inspect the file and decide whether to commit manually or delete.
-exit /b 1
-
-:err_push
-echo *** Git push failed. The commit landed locally but not on origin.
-echo *** Try: git pull --rebase origin main, then git push origin main.
-echo *** Or use deploy-session.bat for the safer commit+push path.
-exit /b 1
+echo *** Inspe
