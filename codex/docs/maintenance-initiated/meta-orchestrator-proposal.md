@@ -130,6 +130,18 @@ Next concrete steps (Maintenance-owned):
 
 ---
 
+2026-05-16 (further amendment): **Convention needs a refresh-before-emit clause — convention as originally written has a stale-view failure mode.** Hit live this session: Codex emitted `Currently waiting on Maintenance for: workflow-2-completion-triggered-fork-shipped` based on context loaded earlier, but workflow #2 had actually shipped in `c2f7d8a` hours before. User correctly called this out as exactly the friction the convention was supposed to eliminate.
+
+**Required behavior on both sides:** before generating a `Currently waiting on …` line, **refresh state**. Specifically: `git fetch origin`, re-read the relevant `codex/docs/maintenance-initiated/*.md` files + `codex/docs/queue.md` against origin/main. The wait line must reflect current origin, not whatever was in context from earlier in the session.
+
+If you can't (or won't) refresh: don't emit the wait line, or explicitly mark it `(view-as-of: HH:MM, may be stale)` so the user knows to discount it.
+
+Why this is mandatory: during long sessions, origin can move many times. A wait line based on stale context can claim something is unshipped when it actually shipped hours ago — exactly the user-as-router friction this convention was supposed to eliminate.
+
+Maintenance side updated on the memory rule (`feedback_autobuilder_waiting_state_surfacing.md`). Codex should adopt the parallel update on their side memory (`feedback_codex_waiting_on_maintenance_surfacing.md`).
+
+---
+
 2026-05-15 (followup): **Lightweight in-place convention adopted ahead of the queue.md / polling / Actions work.** User surfaced that the actual friction during this session wasn't routing or even queue prioritization — it was that he kept interacting with Maintenance not knowing Maintenance was waiting on Codex for something. Cheap fix that doesn't need any new infrastructure or scheduled tasks:
 
 **The rule (Maintenance side, adopted 2026-05-15):** At the start of every Maintenance response, if Maintenance is waiting on Codex for anything, state "Currently waiting on Frontend for: ..." as the first line. Exception: if the response will *modify* the waiting state (close a dependency, open a new one), put the line at the end so the action lands first and the consequence reads cleanly. Skip the line entirely if nothing is pending.

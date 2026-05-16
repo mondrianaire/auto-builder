@@ -917,6 +917,12 @@
     // Curation-overlay fields land via the aggregator's merge; safe-access.
     const promotedTo = sum.promoted_to;
     const ratifiedAt = sum.completion_ratified_at;
+    // v0.14: verdict-schema alignment with ratify-build.bat.
+    // The aggregator's `verification_passed` is true when verdict is 'pass'
+    // OR 'pass_with_concerns' — same axis as the bat's acceptance criterion.
+    // (v0.13 originally checked `cv.passed === true` which never matched
+    // since CV emits `verdict: string` not `passed: boolean`. Maintenance
+    // flagged the misalignment after v0.13 shipped; this is the fix.)
     const verifPassed = sum.verification_passed === true;
     const outcome    = sum.first_delivery_outcome;
     const revs       = (sum.counts && sum.counts.revision_count) || 1;

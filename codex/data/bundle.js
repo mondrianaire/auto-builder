@@ -75,11 +75,11 @@ window.CODEX_BUNDLE = {
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-16T10:17:18.869Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
-        "verification_passed": false,
+        "ratification_writer_version": "0.2",
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -211,7 +211,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -288,7 +288,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -365,7 +365,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -519,7 +519,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -595,7 +595,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -672,7 +672,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -749,7 +749,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -876,7 +876,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -995,49 +995,49 @@ window.CODEX_BUNDLE = {
       {
         "id": "A",
         "name": "Verification Fidelity",
-        "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "B",
         "name": "Audit Completeness",
-        "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "C",
         "name": "Spec-to-Test Coverage",
-        "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "D",
         "name": "Path Coverage",
-        "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "E",
         "name": "Atomic Lexical Anchors",
-        "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "F",
         "name": "External Authority Discipline",
-        "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "G",
         "name": "Deliverability Tier Discipline",
-        "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "H",
         "name": "Verification Independence",
-        "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+        "summary": "",
         "introduced_in": "v1.9"
       }
     ],
@@ -1295,7 +1295,7 @@ window.CODEX_BUNDLE = {
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": false,
-        "maintenance_notes_count": 14,
+        "maintenance_notes_count": 20,
         "codex_acks_count": 27,
         "maintenance_notes_latest": {
           "date": null,
@@ -1376,11 +1376,11 @@ window.CODEX_BUNDLE = {
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-16T10:17:18.869Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
-        "verification_passed": false,
+        "ratification_writer_version": "0.2",
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -1844,7 +1844,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -2333,7 +2333,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -2592,7 +2592,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -3788,7 +3788,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -4371,7 +4371,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -5079,7 +5079,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -5640,7 +5640,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {
@@ -6046,7 +6046,7 @@ window.CODEX_BUNDLE = {
         "ratified_by": null,
         "ratification_notes": null,
         "ratification_writer_version": null,
-        "verification_passed": false,
+        "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
         "links": {

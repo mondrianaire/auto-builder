@@ -65,7 +65,7 @@
     "ratified_by": null,
     "ratification_notes": null,
     "ratification_writer_version": null,
-    "verification_passed": false,
+    "verification_passed": true,
     "promoted_to": null,
     "promoted_at": null,
     "links": {

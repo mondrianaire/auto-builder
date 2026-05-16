@@ -639,8 +639,15 @@ async function aggregateRun(slug) {
     ratification_notes: ratification ? (ratification.notes || null) : null,
     ratification_writer_version: ratification ? ratification.writer_version : null,
     // v0.13: verification-passed flag pulled forward so the dashboard can
-    // light up "READY TO RATIFY" without re-reading the CV report
-    verification_passed: cv ? (cv.passed === true) : null,
+    // light up "READY TO RATIFY" without re-reading the CV report.
+    // v0.14 fix: CV emits `verdict: string` ('pass' | 'pass_with_concerns' |
+    // 'fail'), not `passed: boolean`. The earlier v0.13 check on
+    // `cv.passed === true` never matched real reports (the field doesn't
+    // exist), so all builds reported `verification_passed: null` and the
+    // dashboard never showed the ready-to-ratify state. The bat script
+    // already accepts both 'pass' and 'pass_with_concerns' as ratifiable;
+    // aligning the parser to the same axis.
+    verification_passed: cv ? (cv.verdict === 'pass' || cv.verdict === 'pass_with_concerns') : null,
     // v0.13: promoted_to is curation-overlay-only for now (set by workflow #2
     // when it fires). Pass through if the curation overlay has it.
     promoted_to: (curation && curation.promoted_to) || null,
@@ -1015,7 +1022,7 @@ async function main() {
   const index = {
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    codex_version: '0.13',
+    codex_version: '0.14',
     architecture_versions_seen: [...archVersionsSeen].sort(),
     run_count: summaries.length,
     runs: summaries,
