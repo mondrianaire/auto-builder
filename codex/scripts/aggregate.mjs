@@ -177,8 +177,8 @@ function parseRunReport(text, slug) {
   // not get mistaken for a header line.
   let archMatch = null;
   const archCandidates = [
-    /\*\*Architecture version(?:\s+under build)?(?:\s*\([^)]*\))?:?\*\*[ \t]*(v[0-9]+(?:\.[0-9]+)?(?:[^\n]*)?)/i,
-    /\*\*Arch(?:\.|itecture)?\s+version:?\*\*[ \t]*(v[0-9]+(?:\.[0-9]+)?(?:[^\n]*)?)/i
+    /\*\*Architecture version(?:\s+under build)?(?:\s*\([^)]*\))?:?\*\*[ \t]*(v[0-9]+(?:\.[0-9]+){0,2}(?:[^\n]*)?)/i,
+    /\*\*Arch(?:\.|itecture)?\s+version:?\*\*[ \t]*(v[0-9]+(?:\.[0-9]+){0,2}(?:[^\n]*)?)/i
   ];
   for (const re of archCandidates) {
     const m = text.match(re);
@@ -220,7 +220,7 @@ function parseRunReport(text, slug) {
     } else if (h.includes('what broke') || h.includes('what surfaced') || h.includes('strained')) {
       out.what_broke = extractBullets(sec.body).map(b => truncate(b, 240));
       // Amendment candidates appear inside the what-broke bullets
-      const candRe = /(v[0-9]+(?:\.[0-9]+)?\s+candidate:?)[ \t]*([^\n]+)/gi;
+      const candRe = /(v[0-9]+(?:\.[0-9]+){0,2}\s+candidate:?)[ \t]*([^\n]+)/gi;
       let m;
       while ((m = candRe.exec(sec.body)) !== null) {
         out.amendment_candidates.push({
@@ -828,7 +828,7 @@ function parseAmendments(text) {
     if (/^##\s+Version History/i.test(line)) { inHistory = true; continue; }
     if (inHistory && /^##\s+/.test(line)) break;
     if (!inHistory) continue;
-    const m = line.match(/^-\s+\*\*(v[0-9]+(?:\.[0-9]+)?)\*\*\s+[—-]\s+(.*)$/);
+    const m = line.match(/^-\s+\*\*(v[0-9]+(?:\.[0-9]+){0,2})\*\*\s+[—-]\s+(.*)$/);
     if (m) {
       if (buf) out.push(buf);
       buf = { version: m[1], title: m[1], summary: m[2].trim() };
@@ -995,7 +995,7 @@ async function main() {
   const index = {
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    codex_version: '0.9',
+    codex_version: '0.10',
     architecture_versions_seen: [...archVersionsSeen].sort(),
     run_count: summaries.length,
     runs: summaries,

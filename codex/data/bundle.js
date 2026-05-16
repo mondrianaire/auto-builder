@@ -3,8 +3,8 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T01:32:17.124Z",
-    "codex_version": "0.9",
+    "generated_at": "2026-05-16T01:42:46.928Z",
+    "codex_version": "0.10",
     "architecture_versions_seen": [
       "v1.3",
       "v1.4 (initial run); v1.5 (recovery)",
@@ -906,6 +906,13 @@ window.CODEX_BUNDLE = {
         "version": "v1.10",
         "title": "v1.10",
         "summary": "operational amendment: git commit cadence added to the Orchestrator charter. Builds are no longer a single undifferentiated artifact-snapshot at delivery; each build now lands as a sequence of five scoped commits at natural phase boundaries (C1 discovery+td complete / C2 editor pass / C3 build complete / C4 verification complete / C5 delivery + `delivery/{slug}` tag), all confined to `runs/{slug}/` so the convention preserves clean `git filter-repo` extraction at promotion time. Five-commit cadence consolidates proposal §4's six-commit ideal: Integrator is internal to Coordinator and lands in…",
+        "principles_mentioned": [],
+        "roles_introduced": []
+      },
+      {
+        "version": "v1.10.1",
+        "title": "v1.10.1",
+        "summary": "cleanup amendment: purges residual Sev-4-to-user routing from the post-v1.9 charters. v1.9's Discovery Demotion Mode design committed the architecture to a five-outcome no-`block` resolution path with no user-surfacing under the always-deliver contract, but the v1.0-era Sev-4-routes-to-Orchestrator-for-user-question text remained in `role_charters.md` § Orchestrator (\"On Severity 4 escalation\") and was referenced from four downstream locations (Orchestrator step 8 idle-wait trigger, Discovery Amendment Mode escalation verdict, Critic IP-resolution check option (b), Arbiter routing for Sev 4, …",
         "principles_mentioned": [
           "E"
         ],

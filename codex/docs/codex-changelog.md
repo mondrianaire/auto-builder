@@ -6,6 +6,51 @@ layer, not part of any run's substrate.
 
 ---
 
+## v0.10 — 2026-05-15 (verification + bugfix follow-up)
+
+Live-dashboard verification pass after the v0.9 deploy landed surfaced
+**one parser bug**: the amendments regex (and three sibling
+`architecture_version` parsers) matched `**v1.X**` but not `**v1.X.Y**`,
+so the v1.10.1 architecture amendment shipped in the same push was
+silently dropped from `index.amendments[]`. Architecture timeline
+showed 11 cards (v1.0–v1.10) instead of 12 (v1.0–v1.10.1).
+
+**Fix:** Pattern `v[0-9]+(?:\.[0-9]+)?` → `v[0-9]+(?:\.[0-9]+){0,2}` in
+all four locations in `aggregate.mjs`:
+
+- `parseAmendments` (line ~831) — architecture/README.md version history parser
+- Architecture-version regexes (lines ~180-181) — run-report architecture_version field
+- Amendment-candidate regex (line ~223) — run-report `vX candidate:` mentions
+
+After re-running the aggregator, the architecture timeline picks up v1.10.1
+and renders 12 cards. All future architecture amendments using `vN.M.P`
+versioning (semver-style patch revisions) now flow through correctly.
+
+**Other verification observations from the live-dashboard pass:**
+
+- Corpus widget ships exactly as designed: stacked bar (3/4/3 segments),
+  legend with counts, divergence callout naming kanban-board /
+  blackjack-trainer / tic-tac-toe as the 3 first-contact-success +
+  re-audit-fail builds, and the "3 builds required user re-prompts —
+  recoverable failure mode" framing.
+- Roster color palette correct: green / amber / orange / gray pills per
+  outcome.
+- Filter-on-click confirmed wired (segments + legend items carry
+  cursor:pointer + outline-on-active styling; click handlers + localStorage
+  state machine attached at module init time).
+- Maintenance Handoff panel now shows 4 cards (was 3 in earlier
+  screenshots): coordination-proposal (done), github-pages-proposal
+  (9/10), git-integration-proposal (10/11), and the first-delivery-
+  outcome-viz-proposal (7/7 done — Maintenance ticked `design-agreed`
+  on their side during the deploy window).
+
+**Files touched:**
+
+- `codex/scripts/aggregate.mjs` — codex_version 0.9 → 0.10; four version
+  regex extensions to accept 3-segment versions.
+
+---
+
 ## v0.9 — 2026-05-15
 
 **First-delivery-outcome corpus visualization shipped** — per
