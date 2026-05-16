@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T14:01:25.740Z",
+    "generated_at": "2026-05-16T14:11:08.672Z",
     "codex_version": "0.15",
     "architecture_versions_seen": [
       "v1.3",
@@ -1145,9 +1145,9 @@ window.CODEX_BUNDLE = {
         "origin": "codex-initiated",
         "source_file": "codex/docs/claude-code-handoff-tier1-proposal.md",
         "last_touched": "2026-05-16",
-        "overall_state": "user-greenlit",
+        "overall_state": "maintenance",
         "items_total": 3,
-        "items_done": 0,
+        "items_done": 2,
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": false,
@@ -1156,7 +1156,7 @@ window.CODEX_BUNDLE = {
         "maintenance_notes_latest": null,
         "codex_acks_latest": null,
         "parse_warnings": [
-          "unrecognized overall_state value: user-greenlit"
+          "unrecognized overall_state value: maintenance"
         ]
       },
       {
