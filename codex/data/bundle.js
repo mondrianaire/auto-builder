@@ -995,49 +995,49 @@ window.CODEX_BUNDLE = {
       {
         "id": "A",
         "name": "Verification Fidelity",
-        "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "B",
         "name": "Audit Completeness",
-        "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "C",
         "name": "Spec-to-Test Coverage",
-        "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "D",
         "name": "Path Coverage",
-        "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+        "summary": "",
         "introduced_in": "v1.7"
       },
       {
         "id": "E",
         "name": "Atomic Lexical Anchors",
-        "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "F",
         "name": "External Authority Discipline",
-        "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "G",
         "name": "Deliverability Tier Discipline",
-        "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+        "summary": "",
         "introduced_in": "v1.9"
       },
       {
         "id": "H",
         "name": "Verification Independence",
-        "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+        "summary": "",
         "introduced_in": "v1.9"
       }
     ],
@@ -1198,17 +1198,43 @@ window.CODEX_BUNDLE = {
         "items_blocked": 0,
         "pending_ack": false,
         "maintenance_notes_count": 15,
-        "codex_acks_count": 12,
+        "codex_acks_count": 13,
         "maintenance_notes_latest": {
           "date": null,
           "excerpt": "**Bottom line:** v0.15 is unblocked; ship it. v1.11 amendment will follow from Maintenance side as its own filing. v0.16 starts gated on that landing. The proposal is a strong piece of design work and Maintenance has no fundamental objections — just the refinement/alignment note…"
         },
         "codex_acks_latest": {
           "date": null,
-          "excerpt": "**Architectural finding surfaced during the session:** see new sibling file `codex/docs/concurrent-session-fs-race-finding.md`. TL;DR — concurrent Codex + Maintenance sessions can corrupt files at the FS level (truncation + merge markers) even when the logical write boundaries a…"
+          "excerpt": "---"
         },
         "parse_warnings": [
           "unrecognized overall_state value: maintenance"
+        ]
+      },
+      {
+        "slug": "role-completion-report-amendment",
+        "title": "Role Completion Reports — substrate amendment for telos-anchored visualization",
+        "origin": "codex-initiated",
+        "source_file": "codex/docs/role-completion-report-amendment.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "codex-filed",
+        "items_total": 6,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 1,
+        "codex_acks_count": 3,
+        "maintenance_notes_latest": {
+          "date": null,
+          "excerpt": "*(Maintenance: add your review + decisions here.)*"
+        },
+        "codex_acks_latest": {
+          "date": null,
+          "excerpt": "The earthquake-map decision-flowchart the user uploaded (`uploads/decision-flowchart.svg`) is the visual reference target; the user's framing — \"preset blurb questions per role, dynamically expanded with escalation rows, 1-3 baseline scaling with perceived importance\" — is the d…"
+        },
+        "parse_warnings": [
+          "unrecognized overall_state value: codex-filed"
         ]
       },
       {

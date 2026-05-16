@@ -1,6 +1,6 @@
 # Live build visualization — proposal for AutoBuilder-Maintenance
 
-**Status:** draft for review.
+**Status:** v0.15 shipped 2026-05-16 as plumbing (data extractor + rendering pipeline + minimal topology view). **Direction corrected mid-session 2026-05-16** — v0.15 was aimed at the wrong altitude (build skeleton, technical-speak metadata) and the corrected v0.16+ direction (live narrative, real-world-speak, telos-anchored, per-role blurbs) is gated on a substrate amendment filed separately at `codex/docs/role-completion-report-amendment.md`. See § "Direction correction 2026-05-16" at end of file for the trail.
 **Author:** Codex meta-instance, with substantial design feedback from the user's design skill folded in.
 **Scope:** dynamic, per-build SVG topology that grows as Discovery + TD plan the work, animates as roles execute, surfaces the deliverable materializing alongside the agents, and exports as a self-contained "build story" research artifact at the end. Replaces the static `architecture_diagram.svg` (dated 2026-05-03, pre-v1.9, missing Editor + Demotion Mode + v1.10 cadence) with a per-build dynamic renderer driven by substrate data.
 
@@ -374,3 +374,35 @@ This is intentionally substantial — multi-version Codex work spanning several 
 **Forward-look on screenshot pipeline (relevant to v0.17/v0.18):** the build-story export's five-signature-moment SVG snapshots will need a real headless browser (playwright or puppeteer) to capture the animations as they fire. JSDOM works for v0.15's static markup but can't render animation pipelines. Defer the dependency until v0.17 implementation commits — no impact on v0.15.
 
 **Architectural finding surfaced during the session:** see new sibling file `codex/docs/concurrent-session-fs-race-finding.md`. TL;DR — concurrent Codex + Maintenance sessions can corrupt files at the FS level (truncation + merge markers) even when the logical write boundaries are clean, because `git stash`/pop touches the whole working tree. v0.15 implementation adopted a defensive pattern (large new content in untouched files, only minimal hooks in volatile shared files); worth Maintenance considering whether to encode that pattern formally as a v1.12-candidate amendment, or whether the operational fix (coordinate session activeness) is sufficient.
+
+---
+
+## Direction correction 2026-05-16
+
+After v0.15 shipped, the user surfaced a decision-flowchart SVG from the earthquake-map build (`uploads/decision-flowchart.svg`) as MUCH closer to the intended end-state. Comparing v0.15 against the earthquake-map flowchart exposed three categorical misses:
+
+1. **Static vs interactive.** v0.15 renders completed builds as static slot diagrams. The proposal's "watching the architecture come alive" requires live progression — cells filling in as roles complete.
+2. **Technical-speak vs real-world-speak.** v0.15 surfaces "5 sections · 4 contracts · 4 waves · 27 dispatch entries." The user wants telos-anchored narrative: "Working out how to build it. Picking Leaflet (no API key, works offline). Picking USGS (free public feed)."
+3. **No telos anchoring.** Every step should answer "what is this doing to achieve the prompt goal?" v0.15 doesn't.
+
+**The corrected direction** (user-articulated):
+
+- Each role answers preset blurb questions when it completes its purpose (1-3 baseline, more in special cases, scaling with perceived importance)
+- Discovery: human-readable extrapolation of prompt interpretation
+- TD: technical keyframes per overseer section, plain-language
+- Each Overseer: technical goal in real-world terms
+- Critic/Editor/CV: findings in plain language
+- Integrator: final artifact description as the user-facing close
+- Exception/escalation flow gets a first-class visualization (the red vertical channel in the earthquake-map flowchart) — dynamically adds rows as escalations fire
+
+**The substrate gap** that has to close before this is buildable: each role needs to emit a structured Completion Report carrying the blurb answers. This is architecture territory (role charters); Codex filed it as `codex/docs/role-completion-report-amendment.md` for Maintenance to action as a v1.11-candidate substrate amendment.
+
+**What v0.15 becomes:**
+
+The plumbing (build_shape extractor + topology.js rendering pipeline + dashboard hooks) stays as reusable infrastructure. The phase bands become a structural skeleton for the corrected renderer to fill with blurb content. The static v0.15 widget stays live as a "build skeleton" fallback view while the live narrative renderer is the headline once it's built. No tear-down of v0.15 needed.
+
+**What v0.16+ becomes:**
+
+The live narrative renderer per the corrected direction. Polls `runs/{slug}/state/reports/` for incoming Completion Reports; appends to the canvas as each report lands; animates blurbs in with a brief fade-up; escalation rows materialize as their journey fires. Telos anchored at the top (the user's prompt verbatim); every blurb visually traces back to it. Real-world-speak enforced at the substrate level (the blurbs in the reports are already user-facing); no further translation needed at render-time.
+
+Concrete v0.16+ scope is specified in `codex/docs/role-completion-report-amendment.md` § "What this unblocks Codex to build". The Maintenance-Status checkboxes in THIS file (covering v0.15-v0.18 staging) remain valid for the rendering-pipeline + escalation-choreography + build-story-export increments; the per-version scope just narrows to "render the new substrate" rather than "render existing technical metadata."
