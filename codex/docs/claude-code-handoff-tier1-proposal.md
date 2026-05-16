@@ -19,11 +19,11 @@ Tier 1 is the highest-leverage piece — it works the moment the user opens the 
 <!-- Edit checkboxes when you action items. Codex parses this block on its next aggregator run. -->
 
 **Last touched:** 2026-05-16
-**Overall state:** user-greenlit, Maintenance-owned, not started.
+**Overall state:** Maintenance shipped template + workflow amendment. Awaiting first real promotion to validate end-to-end.
 
-- [ ] tier1-claude-md-template-drafted — *Maintenance owns the canonical content of the seeded CLAUDE.md (per architecture's authority over role/lifecycle vocabulary). Template content spec below; Maintenance should treat it as a starting point and refine.*
-- [ ] workflow2-amended — *add a step to `.github/workflows/completion-triggered-fork.yml` that writes the templated CLAUDE.md into the new repo before the final push. Substitutions: {slug}, {prompt}, {delivered_at}, {deliverable_kind}, {live_url_if_present}, {verdict}.*
-- [ ] tested-on-next-promotion — *first new ratification → fork after this lands should produce a fork with `.claude/CLAUDE.md` at root. Verify visually by opening the new repo.*
+- [x] tier1-claude-md-template-drafted — *Maintenance shipped 2026-05-16 at `architecture/claude-code-handoff-template.md`. Canonical content refines Codex's starter with the three-category vocabulary, the corpus-vs-product-life framing, the "re-prompting AutoBuilder produces a new fork, not an overwrite" clarification, and footer noting auto-generation provenance. Substitutions expanded from 6 to 9: added `ratified_at`, `ratified_by`, `architecture_version`. Template includes a clear "you don't NEED to read these to work here" framing on the corpus-context links — accessible without imposing.*
+- [x] workflow2-amended — *Maintenance shipped 2026-05-16 in `.github/workflows/completion-triggered-fork.yml`. Added two new pre-filter extractions (DELIVERABLE_KIND, LIVE_URL) + template path resolution. Inside the filter-repo subshell, after the README commit and before the push, a new step: `mkdir -p .claude`, node-based template-substitute → `.claude/CLAUDE.md`, separate `[bot:fork]` commit for the CLAUDE.md file. Defensive guard: if template file is missing for any reason, workflow emits a warning and skips the seed (doesn't fail the fork). Applied FS-race-finding defensive pattern: template lives in a separate file in architecture/; workflow's hook is minimal (one extraction + one substitution + one commit), not a large block extension.*
+- [ ] tested-on-next-promotion — *first new ratification → fork after this lands should produce a fork with `.claude/CLAUDE.md` at the new repo root. Verify visually by opening the new fork. The gto-poker-async-duel-AB re-fork (pending user delete + promote-build.bat run) will be the first test.*
 
 ## Suggested template content
 
