@@ -68,7 +68,7 @@
     "ratification_writer_version": "0.2",
     "verification_passed": true,
     "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
-    "promoted_at": "2026-05-16T10:30:52Z",
+    "promoted_at": "2026-05-16T14:44:51.619Z",
     "links": {
       "run_report": "runs/gto-poker-async-duel/run-report.md",
       "verification": "runs/gto-poker-async-duel/output/verification/report.json",
