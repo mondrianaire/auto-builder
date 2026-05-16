@@ -159,6 +159,33 @@ echo.
 echo The AutoBuilder repo retains runs/%SLUG%/ as the corpus snapshot.
 echo Post-fork product life happens in the standalone repo.
 echo.
+echo ************************************************************
+echo *  ARCHIVE THIS COWORK CHAT NOW                            *
+echo ************************************************************
+echo *                                                          *
+echo *  This build is now SEALED. The chat that drove it has    *
+echo *  served its purpose. Per architecture/build-lifecycle.md *
+echo *  no further work on %SLUG% belongs in this chat or       *
+echo *  in this repo.                                           *
+echo *                                                          *
+echo *  Manual steps (no programmatic archive API exists):      *
+echo *  1. In the Cowork sidebar, RENAME this chat to prepend   *
+echo *     the [ARCHIVED] indicator (e.g.,                      *
+echo *     "[ARCHIVED] %SLUG% build").                          *
+echo *  2. CLOSE this Cowork tab.                               *
+echo *  3. If the build was promoted, open a Claude Code        *
+echo *     session against the standalone repo for any future   *
+echo *     product work.                                        *
+echo *  4. If the build was not promoted, the corpus snapshot   *
+echo *     under runs/%SLUG%/ is the final record.              *
+echo *                                                          *
+echo *  Continuing to extend this build inside this Cowork      *
+echo *  chat is architecturally invalid -- future Claude        *
+echo *  instances reading the corpus will treat the build as    *
+echo *  sealed regardless of additional chat messages.          *
+echo *                                                          *
+echo ************************************************************
+echo.
 exit /b 0
 
 REM ---------------------------------------------------------------------------
