@@ -1,0 +1,9 @@
+{
+  "_comment": "Curation overlay for streamdock-applemusic-touchbar (v2 of A/B pair with streamdock-apple-music-touchbar).",
+  "ab_pair": {
+    "with": "streamdock-apple-music-touchbar",
+    "role": "v2",
+    "trigger": "AutoBuilder data-interpretation amendments between v1 and v2 runs",
+    "note": "Re-run of the streamdock-applemusic prompt after user-enacted AutoBuilder amendments. Pair semantic: same prompt, different architecture, measuring delivery-quality delta. Codex dashboard should surface this pair together for comparison."
+  }
+}

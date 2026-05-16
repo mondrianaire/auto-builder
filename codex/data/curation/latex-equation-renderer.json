@@ -1,0 +1,5 @@
+{
+  "_comment": "Curation overlay for latex-equation-renderer (CV verdict fail).",
+  "lifecycle_state": "unratifiable-verdict-fail",
+  "lifecycle_state_rationale": "CV verdict was fail; the four-gate promotion model and ratify-build.bat both require verdict pass or pass_with_concerns. Preserved in corpus as the failure measurement; not eligible for ratification or promotion."
+}

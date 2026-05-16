@@ -1,0 +1,11 @@
+{
+  "_comment": "Curation overlay for streamdock-apple-music-touchbar (v1 of A/B pair with streamdock-applemusic-touchbar).",
+  "ab_pair": {
+    "with": "streamdock-applemusic-touchbar",
+    "role": "v1",
+    "trigger": "AutoBuilder data-interpretation amendments between v1 and v2 runs",
+    "note": "First-attempt delivery of the streamdock-applemusic prompt. The output was off enough that the user enacted AutoBuilder amendments and re-ran the prompt; that re-run is the streamdock-applemusic-touchbar build (note the slug contraction from 'apple-music' to 'applemusic'). Pair semantic: same prompt, different architecture, measuring delivery-quality delta."
+  },
+  "lifecycle_state": "unratifiable-as-v1-of-pair",
+  "lifecycle_state_rationale": "v1 of an A/B pair where the user found the delivery \"off\" enough to enact AutoBuilder amendments and re-run the same prompt. Per promotion-semantics rule: gates 1+2 reflect user experience; if v1 was unacceptable (and the re-run is proof of that), the user cannot honestly attest gate 2. v1 stays in corpus as the measurement-against-prior-architecture, not as a ratifiable artifact."
+}

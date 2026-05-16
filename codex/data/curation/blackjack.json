@@ -1,0 +1,11 @@
+{
+  "_comment": "Curation overlay for blackjack (v1 of A/B pair with blackjack-trainer).",
+  "ab_pair": {
+    "with": "blackjack-trainer",
+    "role": "v1",
+    "trigger": "AutoBuilder data-interpretation infrastructure changes after this v1 delivery missed the mark",
+    "note": "First-attempt delivery of the blackjack-trainer prompt. The output was off enough that the user enacted AutoBuilder amendments and re-ran the prompt; that re-run is the blackjack-trainer build. This build was later reclassified-failed under v1.5 when the production-fidelity-exercise loophole was closed."
+  },
+  "lifecycle_state": "unratifiable-as-v1-of-pair",
+  "lifecycle_state_rationale": "v1 of A/B pair with blackjack-trainer. User found delivery \"off\" enough to enact AutoBuilder amendments and re-run. Additionally reclassified RECLASSIFIED FAILED 2026-05-10 under v1.5 amendment (production-fidelity-exercise loophole closure). Two independent reasons this build is not ratifiable; either alone would suffice. Preserved in corpus as the v1 measurement."
+}
