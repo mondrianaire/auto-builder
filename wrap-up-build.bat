@@ -65,10 +65,10 @@ REM was manually uploaded before AutoBuilder's git infrastructure existed)
 REM also gets shipped together in one [run:{slug}] commit. If
 REM completion-ratified.json is already on origin, `git add` is a no-op
 REM and the staged-changes check below handles it gracefully.
-git add "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json"
+git add "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart.html" "runs/%SLUG%/decision-flowchart.svg"
 if errorlevel 1 goto :err_git
 
-git diff --cached --quiet -- "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json"
+git diff --cached --quiet -- "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart.html" "runs/%SLUG%/decision-flowchart.svg"
 if errorlevel 1 (
     echo === Committing [run:%SLUG%] back-fill ===
     git commit -m "[run:%SLUG%] wrap-up back-fill: PROJECT-OVERVIEW.md + sentinel (+ completion-ratified.json if retroactive)" -m "Wrap-up routine run via wrap-up-build.bat (standalone back-fill of a build ratified before the wrap-up gate existed). Required by promote-build.bat + workflow #2 four-gate promotion model. See architecture/build-lifecycle.md § Promotion gates."
@@ -95,24 +95,4 @@ echo Example: wrap-up-build.bat gto-poker-async-duel
 echo.
 echo Pre-requisites:
 echo   - Build at runs/^<slug^>/ exists AND is ratified
-echo   - runs/^<slug^>/output/verification/report.json exists
-echo   - Node.js on PATH
-exit /b 1
-
-:err_no_node
-echo *** node was not found on PATH. Install Node.js and re-run.
-exit /b 1
-
-:err_node
-echo *** wrap-up routine failed. See output above.
-exit /b 1
-
-:err_git
-echo *** Git stage or commit failed. The wrap-up artifacts may be on disk
-echo *** but not committed. Run `git status` to inspect.
-exit /b 1
-
-:err_push
-echo *** Git push failed. The wrap-up commit landed locally but not on origin.
-echo *** Try: git pull --rebase origin main, then git push origin main.
-exit /b 1
+echo   - runs/^<slug^>/output/verification/report.json 
