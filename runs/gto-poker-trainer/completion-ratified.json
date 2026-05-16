@@ -1,0 +1,9 @@
+{
+  "schema_version": "0.1",
+  "ratified_at": "2026-05-10T18:59:04Z",
+  "ratified_by": "Jett",
+  "instructions_followable": true,
+  "access_confirmed": true,
+  "writer_version": "0.3",
+  "notes": "Retroactive ratification 2026-05-16. Build was manually uploaded to mondrianaire/gto-poker-trainer on 2026-05-10 (before AutoBuilder git infrastructure existed); GitHub repo bytes are identical to corpus runs/gto-poker-trainer/repo/ + the gto-poker-trainer-v2.zip artifact (md5 verified). Pages live at https://mondrianaire.github.io/gto-poker-trainer/. CV verdict was clean pass at v1.8. Gates 1 + 2 confirmed implicitly: the artifact has been in use and the install path (open index.html) is trivially clear. No -AB rename — per user 2026-05-16 directive 'we will forgo the -AB to do option A just for this one'."
+}
