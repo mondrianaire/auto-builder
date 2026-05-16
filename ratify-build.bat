@@ -79,25 +79,55 @@ if errorlevel 1 (
     exit /b 1
 )
 
-for /f "usebackq tokens=*" %%v in (`node -e "try{const r=JSON.parse(require('fs').readFileSync('%REPORT:\=/%','utf8'));process.stdout.write(r.passed===true?'PASS':'FAIL')}catch(e){process.stdout.write('PARSE_ERROR')}"`) do (
+REM Verification report uses `verdict` field per convergence-verification/v1 schema:
+REM   "pass"               -- clean pass, ratifiable
+REM   "pass_with_concerns" -- pass with documented concerns (still ratifiable per
+REM                           build-lifecycle.md: concerns are gaps, not failures)
+REM   "fail"               -- NOT ratifiable; build is in Phase 2
+REM   anything else        -- unknown, refuse defensively
+for /f "usebackq tokens=*" %%v in (`node -e "try{const r=JSON.parse(require('fs').readFileSync('%REPORT:\=/%','utf8'));const v=r.verdict||'';process.stdout.write(v==='pass'?'PASS':v==='pass_with_concerns'?'PASS_WITH_CONCERNS':v==='fail'?'FAIL':v?'UNKNOWN:'+v:'MISSING')}catch(e){process.stdout.write('PARSE_ERROR')}"`) do (
     set "VERIFY_STATE=%%v"
 )
 
 if "%VERIFY_STATE%"=="PARSE_ERROR" (
-    echo *** Could not parse %REPORT% as JSON, or it's missing the `passed` field.
+    echo *** Could not parse %REPORT% as JSON.
     echo *** Cannot determine verification state. Fix the report and re-run.
     exit /b 1
 )
 
-if not "%VERIFY_STATE%"=="PASS" (
-    echo *** Verification has not passed for %SLUG%.
-    echo *** runs/%SLUG%/output/verification/report.json shows passed=false.
+if "%VERIFY_STATE%"=="MISSING" (
+    echo *** %REPORT% is parseable but has no `verdict` field.
+    echo *** Cannot determine verification state. Schema mismatch.
+    exit /b 1
+)
+
+if "%VERIFY_STATE%"=="FAIL" (
+    echo *** Verification FAILED for %SLUG%.
+    echo *** runs/%SLUG%/output/verification/report.json shows verdict=fail.
     echo ***
     echo *** Per architecture/build-lifecycle.md, gate 3 ^(verification^) must be
     echo *** green before ratification. The build is in Phase 2 ^(In Limbo^).
     echo *** Use commit-step.bat to enter rectification:
     echo ***   commit-step.bat %SLUG% N "summary of rectification"
     exit /b 1
+)
+
+REM Strip prefix in case of UNKNOWN:<value>
+for /f "tokens=1 delims=:" %%t in ("%VERIFY_STATE%") do set "VERIFY_PREFIX=%%t"
+if "%VERIFY_PREFIX%"=="UNKNOWN" (
+    echo *** Verification verdict is an unknown value: %VERIFY_STATE%
+    echo *** Expected: pass / pass_with_concerns / fail. Refusing defensively.
+    exit /b 1
+)
+
+if "%VERIFY_STATE%"=="PASS_WITH_CONCERNS" (
+    echo === Verification: PASS_WITH_CONCERNS ===
+    echo === Concerns are documented gaps per the report; per build-lifecycle.md ===
+    echo === these are ratifiable. Proceeding with ratification flow. ===
+    echo.
+) else (
+    echo === Verification: PASS ===
+    echo.
 )
 
 REM ---------------------------------------------------------------------------
