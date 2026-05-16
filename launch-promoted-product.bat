@@ -25,12 +25,37 @@ REM          fork has only [bot:fork] seed commits (no user product-life work
 REM          yet), falls back to `git pull` once real product-life commits
 REM          exist. Closes the merge-commit-on-force-push hole introduced by
 REM          workflow #2 re-derivation.
+REM   v0.4 — spawn Claude Code CLI in a NEW visible cmd window via `start`,
+REM          so the bat is invokable from Desktop Commander (or any hidden
+REM          shell) while still giving the user a visible interactive Claude
+REM          Code session. Working directory of the new window is set to the
+REM          fork root so Claude Code orients there.
 REM ===========================================================================
 
 setlocal EnableDelayedExpansion
 set "PATHEXT=.COM;.EXE;.BAT;.CMD"
 
-set "SLUG=%~1"
+REM Parse args. First non-flag positional is the slug. --auto suppresses
+REM `pause` calls on error paths so the bat can be invoked from a non-
+REM interactive shell (e.g., Desktop Commander) without hanging.
+set "AUTO_MODE=0"
+set "SLUG="
+:argloop
+if "%~1"=="" goto :argdone
+if /I "%~1"=="--auto" (
+    set "AUTO_MODE=1"
+    shift
+    goto :argloop
+)
+if not defined SLUG (
+    set "SLUG=%~1"
+    shift
+    goto :argloop
+)
+shift
+goto :argloop
+:argdone
+
 if "%SLUG%"=="" goto :usage
 
 set "REPO_NAME=%SLUG%-AB"
@@ -53,7 +78,7 @@ if exist "%LOCAL_PATH%\.git" (
     git fetch
     if errorlevel 1 (
         echo *** git fetch failed — see output above. ***
-        pause
+        if "!AUTO_MODE!"=="0" pause
         exit /b 1
     )
 
@@ -119,7 +144,7 @@ if exist "%LOCAL_PATH%\.git" (
     git clone "%GITHUB_URL%"
     if errorlevel 1 (
         echo *** git clone failed — check that mondrianaire/%REPO_NAME% exists. ***
-        pause
+        if "!AUTO_MODE!"=="0" pause
         exit /b 1
     )
     cd /d "%LOCAL_PATH%"
@@ -131,7 +156,7 @@ if not exist "cc-launch-prompt.md" (
     echo *** Fork was likely created before Tier 2 shipped. ***
     echo *** Recovery: workflow_dispatch the Promotion-Triggered Fork on %SLUG% ***
     echo *** to refresh. Set overwrite_user_commits=true if guard blocks. ***
-    pause
+    if "!AUTO_MODE!"=="0" pause
     exit /b 1
 )
 
@@ -141,7 +166,7 @@ if errorlevel 1 (
     echo *** Claude Code CLI ^(claude.exe^) not found on PATH. ***
     echo *** Install or alias claude.exe, then re-run. ***
     echo *** Local clone is ready at: %LOCAL_PATH% ***
-    pause
+    if "!AUTO_MODE!"=="0" pause
     exit /b 1
 )
 
@@ -162,14 +187,20 @@ if not defined PROMPT (
     exit /b 0
 )
 
-echo === Launching Claude Code CLI with bootstrap prompt as initial query ===
+echo === Launching Claude Code CLI in a new window ===
 echo Working directory: %LOCAL_PATH%
+echo Window title:      Claude Code: %SLUG%
 echo.
 
-claude "!PROMPT!"
+REM `start` opens a new visible cmd window so the bat is invokable from
+REM Desktop Commander (or any hidden shell) while still giving the user a
+REM real interactive Claude Code session. `/D` sets the new window's working
+REM directory; `/K` keeps the cmd shell open after claude exits so the user
+REM can see any final output and re-invoke if needed.
+start "Claude Code: %SLUG%" /D "%LOCAL_PATH%" cmd /K claude "!PROMPT!"
 
-echo.
-echo === Claude Code session ended ===
+echo === Spawned Claude Code window ===
+echo This launcher exits now; the new window will run independently.
 exit /b 0
 
 :usage
