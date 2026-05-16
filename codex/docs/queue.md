@@ -17,7 +17,7 @@ Items that someone is or could be working on right now.
 | `queue-md-drafted-if-B` (this file) | Maintenance | high | — | 2026-05-15 | **shipping** |
 | `github-actions-on-push-proposal` | Maintenance | high | — | 2026-05-16 | **workflows #1 + #3 LIVE & VERIFIED 2026-05-16**: push `04e3162` triggered aggregator-on-push.yml → bot commit `d76c0a8` landed; loop-safety guard confirmed working; substrate-staleness gap structurally closed. #2 still gated on ratification-UI-proposal. |
 | `codex-polling-convention-adopted` | Codex | high | — | 2026-05-15 | awaiting Codex declaration of cadence |
-| `ratification-ui-proposal` (filing) | Maintenance | medium | viz-proposal landed (done) | 2026-05-15 | drafted in TaskList #1; file as proposal next |
+| `ratification-ui-proposal` | Codex | medium | viz-proposal landed (done) | 2026-05-16 | **proposal filed** at `codex/docs/maintenance-initiated/ratification-ui-proposal.md`; specifies ratify-build.bat (Maintenance) + dashboard READY/RATIFIED/PROMOTED state machine (Codex) + completion-ratified.json schema; awaiting Codex review on 4 open questions |
 | `discovery-misalignment-data-model` | Maintenance | medium | — | 2026-05-15 | open question in `architecture/build-lifecycle.md` |
 | `v1.10.1-sev4-cleanup` (Orchestrator charter) | Maintenance | medium | — | 2026-05-15 | **shipped** in `ad1f8c5` by parallel Maintenance window — Sev-4-to-user routing removed from Orchestrator + supporting docs |
 
