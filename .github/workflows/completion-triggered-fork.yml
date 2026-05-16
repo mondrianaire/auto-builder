@@ -313,8 +313,16 @@ jobs:
 
               git remote remove origin 2>/dev/null || true
               git remote add origin "https://x-access-token:$FORK_PAT@github.com/$FULL_REPO.git"
-              git push -u origin main
-              git push origin --tags
+              # Force-push: promotion is a re-derivation event. The AutoBuilder
+              # corpus is canonical; the standalone fork is a derived artifact
+              # of runs/$SLUG/output/final/. If the fork already exists with
+              # divergent history (prior broken fork attempt, or re-promotion
+              # after a curation overlay change), we overwrite it rather than
+              # try to merge. Users doing post-promotion product-life work
+              # should not re-trigger promotion on the same slug.
+              echo "Force-pushing filtered output/final/ history to $FULL_REPO (re-derivation semantics — see workflow comment)."
+              git push -u --force origin main
+              git push --force origin --tags
             )
             rm -rf "$TMPDIR"
 
