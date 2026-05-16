@@ -10,14 +10,17 @@ REM Per architecture/build-lifecycle.md, captures the user's explicit confirmati
 REM that install instructions are clear (gate 1) and the deliverable is accessible
 REM (gate 2). Gate 3 (verification) is asserted automatically by CV via report.json.
 REM
-REM Writer version: 0.2  (rewrite for cmd parser safety — goto-based flow)
+REM Writer version: 0.3  (added inline wrap-up routine invocation as final
+REM step before commit, per promotion-gate directive 2026-05-16 — every
+REM newly-ratified build is promotion-eligible immediately because the
+REM wrap-up artifacts and sentinel are written here.)
 REM ===========================================================================
 
 setlocal
 cd /d "%~dp0"
 
 set "SLUG=%~1"
-set "WRITER_VERSION=0.2"
+set "WRITER_VERSION=0.3"
 
 if "%SLUG%"=="" goto :usage
 
@@ -118,6 +121,22 @@ node -e "var fs=require('fs');var n=process.env.NOTES_VALUE||'';var out={schema_
 if not exist "%RATIFIED%" goto :err_write
 
 REM ---------------------------------------------------------------------------
+REM Wrap-up routine — inline as the final mechanical step of ratification.
+REM Writes:
+REM   - runs/{slug}/PROJECT-OVERVIEW.md      (Cat 1 wrap-up doc)
+REM   - runs/{slug}/wrap-up-complete.json    (sentinel — required by
+REM                                            promote-build.bat AND workflow #2)
+REM This is what makes the build promotion-eligible. Failing here aborts
+REM ratification (so we don't end up with completion-ratified.json without
+REM the wrap-up artifacts — that state is the "older-build back-fill" case
+REM that wrap-up-build.bat covers separately).
+REM ---------------------------------------------------------------------------
+echo.
+echo === Running wrap-up routine (PROJECT-OVERVIEW.md + sentinel) ===
+node architecture\scripts\wrap-up-build.mjs %SLUG% --invoked-by ratify-build.bat
+if errorlevel 1 goto :err_wrapup
+
+REM ---------------------------------------------------------------------------
 REM Commit + push
 REM ---------------------------------------------------------------------------
 
@@ -125,8 +144,8 @@ echo === Clearing any stuck git lock files ===
 if exist .git\index.lock del /f /q .git\index.lock
 if exist .git\config.lock del /f /q .git\config.lock
 
-echo === Staging %RATIFIED% ===
-git add "%RATIFIED%"
+echo === Staging %RATIFIED% + wrap-up artifacts ===
+git add "%RATIFIED%" "runs\%SLUG%\PROJECT-OVERVIEW.md" "runs\%SLUG%\wrap-up-complete.json"
 if errorlevel 1 goto :err_git
 
 echo === Showing what will be committed ===
@@ -263,6 +282,19 @@ exit /b 1
 
 :err_write
 echo *** Failed to write %RATIFIED%. Check node and filesystem permissions.
+exit /b 1
+
+:err_wrapup
+echo *** Wrap-up routine failed. completion-ratified.json was written to disk
+echo *** but PROJECT-OVERVIEW.md + wrap-up-complete.json were not produced.
+echo *** This build is RATIFIED but NOT promotion-eligible.
+echo ***
+echo *** Recovery:
+echo ***   1. See output above for the wrap-up failure reason.
+echo ***   2. Fix the underlying issue (likely missing data in codex/data/index.json
+echo ***      or a malformed runs/%SLUG%/output/verification/report.json).
+echo ***   3. Re-run: wrap-up-build.bat %SLUG%
+echo ***   4. Then: deploy-session.bat to ship.
 exit /b 1
 
 :err_git

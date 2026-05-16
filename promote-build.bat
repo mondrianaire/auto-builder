@@ -26,15 +26,27 @@ REM     fires when promoted.json appears in a push, creates mondrianaire/{slug}-
 REM     via GitHub API (using FORK_PAT), filter-repos output/final/ into it,
 REM     generates the README, and writes the curation overlay.
 REM
-REM Writer version: 0.2 (rewritten 2026-05-16 for the ratify/promote split per
-REM build-lifecycle.md)
+REM Promotion gates (all must pass before promoted.json is written):
+REM   1. Verification verdict = pass | pass_with_concerns (re-checked here
+REM      defensively even though ratify-build.bat already gated on it).
+REM   2. completion-ratified.json present (user-ratified gates 1 + 2).
+REM   3. wrap-up-complete.json present (wrap-up routine produced PROJECT-
+REM      OVERVIEW.md + the sentinel). Newly-ratified builds get this
+REM      automatically via ratify-build.bat. Older builds need
+REM      wrap-up-build.bat ^<slug^> + deploy-session.bat to back-fill.
+REM   4. promoted.json does NOT already exist.
+REM
+REM Writer version: 0.3 (added gates 1 + 3 — verdict re-check and wrap-up
+REM sentinel — per user directive 2026-05-16: promotion requires that the
+REM completion procedures and routines have run and wrap up documentation
+REM created and accompanied.)
 REM ===========================================================================
 
 setlocal
 cd /d "%~dp0"
 
 set "SLUG=%~1"
-set "WRITER_VERSION=0.2"
+set "WRITER_VERSION=0.3"
 
 if "%SLUG%"=="" goto :usage
 
@@ -51,11 +63,39 @@ if not exist "runs\%SLUG%" goto :err_no_slug
 set "RATIFIED=runs\%SLUG%\completion-ratified.json"
 if not exist "%RATIFIED%" goto :err_not_ratified
 
+set "WRAPUP=runs\%SLUG%\wrap-up-complete.json"
+if not exist "%WRAPUP%" goto :err_no_wrapup
+
+set "REPORT=runs\%SLUG%\output\verification\report.json"
+if not exist "%REPORT%" goto :err_no_report
+
 set "PROMOTED=runs\%SLUG%\promoted.json"
 if exist "%PROMOTED%" goto :err_already_promoted
 
 where node >nul 2>&1
 if errorlevel 1 goto :err_no_node
+
+REM ---------------------------------------------------------------------------
+REM Defense-in-depth verdict gate. ratify-build.bat already gated on this,
+REM but with force-push semantics in workflow #2 we re-check at promotion time
+REM so a corrupted / modified report.json can't slip a non-pass build through.
+REM ---------------------------------------------------------------------------
+set "VTMP=%TEMP%\promote-verdict-%RANDOM%.txt"
+node -e "try{var r=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));process.stdout.write(r.verdict||'MISSING')}catch(e){process.stdout.write('PARSE_ERROR')}" "%REPORT%" > "%VTMP%" 2>nul
+set "VERDICT="
+set /p VERDICT=<"%VTMP%"
+del /f /q "%VTMP%" 2>nul
+
+if "%VERDICT%"=="" set "VERDICT=MISSING"
+if "%VERDICT%"=="PARSE_ERROR" goto :err_verdict_parse
+if "%VERDICT%"=="MISSING" goto :err_verdict_missing
+if /i "%VERDICT%"=="fail" goto :err_verdict_fail
+if /i "%VERDICT%"=="pass" goto :verdict_ok
+if /i "%VERDICT%"=="pass_with_concerns" goto :verdict_ok
+goto :err_verdict_unknown
+
+:verdict_ok
+echo === Verdict gate: %VERDICT% (acceptable for promotion) ===
 
 REM ---------------------------------------------------------------------------
 REM Confirmation
@@ -139,11 +179,15 @@ echo Usage: promote-build.bat ^<slug^> [--notes "free-text reason"]
 echo   Example: promote-build.bat gto-poker-async-duel
 echo            promote-build.bat earthquake-map --notes "USGS data worth productizing"
 echo.
-echo Pre-requisites:
-echo   - Build at runs/^<slug^>/ exists AND is ratified (completion-ratified.json present)
-echo   - runs/^<slug^>/promoted.json does NOT already exist
-echo   - Node.js on PATH
-echo   - FORK_PAT secret set in Repo Settings (for the Action to create the fork repo)
+echo Pre-requisites (all four enforced):
+echo   1. Build at runs/^<slug^>/ exists AND has a verification report with
+echo      verdict pass or pass_with_concerns.
+echo   2. runs/^<slug^>/completion-ratified.json present (run ratify-build.bat).
+echo   3. runs/^<slug^>/wrap-up-complete.json present (newly-ratified builds
+echo      get this automatically; older builds run wrap-up-build.bat ^<slug^>).
+echo   4. runs/^<slug^>/promoted.json does NOT already exist.
+echo   - Node.js on PATH.
+echo   - FORK_PAT secret set in Repo Settings (for the workflow to fork).
 exit /b 1
 
 :err_no_slug
@@ -154,6 +198,51 @@ exit /b 1
 echo *** Build is not ratified. runs\%SLUG%\completion-ratified.json missing.
 echo *** Promotion requires the build to be ratified first.
 echo *** Run: ratify-build.bat %SLUG%
+exit /b 1
+
+:err_no_wrapup
+echo *** Build is ratified but wrap-up routine has not completed.
+echo *** runs\%SLUG%\wrap-up-complete.json missing.
+echo ***
+echo *** Per architecture/build-lifecycle.md, promotion requires:
+echo ***   1. Verification verdict pass or pass_with_concerns
+echo ***   2. completion-ratified.json present (user-ratified gates 1 + 2)
+echo ***   3. wrap-up-complete.json present (wrap-up routines + docs done)
+echo ***
+echo *** This build has #1 and #2 but not #3. Run wrap-up-build.bat to fix:
+echo ***   wrap-up-build.bat %SLUG%
+echo *** Then deploy-session.bat to ship, then re-run promote-build.bat.
+echo ***
+echo *** (Newly-ratified builds get this automatically — ratify-build.bat
+echo ***  invokes the wrap-up routine inline. This error path is for older
+echo ***  builds that were ratified before the wrap-up gate existed.)
+exit /b 1
+
+:err_no_report
+echo *** runs\%SLUG%\output\verification\report.json missing.
+echo *** Cannot verify verdict gate at promotion time. Refusing defensively.
+exit /b 1
+
+:err_verdict_parse
+echo *** Could not parse %REPORT% as JSON.
+echo *** Fix the report and re-run.
+exit /b 1
+
+:err_verdict_missing
+echo *** Verification report has no verdict field.
+echo *** Schema mismatch. Cannot promote.
+exit /b 1
+
+:err_verdict_fail
+echo *** Verification verdict is FAIL for %SLUG%.
+echo *** Per build-lifecycle.md, FAIL builds are not promotable.
+echo *** (If the build was ratified despite a fail verdict, that's a deeper
+echo ***  consistency issue — promote-build.bat refuses defensively regardless.)
+exit /b 1
+
+:err_verdict_unknown
+echo *** Unknown verdict value: %VERDICT%
+echo *** Expected: pass / pass_with_concerns. Refusing defensively.
 exit /b 1
 
 :err_already_promoted
