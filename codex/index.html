@@ -249,6 +249,25 @@
   /* dash / placeholder */
   .dash { color: var(--text-faint); }
 
+  /* v0.12 — lifecycle phase pill per build-lifecycle.md state machine */
+  .phase-pill {
+    display: inline-flex; align-items: center;
+    padding: 2px 9px; border-radius: 10px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.4px;
+    border: 1px solid var(--border-soft);
+    white-space: nowrap;
+    color: var(--text-dim);
+    margin-left: 4px;
+  }
+  .phase-pill.p1ok      { color: rgba(110,201,122,0.95); border-color: rgba(110,201,122,0.45); background: rgba(110,201,122,0.10); }
+  .phase-pill.p1concern { color: rgba(212,163,90,0.95);  border-color: rgba(212,163,90,0.45);  background: rgba(212,163,90,0.10); }
+  .phase-pill.p2active  { color: rgba(217,140,80,0.95);  border-color: rgba(217,140,80,0.45);  background: rgba(217,140,80,0.10); }
+  .phase-pill.p2closed  { color: rgba(140,160,200,0.95); border-color: rgba(140,160,200,0.45); background: rgba(140,160,200,0.10); }
+  .phase-pill.p2broken  { color: rgba(217,112,112,0.95); border-color: rgba(217,112,112,0.45); background: rgba(217,112,112,0.10); }
+  .phase-pill.complete  { color: rgba(184,160,90,0.95);  border-color: rgba(184,160,90,0.55);  background: rgba(184,160,90,0.12); }
+  .phase-pill.promoted  { color: rgba(220,180,80,0.95);  border-color: rgba(220,180,80,0.65);  background: rgba(220,180,80,0.16); }
+  .phase-pill.pending   { color: var(--text-faint);      border-color: var(--border-soft); }
+
   /* first-delivery pill — uses bolder treatment than composite */
   .fdo-pill {
     display: inline-flex; align-items: center;
@@ -795,6 +814,50 @@
     const m = map[verdict] || { cls: 'muted', label: verdict || '—' };
     return el('span', { class: 'pill ' + m.cls, text: m.label });
   }
+  // ----- v0.12: lifecycle phase chip per build-lifecycle.md -----
+  // Derives the build's current lifecycle phase from existing fields:
+  // first_delivery_outcome (curated/synthesized), revision_count, and
+  // curation-overlay fields (promoted_to, completion_ratified_at — future
+  // surfaces that don't exist in today's data but will when ratification-UI
+  // ships).
+  function derivePhase(sum) {
+    if (!sum) return { cls: 'pending', label: 'lifecycle —' };
+    // Curation-overlay fields land via the aggregator's merge; safe-access.
+    const promotedTo = sum.promoted_to;
+    const ratifiedAt = sum.completion_ratified_at;
+    const outcome    = sum.first_delivery_outcome;
+    const revs       = (sum.counts && sum.counts.revision_count) || 1;
+
+    if (promotedTo) {
+      return { cls: 'promoted', label: 'Promoted ★', title: 'Forked to ' + promotedTo };
+    }
+    if (ratifiedAt) {
+      return { cls: 'complete', label: 'Complete · awaiting fork', title: 'Ratified ' + ratifiedAt + '; fork ceremony pending' };
+    }
+    if (outcome === 'succeeded') {
+      return { cls: 'p1ok', label: 'Phase 1 ✓', title: 'Initial delivery succeeded; ratification UI pending' };
+    }
+    if (outcome === 'succeeded_with_concerns') {
+      return { cls: 'p1concern', label: 'Phase 1 ✓ (concerns)', title: 'Initial delivery succeeded with documented concerns; ratification UI pending' };
+    }
+    if (outcome === 'failed_user_reprompted') {
+      if (revs > 1) {
+        return { cls: 'p2active', label: 'Phase 2 active', title: 'Initial delivery broken; rectification commits in revisions[]' };
+      }
+      return { cls: 'p2closed', label: 'Phase 1 failed · user moved on', title: 'Initial delivery broken; user re-prompted into a different build rather than running Phase 2 rectification' };
+    }
+    if (outcome === 'failed_unrecoverable') {
+      return { cls: 'p2broken', label: 'Phase 2 abandoned', title: 'Initial delivery broken; rectification arc closed without recovery' };
+    }
+    return { cls: 'pending', label: 'lifecycle —', title: 'Outcome not yet curated; lifecycle phase indeterminate' };
+  }
+  function phasePill(sum) {
+    const p = derivePhase(sum);
+    const span = el('span', { class: 'phase-pill ' + p.cls, text: p.label });
+    if (p.title) span.title = p.title;
+    return span;
+  }
+
   function firstDeliveryPill(outcome, source) {
     const map = {
       'succeeded':               { cls: 'ok',     label: 'succeeded' },
@@ -985,7 +1048,9 @@
         ' ',
         compositePill(sum.rating.composite),
         ' ',
-        tierGroup(sum.rating.deliverability)
+        tierGroup(sum.rating.deliverability),
+        // v0.12: lifecycle phase per architecture/build-lifecycle.md
+        phasePill(sum)
       ),
       el('div', { class: 'verdict' },
         sum.date || '—', ' · ', sum.architecture_version || '—',

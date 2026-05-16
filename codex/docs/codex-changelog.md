@@ -6,6 +6,70 @@ layer, not part of any run's substrate.
 
 ---
 
+## v0.12 — 2026-05-16 (lifecycle phase chip)
+
+**Adds a lifecycle phase indicator to each build's detail panel,**
+derived from `architecture/build-lifecycle.md`'s Phase 1 / Phase 2 /
+Complete / Promoted state machine. The dashboard now visibly surfaces
+where each build is in its post-prompt journey, not just its
+verification verdict and first-delivery outcome.
+
+**The seven phase states** (in priority order — first match wins):
+
+| condition | label | color |
+|---|---|---|
+| has `promoted_to` curation field | Promoted ★ | gold |
+| has `completion_ratified_at` field | Complete · awaiting fork | warm-gold |
+| first_delivery: succeeded | Phase 1 ✓ | green |
+| first_delivery: succeeded_with_concerns | Phase 1 ✓ (concerns) | amber |
+| first_delivery: failed_user_reprompted + revisions[] > 1 | Phase 2 active | orange |
+| first_delivery: failed_user_reprompted + revisions[] = 1 | Phase 1 failed · user moved on | blue-gray |
+| first_delivery: failed_unrecoverable | Phase 2 abandoned | deep red |
+| outcome null/unverified | lifecycle — | gray |
+
+**Hover tooltips** explain each state ("Initial delivery broken; user
+re-prompted into a different build rather than running Phase 2
+rectification" etc.) so the semantics are visible without needing to
+consult build-lifecycle.md.
+
+**Where it renders:** detail panel head, adjacent to the existing
+verdict / composite / tiers pills. Roster cards intentionally NOT
+extended with this chip — the roster is already dense, and the phase
+is a "drill-in" piece of info appropriate for the detail view rather
+than the at-a-glance view.
+
+**Forward-looking fields wired in but currently no-op:**
+
+- `sum.promoted_to` — when curation overlays start carrying this
+  (post-fork ceremony), the gold "Promoted ★" badge fires
+  automatically with hover tooltip "Forked to {URL}".
+- `sum.completion_ratified_at` — when the ratification-UI
+  Maintenance is planning lands and starts writing
+  `runs/{slug}/completion-ratified.json` (eventually pulled into the
+  aggregator's per-run summary), the warm-gold "Complete · awaiting
+  fork" badge fires.
+
+Both render as no-ops in today's data (zero builds carry either
+field). The chip surface is ready when the data arrives.
+
+**Today's corpus rendered states:**
+
+- Phase 1 ✓ — kanban-board, blackjack-trainer, tic-tac-toe (3 builds)
+- Phase 1 ✓ (concerns) — earthquake-map, gto-poker-async-duel,
+  streamdock-apple-music-touchbar, gto-poker-trainer (4 builds)
+- Phase 1 failed · user moved on — blackjack, latex-equation-renderer,
+  streamdock-applemusic-touchbar (3 builds)
+- Phase 2 active / abandoned / Complete / Promoted — none today
+
+**Files touched:**
+
+- `codex/index.html` — `.phase-pill` CSS for 8 variants;
+  `derivePhase` + `phasePill` helpers; chip inserted in `renderDetail`'s
+  head row.
+- `codex/scripts/aggregate.mjs` — codex_version 0.11 → 0.12.
+
+---
+
 ## v0.11 — 2026-05-16 (sortable roster columns)
 
 **Run roster headers are now click-sortable.** 11 of the 15 columns
