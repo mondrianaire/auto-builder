@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-16T12:39:42.690Z",
+  "generated_at": "2026-05-16T12:43:37.670Z",
   "codex_version": "0.14",
   "architecture_versions_seen": [
     "v1.3",
@@ -1136,6 +1136,32 @@
     "unverified": 0
   },
   "maintenance_handoffs": [
+    {
+      "slug": "live-build-visualization-proposal",
+      "title": "Live build visualization — proposal for AutoBuilder-Maintenance",
+      "origin": "codex-initiated",
+      "source_file": "codex/docs/live-build-visualization-proposal.md",
+      "last_touched": "2026-05-16",
+      "overall_state": "maintenance",
+      "items_total": 6,
+      "items_done": 2,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 15,
+      "codex_acks_count": 4,
+      "maintenance_notes_latest": {
+        "date": null,
+        "excerpt": "**Bottom line:** v0.15 is unblocked; ship it. v1.11 amendment will follow from Maintenance side as its own filing. v0.16 starts gated on that landing. The proposal is a strong piece of design work and Maintenance has no fundamental objections — just the refinement/alignment note…"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "This is intentionally substantial — multi-version Codex work spanning several weeks of implementation. Not asking Maintenance to commit to all four versions; v0.15 alone is the first deliverable, with the rest staged on its evidence."
+      },
+      "parse_warnings": [
+        "unrecognized overall_state value: maintenance"
+      ]
+    },
     {
       "slug": "first-delivery-outcome-viz-proposal",
       "title": "First-delivery-outcome visualization — proposal for Codex",
