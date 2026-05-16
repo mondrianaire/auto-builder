@@ -34,6 +34,12 @@ on:
     branches: [main]
     paths:
       - 'runs/*/completion-ratified.json'
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Build slug to fork manually (skips diff detection; verifies the slug has a completion-ratified.json on main)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -60,15 +66,42 @@ jobs:
       - name: Identify newly-added completion-ratified.json files
         id: find_new
         run: |
-          # Only fork on file ADDITIONS, not modifications or deletions
           NEW_SLUGS=""
-          while IFS= read -r f; do
-            [ -z "$f" ] && continue
-            SLUG=$(echo "$f" | sed 's|runs/\([^/]*\)/completion-ratified\.json|\1|')
-            if [ -n "$SLUG" ] && [ -d "runs/$SLUG" ]; then
-              NEW_SLUGS="$NEW_SLUGS $SLUG"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual trigger: use the supplied slug directly. Verify the
+            # completion-ratified.json exists on main before adding to the list.
+            MANUAL_SLUG="${{ inputs.slug }}"
+            if [ -n "$MANUAL_SLUG" ] && [ -f "runs/$MANUAL_SLUG/completion-ratified.json" ]; then
+              NEW_SLUGS="$MANUAL_SLUG"
+              echo "Manual trigger: processing $MANUAL_SLUG"
+            else
+              echo "::error::Manual trigger requested slug '$MANUAL_SLUG' but runs/$MANUAL_SLUG/completion-ratified.json does not exist on main."
+              exit 1
             fi
-          done < <(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'runs/*/completion-ratified.json' 2>/dev/null || true)
+          else
+            # Push trigger: diff the push range, not just HEAD~1..HEAD.
+            # github.event.before is the commit SHA before the push started,
+            # so it correctly captures multi-commit pushes (which is exactly
+            # the case that broke the first time: ratification commit + a
+            # follow-on commit arrived as one push, head was the follow-on,
+            # HEAD~1..HEAD missed the ratification file entirely).
+            BEFORE="${{ github.event.before }}"
+            # Defend against the all-zeros sentinel that GitHub sends on the
+            # very first push to a branch.
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              BEFORE="HEAD~1"
+            fi
+            echo "Diff range: $BEFORE..HEAD"
+
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              SLUG=$(echo "$f" | sed 's|runs/\([^/]*\)/completion-ratified\.json|\1|')
+              if [ -n "$SLUG" ] && [ -d "runs/$SLUG" ]; then
+                NEW_SLUGS="$NEW_SLUGS $SLUG"
+              fi
+            done < <(git diff --name-only --diff-filter=A "$BEFORE" HEAD -- 'runs/*/completion-ratified.json' 2>/dev/null || true)
+          fi
 
           NEW_SLUGS_TRIM=$(echo "$NEW_SLUGS" | xargs)
           echo "Found new ratifications: '$NEW_SLUGS_TRIM'"
