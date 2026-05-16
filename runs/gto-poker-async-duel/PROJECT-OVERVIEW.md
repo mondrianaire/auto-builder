@@ -44,7 +44,7 @@ Build a GitHub-Pages-hostable web application that lets two users play an asynch
 
 The production deliverable for this build is at `runs/gto-poker-async-duel/output/final/`. After promotion (an opt-in event distinct from ratification), this directory is forked verbatim to `mondrianaire/gto-poker-async-duel-AB` as a standalone repo for ongoing product life.
 
-**Live URL:** https://mondrianaire.github.io/auto-builder/runs/gto-poker-async-duel/output/final/index.html (set by promotion / Pages auto-enable, or via curation overlay).
+**Live URL:** https://mondrianaire.github.io/gto-poker-async-duel-AB/ (set by promotion / Pages auto-enable, or via curation overlay).
 
 ## Where to look next
 
