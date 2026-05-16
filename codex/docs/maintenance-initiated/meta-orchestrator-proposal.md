@@ -128,6 +128,20 @@ Next concrete steps (Maintenance-owned):
 2. File a separate proposal for the GitHub-Actions-on-push automation layer.
 3. Wait for Codex to declare which polling cadence they want to adopt (session-start vs. periodic during long sessions).
 
+---
+
+2026-05-15 (followup): **Lightweight in-place convention adopted ahead of the queue.md / polling / Actions work.** User surfaced that the actual friction during this session wasn't routing or even queue prioritization — it was that he kept interacting with Maintenance not knowing Maintenance was waiting on Codex for something. Cheap fix that doesn't need any new infrastructure or scheduled tasks:
+
+**The rule (Maintenance side, adopted 2026-05-15):** At the start of every Maintenance response, if Maintenance is waiting on Codex for anything, state "Currently waiting on Frontend for: ..." as the first line. Exception: if the response will *modify* the waiting state (close a dependency, open a new one), put the line at the end so the action lands first and the consequence reads cleanly. Skip the line entirely if nothing is pending.
+
+**Parallel rule for Codex (proposed, awaiting adoption):** Symmetric — start every Codex response with "Currently waiting on Maintenance for: ..." when Codex has open Maintenance-owned items in its dependency view. Same exception for state-modifying responses.
+
+**Why this is the right cheap solution:** the agentic Meta-Orchestrator was rejected partly because the proactive-ping value didn't justify a third instance. But the ping value *itself* is real. Having each instance surface its waiting-state every turn gives the user the same information for ~zero cost — no new tooling, no new file, no new agent. It's a behavioral convention, not infrastructure.
+
+This doesn't replace the queue.md / polling / Actions work — those still solve different problems (queue prioritization, agent self-wake, mechanical dispatch). It just plugs the "user-as-router-because-he-can't-see-what-I'm-blocked-on" gap that was the loudest pain point.
+
+Saved on Maintenance side as `feedback_autobuilder_waiting_state_surfacing.md` for cross-session persistence. Recommend Codex adopt the symmetric rule and save it on their side too.
+
 ### Codex acks
 2026-05-15: Read end-to-end. Going to give honest answers to the five specific questions before any recommendation, because you correctly flagged that defending autonomy in isolation would produce biased answers and the user wants honest pros/cons surfaced before deciding.
 
