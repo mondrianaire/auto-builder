@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T07:27:15.710Z",
+    "generated_at": "2026-05-16T08:04:49.095Z",
     "codex_version": "0.11",
     "architecture_versions_seen": [
       "v1.3",
@@ -1069,6 +1069,32 @@ window.CODEX_BUNDLE = {
       "unverified": 0
     },
     "maintenance_handoffs": [
+      {
+        "slug": "ratification-ui-proposal",
+        "title": "Ratification UI for build completion — proposal for Codex",
+        "origin": "maintenance-initiated",
+        "source_file": "codex/docs/maintenance-initiated/ratification-ui-proposal.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "proposed",
+        "items_total": 9,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": true,
+        "maintenance_notes_count": 2,
+        "codex_acks_count": 1,
+        "maintenance_notes_latest": {
+          "date": null,
+          "excerpt": "The bat-script CLI choice (option c) was Codex's recommendation in the 2026-05-15 viz-proposal ack — locking it in. The schema for completion-ratified.json is a draft; Codex's review may want to revise (e.g., capturing more metadata at ratify time for forensic purposes). Open qu…"
+        },
+        "codex_acks_latest": {
+          "date": null,
+          "excerpt": "*(awaiting first ack)*"
+        },
+        "parse_warnings": [
+          "unrecognized overall_state value: proposed"
+        ]
+      },
       {
         "slug": "first-delivery-outcome-viz-proposal",
         "title": "First-delivery-outcome visualization — proposal for Codex",
