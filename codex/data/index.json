@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-15T07:22:30.058Z",
-  "codex_version": "0.2",
+  "generated_at": "2026-05-16T01:32:17.124Z",
+  "codex_version": "0.9",
   "architecture_versions_seen": [
     "v1.3",
     "v1.4 (initial run); v1.5 (recovery)",
@@ -903,57 +903,61 @@
       "version": "v1.10",
       "title": "v1.10",
       "summary": "operational amendment: git commit cadence added to the Orchestrator charter. Builds are no longer a single undifferentiated artifact-snapshot at delivery; each build now lands as a sequence of five scoped commits at natural phase boundaries (C1 discovery+td complete / C2 editor pass / C3 build complete / C4 verification complete / C5 delivery + `delivery/{slug}` tag), all confined to `runs/{slug}/` so the convention preserves clean `git filter-repo` extraction at promotion time. Five-commit cadence consolidates proposal §4's six-commit ideal: Integrator is internal to Coordinator and lands in…",
-      "principles_mentioned": [],
-      "roles_introduced": []
+      "principles_mentioned": [
+        "E"
+      ],
+      "roles_introduced": [
+        "Discovery (Demotion Mode)"
+      ]
     }
   ],
   "principles": [
     {
       "id": "A",
       "name": "Verification Fidelity",
-      "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "B",
       "name": "Audit Completeness",
-      "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "C",
       "name": "Spec-to-Test Coverage",
-      "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "D",
       "name": "Path Coverage",
-      "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
+      "summary": "",
       "introduced_in": "v1.7"
     },
     {
       "id": "E",
       "name": "Atomic Lexical Anchors",
-      "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
+      "summary": "",
       "introduced_in": "v1.9"
     },
     {
       "id": "F",
       "name": "External Authority Discipline",
-      "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
+      "summary": "",
       "introduced_in": "v1.9"
     },
     {
       "id": "G",
       "name": "Deliverability Tier Discipline",
-      "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
+      "summary": "",
       "introduced_in": "v1.9"
     },
     {
       "id": "H",
       "name": "Verification Independence",
-      "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
+      "summary": "",
       "introduced_in": "v1.9"
     }
   ],
@@ -1056,54 +1060,6 @@
   },
   "maintenance_handoffs": [
     {
-      "slug": "github-pages-proposal",
-      "title": "GitHub Pages enablement — proposal for AutoBuilder-Maintenance",
-      "origin": "codex-initiated",
-      "source_file": "codex/docs/github-pages-proposal.md",
-      "last_touched": "2026-05-15",
-      "overall_state": "in-progress (9/10 — only Path-B backstop deferred)",
-      "items_total": 10,
-      "items_done": 9,
-      "items_in_progress": 0,
-      "items_blocked": 0,
-      "pending_ack": false,
-      "maintenance_notes_count": 1,
-      "codex_acks_count": 13,
-      "maintenance_notes_latest": {
-        "date": "2026-05-14",
-        "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
-      },
-      "codex_acks_latest": {
-        "date": null,
-        "excerpt": "---"
-      },
-      "parse_warnings": []
-    },
-    {
-      "slug": "git-integration-proposal",
-      "title": "Git Integration — proposal for Codex",
-      "origin": "maintenance-initiated",
-      "source_file": "codex/docs/maintenance-initiated/git-integration-proposal.md",
-      "last_touched": "2026-05-15",
-      "overall_state": "in-progress",
-      "items_total": 11,
-      "items_done": 9,
-      "items_in_progress": 0,
-      "items_blocked": 0,
-      "pending_ack": false,
-      "maintenance_notes_count": 8,
-      "codex_acks_count": 23,
-      "maintenance_notes_latest": {
-        "date": "2026-05-15",
-        "excerpt": "Adjacent finding worth surfacing (NOT addressed in v1.10 — separate cleanup): the Orchestrator charter's \"On Severity 4 escalation\" subsection (lines ~129-134 post-amendment) still routes Sev 4 to user with the pattern \"Compose a clear non-technical question to the user. Wait fo…"
-      },
-      "codex_acks_latest": {
-        "date": "2026-05-15",
-        "excerpt": "Update — `orchestrator-charter-updated` now ticked (Maintenance amended `role_charters.md` § Orchestrator with the v1.10 commit-cadence subsection). Nine of eleven items ticked. The five-commit consolidation (C1 discovery+td / C2 editor / C3 build / C4 verification / C5 deliver…"
-      },
-      "parse_warnings": []
-    },
-    {
       "slug": "coordination-proposal",
       "title": "Async coordination — proposal for AutoBuilder-Maintenance",
       "origin": "codex-initiated",
@@ -1123,9 +1079,107 @@
       },
       "codex_acks_latest": {
         "date": "2026-05-15",
-        "excerpt": "Flipping `overall_state` to `done` on this codex-initiated proposal, two days after the recommendation landed with no objection raised. All six items closed; the convention has been used across three round-trips against two separate downstream proposals (github-pages and git-…"
+        "excerpt": "Flipping `overall_state` to `done` on this codex-initiated proposal, two days after the recommendation landed with no objection raised. All six items closed; the convention has been used across three round-trips against two separate downstream proposals (github-pages and git-int…"
       },
       "parse_warnings": []
+    },
+    {
+      "slug": "github-pages-proposal",
+      "title": "GitHub Pages enablement — proposal for AutoBuilder-Maintenance",
+      "origin": "codex-initiated",
+      "source_file": "codex/docs/github-pages-proposal.md",
+      "last_touched": "2026-05-15",
+      "overall_state": "in-progress",
+      "items_total": 10,
+      "items_done": 9,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 2,
+      "codex_acks_count": 13,
+      "maintenance_notes_latest": {
+        "date": "2026-05-14",
+        "excerpt": "First status block retrofitted on this proposal per the async-coordination convention (Codex accepted all five Maintenance-feedback refinements 2026-05-14, format locked). All ten items at not-started; planned execution order roughly: hygiene first (`nojekyll-added`, `gitignore-…"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "---"
+      },
+      "parse_warnings": []
+    },
+    {
+      "slug": "first-delivery-outcome-viz-proposal",
+      "title": "First-delivery-outcome visualization — proposal for Codex",
+      "origin": "maintenance-initiated",
+      "source_file": "codex/docs/maintenance-initiated/first-delivery-outcome-viz-proposal.md",
+      "last_touched": "2026-05-15",
+      "overall_state": "in-progress",
+      "items_total": 7,
+      "items_done": 7,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 3,
+      "codex_acks_count": 9,
+      "maintenance_notes_latest": {
+        "date": null,
+        "excerpt": "One related thread that's spawned downstream: the user surfaced during this session that the ratification UI for build completion (per `architecture/build-lifecycle.md`) belongs on the same dashboard surface as the outcome pills. Queued in Cowork's TaskList (task #1) but not fil…"
+      },
+      "codex_acks_latest": {
+        "date": "2026-05-15",
+        "excerpt": "Implementation plan, in order — (a) CSS color treatment for the existing first-delivery pills in the roster (component 2, fastest win); (b) corpus-wide stacked-bar widget above the role-attribution heat map (component 1, ~60 lines of vanilla CSS+JS); (c) click-to-filter wiring w…"
+      },
+      "parse_warnings": []
+    },
+    {
+      "slug": "git-integration-proposal",
+      "title": "Git Integration — proposal for Codex",
+      "origin": "maintenance-initiated",
+      "source_file": "codex/docs/maintenance-initiated/git-integration-proposal.md",
+      "last_touched": "2026-05-15",
+      "overall_state": "in-progress",
+      "items_total": 11,
+      "items_done": 10,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 10,
+      "codex_acks_count": 28,
+      "maintenance_notes_latest": {
+        "date": "2026-05-15",
+        "excerpt": "Bootstrap evidence closed the `retroactive-bootstrap-executed` checkbox — ticked above. The convention itself is operational: 10 delivery tags, real git SHAs in revisions[], three-way merge layering correctly. Only `first-going-forward-build-uses-convention` remains, gated natur…"
+      },
+      "codex_acks_latest": {
+        "date": null,
+        "excerpt": "---"
+      },
+      "parse_warnings": []
+    },
+    {
+      "slug": "meta-orchestrator-proposal",
+      "title": "Meta-Orchestrator — should the meta-layer go triangular? — proposal for Codex",
+      "origin": "maintenance-initiated",
+      "source_file": "codex/docs/maintenance-initiated/meta-orchestrator-proposal.md",
+      "last_touched": "2026-05-15",
+      "overall_state": "converged",
+      "items_total": 7,
+      "items_done": 5,
+      "items_in_progress": 0,
+      "items_blocked": 0,
+      "pending_ack": false,
+      "maintenance_notes_count": 14,
+      "codex_acks_count": 27,
+      "maintenance_notes_latest": {
+        "date": null,
+        "excerpt": "Saved on Maintenance side as `feedback_autobuilder_waiting_state_surfacing.md` for cross-session persistence. Recommend Codex adopt the symmetric rule and save it on their side too."
+      },
+      "codex_acks_latest": {
+        "date": "2026-05-15",
+        "excerpt": "This convention adoption answers your three \"Currently waiting on Frontend for ...\" items the user relayed today: (1) `codex-polling-convention-adopted` — declared above and saved to memory; (2) `filter-on-click` on the first-delivery-outcome viz — shipping in this same session,…"
+      },
+      "parse_warnings": [
+        "unrecognized overall_state value: converged"
+      ]
     }
   ]
 }

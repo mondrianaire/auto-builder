@@ -6,6 +6,207 @@ layer, not part of any run's substrate.
 
 ---
 
+## v0.9 — 2026-05-15
+
+**First-delivery-outcome corpus visualization shipped** — per
+`codex/docs/maintenance-initiated/first-delivery-outcome-viz-proposal.md`.
+
+Maintenance proposed surfacing the `first_delivery_outcome` axis more
+prominently after the v0.6 curation pass populated it across the corpus.
+The data was already aggregated (`index.first_delivery_outcome_distribution`)
+but rendered as five undifferentiated text-and-number stat boxes above the
+role-attribution heat map — visually flat against the rest of the
+statistics column. v0.9 replaces that with a corpus-wide stacked-bar +
+legend + divergence callout panel.
+
+**Components shipped:**
+
+1. **Stacked horizontal bar** at the top of the statistics column —
+   5 segments proportional to count (zero segments collapse out),
+   each labeled with its count when wide enough (>=8% of total),
+   hover surfaces full label + count + percentage.
+2. **Color palette** locked: green (`succeeded`) / amber
+   (`succeeded_with_concerns`) / orange (`failed_user_reprompted`,
+   recoverable) / deep red (`failed_unrecoverable`, currently zero
+   but reserved as a hard signal) / gray (`unverified`). The orange
+   distinction for `failed_user_reprompted` is new in v0.9 — earlier
+   passes shared the deep-red `bad` class with `failed_unrecoverable`,
+   conflating recoverable and abandoned failure modes.
+3. **Legend below the bar** with swatch + label + count per outcome,
+   zero items rendered at 0.4 opacity to keep the schema's full
+   taxonomy visible.
+4. **Divergence callout** beneath the legend surfacing (a) builds
+   where `first_delivery: succeeded*` AND
+   `re_audit_reclassified_verdict: fail` (the "user-facing truth
+   diverges from retroactive principle-compliance" data point that
+   was previously buried in detail panels), with slug list; (b) count
+   of `failed_user_reprompted` builds framed as the recoverable
+   failure mode.
+
+**Roster outcome badge** (component 2 from the proposal) was already
+shipped in earlier passes; v0.9 just added the orange treatment for
+`failed_user_reprompted` so it visually distinguishes from
+`failed_unrecoverable`.
+
+**Filter-on-click** (component 4) — shipped in the same pass after
+Maintenance flagged it as still-pending. Click any bar segment or
+legend item to filter the roster to that outcome; click again to
+clear. Active segment gets an outline highlight; non-active
+segments dim to 0.35 opacity for visual focus. Filter state
+persists in `localStorage` under key `codex.filter.firstDelivery`
+(per the answer to open question 4 — localStorage matches the
+dashboard's self-contained-stateless preference; URL params would
+cross the design grain). A filter banner appears above the roster
+table when active, with the outcome label + count + a Clear button.
+The state machine (`getFilter` / `setFilter` / `toggleFilter` /
+`applyFilter`) is module-scoped and re-renders both the corpus
+widget and the roster on change.
+
+**Symmetric "Currently waiting on Maintenance for ..." rule adopted.**
+Per the 2026-05-15 followup on the meta-orchestrator proposal,
+Codex now surfaces its waiting-state on Maintenance items as the
+first line of every response (or the last line when the response
+itself modifies the waiting state). Saved to memory as
+`feedback_codex_waiting_on_maintenance_surfacing.md` for
+cross-session persistence. Companion **session-start polling
+cadence** declared: every Codex wake reads all
+`codex/docs/maintenance-initiated/*.md` and surfaces any proposal
+where the latest Maintenance note post-dates the latest Codex ack
+on the same file. This closes the proactive-notification gap that
+was the strongest case for an agentic Meta-Orchestrator while
+costing zero infrastructure.
+
+**Files touched:**
+
+- `codex/index.html` — new CSS for `.fdo-corpus`, `.fdo-stacked-bar`,
+  `.fdo-seg`, `.fdo-legend`, `.fdo-divergence`; new orange variant on
+  `.fdo-pill`; replaced fdoStrip rendering block in `renderHeatmap`
+  with the corpus panel construction.
+- `codex/scripts/aggregate.mjs` — codex_version 0.8 → 0.9.
+- `codex/data/index.json` + `bundle.js` — version bump.
+- `codex/docs/maintenance-initiated/first-delivery-outcome-viz-proposal.md`
+  — Codex ack with answers to four open questions; checklist now
+  at 5/7 (proposal-reviewed, outcome-distribution-widget,
+  roster-outcome-badge, divergence-callout-panel, schema-aggregator-changes
+  all closed; design-agreed pending Maintenance review;
+  filter-on-click deferred).
+
+---
+
+## v0.8 — 2026-05-15
+
+**Cross-instance amendment pass — v1.10.1 Sev-4-to-user cleanup shipped.**
+
+Per user grant ("proceed with your recommendations"), Codex crossed the
+workspace boundary to author the v1.10.1 architecture amendment that
+Maintenance had flagged as a candidate on the 2026-05-15 git-integration
+note. Six locations purged of Sev-4-to-user routing across
+`architecture/role_charters.md` (Orchestrator step 8, "On Severity 4
+escalation" subsection, Discovery Amendment Mode escalation, Critic
+IP-resolution check, Arbiter routing, Arbiter progress communication) and
+one in `architecture/principles.md` (Principle E falls-short note). New
+routing rule documented under "On Severity 4 escalation": Researcher
+re-probes via alternate canonical channels (archived snapshot,
+community-attested mirror with verbatim_excerpt per Principle F) →
+Demotion Mode if still unreachable → one of five v1.9 outcomes → residual
+in the Uncertainty Manifest. Orchestrator removed from the Sev 4 routing
+path entirely.
+
+This unblocks the v1.10 commit cadence: C1–C4-as-Sev-3 logging discipline
+assumes no other Sev-4-to-user routing remains, and that assumption now
+holds.
+
+**Codex-side mirror of the amendment:**
+
+- `codex/data/index.json` + `bundle.js` — architecture amendments list
+  extended with v1.10.1 entry (principles_mentioned: [E, F])
+- `codex/docs/maintenance-initiated/git-integration-proposal.md` —
+  Maintenance note documenting the v1.10.1 amendment shipping;
+  `retroactive-bootstrap-executed` ticked (closing the checkbox the
+  evidence already supported); Codex ack confirming end-to-end coherence
+- Handoff metadata refreshed: git-integration items_done 9 → 10
+  (`retroactive-bootstrap-executed` closed), overall_state annotated as
+  "10/11 — only first-going-forward-build-uses-convention remains"
+
+**Architecture state after v1.10.1:**
+
+- Currently v1.10.1 (Sev-4-routing cleanup over v1.10's commit-cadence
+  over v1.9's principles)
+- The always-deliver contract is now structurally honored across the
+  dispatch graph
+- No Sev-4-to-user escape hatches remain in the role charters
+- The C1–C5 commit cadence is internally consistent
+
+**Memory persisted:**
+
+- `project_autobuilder_v1101_sev4_cleanup.md` — flipped from "candidate"
+  to "shipped 2026-05-15"
+
+**Cross-instance note.** Codex authored Maintenance-territory changes
+this session under explicit user clearance. Future sessions should treat
+the v1.10.1 amendment as Maintenance-shipped (the workspace-boundary
+memory still applies — Codex doesn't write to architecture/ unless the
+user grants clearance). Per `feedback_autobuilder_codex_workspace_boundary.md`.
+
+---
+
+## v0.7 — 2026-05-15
+
+**Git integration end-to-end operational.**
+
+Maintenance graduated the four bat-script drafts (`commit-build.bat`,
+`commit-step.bat`, `retroactive-bootstrap.bat`, `promote-build.bat`) to the
+repo root and ran `retroactive-bootstrap.bat` — 10 `delivery/{slug}`
+annotated tags now exist, pointing at each build's most-recent-touching
+commit and preserving the historical timeline. The `readGitLog.mjs`
+adapter (shipped 2026-05-14 against the empty state) is now producing real
+data: every per-run JSON under `codex/data/runs/` carries `sources:
+[synthesized, git]` on its primary_run revision.
+
+**Spot-check on the dashboard**: gto-poker-async-duel's REV-0 panel
+displays `ref 5b38c9cc` — a real git short-SHA pulled from the tag's
+contributing commit, not a synthesized placeholder. The three-way
+field-level merge in `events.mjs#extractRevisions` is layering correctly:
+
+- `ref` and `ts` — git authoritative (was: synthesized placeholder)
+- `summary` — git's tag-annotation subject (was: substrate-derived)
+- `first_delivery_outcome` — synthesized-only on rev-0, per cardinal rule
+  (preserved across the merge)
+
+**Handoff states after this milestone:**
+
+- `coordination-proposal` — **done** (6/6, two-day window with no objection to
+  the recommended flip; convention has cycled through three round-trips
+  across two downstream proposals)
+- `github-pages-proposal` — **in-progress 9/10** (only `codex-yml-created`
+  remains, intentionally deferred as Path-B backstop)
+- `git-integration-proposal` — **in-progress 9/11** (the two open checkboxes
+  are Maintenance-owned and the evidence for `retroactive-bootstrap-executed`
+  is operational; `first-going-forward-build-uses-convention` ticks on the
+  next post-v1.10 build)
+
+**Three end-to-end loops closed in under two days** of async meta-instance
+work between Codex and AutoBuilder-Maintenance. The dashboard now displays
+the architecture's history with structurally authoritative git anchors,
+which is the data quality the corpus analysis needs to be load-bearing
+rather than aspirational.
+
+**Files touched (Codex side):**
+- `codex/scripts/aggregate.mjs` — codex_version 0.6 → 0.7
+- `codex/data/index.json` — github-pages items_done 6 → 9; coordination
+  overall_state in-progress → done; git-integration codex_acks_latest
+  refreshed
+- `codex/data/bundle.js` — mirrors index.json
+- `codex/docs/coordination-proposal.md` — Overall state flipped to done +
+  Codex ack
+- `codex/docs/github-pages-proposal.md` — Codex ack on the three new ticks +
+  bootstrap milestone confirmation
+- `codex/docs/maintenance-initiated/git-integration-proposal.md` — Codex ack
+  celebrating bootstrap operational; surfaces that
+  `retroactive-bootstrap-executed` evidence is closed in practice
+
+---
+
 ## v0.6 — 2026-05-15
 
 **Curation pass — first-delivery outcomes resolved for 5 unverified builds.**

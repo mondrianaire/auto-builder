@@ -246,8 +246,116 @@
   }
   .fdo-pill.ok        { color: #fff; background: rgba(110,201,122,0.20); border-color: rgba(110,201,122,0.6); }
   .fdo-pill.warn      { color: #fff; background: rgba(212,163,90,0.20);  border-color: rgba(212,163,90,0.6); }
+  .fdo-pill.orange    { color: #fff; background: rgba(217,140,80,0.25);  border-color: rgba(217,140,80,0.6); }
   .fdo-pill.bad       { color: #fff; background: rgba(217,112,112,0.25); border-color: rgba(217,112,112,0.6); }
   .fdo-pill.muted     { color: var(--text-dim); border-color: var(--border-soft); background: transparent; }
+
+  /* first-delivery corpus distribution — v0.9 (per first-delivery-outcome-viz-proposal) */
+  .fdo-corpus {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    background: var(--bg-elev);
+  }
+  .fdo-corpus-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .fdo-corpus-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .fdo-corpus-tagline {
+    font-size: 11px; color: var(--text-faint);
+  }
+  .fdo-stacked-bar {
+    display: flex; height: 28px;
+    border-radius: 3px; overflow: hidden;
+    background: var(--bg-elev-2);
+    margin-bottom: 10px;
+  }
+  .fdo-seg {
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.4px;
+    transition: filter 120ms ease;
+    cursor: pointer;
+    border-right: 1px solid rgba(0,0,0,0.20);
+  }
+  .fdo-seg:last-child { border-right: none; }
+  .fdo-seg:hover { filter: brightness(1.15); }
+  .fdo-seg.zero  { display: none; }
+  .fdo-seg.ok       { background: rgba(110,201,122,0.55); }
+  .fdo-seg.warn     { background: rgba(212,163,90,0.55); }
+  .fdo-seg.orange   { background: rgba(217,140,80,0.55); }
+  .fdo-seg.bad      { background: rgba(217,112,112,0.55); }
+  .fdo-seg.muted    { background: rgba(140,140,140,0.45); }
+  .fdo-legend {
+    display: flex; flex-wrap: wrap; gap: 6px 14px;
+    font-size: 11px;
+  }
+  .fdo-legend-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text-dim);
+  }
+  .fdo-legend-item.zero { opacity: 0.4; }
+  .fdo-legend-swatch {
+    width: 10px; height: 10px; border-radius: 2px;
+    display: inline-block; flex: none;
+  }
+  .fdo-legend-swatch.ok     { background: rgba(110,201,122,0.7); }
+  .fdo-legend-swatch.warn   { background: rgba(212,163,90,0.7); }
+  .fdo-legend-swatch.orange { background: rgba(217,140,80,0.7); }
+  .fdo-legend-swatch.bad    { background: rgba(217,112,112,0.7); }
+  .fdo-legend-swatch.muted  { background: rgba(140,140,140,0.55); }
+  .fdo-legend-count {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .fdo-divergence {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .fdo-divergence-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--text);
+  }
+  /* active-filter highlight on legend items and segments */
+  .fdo-seg.active     { outline: 2px solid var(--text); outline-offset: -2px; }
+  .fdo-seg.dimmed     { opacity: 0.35; }
+  .fdo-legend-item    { cursor: pointer; transition: opacity 120ms ease; }
+  .fdo-legend-item.active { color: var(--text); font-weight: 600; }
+  .fdo-legend-item.dimmed { opacity: 0.4; }
+  /* filter banner above roster */
+  .filter-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 10px 0 12px;
+    padding: 8px 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border-soft);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .filter-banner.hidden { display: none; }
+  .filter-banner-text { color: var(--text-dim); }
+  .filter-banner-text strong { color: var(--text); font-weight: 600; }
+  .filter-clear {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .filter-clear:hover { color: var(--text); border-color: var(--text-dim); }
 
   /* role heat map */
   .heat-row { display: grid; grid-template-columns: 130px 1fr 60px 60px 60px; gap: 6px 12px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border-soft); }
@@ -445,6 +553,13 @@
   <!-- ============ RUN ROSTER ============ -->
   <section id="runs-section">
     <h2>Run roster <small>click a row for detail</small></h2>
+    <div id="filter-banner" class="filter-banner hidden">
+      <div class="filter-banner-text">
+        Filtered by first-delivery outcome: <strong id="filter-banner-label">—</strong>
+        <span id="filter-banner-count" style="color: var(--text-faint); margin-left: 8px;"></span>
+      </div>
+      <button class="filter-clear" id="filter-clear-btn">Clear filter</button>
+    </div>
     <table class="runs" id="runs-table">
       <thead>
         <tr>
@@ -542,6 +657,45 @@
     if (v == null || v === '' || v === 'unknown') return el('span', { class: 'dash', text: '—' });
     return document.createTextNode(String(v));
   }
+
+  // ----- v0.9: first-delivery filter state machine -----
+  // Per first-delivery-outcome-viz-proposal § component 4
+  const FILTER_KEY = 'codex.filter.firstDelivery';
+  function getFilter() {
+    try { return localStorage.getItem(FILTER_KEY) || null; }
+    catch (e) { return null; }
+  }
+  function setFilter(outcome) {
+    try {
+      if (outcome) localStorage.setItem(FILTER_KEY, outcome);
+      else localStorage.removeItem(FILTER_KEY);
+    } catch (e) { /* localStorage unavailable; filter is ephemeral */ }
+    applyFilter();
+  }
+  function applyFilter() {
+    const active = getFilter();
+    // Re-render the corpus widget (highlights active segment/legend)
+    renderHeatmap();
+    // Re-render the roster (hides rows that don't match)
+    renderRoster();
+    // Update the banner
+    const banner = document.getElementById('filter-banner');
+    if (!banner) return;
+    if (active) {
+      const label = active.replace(/_/g, ' ');
+      document.getElementById('filter-banner-label').textContent = label;
+      const fdo = (idx.first_delivery_outcome_distribution || {});
+      const n = fdo[active] || 0;
+      const total = (idx.runs || []).length;
+      document.getElementById('filter-banner-count').textContent = '(' + n + ' of ' + total + ' build' + (total === 1 ? '' : 's') + ')';
+      banner.classList.remove('hidden');
+    } else {
+      banner.classList.add('hidden');
+    }
+  }
+  function toggleFilter(outcome) {
+    setFilter(getFilter() === outcome ? null : outcome);
+  }
   function verdictPill(verdict) {
     const map = {
       'pass':                       { cls: 'ok',    label: 'pass' },
@@ -556,11 +710,11 @@
   }
   function firstDeliveryPill(outcome, source) {
     const map = {
-      'succeeded':               { cls: 'ok',    label: 'succeeded' },
-      'succeeded_with_concerns': { cls: 'warn',  label: 'succeeded w/ concerns' },
-      'failed_user_reprompted':  { cls: 'bad',   label: 'failed → reprompted' },
-      'failed_unrecoverable':    { cls: 'bad',   label: 'failed unrecoverable' },
-      'unverified':              { cls: 'muted', label: 'unverified' }
+      'succeeded':               { cls: 'ok',     label: 'succeeded' },
+      'succeeded_with_concerns': { cls: 'warn',   label: 'succeeded w/ concerns' },
+      'failed_user_reprompted':  { cls: 'orange', label: 'failed → reprompted' },
+      'failed_unrecoverable':    { cls: 'bad',    label: 'failed unrecoverable' },
+      'unverified':              { cls: 'muted',  label: 'unverified' }
     };
     const m = map[outcome] || { cls: 'muted', label: outcome || '—' };
     const span = el('span', { class: 'fdo-pill ' + m.cls, text: m.label });
@@ -656,7 +810,10 @@
   function renderRoster() {
     const tbody = document.getElementById('runs-tbody');
     tbody.innerHTML = '';
+    const activeFilter = getFilter();
     for (const r of idx.runs) {
+      // v0.9: skip runs that don't match the active first-delivery filter
+      if (activeFilter && r.first_delivery_outcome !== activeFilter) continue;
       const tr = el('tr', { class: 'row', 'data-slug': r.slug });
       tr.addEventListener('click', () => selectRun(r.slug));
 
@@ -1068,23 +1225,102 @@
     const totals = idx.role_attribution_corpus_totals || {};
     const fdo = idx.first_delivery_outcome_distribution || {};
 
-    // Tiny FDO bar above the heat map
-    const fdoStrip = el('div', { class: 'stat-row', style: 'margin-bottom: 14px;' });
-    [
-      ['succeeded',               'ok'],
-      ['succeeded_with_concerns', 'warn'],
-      ['failed_user_reprompted',  'bad'],
-      ['failed_unrecoverable',    'bad'],
-      ['unverified',              'muted']
-    ].forEach(([k, cls]) => {
+    // v0.9 — corpus-wide first-delivery distribution panel
+    // Per first-delivery-outcome-viz-proposal § Component 1
+    const outcomes = [
+      ['succeeded',               'ok',     'succeeded'],
+      ['succeeded_with_concerns', 'warn',   'succeeded w/ concerns'],
+      ['failed_user_reprompted',  'orange', 'failed → reprompted'],
+      ['failed_unrecoverable',    'bad',    'failed unrecoverable'],
+      ['unverified',              'muted',  'unverified']
+    ];
+    const total = outcomes.reduce((acc, [k]) => acc + (fdo[k] || 0), 0);
+
+    const corpus = el('div', { class: 'fdo-corpus' });
+    corpus.appendChild(el('div', { class: 'fdo-corpus-header' },
+      el('div', { class: 'fdo-corpus-title', text: 'first-delivery outcomes — ' + total + ' build' + (total === 1 ? '' : 's') }),
+      el('div', { class: 'fdo-corpus-tagline', text: 'are builds shipping correctly on first contact, or does the user have to re-prompt?' })
+    ));
+
+    const activeFilter = getFilter();
+
+    // Stacked bar
+    const bar = el('div', { class: 'fdo-stacked-bar' });
+    outcomes.forEach(([k, cls, label]) => {
       const v = fdo[k] || 0;
-      const s = el('div', { class: 'stat' },
-        el('div', { class: 'label', text: 'first-delivery: ' + k.replace(/_/g, ' ') }),
-        el('div', { class: 'value', text: String(v) })
-      );
-      fdoStrip.appendChild(s);
+      if (v === 0) return; // skip zero segments
+      const pct = total > 0 ? (v / total) * 100 : 0;
+      const classes = ['fdo-seg', cls];
+      if (activeFilter === k) classes.push('active');
+      else if (activeFilter) classes.push('dimmed');
+      const seg = el('div', {
+        class: classes.join(' '),
+        style: 'flex: ' + v + ' 1 ' + pct.toFixed(2) + '%;',
+        title: label + ': ' + v + ' (' + pct.toFixed(0) + '%) — click to filter',
+        onclick: () => toggleFilter(k)
+      });
+      // Only show count text if segment is wide enough
+      if (pct >= 8) seg.textContent = String(v);
+      bar.appendChild(seg);
     });
-    host.appendChild(fdoStrip);
+    corpus.appendChild(bar);
+
+    // Legend
+    const legend = el('div', { class: 'fdo-legend' });
+    outcomes.forEach(([k, cls, label]) => {
+      const v = fdo[k] || 0;
+      const classes = ['fdo-legend-item'];
+      if (v === 0) classes.push('zero');
+      if (activeFilter === k) classes.push('active');
+      else if (activeFilter) classes.push('dimmed');
+      const item = el('div', {
+        class: classes.join(' '),
+        title: 'click to filter to ' + label,
+        onclick: () => toggleFilter(k)
+      },
+        el('span', { class: 'fdo-legend-swatch ' + cls }),
+        el('span', { text: label }),
+        el('span', { class: 'fdo-legend-count', text: String(v) })
+      );
+      legend.appendChild(item);
+    });
+    corpus.appendChild(legend);
+
+    // Divergence callout (component 3)
+    // Count builds where verdict passes architecturally but re-audit reclassified as fail,
+    // AND the curated first_delivery_outcome is succeeded* (i.e., user-facing truth differs
+    // from retroactive principle-compliance).
+    const runs = idx.runs || [];
+    const divergentBuilds = runs.filter(r => {
+      const fdoOk = r.first_delivery_outcome === 'succeeded' || r.first_delivery_outcome === 'succeeded_with_concerns';
+      const reauditFail = r.re_audit_present && r.re_audit_reclassified_verdict === 'fail';
+      return fdoOk && reauditFail;
+    });
+    const repromptedCount = runs.filter(r => r.first_delivery_outcome === 'failed_user_reprompted').length;
+
+    if (divergentBuilds.length > 0 || repromptedCount > 0) {
+      const divergence = el('div', { class: 'fdo-divergence' });
+      const parts = [];
+      if (divergentBuilds.length > 0) {
+        parts.push(
+          el('span', { class: 'fdo-divergence-num', text: String(divergentBuilds.length) }),
+          el('span', { text: ' build' + (divergentBuilds.length === 1 ? '' : 's') + ' shipped successfully on first contact but the re-audit reclassified ' + (divergentBuilds.length === 1 ? 'it' : 'them') + ' as fail under current principle gates: ' }),
+          el('span', { class: 'fdo-divergence-num', text: divergentBuilds.map(r => r.slug).join(', ') }),
+          el('span', { text: '.' })
+        );
+      }
+      if (repromptedCount > 0) {
+        if (parts.length) parts.push(el('br'));
+        parts.push(
+          el('span', { class: 'fdo-divergence-num', text: String(repromptedCount) }),
+          el('span', { text: ' build' + (repromptedCount === 1 ? '' : 's') + ' required user re-prompts to reach a working artifact — recoverable failure mode, distinct from unrecoverable.' })
+        );
+      }
+      parts.forEach(p => divergence.appendChild(p));
+      corpus.appendChild(divergence);
+    }
+
+    host.appendChild(corpus);
 
     // Heat map table
     const entries = Object.entries(totals).sort((a, b) => b[1].total - a[1].total);
@@ -1195,6 +1431,11 @@
   renderHandoffs();
   renderAmendments();
   renderPrinciples();
+
+  // v0.9: wire the filter-clear button and apply any persisted filter
+  const clearBtn = document.getElementById('filter-clear-btn');
+  if (clearBtn) clearBtn.addEventListener('click', () => setFilter(null));
+  applyFilter();  // shows the banner if a filter was persisted from a prior session
 
   // Auto-select the newest run for convenience
   if (idx.runs.length) selectRun(idx.runs[0].slug);
