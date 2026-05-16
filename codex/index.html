@@ -933,7 +933,7 @@
       return { cls: 'promoted', label: 'Promoted ★', title: 'Forked to ' + promotedTo, ready: false };
     }
     if (ratifiedAt) {
-      return { cls: 'complete', label: 'Complete · awaiting fork', title: 'Ratified ' + ratifiedAt + ' by ' + (sum.ratified_by || 'unknown') + '; fork ceremony pending', ready: false };
+      return { cls: 'complete', label: 'Ratified', title: 'Ratified ' + ratifiedAt + ' by ' + (sum.ratified_by || 'unknown') + '. Corpus entry sealed — this IS the natural end state. Promotion is opt-in and only relevant if extending functionality beyond what Discovery surfaced.', ready: false };
     }
     // v0.13: ready-to-ratify sub-state — verification passed + no ratification yet
     if ((outcome === 'succeeded' || outcome === 'succeeded_with_concerns') && verifPassed) {
@@ -941,7 +941,7 @@
       return {
         cls: outcome === 'succeeded' ? 'p1ok ready' : 'p1concern ready',
         label: baseLabel + ' · ready to ratify',
-        title: 'Verification passed + first delivery succeeded; run `ratify-build.bat ' + sum.slug + '` to mark complete and trigger fork ceremony',
+        title: 'Verification passed + first delivery succeeded; run `ratify-build.bat ' + sum.slug + '` to seal the corpus entry. Promotion is a separate opt-in step if you want to extend functionality beyond what Discovery surfaced.',
         ready: true
       };
     }
@@ -1132,7 +1132,7 @@
   function renderRatificationSection(sum) {
     const phase = derivePhase(sum);
     const wrap = el('div', { class: 'rat-section' });
-    wrap.appendChild(el('h3', { text: 'Ratification & fork ceremony' }));
+    wrap.appendChild(el('h3', { text: 'Ratification' }));
 
     const stateLine = el('div', { class: 'rat-state' });
     stateLine.appendChild(el('span', { text: 'Current phase: ' }));
@@ -1157,7 +1157,7 @@
 
     // Ratified: show ratified-by/at + notes + "awaiting fork" status
     if (sum.completion_ratified_at) {
-      wrap.appendChild(el('div', { style: 'font-size:12px;color:var(--text-dim);margin-bottom:8px;', text: 'Awaiting fork ceremony — the completion-triggered-fork.yml workflow (when shipped) fires on this push and creates mondrianaire/' + sum.slug + '-AB.' }));
+      wrap.appendChild(el('div', { style: 'font-size:12px;color:var(--text-dim);margin-bottom:8px;', text: 'Build complete — corpus entry is sealed. Ratification IS the natural end state; nothing further is required. Promotion (forking to a standalone product-life repo) is an opt-in next step only if you want to extend functionality beyond what Discovery surfaced. Run `promote-build.bat ' + sum.slug + '` if and when that is the case.' }));
       const meta = el('div', { class: 'rat-meta' });
       meta.appendChild(el('strong', { text: 'Ratified ' }));
       meta.appendChild(el('span', { text: sum.completion_ratified_at }));
@@ -1189,7 +1189,7 @@
     // Ready to ratify: copy-paste command + checklist
     wrap.appendChild(el('div', {
       style: 'font-size:12px;color:var(--text-dim);margin-bottom:8px;',
-      text: 'This build has passed verification + first delivery. Run the command below from the project root to ratify and trigger the fork ceremony.'
+      text: 'This build has passed verification + first delivery. Run the command below from the project root to ratify — this seals the corpus entry and IS the natural end state. Promotion (forking to a standalone product-life repo) is a separate opt-in step, not a required next stage.'
     }));
 
     const cmdText = 'ratify-build.bat ' + sum.slug;
