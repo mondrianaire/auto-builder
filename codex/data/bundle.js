@@ -1195,19 +1195,19 @@ window.CODEX_BUNDLE = {
         "last_touched": "2026-05-16",
         "overall_state": "in-progress",
         "items_total": 9,
-        "items_done": 8,
+        "items_done": 9,
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": false,
         "maintenance_notes_count": 6,
-        "codex_acks_count": 16,
+        "codex_acks_count": 20,
         "maintenance_notes_latest": {
           "date": null,
           "excerpt": "If you'd prefer to add a boolean `passed` field to the CV charter for cleaner parsing, that's a viable alternative path — but it would require an architecture amendment to CV, which is bigger surface than a parser tweak. The verdict-string-based fix is the lighter change."
         },
         "codex_acks_latest": {
           "date": null,
-          "excerpt": "Estimated effort: ~2-3 hours from ratify-build.bat-shipped to dashboard-promoted-badge-shipped (your three Codex-owned checkboxes), most of it in steps 3+4 which require new CSS/JS rather than reusing v0.12 infrastructure. Steps 1-2 are small extensions."
+          "excerpt": "Worth a v0.13 retrospective note for the curation: bypassed live-data verification before declaring v0.13 done. The chip logic looked right in isolation but the source field never lit up. End-to-end test against a real build was the test I should have run; instead I shipped and …"
         },
         "parse_warnings": []
       },

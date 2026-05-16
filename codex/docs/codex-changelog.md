@@ -6,6 +6,30 @@ layer, not part of any run's substrate.
 
 ---
 
+## v0.14 — 2026-05-16 (verdict-schema parser alignment, post-v0.13 bugfix)
+
+**Bugfix for a v0.13 oversight surfaced by Maintenance.** v0.13's aggregator extension set `verification_passed: cv.passed === true`, but CV actually emits `verdict: 'pass' | 'pass_with_concerns' | 'fail'` as a string — no `passed` boolean. So the check always returned null in real reports, no build ever reached the `ready_to_ratify` chip state, and the "Needs your action" callout never lit up.
+
+Maintenance caught this during preflight for the first live ratification (gto-poker-async-duel, verdict `pass_with_concerns`). The bat script already accepts both `pass` and `pass_with_concerns` as ratifiable; the dashboard's narrower acceptance criterion was the misalignment.
+
+**Fix:** single-line aggregator change to use verdict-string check (lighter than a CV-charter amendment):
+
+- `aggregate.mjs`: `verification_passed: cv ? (cv.passed === true) : null` → `verification_passed: cv ? (cv.verdict === 'pass' || cv.verdict === 'pass_with_concerns') : null`
+- `index.html` derivePhase: comment update only; the chip logic is unchanged because the boolean is now sourced correctly upstream.
+
+**Confirmed via data layer regen:** per-run JSONs (earthquake-map, kanban-board, blackjack-trainer, tic-tac-toe, gto-poker-trainer) now show `verification_passed: true` for the verdict-passing builds. After this push deploys, the corpus will show 5 builds in the `ready_to_ratify` chip state (3 succeeded + 2 succeeded_with_concerns with verdict pass) and the "Needs your action" callout will fire with their slugs.
+
+**Codex protocol addition (recorded in proposal ack):** when shipping schema-dependent UI, manually verify at least one row in the data layer carries the expected field before claiming the work done. v0.13 looked right in isolation but the source field never lit up; only Maintenance's coordination flag caught it.
+
+**Files touched:**
+
+- `codex/scripts/aggregate.mjs` — verification_passed expression; codex_version 0.13 → 0.14
+- `codex/index.html` — derivePhase comment clarification
+- `codex/docs/maintenance-initiated/ratification-ui-proposal.md` — v0.14 ack + workflow-2 checkbox ticked (Maintenance shipped it 2026-05-16); status updated to 9/9 closed
+- `codex/docs/queue.md` — refreshed to current state
+
+---
+
 ## v0.13 — 2026-05-16 (ratification UI — 4 dashboard items + aggregator extension)
 
 Implements Codex's side of `codex/docs/maintenance-initiated/ratification-ui-proposal.md`. Six of the proposal's nine items closed by this commit (the seven Codex-owned items minus the workflow #2 item which is downstream Maintenance work).
