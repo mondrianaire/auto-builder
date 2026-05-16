@@ -6,6 +6,48 @@ This document is the architectural boundary between **AutoBuilder as a build fac
 
 ---
 
+## Three categories of run substrate
+
+Every file inside `runs/{slug}/` belongs to exactly one of three categories. This partition determines audience, lifecycle, and what gets included in promotion's fork ceremony.
+
+**Category 1 — Project metadata.** What this build is, what was asked of it, how it concluded. Short, human-readable, fast to scan.
+- `prompt.txt`, `run-report.md`, `completion-ratified.json`
+- `root-cause-analysis.md` (when Phase 2 occurred)
+- The verdict-summary portion of `output/verification/report.json` (`verdict`, `first_contact_failure`)
+- (Future) `RATIFICATION-RECAP.md` — single canonical summary written at ratification time
+
+*Audience:* corpus readers (future humans/agents looking back at this build), the user re-discovering past work, the dashboard's per-build detail panel.
+
+**Category 2 — Build byproduct data.** The structured substrate that informs the AutoBuilder system itself. Heavy, machine-readable, recorded for downstream analysis rather than for human consumption.
+- `audit/`, `decisions/`, `state/`, `history/`, `research/`, `contracts/`
+- `output/builders/`, `output/integration/`
+- The detailed inspection portion of `output/verification/report.json` (per-component fidelity, principle-h skips, edge-case results)
+
+*Audience:* the AutoBuilder system measuring itself (corpus statistics, re-audits, principle-amendment loop), root-cause analysts, the Codex aggregator generating dashboard data.
+
+**Category 3 — The deliverable.** The production artifact, in its final state after verification.
+- `output/final/*` and nothing else.
+
+*Audience:* the eventual product consumers (end users, Claude Code sessions for post-promotion product work, the user when running the app).
+
+### How the categories travel through the lifecycle
+
+| Event | Cat 1 | Cat 2 | Cat 3 |
+|---|---|---|---|
+| Phase 1 build | populated by Discovery/TD/Coordinator/Builders/CV | populated by every role's writes during the build | populated by Integrator → Orchestrator at final delivery |
+| Phase 2 rectification (if any) | RCA + run-report updated | new entries in audit/decisions/state | output/final updated to match the fix |
+| Ratification | `completion-ratified.json` added; (future) `RATIFICATION-RECAP.md` synthesized | frozen | frozen |
+| Sealed state (post-ratification, in this repo) | frozen | frozen | frozen |
+| Promotion (opt-in) | stays in corpus | stays in corpus | **forked** to `mondrianaire/{slug}-AB` with auto-generated README |
+
+The architectural reason the workflow #2 filter is `runs/{slug}/output/final/` rather than the broader `runs/{slug}/`: promotion extracts the **deliverable**, not the build's process records. Cat 1 and Cat 2 are corpus artifacts; only Cat 3 is a product.
+
+### Verification report is mixed-category
+
+A note on the one file whose content spans two categories: `output/verification/report.json`. Its top-level `verdict` field and `first_contact_failure` flag are Cat 1 (the verdict is the single most-referenced field for corpus readers). Its `components[]`, `principle_h_skips[]`, `prompt_named_verb_result`, and per-tier inspection traces are Cat 2 (machine-readable detail for re-audits). The file isn't split because the verdict is derived from the inspection results and they have to be co-located for traceability — but readers should treat the verdict as the Cat-1 surface and everything below it as Cat-2 detail.
+
+---
+
 ## Phase 1 — Initial Delivery
 
 The artifact AutoBuilder returns from the original user prompt, after the full Discovery → Technical Discovery → Coordinator → Builders → Integrator → Convergence Verifier pipeline has run end-to-end.

@@ -36,6 +36,26 @@ The following fields are **coverage-required**. Critic's `prose_coverage` final-
 
 ---
 
+## Three Categories of Run Substrate
+
+Every file under `runs/{slug}/` belongs to exactly one of three categories. This partition determines audience, lifecycle, and what gets included in the fork ceremony at promotion (per `build-lifecycle.md` § Three categories of run substrate).
+
+| Category | What it is | Files | Audience |
+|---|---|---|---|
+| **1 — Project metadata** | Short, human-readable summary of what this build is and how it concluded | `prompt.txt`, `run-report.md`, `completion-ratified.json`, `root-cause-analysis.md` (when present), `output/verification/report.json#verdict` (top-level summary only) | Corpus readers, future humans/agents, the dashboard's per-build detail panel |
+| **2 — Build byproduct data** | Structured substrate that informs the AutoBuilder system itself | `audit/`, `decisions/`, `state/`, `history/`, `research/`, `contracts/`, `output/builders/`, `output/integration/`, the detailed body of `output/verification/report.json` (components[], principle_h_skips, per-tier inspection) | The AutoBuilder system measuring itself, corpus statistics, re-audits, principle-amendment loop |
+| **3 — The deliverable** | The production artifact, post-verification | `output/final/*` and nothing else | End users, Claude Code sessions for post-promotion product work, the user running the app |
+
+**At ratification:** all three categories freeze together in the AutoBuilder corpus.
+
+**At promotion (opt-in):** ONLY Category 3 forks to the standalone repo. Categories 1 and 2 stay in the AutoBuilder corpus permanently as architectural measurement records.
+
+This is the architectural reason workflow #2's filter is `runs/{slug}/output/final/` rather than the broader `runs/{slug}/` — the fork extracts the deliverable, not the build's process records.
+
+The Directory Layout below visually illustrates the partition: each top-level subdirectory of a run root belongs to exactly one category, except `output/` which itself partitions (`output/builders/` and `output/integration/` are Cat 2, `output/final/` is Cat 3, `output/verification/report.json` is the documented mixed-category exception).
+
+---
+
 ## Directory Layout
 
 ```
