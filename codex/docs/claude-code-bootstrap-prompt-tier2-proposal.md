@@ -136,3 +136,73 @@ Approximate Codex scope: ~30 lines in `index.html` (button + handler + toast). G
 The "informational, not regulatory" framing is user-articulated and should be preserved as a core motif: the bootstrap prompt's job is to give the new Claude Code instance enough origin context to be effective without imposing AutoBuilder's defaults as a frame the product must stay within. The user explicitly called out that "AutoBuilder and initial user goals may have changed since and are more informational than regulatory" — that framing is the load-bearing principle for the whole Tier 2 surface.
 
 This is filed as a separate proposal from Tier 1 (`claude-code-handoff-tier1-proposal.md`) because Tier 1 is shipped and the work surface for Tier 2 is distinct (template + wrap-up integration + dashboard button vs Tier 1's template + workflow-#2 amendment). Cross-reference from Tier 1's proposal to here will be added once Maintenance acks this thread.
+
+---
+
+## User decision 2026-05-16 — option b locked
+
+User chose **option b**: bootstrap prompt ships INTO the fork repo at `cc-launch-prompt.md` at the root (alongside README.md and .claude/CLAUDE.md), not in the corpus at runs/{slug}/.
+
+**Rationale (user-implicit, my reading):** the bootstrap prompt is forklife material. It lives with the product, not with the build factory's measurement of the product. A future Claude Code session opened against the fork can find it locally without having to fetch from upstream.
+
+## Implementation status 2026-05-16
+
+**Shipped by Maintenance:**
+
+1. Template at `architecture/claude-code-bootstrap-prompt-template.md` (canonical wording per the draft in this proposal).
+2. Workflow #2 (`completion-triggered-fork.yml`) extended:
+   - Reads Discovery restatement, first paragraph of prompt, IP bullets, "What broke" section before filter-repo strips the corpus.
+   - Substitutes into the template at fork time (same pattern as `.claude/CLAUDE.md` and README.md generation).
+   - Commits `cc-launch-prompt.md` to the fork's root via `[bot:fork]` namespace.
+3. Graceful-fail: if the template is missing, logs a warning and continues (fork still gets README.md + .claude/CLAUDE.md).
+
+**Open Codex-side follow-up:** the "Copy launch prompt" button on each build's detail panel — separate from this Maintenance shipment, can land any time.
+
+**Validates on:** next promotion (any web_app or other kind). For existing promoted forks (gto-poker-async-duel-AB, gto-poker-trainer), a workflow_dispatch re-trigger will refresh all three handoff files including the new cc-launch-prompt.md. Guard is dormant on both — neither has user commits yet.
+
+---
+
+## Companion convention — local clone layout for promoted forks
+
+Added 2026-05-16 per user direction (option 1 of two: documented convention vs scripted automation).
+
+**The convention:**
+
+> Local clones of promoted-fork repos live as **siblings to the Auto Builder workspace** under `Documents/Claude/Projects/`, mirroring the flat GitHub `mondrianaire/*` layout.
+
+So for the two current promotions:
+
+```
+Documents/Claude/Projects/
+├── Auto Builder/                       (the AutoBuilder workspace + corpus)
+├── gto-poker-async-duel-AB/            (clone of mondrianaire/gto-poker-async-duel-AB)
+└── gto-poker-trainer/                  (clone of mondrianaire/gto-poker-trainer)
+```
+
+**Why this layout:**
+
+- Mirrors the GitHub-side flat layout (`mondrianaire/{slug}-AB` or `mondrianaire/{slug}` for Option A retroactive bindings) — no surprise mapping between disk and GitHub.
+- Keeps the AutoBuilder corpus + the promoted product life cleanly separated on disk, same as they are conceptually.
+- One `cd ..` from the Auto Builder workspace reaches any promoted-fork clone.
+- Claude Code sessions opened against a promoted-fork clone have no path-confusion with the AutoBuilder workspace.
+
+**Where this should be canonicalized:**
+
+- **Primary surface:** `architecture/build-lifecycle.md` — small addition under the Promotion section. Maintenance owns this file; suggested location is near the "promoted to standalone `mondrianaire/{slug}-AB` repo" language with a one-sentence companion note like *"Local convention: clone the promoted fork as a sibling to the AutoBuilder workspace under `Documents/Claude/Projects/`, matching the GitHub flat layout."*
+- **Secondary surface:** the bootstrap prompt template above could optionally include a `{suggested_clone_path}` substitution that names the expected local location. If the user has cloned to the conventional path, the prompt could say something like "you should be running this from `Documents/Claude/Projects/{slug}-or-{slug}-AB/`"; if cloned elsewhere, the substitution is harmless (the local path is wherever Claude Code is invoked from).
+
+**What this convention does NOT prescribe:**
+
+- Doesn't force the user to clone — they may work entirely on GitHub or via Codespaces and never have a local clone.
+- Doesn't force WHEN to clone — could be at promotion time, or never, or only when the user wants to make changes.
+- Doesn't require Maintenance to write a script automating the clone (option 2 of the original question) — that's deferred. The convention is documentation-only for now.
+
+**Open question for Maintenance:**
+
+6. **Scripted clone automation (deferred for now, raised here for record).** A future improvement would extend `promote-build.bat` to optionally clone the freshly-created fork locally as the last step of the promotion ceremony — so the local copy exists by the time the user goes to open Claude Code, and lands at the conventional path automatically. Trade-offs: (a) requires assuming the user wants a local clone (some don't), (b) makes promote-build.bat slower by one git-clone round-trip, (c) adds an "are you sure you want me to clone?" prompt or a default-yes-with-flag-to-skip. Codex preference: defer until the convention has been used long enough to see whether the manual-clone friction is real. The convention itself is the first step; automation is a follow-on if needed.
+
+## Maintenance Status — addendum
+
+- [ ] local-clone-convention-canonicalized — *Maintenance adds a one-sentence note to `architecture/build-lifecycle.md` under the Promotion section per the language above. Codex's draft language is starting point; refine to match the file's voice.*
+- [ ] bootstrap-template-includes-clone-path — *Optional. Maintenance decides whether to add a `{suggested_clone_path}` substitution to the bootstrap prompt template, or leave the convention as documentation-only.*
+- [ ] scripted-clone-deferred — *Tracked as Maintenance-deferred future work per Codex preference above; revisit if manual-clone friction is observed.*

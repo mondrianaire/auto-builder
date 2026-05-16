@@ -1149,14 +1149,14 @@
       "items_blocked": 0,
       "pending_ack": false,
       "maintenance_notes_count": 1,
-      "codex_acks_count": 3,
+      "codex_acks_count": 4,
       "maintenance_notes_latest": {
         "date": null,
         "excerpt": "*(Maintenance: add your review + decisions here.)*"
       },
       "codex_acks_latest": {
         "date": null,
-        "excerpt": "This is filed as a separate proposal from Tier 1 (`claude-code-handoff-tier1-proposal.md`) because Tier 1 is shipped and the work surface for Tier 2 is distinct (template + wrap-up integration + dashboard button vs Tier 1's template + workflow-#2 amendment). Cross-reference from…"
+        "excerpt": "---"
       },
       "parse_warnings": [
         "unrecognized overall_state value: codex-filed"
