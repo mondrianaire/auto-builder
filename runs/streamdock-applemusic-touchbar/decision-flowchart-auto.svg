@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1649" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+    </marker>
+  </defs>
+
+  <text x="1200" y="40" text-anchor="middle" font-size="28" font-weight="bold">streamdock-applemusic-touchbar — Decision Flowchart</text>
+
+  <rect x="630" y="60" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="630" y="60" width="360" height="5" fill="#3a6abf"/>
+  <text x="810" y="135" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">20</text>
+  <text x="810" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">DECISIONS</text>
+
+  <rect x="1020" y="60" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="1020" y="60" width="360" height="5" fill="#8a3aaf"/>
+  <text x="1200" y="135" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">7</text>
+  <text x="1200" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">AGENTS DEPLOYED</text>
+
+  <rect x="1410" y="60" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="1410" y="60" width="360" height="5" fill="#c43c3c"/>
+  <text x="1590" y="135" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">3</text>
+  <text x="1590" y="163" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">ESCALATIONS</text>
+
+  <!-- Phase: PHASE 1 — DISCOVERY -->
+  <text x="80" y="273" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 1 — DISCOVERY</text>
+
+  <!-- Agent: discovery -->
+  <rect x="500" y="305" width="1400" height="174" fill="#fff" stroke="#c43c3c" stroke-width="2" rx="2"/>
+  <rect x="500" y="305" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="328" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Discovery</text>
+  <text x="1888" y="328" text-anchor="end" font-size="11" font-weight="bold" fill="#fff">↻ REVISITED esc-003</text>
+  <text x="530" y="360" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-1: Restatement of the user prompt.</text>
+  <text x="530" y="390" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-2: Logged 13 assumptions (A1–A13).</text>
+  <text x="530" y="420" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-3: Surfaced 3 inflection points (IP1–IP3).</text>
+  <text x="530" y="450" font-size="13" font-weight="bold" fill="#0a3a6a">D-DSC-4: Marked 10 items out-of-scope.</text>
+
+  <!-- Phase: PHASE 2 — TECHNICAL DISCOVERY (initial → revisited in impact mode) -->
+  <text x="80" y="542" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 2 — TECHNICAL DISCOVERY (initial → revisited in impact mode)</text>
+
+  <!-- Agent: td-initial -->
+  <rect x="200" y="574" width="900" height="144" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="200" y="574" width="900" height="36" fill="#1e3a5f"/>
+  <text x="650" y="597" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Technical Discovery (initial)</text>
+  <text x="230" y="629" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-1: Prompt-verb selection.</text>
+  <text x="230" y="659" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-2: Section breakdown (6 sections).</text>
+  <text x="230" y="689" font-size="13" font-weight="bold" fill="#0a3a6a">D-TD-3: Coverage assertions.</text>
+
+  <!-- Agent: td-impact -->
+  <rect x="1130" y="574" width="900" height="234" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="1130" y="574" width="900" height="36" fill="#5a1a1a"/>
+  <text x="1580" y="597" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Technical Discovery (impact mode)</text>
+  <text x="1160" y="629" font-size="13" font-weight="bold" fill="#5a1a1a">D-TD2-1: Triggered by escalation.</text>
+  <text x="1160" y="659" font-size="13" font-weight="bold" fill="#5a1a1a">D-TD2-2: Chosen option: see impact analysis.</text>
+  <text x="1160" y="689" font-size="13" font-weight="bold" fill="#5a1a1a">D-TD2-3: Produced delta plan.</text>
+  <text x="1160" y="719" font-size="13" font-weight="bold" fill="#5a1a1a">D-TD2-4: Triggered by escalation.</text>
+  <text x="1160" y="749" font-size="13" font-weight="bold" fill="#5a1a1a">D-TD2-5: Chosen option: see impact analysis.</text>
+  <text x="1160" y="779" font-size="13" font-weight="bold" fill="#5a1a1a">D-TD2-6: 6 contract amendments.</text>
+
+  <!-- Phase: PHASE 3 — BUILD -->
+  <text x="80" y="871" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 3 — BUILD</text>
+
+  <!-- Agent: coordinator -->
+  <rect x="500" y="903" width="1400" height="174" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="903" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="926" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Coordinator (initial dispatch)</text>
+  <text x="530" y="958" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-1: Dispatch mode = inline.</text>
+  <text x="530" y="988" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-2: DAG construction (7 nodes, 0 waves).</text>
+  <text x="530" y="1018" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-3: 31 dispatch entries logged.</text>
+  <text x="530" y="1048" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRD-4: Logged inline-deviations (dev-001, dev-002, dev-003, dev-004, dev-005).</text>
+
+  <!-- Phase: PHASE 4 — INTEGRATION -->
+  <text x="80" y="1140" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 4 — INTEGRATION</text>
+
+  <!-- Agent: integrator -->
+  <rect x="500" y="1172" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1172" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1195" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Integrator</text>
+  <text x="530" y="1227" font-size="13" font-weight="bold" fill="#0a3a6a">D-INT-1: Assembled 34 integration files.</text>
+
+  <!-- Phase: PHASE 5 — VERIFICATION -->
+  <text x="80" y="1319" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 5 — VERIFICATION</text>
+
+  <!-- Agent: critic -->
+  <rect x="500" y="1351" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1351" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1374" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Critic (final sweep)</text>
+  <text x="530" y="1406" font-size="13" font-weight="bold" fill="#0a3a6a">D-CRT-1: Raised 34 flags (6 medium/high).</text>
+
+  <!-- Agent: cv -->
+  <rect x="500" y="1460" width="1400" height="84" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="500" y="1460" width="1400" height="36" fill="#1e3a5f"/>
+  <text x="1200" y="1483" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Convergence Verifier</text>
+  <text x="530" y="1515" font-size="13" font-weight="bold" fill="#0a3a6a">D-CV-1: Verdict: pass.</text>
+
+  <!-- Escalation highway: esc-001 -->
+  <g class="highway-esc-001">
+    <line x1="1900" y1="1393" x2="2050" y2="1393" stroke="#c43c3c" stroke-width="2.5"/>
+    <line x1="2050" y1="1393" x2="2050" y2="691" stroke="#c43c3c" stroke-width="2.5"/>
+    <line x1="2050" y1="691" x2="2030" y2="691" stroke="#c43c3c" stroke-width="2.5"/>
+    <polygon points="1900,1393 1894,1389 1894,1397" fill="#c43c3c"/>
+    <polygon points="2030,691 2036,687 2036,695" fill="#c43c3c"/>
+    <text x="2042" y="1383" text-anchor="end" font-size="11" font-weight="bold" fill="#c43c3c">raised by critic_final_sweep</text>
+    <text x="2058" y="1042" text-anchor="start" font-size="11" font-weight="bold" fill="#c43c3c">delta plan</text>
+    <text x="2058" y="679" font-size="12" font-weight="bold" fill="#c43c3c" letter-spacing="0.8">↻ ESC-001</text>
+  </g>
+
+  <!-- Escalation highway: esc-002 -->
+  <g class="highway-esc-002">
+    <line x1="1900" y1="1393" x2="2105" y2="1393" stroke="#c43c3c" stroke-width="2.5"/>
+    <line x1="2105" y1="1393" x2="2105" y2="691" stroke="#c43c3c" stroke-width="2.5"/>
+    <line x1="2105" y1="691" x2="2030" y2="691" stroke="#c43c3c" stroke-width="2.5"/>
+    <polygon points="1900,1393 1894,1389 1894,1397" fill="#c43c3c"/>
+    <polygon points="2030,691 2036,687 2036,695" fill="#c43c3c"/>
+    <text x="2097" y="1383" text-anchor="end" font-size="11" font-weight="bold" fill="#c43c3c">raised by critic_final_sweep</text>
+    <text x="2113" y="1042" text-anchor="start" font-size="11" font-weight="bold" fill="#c43c3c">delta plan</text>
+    <text x="2113" y="679" font-size="12" font-weight="bold" fill="#c43c3c" letter-spacing="0.8">↻ ESC-002</text>
+  </g>
+
+  <!-- Escalation highway: esc-003 -->
+  <g class="highway-esc-003">
+    <line x1="1900" y1="1393" x2="2160" y2="1393" stroke="#c43c3c" stroke-width="2.5"/>
+    <line x1="2160" y1="1393" x2="2160" y2="392" stroke="#c43c3c" stroke-width="2.5"/>
+    <line x1="2160" y1="392" x2="1900" y2="392" stroke="#c43c3c" stroke-width="2.5"/>
+    <polygon points="1900,1393 1894,1389 1894,1397" fill="#c43c3c"/>
+    <polygon points="1900,392 1906,388 1906,396" fill="#c43c3c"/>
+    <text x="2152" y="1383" text-anchor="end" font-size="11" font-weight="bold" fill="#c43c3c">raised by critic_final_sweep</text>
+    <text x="2168" y="892.5" text-anchor="start" font-size="11" font-weight="bold" fill="#c43c3c">delta plan</text>
+    <text x="2168" y="380" font-size="12" font-weight="bold" fill="#c43c3c" letter-spacing="0.8">↻ ESC-003</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="1200" y="1624" text-anchor="middle" font-size="11" fill="#999">Auto-generated by architecture/scripts/decision-flowchart.mjs · verdict: pass · build: streamdock-applemusic-touchbar</text>
+</svg>

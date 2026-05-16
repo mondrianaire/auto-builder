@@ -1,0 +1,11 @@
+{
+  "schema_version": "0.1",
+  "completed_at": "2026-05-16T19:19:03.451Z",
+  "completed_by": "ratify-build.bat",
+  "writer_version": "0.1",
+  "artifacts": [
+    "PROJECT-OVERVIEW.md",
+    "decision-flowchart-auto.html",
+    "decision-flowchart-auto.svg"
+  ]
+}
