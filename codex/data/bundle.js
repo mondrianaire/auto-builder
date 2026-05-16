@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T09:03:48.756Z",
+    "generated_at": "2026-05-16T09:14:16.987Z",
     "codex_version": "0.12",
     "architecture_versions_seen": [
       "v1.3",
@@ -1123,9 +1123,9 @@ window.CODEX_BUNDLE = {
         "origin": "maintenance-initiated",
         "source_file": "codex/docs/maintenance-initiated/ratification-ui-proposal.md",
         "last_touched": "2026-05-16",
-        "overall_state": "proposed",
+        "overall_state": "in-progress",
         "items_total": 9,
-        "items_done": 0,
+        "items_done": 4,
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": false,
@@ -1139,9 +1139,7 @@ window.CODEX_BUNDLE = {
           "date": null,
           "excerpt": "Estimated effort: ~2-3 hours from ratify-build.bat-shipped to dashboard-promoted-badge-shipped (your three Codex-owned checkboxes), most of it in steps 3+4 which require new CSS/JS rather than reusing v0.12 infrastructure. Steps 1-2 are small extensions."
         },
-        "parse_warnings": [
-          "unrecognized overall_state value: proposed"
-        ]
+        "parse_warnings": []
       },
       {
         "slug": "coordination-proposal",
