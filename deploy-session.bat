@@ -31,11 +31,32 @@ cd /d "%~dp0"
 REM Fix PATHEXT so bare `git`, `node`, etc. resolve under Desktop Commander shells
 set "PATHEXT=.COM;.EXE;.BAT;.CMD"
 
+REM --auto flag: invoked by auto-deploy-watcher.bat; suppresses interactive
+REM prompts (pause) and exits silently if nothing to do. Manual invocations
+REM (no --auto) keep the pauses + echoes for visibility.
+set "AUTO_MODE="
+if /i "%~1"=="--auto" set "AUTO_MODE=1"
+
+REM In auto mode, fast-path exit if nothing to do (avoid noisy log entries)
+if defined AUTO_MODE (
+    git status --porcelain > "%temp%\_codex_status.tmp" 2>nul
+    for %%I in ("%temp%\_codex_status.tmp") do set "_STAT_SIZE=%%~zI"
+    git rev-list "@{u}..HEAD" --count 2>nul > "%temp%\_codex_ahead.tmp"
+    set /p _AHEAD=<"%temp%\_codex_ahead.tmp"
+    if "%_AHEAD%"=="" set "_AHEAD=0"
+    del "%temp%\_codex_status.tmp" 2>nul
+    del "%temp%\_codex_ahead.tmp" 2>nul
+    if "%_STAT_SIZE%"=="0" if "%_AHEAD%"=="0" (
+        echo [auto] Nothing to commit or push. Working tree clean and up-to-date.
+        exit /b 0
+    )
+)
+
 echo === Refreshing Codex data layer (aggregator) ===
 node codex\scripts\aggregate.mjs
 if errorlevel 1 (
     echo *** Aggregator failed. Aborting before any commits. ***
-    pause
+    if not defined AUTO_MODE pause
     exit /b 1
 )
 
@@ -135,7 +156,7 @@ git pull --rebase --autostash -X ours origin main
 if errorlevel 1 (
     echo *** Rebase failed. Resolve manually then retry. ***
     echo Hint: try `git rebase --abort` and inspect with `git status`.
-    pause
+    if not defined AUTO_MODE pause
     exit /b 1
 )
 
@@ -146,12 +167,12 @@ git push origin main --follow-tags || goto :err
 echo.
 echo === DONE — committed and pushed. Pages will reflect new state in ~1 min. ===
 echo Live dashboard: https://mondrianaire.github.io/auto-builder/codex/
-pause
+if not defined AUTO_MODE pause
 exit /b 0
 
 :err
 echo.
 echo *** A step failed. See output above. ***
 echo The working tree may have partial stages. Run `git status` to inspect.
-pause
+if not defined AUTO_MODE pause
 exit /b 1
