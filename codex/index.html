@@ -118,6 +118,20 @@
     font-size: 10.5px; letter-spacing: 0.8px;
     border-bottom: 1px solid var(--border);
   }
+  /* v0.11 — sortable headers */
+  table.runs th[data-sort-key] {
+    cursor: pointer;
+    user-select: none;
+    transition: color 120ms ease;
+  }
+  table.runs th[data-sort-key]:hover { color: var(--text-dim); }
+  table.runs th[data-sort-key].sort-active { color: var(--text); }
+  table.runs th[data-sort-key]::after {
+    content: ''; display: inline-block; width: 0.6em; opacity: 0.4;
+    margin-left: 0.3em; font-size: 10px;
+  }
+  table.runs th[data-sort-key].sort-asc::after  { content: '▲'; opacity: 1; color: var(--text); }
+  table.runs th[data-sort-key].sort-desc::after { content: '▼'; opacity: 1; color: var(--text); }
   table.runs tr.row {
     cursor: pointer;
     transition: background-color 90ms ease;
@@ -563,20 +577,20 @@
     <table class="runs" id="runs-table">
       <thead>
         <tr>
-          <th>Slug</th>
-          <th>Date</th>
-          <th>Arch</th>
-          <th>Verdict</th>
-          <th>First delivery</th>
-          <th>Composite</th>
+          <th data-sort-key="slug">Slug</th>
+          <th data-sort-key="date">Date</th>
+          <th data-sort-key="architecture_version">Arch</th>
+          <th data-sort-key="verdict">Verdict</th>
+          <th data-sort-key="first_delivery_outcome">First delivery</th>
+          <th data-sort-key="composite">Composite</th>
           <th>Tiers (1 / 2 / 3)</th>
-          <th>Sections</th>
-          <th>Disp.</th>
-          <th>Min.</th>
+          <th data-sort-key="sections">Sections</th>
+          <th data-sort-key="dispatches">Disp.</th>
+          <th data-sort-key="wall_clock_minutes">Min.</th>
           <th>Edge cases</th>
           <th>Critic (H/M/L)</th>
-          <th>Amend. cand.</th>
-          <th>Kind</th>
+          <th data-sort-key="amendment_candidates">Amend. cand.</th>
+          <th data-sort-key="deliverable_kind">Kind</th>
           <th>View</th>
         </tr>
       </thead>
@@ -696,6 +710,79 @@
   function toggleFilter(outcome) {
     setFilter(getFilter() === outcome ? null : outcome);
   }
+
+  // ----- v0.11: roster sort state machine -----
+  // Persists sort column + direction in localStorage. Headers with data-sort-key
+  // are clickable; click toggles asc → desc → off. Three-state cycle so users can
+  // return to the default newest-first order without reloading.
+  const SORT_KEY = 'codex.sort.roster';
+  function getSort() {
+    try {
+      const raw = localStorage.getItem(SORT_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.key || !parsed.dir) return null;
+      return parsed;
+    } catch (e) { return null; }
+  }
+  function setSort(state) {
+    try {
+      if (state) localStorage.setItem(SORT_KEY, JSON.stringify(state));
+      else localStorage.removeItem(SORT_KEY);
+    } catch (e) {}
+    renderRoster();
+    applySortHeaderIndicators();
+  }
+  function cycleSort(key) {
+    const current = getSort();
+    if (!current || current.key !== key) {
+      setSort({ key, dir: 'asc' });
+    } else if (current.dir === 'asc') {
+      setSort({ key, dir: 'desc' });
+    } else {
+      setSort(null); // back to default order
+    }
+  }
+  function applySortHeaderIndicators() {
+    const state = getSort();
+    document.querySelectorAll('table.runs th[data-sort-key]').forEach(th => {
+      th.classList.remove('sort-asc', 'sort-desc', 'sort-active');
+      if (state && th.getAttribute('data-sort-key') === state.key) {
+        th.classList.add('sort-active');
+        th.classList.add(state.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+      }
+    });
+  }
+  // Comparators for each sortable column. Pull values out of the run row so
+  // the comparator stays a one-liner per key.
+  function sortValueFor(r, key) {
+    switch (key) {
+      case 'slug':                   return r.slug || '';
+      case 'date':                   return r.date || '';
+      case 'architecture_version':   return r.architecture_version || '';
+      case 'verdict':                return r.verdict || '';
+      case 'first_delivery_outcome': return r.first_delivery_outcome || '';
+      case 'composite':              return (r.rating && r.rating.composite) || '';
+      case 'sections':               return r.counts ? (r.counts.sections || 0) : 0;
+      case 'dispatches':             return r.counts ? (r.counts.dispatches || 0) : 0;
+      case 'wall_clock_minutes':     return r.counts ? (r.counts.wall_clock_minutes || 0) : 0;
+      case 'amendment_candidates':   return (r.rating && r.rating.learning_yield) ? (r.rating.learning_yield.amendment_candidates || 0) : 0;
+      case 'deliverable_kind':       return r.deliverable_kind || '';
+      default:                       return '';
+    }
+  }
+  function sortRuns(rows, state) {
+    if (!state) return rows; // default order from index
+    const dir = state.dir === 'desc' ? -1 : 1;
+    return [...rows].sort((a, b) => {
+      const av = sortValueFor(a, state.key);
+      const bv = sortValueFor(b, state.key);
+      if (typeof av === 'number' && typeof bv === 'number') {
+        return (av - bv) * dir;
+      }
+      return String(av).localeCompare(String(bv)) * dir;
+    });
+  }
   function verdictPill(verdict) {
     const map = {
       'pass':                       { cls: 'ok',    label: 'pass' },
@@ -811,7 +898,9 @@
     const tbody = document.getElementById('runs-tbody');
     tbody.innerHTML = '';
     const activeFilter = getFilter();
-    for (const r of idx.runs) {
+    const sortState = getSort();
+    const rows = sortRuns(idx.runs, sortState);
+    for (const r of rows) {
       // v0.9: skip runs that don't match the active first-delivery filter
       if (activeFilter && r.first_delivery_outcome !== activeFilter) continue;
       const tr = el('tr', { class: 'row', 'data-slug': r.slug });
@@ -1436,6 +1525,12 @@
   const clearBtn = document.getElementById('filter-clear-btn');
   if (clearBtn) clearBtn.addEventListener('click', () => setFilter(null));
   applyFilter();  // shows the banner if a filter was persisted from a prior session
+
+  // v0.11: wire roster sortable headers and apply any persisted sort
+  document.querySelectorAll('table.runs th[data-sort-key]').forEach(th => {
+    th.addEventListener('click', () => cycleSort(th.getAttribute('data-sort-key')));
+  });
+  applySortHeaderIndicators();
 
   // Auto-select the newest run for convenience
   if (idx.runs.length) selectRun(idx.runs[0].slug);

@@ -6,6 +6,48 @@ layer, not part of any run's substrate.
 
 ---
 
+## v0.11 — 2026-05-16 (sortable roster columns)
+
+**Run roster headers are now click-sortable.** 11 of the 15 columns
+carry `data-sort-key` attributes and respond to clicks with a three-state
+cycle: asc → desc → off (back to default newest-first order). Sort
+state persists in `localStorage` under key `codex.sort.roster` so it
+survives reloads.
+
+**Columns sortable:** slug, date, arch, verdict, first delivery, composite,
+sections, dispatches (Disp.), minutes (Min.), amendment candidates,
+kind.
+
+**Columns NOT sortable** (composite views or visual aggregates that
+don't have a single natural ordering): tiers, edge cases, critic
+(H/M/L), view.
+
+**Visual cues:** active sort column gets a brighter color and a small
+▲ or ▼ indicator after the header text. Hover state on any sortable
+header gives the standard transition cue.
+
+**State machine:** `getSort` / `setSort` / `cycleSort` /
+`applySortHeaderIndicators` / `sortRuns` / `sortValueFor`. Mirrors the
+filter state machine pattern from v0.9. Comparators dispatch on the
+`data-sort-key` attribute and pull the right value out of each run row;
+numerics use subtraction, strings use `localeCompare`.
+
+**Combines with filter:** sorting and filtering coexist — set a first-
+delivery filter, then click a header to sort the filtered subset.
+
+Pure client-side. No schema changes, no aggregator changes, just
+dashboard rendering on top of fields that already exist.
+
+**Files touched:**
+
+- `codex/index.html` — `data-sort-key` attributes on 11 `<th>` elements;
+  new CSS for `.sort-active` / `.sort-asc` / `.sort-desc` indicators;
+  sort state machine; `renderRoster` now sorts before iterating;
+  init-time handlers wire `th[data-sort-key]` click events.
+- `codex/scripts/aggregate.mjs` — codex_version 0.10 → 0.11.
+
+---
+
 ## v0.10 — 2026-05-15 (verification + bugfix follow-up)
 
 Live-dashboard verification pass after the v0.9 deploy landed surfaced

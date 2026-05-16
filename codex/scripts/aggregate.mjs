@@ -995,7 +995,7 @@ async function main() {
   const index = {
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    codex_version: '0.10',
+    codex_version: '0.11',
     architecture_versions_seen: [...archVersionsSeen].sort(),
     run_count: summaries.length,
     runs: summaries,
