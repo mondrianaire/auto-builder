@@ -165,5 +165,22 @@ try {
 
 console.log(`[wrap-up] wrote ${path.relative(REPO_ROOT, overviewPath)}`);
 console.log(`[wrap-up] wrote ${path.relative(REPO_ROOT, sentinelPath)}`);
+
+// Generate decision-flowchart artifact (non-fatal). Per the locked design
+// in codex/docs/maintenance-initiated/decision-flowchart-wrap-up-artifact.md
+// (all 5 design questions answered 2026-05-16).
+try {
+  const flowchart = await import('./decision-flowchart.mjs');
+  const result = flowchart.generate(slug, runDir, REPO_ROOT);
+  console.log(`[wrap-up] wrote ${path.relative(REPO_ROOT, result.htmlPath)}`);
+  console.log(`[wrap-up] wrote ${path.relative(REPO_ROOT, result.svgPath)}`);
+  // Patch sentinel artifacts[] to include the new files
+  const s = JSON.parse(fs.readFileSync(sentinelPath, 'utf8'));
+  s.artifacts = Array.from(new Set([...(s.artifacts || []), 'decision-flowchart.html', 'decision-flowchart.svg']));
+  fs.writeFileSync(sentinelPath, JSON.stringify(s, null, 2) + '\n');
+} catch (e) {
+  console.warn(`[wrap-up] decision-flowchart generation failed (non-fatal): ${e.message}`);
+}
+
 console.log(`[wrap-up] ${slug} is now promotion-eligible.`);
 process.exit(0);
