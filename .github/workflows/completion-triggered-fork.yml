@@ -1,0 +1,203 @@
+# ============================================================================
+# completion-triggered-fork.yml
+#
+# Fires the Fork-and-Archive Ceremony from architecture/build-lifecycle.md
+# automatically when ratify-build.bat (or any other writer) lands a new
+# runs/{slug}/completion-ratified.json on main.
+#
+# Sequence:
+#   1. Detect newly-added completion-ratified.json files in the push
+#   2. For each: verify CV report's verdict is acceptable (pass | pass_with_concerns)
+#   3. Use git filter-repo to extract just runs/{slug}/ history with all tags
+#   4. Create mondrianaire/{slug}-AB if it doesn't exist (using FORK_PAT)
+#   5. Push the filtered history + tags to the new repo
+#   6. Write curation overlay update with promoted_to + promoted_at
+#   7. Commit the curation update; aggregator-on-push.yml re-fires and dashboard
+#      flips to "Promoted ★" badge
+#
+# REQUIRES SECRET: FORK_PAT
+#   A fine-grained personal access token with:
+#     - "Repository access" -> "Only select repositories" OR "All repositories"
+#       (under owner: mondrianaire)
+#     - "Administration: Read and write" (to create new repos)
+#     - "Contents: Read and write" (to push to new repos)
+#   Stored in: Repo Settings -> Secrets and variables -> Actions -> FORK_PAT
+#
+# Author: Maintenance, per github-actions-automation-proposal.md §2.
+# Commit signature: [bot:fork] per the [bot:{workflow}] namespace.
+# ============================================================================
+
+name: Completion-Triggered Fork
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'runs/*/completion-ratified.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  # Don't run multiple fork ceremonies simultaneously — git filter-repo + the
+  # GitHub API repo creation should be serial to avoid weird states.
+  group: fork-ceremony
+  cancel-in-progress: false
+
+jobs:
+  fork:
+    # Loop-safety: skip our own auto-commits and Codex's aggregator output.
+    if: ${{ !startsWith(github.event.head_commit.message, '[bot:') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Identify newly-added completion-ratified.json files
+        id: find_new
+        run: |
+          # Only fork on file ADDITIONS, not modifications or deletions
+          NEW_SLUGS=""
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            SLUG=$(echo "$f" | sed 's|runs/\([^/]*\)/completion-ratified\.json|\1|')
+            if [ -n "$SLUG" ] && [ -d "runs/$SLUG" ]; then
+              NEW_SLUGS="$NEW_SLUGS $SLUG"
+            fi
+          done < <(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'runs/*/completion-ratified.json' 2>/dev/null || true)
+
+          NEW_SLUGS_TRIM=$(echo "$NEW_SLUGS" | xargs)
+          echo "Found new ratifications: '$NEW_SLUGS_TRIM'"
+          echo "slugs=$NEW_SLUGS_TRIM" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Python (for git-filter-repo)
+        if: steps.find_new.outputs.slugs != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install git-filter-repo
+        if: steps.find_new.outputs.slugs != ''
+        run: pip install git-filter-repo
+
+      - name: Setup Node (for JSON parse + curation write)
+        if: steps.find_new.outputs.slugs != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Process each new ratification
+        if: steps.find_new.outputs.slugs != ''
+        env:
+          FORK_PAT: ${{ secrets.FORK_PAT }}
+          GH_OWNER: mondrianaire
+        run: |
+          set -e
+
+          if [ -z "$FORK_PAT" ]; then
+            echo "::error::FORK_PAT secret is not set. Cannot create or push to standalone repos. See workflow file header for setup instructions."
+            exit 1
+          fi
+
+          for SLUG in ${{ steps.find_new.outputs.slugs }}; do
+            echo ""
+            echo "============================================================"
+            echo "=== Processing fork ceremony for $SLUG ==="
+            echo "============================================================"
+
+            # ----- (1) Verify verdict is acceptable -----
+            REPORT="runs/$SLUG/output/verification/report.json"
+            if [ ! -f "$REPORT" ]; then
+              echo "::error::$REPORT missing for $SLUG; cannot verify verdict. Skipping."
+              continue
+            fi
+
+            VERDICT=$(node -e "try{const r=JSON.parse(require('fs').readFileSync('$REPORT','utf8'));process.stdout.write(r.verdict||'missing')}catch(e){process.stdout.write('parse_error')}")
+            case "$VERDICT" in
+              pass|pass_with_concerns)
+                echo "Verdict OK: $VERDICT"
+                ;;
+              fail)
+                echo "::error::Verdict for $SLUG is 'fail'; ratification should not have been allowed. Skipping fork."
+                continue
+                ;;
+              missing|parse_error|*)
+                echo "::error::Verdict for $SLUG is unexpected: $VERDICT. Skipping fork."
+                continue
+                ;;
+            esac
+
+            NEW_REPO="${SLUG}-AB"
+            FULL_REPO="${GH_OWNER}/${NEW_REPO}"
+
+            # ----- (2) Create target repo if it doesn't exist -----
+            HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token $FORK_PAT" \
+              "https://api.github.com/repos/$FULL_REPO" || echo "404")
+
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Target repo $FULL_REPO already exists; will push to existing."
+            else
+              echo "Creating $FULL_REPO via GitHub API..."
+              CREATE_RESPONSE=$(curl -s -X POST \
+                -H "Authorization: token $FORK_PAT" \
+                -H "Accept: application/vnd.github+json" \
+                -d "{\"name\":\"$NEW_REPO\",\"private\":false,\"description\":\"Forked from AutoBuilder run $SLUG (mondrianaire/auto-builder). Standalone repo for post-completion product life per architecture/build-lifecycle.md.\",\"auto_init\":false}" \
+                "https://api.github.com/user/repos")
+
+              CREATED_NAME=$(echo "$CREATE_RESPONSE" | node -e "let s='';process.stdin.on('data',c=>s+=c);process.stdin.on('end',()=>{try{console.log(JSON.parse(s).full_name||'')}catch(e){}})")
+
+              if [ "$CREATED_NAME" != "$FULL_REPO" ]; then
+                echo "::error::Failed to create $FULL_REPO. API response: $CREATE_RESPONSE"
+                continue
+              fi
+              echo "Created $FULL_REPO."
+            fi
+
+            # ----- (3) Filter-repo in a temp clone -----
+            TMPDIR=$(mktemp -d)
+            EXTRACT_DIR="$TMPDIR/extracted"
+            git clone --no-local "$GITHUB_WORKSPACE" "$EXTRACT_DIR"
+            (
+              cd "$EXTRACT_DIR"
+              git filter-repo --path "runs/$SLUG/" --path-rename "runs/$SLUG/:" --force
+              git remote remove origin 2>/dev/null || true
+              git remote add origin "https://x-access-token:$FORK_PAT@github.com/$FULL_REPO.git"
+              git push -u origin main
+              git push origin --tags
+            )
+            rm -rf "$TMPDIR"
+
+            echo "Pushed filtered history to https://github.com/$FULL_REPO"
+
+            # ----- (4) Update curation overlay -----
+            CURATION="codex/data/curation/$SLUG.json"
+            mkdir -p "$(dirname "$CURATION")"
+            node -e "
+              const fs = require('fs');
+              const path = '$CURATION';
+              const data = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, 'utf8')) : { slug: '$SLUG' };
+              data.promoted_to = 'https://github.com/$FULL_REPO';
+              data.promoted_at = new Date().toISOString();
+              fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+              console.log('Updated', path);
+            "
+          done
+
+      - name: Commit curation updates
+        if: steps.find_new.outputs.slugs != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet codex/data/curation/; then
+            echo "No curation changes to commit (all ratifications failed or were no-ops)."
+          else
+            git add codex/data/curation/
+            git commit -m "[bot:fork] curation updates for promoted builds (${{ steps.find_new.outputs.slugs }})" \
+                       -m "Auto-generated by .github/workflows/completion-triggered-fork.yml. Each affected codex/data/curation/{slug}.json now carries promoted_to + promoted_at fields. Aggregator-on-push.yml will re-fire on this commit and the dashboard will flip the affected builds' phase chips to 'Promoted *'."
+            git push origin main
+          fi
