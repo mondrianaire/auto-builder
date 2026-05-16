@@ -145,7 +145,7 @@ if exist .git\index.lock del /f /q .git\index.lock
 if exist .git\config.lock del /f /q .git\config.lock
 
 echo === Staging %RATIFIED% + wrap-up artifacts ===
-git add "%RATIFIED%" "runs\%SLUG%\PROJECT-OVERVIEW.md" "runs\%SLUG%\wrap-up-complete.json"
+git add "%RATIFIED%" "runs\%SLUG%\PROJECT-OVERVIEW.md" "runs\%SLUG%\wrap-up-complete.json" "runs\%SLUG%\decision-flowchart.html" "runs\%SLUG%\decision-flowchart.svg"
 if errorlevel 1 goto :err_git
 
 echo === Showing what will be committed ===
