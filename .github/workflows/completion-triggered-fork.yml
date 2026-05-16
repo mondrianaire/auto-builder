@@ -247,10 +247,33 @@ jobs:
             DELIVERABLE_KIND=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.deliverable_kind?r.deliverable_kind:'unknown')}catch(e){process.stdout.write('unknown')}")
             LIVE_URL=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.live_url?r.live_url:'')}catch(e){process.stdout.write('')}")
 
+            # Tier 2 bootstrap-prompt extractions (per claude-code-bootstrap-prompt-tier2-proposal.md).
+            # These read corpus data BEFORE filter-repo strips everything outside output/final/.
+            DISCOVERY_RESTATEMENT=$(node -e "try{const r=JSON.parse(require('fs').readFileSync('runs/$SLUG/decisions/discovery/ledger-v1.json','utf8'));const s=(r.restatement||'').split(/(?<=[.!?])\\s+/)[0]||'(restatement not surfaced in ledger)';process.stdout.write(s.trim())}catch(e){process.stdout.write('(restatement not surfaced in ledger)')}")
+
+            PROMPT_ABBREV=$(node -e "const fs=require('fs');let t='';try{t=fs.readFileSync('runs/$SLUG/prompt.txt','utf8')}catch(e){t='(prompt.txt missing from corpus)'};const firstPara=t.split(/\\n\\n+/)[0]||t;if(firstPara.split(/\\s+/).length<=200){process.stdout.write(firstPara.trim())}else{const sents=firstPara.split(/(?<=[.!?])\\s+/).slice(0,2).join(' ');process.stdout.write(sents.trim())}")
+
+            IP_BULLETS=$(node -e "try{const r=JSON.parse(require('fs').readFileSync('runs/$SLUG/decisions/discovery/ledger-v1.json','utf8'));const ips=r.inflection_points||r.IPs||[];if(!ips.length){process.stdout.write('(no major inflection points surfaced — Discovery treated the prompt as canonical)')}else{const lines=ips.map(ip=>{const topic=(ip.topic||ip.question||ip.title||'unknown').replace(/\\n/g,' ').trim();const chosen=(ip.default_branch||ip.chosen||ip.default||ip.resolution||'see ledger').replace(/\\n/g,' ').trim();return '- '+topic+': '+chosen;});process.stdout.write(lines.join('\\n'))}}catch(e){process.stdout.write('(could not read inflection points from ledger)')}")
+
+            WHAT_BROKE=$(node -e "try{const t=require('fs').readFileSync('runs/$SLUG/run-report.md','utf8');const m=t.match(/##\\s*What broke[^\\n]*\\n([\\s\\S]*?)(?=\\n##|\$)/i);if(!m){process.stdout.write('')}else{const lines=m[1].split('\\n').filter(l=>/^- /.test(l)).slice(0,3);if(!lines.length){process.stdout.write('')}else{process.stdout.write('One notable build-time self-correction (see run-report.md for full detail):\\n\\n'+lines.join('\\n'))}}}catch(e){process.stdout.write('')}")
+
+            # Bootstrap-prompt live URL line + entry-point (conditional on web_app + live_url).
+            # Single-line literals only — YAML run: | blocks reject lines at lower indent than the block.
+            if [ "$DELIVERABLE_KIND" = "web_app" ] && [ -n "$LIVE_URL" ]; then
+              LIVE_URL_LINE_BS="The current state of the deployed application is at: $LIVE_URL"
+              ENTRY_POINT="$LIVE_URL"
+            else
+              LIVE_URL_LINE_BS=""
+              ENTRY_POINT="the deliverable (entry point is usually index.html; for other deliverable kinds check README.md)"
+            fi
+
+            RATIFIED_DATE=$(echo "$RATIFIED_AT" | cut -c1-10)
+
             # Read templates from architecture/ (Maintenance canon).
             # Substituted into the new repo at fork time.
             README_TEMPLATE_PATH="$GITHUB_WORKSPACE/architecture/promoted-repo-readme-template.md"
             CLAUDE_TEMPLATE_PATH="$GITHUB_WORKSPACE/architecture/claude-code-handoff-template.md"
+            BOOTSTRAP_TEMPLATE_PATH="$GITHUB_WORKSPACE/architecture/claude-code-bootstrap-prompt-template.md"
 
             # ----- (4) Filter-repo in a temp clone, narrowed to output/final/ -----
             TMPDIR=$(mktemp -d)
@@ -326,6 +349,37 @@ jobs:
                            -m "Per claude-code-handoff-tier1-proposal: when a fresh Claude Code session is opened against this fork, this file provides orientation about what was built, the original prompt, where the corpus lives, and what's safe to edit."
               else
                 echo "::warning::architecture/claude-code-handoff-template.md not found at \$CLAUDE_TEMPLATE_PATH — skipping .claude/CLAUDE.md seed for $SLUG"
+              fi
+
+              # Seed cc-launch-prompt.md per claude-code-bootstrap-prompt-tier2-proposal.md.
+              # This is the first-message template the user copy-pastes into a new Claude
+              # Code window opened against this fork. Renders prompt summary + Discovery
+              # restatement + inflection-point context + verdict + first-action directive.
+              # Filename + path are option b per user 2026-05-16: ships INTO the fork repo
+              # at root (alongside README.md and .claude/CLAUDE.md), not in the corpus.
+              if [ -f "$BOOTSTRAP_TEMPLATE_PATH" ]; then
+                node -e "
+                  const fs = require('fs');
+                  const tpl = fs.readFileSync(process.argv[1], 'utf8');
+                  const out = tpl
+                    .replace(/\\{slug\\}/g, process.argv[2])
+                    .replace(/\\{ratified_at\\}/g, process.argv[3])
+                    .replace(/\\{live_url_line\\}/g, process.argv[4])
+                    .replace(/\\{prompt_abbreviated\\}/g, process.argv[5])
+                    .replace(/\\{discovery_restatement\\}/g, process.argv[6])
+                    .replace(/\\{inflection_points_as_real_world_bullets\\}/g, process.argv[7])
+                    .replace(/\\{verdict\\}/g, process.argv[8])
+                    .replace(/\\{notable_exceptions_block_if_any\\}/g, process.argv[9])
+                    .replace(/\\{live_url_or_local_entry_point\\}/g, process.argv[10]);
+                  fs.writeFileSync('cc-launch-prompt.md', out);
+                " "$BOOTSTRAP_TEMPLATE_PATH" "$SLUG" "$RATIFIED_DATE" "$LIVE_URL_LINE_BS" "$PROMPT_ABBREV" "$DISCOVERY_RESTATEMENT" "$IP_BULLETS" "$VERDICT" "$WHAT_BROKE" "$ENTRY_POINT"
+                git add cc-launch-prompt.md
+                git -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                    -c user.name="github-actions[bot]" \
+                    commit -m "[bot:fork] seed cc-launch-prompt.md (Tier 2 bootstrap) for $SLUG" \
+                           -m "Per claude-code-bootstrap-prompt-tier2-proposal.md: this is the first-message template the user copy-pastes into a new Claude Code window opened against this fork. Tier 1 (.claude/CLAUDE.md) is ambient context; this Tier 2 prompt sets the conversation register and gives an explicit first action."
+              else
+                echo "::warning::architecture/claude-code-bootstrap-prompt-template.md not found at \$BOOTSTRAP_TEMPLATE_PATH — skipping cc-launch-prompt.md seed for $SLUG"
               fi
 
               git remote remove origin 2>/dev/null || true
