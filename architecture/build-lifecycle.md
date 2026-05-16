@@ -10,12 +10,22 @@ This document is the architectural boundary between **AutoBuilder as a build fac
 
 Every file inside `runs/{slug}/` belongs to exactly one of three categories. This partition determines audience, lifecycle, and what gets included in promotion's fork ceremony.
 
-**Category 1 — Project metadata.** Orientation for a brand-new reader (human or fresh agent) with **zero context about AutoBuilder or this specific build**. Plain-language, self-contained, comprehensive enough to understand what was asked, what was built, did it work, and how to use it — without ever needing to learn AutoBuilder vocabulary or internals.
+**Category 1 — Project metadata.** Orientation for a brand-new reader (human or fresh agent) with **zero context about AutoBuilder or this specific build**. Plain-language, self-contained, comprehensive enough to understand what was asked, what was built, did it work, and where to go next — without ever needing to learn AutoBuilder vocabulary or internals.
+
+Cat 1 is a **wayfinding document**: a fresh reader lands here first, gets oriented to AutoBuilder (the ethos preamble), gets oriented to this specific build (the project-specific section), then gets directed onward to the Cat-3 README for actual product details or to Cat 2 if they want AutoBuilder internals.
+
 - `prompt.txt` — the user's verbatim ask
-- `completion-ratified.json` — timestamps + ratifier identity (the schema fields are minimal; no AutoBuilder concepts surface here)
-- (Future) `PROJECT-OVERVIEW.md` — the synthesized canonical Cat-1 document, written at ratification time. Distills information from Cat 2 sources into plain language for fresh readers. Answers: what was asked, what was built, did it work, how to use it, where to go next. Explicitly avoids role names (Discovery, TD, Critic, Editor, CV, Researcher), AutoBuilder verdict strings, dispatch counts, section names, principle references, Phase 2 / commit-step terminology, and architecture version numbers — those all belong in Cat 2.
+- `completion-ratified.json` — timestamps + ratifier identity (minimal schema, no AutoBuilder concepts)
+- (Future) `PROJECT-OVERVIEW.md` — the synthesized canonical Cat-1 document, written at ratification time. Structured as:
+  1. **About AutoBuilder** — the canonical ethos preamble verbatim from `architecture/autobuilder-ethos.md`. Same opening across every PROJECT-OVERVIEW.md across every build. Tells a fresh reader what AutoBuilder is, what a "build" is, what ratification + promotion mean, what the three categories are, and how to navigate from here.
+  2. **About this build** — project-specific: what was asked, what was built, did it work, what happened if it didn't first time, when + who ratified it.
+  3. **Where to go next** — links to the Cat-3 README (in the promoted repo if this build was promoted; otherwise to `output/final/` in this corpus entry) for product details, and links to Cat-2 files if the reader wants AutoBuilder-internals.
+
+Explicitly avoids in the project-specific section: role names (Discovery, TD, Critic, Editor, CV, Researcher), AutoBuilder verdict strings, dispatch counts, section names, principle references, Phase 2 / commit-step terminology, architecture version numbers. Those all live in Cat 2 documents.
 
 *Audience:* corpus readers (future humans/agents looking back at this build), the user re-discovering past work, the dashboard's per-build detail panel, fresh-model agents reading the corpus cold.
+
+*The intended workflow* for a fresh agent encountering this corpus: open PROJECT-OVERVIEW.md → read the ethos preamble to understand AutoBuilder → read the build-specific section to understand this artifact → click through to Cat-3 README (or `output/final/`) for product use.
 
 **Category 2 — Build byproduct data.** The structured substrate that records *how* AutoBuilder built this artifact, in AutoBuilder's own vocabulary. Read by the system measuring itself; not user-facing.
 - `audit/`, `decisions/`, `state/`, `history/`, `research/`, `contracts/`
