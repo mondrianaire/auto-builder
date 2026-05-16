@@ -116,11 +116,27 @@ if errorlevel 1 (
 )
 
 REM ---- Push ----
-if not defined COMMITTED_ANY (
-    echo.
-    echo === Nothing to commit. Working tree is clean. ===
+REM Always reach the push step (don't early-exit on "no new staged changes")
+REM because the working tree being clean doesn't mean origin is caught up —
+REM local could have unpushed commits from a prior failed push. Let
+REM `git push` itself decide whether there's anything to send.
+
+echo.
+echo === Rebasing on top of origin/main (picks up bot's auto-aggregator commits) ===
+REM Pull --rebase --autostash so local commits replay on top of any bot commits
+REM that landed since our last fetch. -X ours prefers the upstream (bot's)
+REM version of any regenerated file on conflict — during rebase, "ours" is the
+REM branch we're rebasing onto, NOT our local commits. The bot's aggregator
+REM output is canonical for codex/data/*, so when there's a conflict we want
+REM the upstream version to win.
+REM This is the fix for the 2026-05-16 push-rejected case where deploy-session.bat
+REM ran after aggregator-on-push had already advanced origin.
+git pull --rebase --autostash -X ours origin main
+if errorlevel 1 (
+    echo *** Rebase failed. Resolve manually then retry. ***
+    echo Hint: try `git rebase --abort` and inspect with `git status`.
     pause
-    exit /b 0
+    exit /b 1
 )
 
 echo.
