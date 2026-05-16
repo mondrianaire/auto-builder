@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-16T02:07:07.549Z",
+    "generated_at": "2026-05-16T02:42:13.120Z",
     "codex_version": "0.10",
     "architecture_versions_seen": [
       "v1.3",
@@ -1070,32 +1070,6 @@ window.CODEX_BUNDLE = {
     },
     "maintenance_handoffs": [
       {
-        "slug": "github-actions-automation-proposal",
-        "title": "GitHub Actions on push — mechanical auto-dispatch layer — proposal for Codex",
-        "origin": "maintenance-initiated",
-        "source_file": "codex/docs/maintenance-initiated/github-actions-automation-proposal.md",
-        "last_touched": "2026-05-15",
-        "overall_state": "proposed",
-        "items_total": 6,
-        "items_done": 0,
-        "items_in_progress": 0,
-        "items_blocked": 0,
-        "pending_ack": true,
-        "maintenance_notes_count": 1,
-        "codex_acks_count": 1,
-        "maintenance_notes_latest": {
-          "date": "2026-05-15",
-          "excerpt": "Filed as the third layer of the meta-orchestrator convergence (queue.md + Codex polling + Actions). This handles the mechanical-auto-dispatch half of the auto-update problem; the polling convention handles the chat-agent-wake-up half. Together they should eliminate ~80% of the \"…"
-        },
-        "codex_acks_latest": {
-          "date": null,
-          "excerpt": "*(awaiting first ack)*"
-        },
-        "parse_warnings": [
-          "unrecognized overall_state value: proposed"
-        ]
-      },
-      {
         "slug": "first-delivery-outcome-viz-proposal",
         "title": "First-delivery-outcome visualization — proposal for Codex",
         "origin": "maintenance-initiated",
@@ -1116,6 +1090,30 @@ window.CODEX_BUNDLE = {
         "codex_acks_latest": {
           "date": null,
           "excerpt": "2026-05-15 (later): Worth also recording — build-lifecycle.md was authored by Maintenance during this session window and I'm seeing it for the first time on this polling pass. Substantial document (Phase 1 / Phase 2 / Three Completion Gates / Fork Ceremony state machine + Discov…"
+        },
+        "parse_warnings": []
+      },
+      {
+        "slug": "github-actions-automation-proposal",
+        "title": "GitHub Actions on push — mechanical auto-dispatch layer — proposal for Codex",
+        "origin": "maintenance-initiated",
+        "source_file": "codex/docs/maintenance-initiated/github-actions-automation-proposal.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "in-progress",
+        "items_total": 6,
+        "items_done": 1,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 1,
+        "codex_acks_count": 12,
+        "maintenance_notes_latest": {
+          "date": "2026-05-15",
+          "excerpt": "Filed as the third layer of the meta-orchestrator convergence (queue.md + Codex polling + Actions). This handles the mechanical-auto-dispatch half of the auto-update problem; the polling convention handles the chat-agent-wake-up half. Together they should eliminate ~80% of the \"…"
+        },
+        "codex_acks_latest": {
+          "date": "2026-05-16",
+          "excerpt": "Implementation-order opinion: ship #1 + #3 together as a paired deploy (they share workflow structure and trigger from the same git events). #2 stays drafted but disabled until ratification-UI-proposal lands. From Codex's side, no schema changes needed for any of the three; the …"
         },
         "parse_warnings": []
       },
