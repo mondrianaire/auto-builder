@@ -94,8 +94,12 @@ The Directory Layout below illustrates the partition: each top-level subdirector
 │   │   │   └── esc-{nnn}-routing.json
 │   │   └── sev0-fixes/
 │   │       └── sev0-{nnn}.json
-│   └── inline-deviations/
-│       └── dev-{nnn}.json
+│   ├── inline-deviations/
+│   │   └── dev-{nnn}.json
+│   ├── reports/                              (v1.11)
+│   │   └── {role}-{instance_id}-v{N}.json
+│   └── live/                                 (v1.11)
+│       └── current-step.json
 ├── research/
 │   └── probes/
 │       └── probe-{id}/
@@ -136,6 +140,8 @@ The Directory Layout below illustrates the partition: each top-level subdirector
 | `state/escalations/routed/*` | Arbiter | Append-only |
 | `state/escalations/sev0-fixes/*` | Critic, CV, or Integrator (whichever applied the fix) | Append-only; Critic audits |
 | `state/inline-deviations/*` | Any role acting under inline dispatch (typically Coordinator) | Append-only; Critic audits scope claims |
+| `state/reports/{role}-{instance_id}-v{N}.json` (v1.11) | The role itself, written on its completion | Append-only; one file per role-completion-event; consumed by the live narrative renderer (Codex v0.16+) |
+| `state/live/current-step.json` (v1.11) | The role that just completed OR the role that just got dispatched (whichever is currently in the seat); single-writer-at-a-time | Mutated in place via atomic write (write-temp-then-rename); supplies the live viz with a fast-lookup pointer to active role(s) without scanning the full reports tree |
 | `research/probes/{id}/briefing.json` | The dispatching role (Arbiter, TD, or Coordinator) | Written once |
 | `research/probes/{id}/findings.json` | The Researcher assigned to that probe | Written once |
 | `history/log.jsonl` | Historian | Append-only |
@@ -1092,6 +1098,159 @@ Free-form markdown. Should include: original prompt, final assumption set (live 
 - `prompt_named_verb_result.source` and `artifact_exercise_results[].source` — every behavioral verification result records the source of its expected value (per Principle H). Auditors can spot-check `source: canonical_evidence` results by following the `citations_pointer` and re-validating the `verbatim_excerpt`.
 
 - `principle_h_skips[]` — assertions that CV refused to verify because they had `source: td_plan` against an external system property (self-referential, structurally insufficient). These are not "pass" — they're explicit non-verifications, surfaced for Editor/Critic re-review.
+
+---
+
+### `state/reports/{role}-{instance_id}-v{N}.json` — Role Completion Report (v1.11)
+
+**Writer:** the role itself, on completion of its purpose. **Reader:** the live narrative renderer (Codex v0.16+), Historian (for archival), and any post-hoc analysis tool.
+
+**Purpose:** small structured artifact carrying plain-language blurbs that answer preset per-role questions. The substrate the live-build visualization populates from. Reports replace the previous practice of inferring narrative from technical metadata (dispatch counts, section counts, audit flag counts).
+
+**File-name encoding:**
+- `{role}` — kebab-case role identifier matching `role_charters.md` section names: `orchestrator`, `discovery-initial`, `discovery-amendment`, `discovery-demotion`, `td-initial`, `td-impact`, `editor`, `coordinator`, `overseer`, `builder`, `critic`, `arbiter`, `researcher-planning`, `researcher-escalation`, `integrator`, `cv`, `re-verification`. The `orchestrator` and `historian` roles do not write Completion Reports — see `role_charters.md` for the rationale.
+- `{instance_id}` — disambiguates same-role-multiple-instances. Single-instance roles use the role name (e.g., `discovery-initial-v1`). Per-section roles use `{role}-{section}` (e.g., `overseer-data-fetcher-v1`, `builder-map-renderer-v1`). Per-escalation roles use `{role}-esc-{nnn}` (e.g., `arbiter-esc-001-v1`).
+- `{N}` — iteration counter. Increments when the same role-instance re-engages (e.g., `td-initial-v1` initial pass, `td-impact-v2` after escalation).
+
+**Schema:**
+
+```json
+{
+  "role": "Discovery",
+  "instance_id": "discovery-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "ISO-8601",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "What did you understand the user wants?",
+      "answer": "A 1-3 sentence plain-language restatement of the user's intent, written for a fresh reader with no AutoBuilder context.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What choices did you make on their behalf, and why?",
+      "answer": "One short bullet per inflection point, plain-language: default + reason. Avoid technical jargon. ~25 words per bullet.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What couldn't you verify?",
+      "answer": "Only present when proper nouns were demoted or canonical evidence was unreachable.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "TechnicalDiscovery"
+}
+```
+
+**Field semantics:**
+
+- `role` — pretty-cased role name matching the charter section.
+- `instance_id` — kebab-case stable identifier; the same role-instance keeps the same `instance_id` across iterations.
+- `iteration` — 1-indexed counter; increments when the same role-instance writes a new report (re-engagement).
+- `mode` — for roles with multiple modes (Discovery initial/amendment/demotion, TD initial/impact, Researcher planning/escalation), the mode in effect for this report. `null` for single-mode roles.
+- `section` — for per-section roles (Overseer, Builder), the section name. `null` for non-section-scoped roles.
+- `escalation_id` — for escalation-triggered reports (Arbiter, escalation-mode Researcher, re-engaged rectifier roles), the `esc-{nnn}` id this report belongs to. `null` otherwise.
+- `blurbs[]` — the report's payload. Each entry is one question-answer pair:
+  - `question` — verbatim from the role's charter (canonical per-role list).
+  - `answer` — plain-language user-facing prose. Style guidance in role_charters.md § "Notes for All Roles".
+  - `kind` — `always` (the role emits this on every completion) or `conditional` (only when the corresponding condition fires — see per-role charter for conditions).
+  - `importance` — `high | medium | low`. Controls renderer space allocation (high → full-width card, low → compact).
+- `raised_escalation` — `true` if this role completion triggered an escalation packet (`state/escalations/queue/esc-{nnn}.json` was created during this role's run). The renderer uses this flag to materialize an escalation row in the visualization.
+- `next_role` — informational hint for the renderer's cell positioning. The role this completion is dispatching to next, or `null` if terminal (Integrator, CV).
+
+**Style contract for `answer` text** (canonical phrasing lives in `role_charters.md` § per-role; reproduced here for schema-readers):
+
+- Written FOR THE USER, not for the AutoBuilder system.
+- Real-world language, no AutoBuilder vocabulary (no "IP", "dispatch", "section", "verdict", "Sev N", "Principle X").
+- Anchored to the user's stated goal — every blurb advances "what is this getting me toward?"
+- 1-3 sentences typical. List answers can be longer if each item is one short bullet.
+- Tone: matter-of-fact, slightly conversational. Avoid hype.
+
+**Lifecycle:**
+- Files appear during build progression, one per role-completion event.
+- At ratification, all reports freeze in the corpus (Cat 2 — build byproduct, AutoBuilder's measurement of itself, but the *content* of the reports is plain-language for the live renderer's downstream rendering needs).
+- At promotion, reports stay in the AutoBuilder corpus; they do not fork into the standalone product-life repo.
+
+**Audit hooks:**
+- Critic checks: every role completion produces exactly one report (per iteration); reports' blurb `answer` text contains no banned AutoBuilder vocabulary; conditional blurbs appear only when the documented condition fires.
+
+---
+
+### `state/live/current-step.json` — Live-Renderer Current-Step Pointer (v1.11)
+
+**Writer:** the role that just completed (writing both its `state/reports/...` file AND updating `current-step.json` to point at the next active role). The Orchestrator writes the initial `current-step.json` when dispatching Discovery on build start.
+
+**Reader:** the live narrative renderer (Codex v0.16+) on every poll.
+
+**Purpose:** a fast-lookup pointer to "what is the build doing right now." Without this file, the renderer would have to scan the entire `state/reports/` tree every poll to determine active vs completed roles — O(N) per poll. With this file, every poll is O(1) for the active-role lookup, with a fall-back O(N) scan only when the pointer is stale.
+
+**Mutation pattern:** atomic write-temp-then-rename. Writers compose the new state in `current-step.json.tmp` then `rename current-step.json.tmp → current-step.json`. This avoids the FS-race finding's partial-read class — readers always see a coherent prior or new state, never a mid-write tear.
+
+**Schema:**
+
+```json
+{
+  "updated_at": "ISO-8601",
+  "current_phase": "initial-discovery|technical-discovery|editor-review|coordinator-dispatch|building|integration|verification|delivery|phase-2-rectification|complete",
+  "active_roles": [
+    {
+      "role": "Builder",
+      "instance_id": "builder-data-fetcher",
+      "section": "data-fetcher",
+      "started_at": "ISO-8601",
+      "escalation_id": null
+    }
+  ],
+  "last_completed_report": "state/reports/td-initial-v1.json",
+  "open_escalations": ["esc-001", "esc-002"],
+  "build_complete": false
+}
+```
+
+**Field semantics:**
+
+- `updated_at` — ISO-8601 of the last write.
+- `current_phase` — the dominant phase of the build right now. The renderer uses this to highlight the active phase band.
+- `active_roles[]` — array of currently-running role-instances. Multiple entries when parallel waves are active (e.g., 3 Builders running simultaneously). Empty array between dispatch events.
+- `last_completed_report` — relative path to the most recently completed report file. Lets the renderer cheaply detect "did anything change since my last poll?" — if this path is unchanged from last poll, no new report has landed.
+- `open_escalations[]` — array of escalation IDs (`esc-{nnn}`) currently in flight (queued but not yet resolved). The renderer uses this to keep escalation rows "live" in the visualization.
+- `build_complete` — `true` once Integrator + CV finish and Orchestrator marks delivery complete. The renderer freezes the live trace and transitions to the static post-build view when this flips.
+
+**Write coordination:**
+
+- Sequential phases (Discovery → TD → Editor → Coordinator-dispatch): the completing role writes the file before dispatching the next. No contention.
+- Parallel waves (Coordinator dispatches multiple Builders or Overseers in one wave): Coordinator owns the file during the wave. Each section reports completion to Coordinator via its own `state/sections/{name}.json` write, and Coordinator aggregates and updates `current-step.json` after each section completion. This serializes updates through a single writer.
+- Escalations: the raising role writes its report (with `raised_escalation: true`) AND updates `current-step.json` to add Arbiter to `active_roles[]` and the new escalation ID to `open_escalations[]`. Arbiter's completion removes itself, adds the rectifier role. Rectifier's completion removes itself, closes the escalation ID. Each handoff is single-writer.
+
+**Atomic-write pattern (mandatory, per FS-race finding):**
+
+```python
+# Pseudo-code; concrete writer implementations are per-role
+tmp = f"state/live/current-step.json.tmp"
+with open(tmp, "w") as f:
+    json.dump(new_state, f, indent=2)
+    f.flush()
+    os.fsync(f.fileno())  # force disk flush before rename
+os.replace(tmp, "state/live/current-step.json")  # atomic on Windows + POSIX
+```
+
+`os.replace` (Python) / `MoveFileEx` with `MOVEFILE_REPLACE_EXISTING` (Win32) / `rename(2)` (POSIX) are all atomic at the filesystem level. Readers polling the file always see either the prior coherent state or the new coherent state, never a torn intermediate.
+
+**Lifecycle:**
+- Created when Orchestrator first dispatches Discovery on build start.
+- Mutated in place throughout the build.
+- Final write: `build_complete: true` + `active_roles: []` + `current_phase: "complete"` at delivery.
+- At ratification, freezes in the corpus as a record of the build's terminal state.
+- At promotion, does not fork to the standalone repo.
+
+**Audit hooks:**
+- Critic checks: `current-step.json` is never absent during an active build; `active_roles[]` always reflects roles that have started but not yet emitted a Completion Report.
 
 ---
 

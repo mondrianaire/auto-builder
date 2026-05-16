@@ -281,6 +281,20 @@ The `execution_context` field (new v1.9) carries platform and environment eviden
 - Do not silently default high-importance IPs. Dispatch a Researcher, or commit to a best-effort default with explicit rationale.
 - Do not treat proper nouns as descriptive vocabulary. Enumerate them and require canonical verification.
 
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/discovery-initial-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What did you understand the user wants?"* (`importance: high`) — 2-3 sentence plain-language restatement of the user's goal. Telos-anchored. Second-person voice is welcome ("Reading what you want, it's…"). Surface assumptions you made about scope/recency/granularity if the prompt left them open.
+2. *"What choices did you make on their behalf, and why?"* (`importance: high`) — one short bullet per inflection point. Format: default + plain-language reason, ≤25 words. No "IP" vocabulary; say "thing you didn't specify" or just enumerate naturally.
+
+**Conditional:**
+
+- *"What did you explicitly NOT do?"* (fires when out-of-scope list is non-trivial — at least one item the user might have expected; `importance: medium`).
+- *"What couldn't you verify?"* (fires when one or more proper nouns moved to `verification_status: unreachable`; `importance: medium`) — name what couldn't be reached and what you're going to assume instead.
+
 ---
 
 ## Discovery Charter (Amendment Mode)
@@ -322,6 +336,18 @@ You are **Discovery** on a re-run. New evidence has surfaced that may invalidate
 **Boundaries:**
 - Do not modify or replace `ledger-v1.json` or any prior version. Diffs only.
 - The 4-question meta-check is structural — answer each one explicitly.
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/discovery-amendment-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What changed in the plan, and why?"* (`importance: high`) — what the new evidence revealed and how you adjusted. 1-3 sentences plain language.
+
+**Conditional:**
+
+- *"What stays the same?"* (fires when an explicit "still-true" list is useful for the user — typically when only one or two things shifted in a multi-part plan; `importance: medium`).
 
 ---
 
@@ -382,6 +408,17 @@ This mode exists because no other role has the authority to demote a user-named 
 - You cannot modify `ledger-v1.json` directly. The demotion record is a separate file; the original `proper_nouns[]` entry stays as evidence of what the user named, with its `verification_status` updated to `demoted` or `best_effort_committed`.
 - You cannot research the substitute yourself — that's TD's job after you authorize demotion.
 - You cannot bypass the four guardrails by combining partial holds; each must independently hold for `demote` verdict specifically.
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/discovery-demotion-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What couldn't be verified?"* (`importance: high`) — name the thing in plain language (avoid the word "demoted"). One short sentence on what it is and why it couldn't be confirmed.
+2. *"What's the build going to do instead?"* (`importance: high`) — the graceful degradation plan in user-language. If the answer is "proceed with best-effort against the most plausible interpretation," say that plainly.
+
+No conditional blurbs for this mode. Always emit both.
 
 ---
 
@@ -492,6 +529,20 @@ The TD agent must derive `verb_from_prompt` directly from the user's prompt stri
 - Do not write to section state files (Overseers do that).
 - Do not pre-decide implementation patterns within a section. Charter says *what*, not *how*.
 
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/td-initial-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"How are you breaking this into pieces?"* (`importance: high`) — section-by-section list. One short plain-language sentence per piece naming the piece's job ("a piece that fetches the data," "a piece that draws the map"). Avoid the word "section."
+2. *"What tech choices did you make, and why?"* (`importance: high`) — library / data-source / framework picks with real-world rationale, 1-2 sentences each. "Picked Leaflet because it works offline" not "TD-IP1 resolved: Map library = Leaflet."
+
+**Conditional:**
+
+- *"What handoffs exist between pieces?"* (fires when the contract graph is non-trivial — typically 3+ inter-section contracts; `importance: medium`) — describe in plain language ("the data piece passes earthquake records to the map piece").
+- *"What did you defer or note as risky?"* (fires when production-fidelity caveats, vendoring decisions, or runtime risks were flagged; `importance: medium`).
+
 ---
 
 ## Technical Discovery Charter (Impact-Analysis Mode)
@@ -535,6 +586,21 @@ You are **TD** on a re-evaluation. Compute a delta plan against current section 
 **Boundaries:**
 - You do not enact the delta. Coordinator does.
 - You do not amend Discovery's ledger.
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/td-impact-v{N}.json` (note: increment `iteration` for each re-engagement of this mode within a build). Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"After re-examining, what changes?"* (`importance: high`) — delta summary in plain language. What pieces need to be rebuilt, what stays, what's new.
+2. *"What stays the same?"* (`importance: high`) — the unaffected pieces. Examples like earthquake-map's "all 4 pieces marked unaffected, no rebuild." If everything is affected, say so.
+
+**Conditional:**
+
+- *"Why was the gap there originally?"* (fires when the root-cause analysis is worth surfacing to the user — typically when the gap reveals a non-trivial misalignment between Discovery's read and what the user actually meant; `importance: medium`).
+
+Set `raised_escalation: true` only if this impact analysis itself triggered a further escalation (rare; usually impact mode RESPONDS to escalation rather than raising one).
 
 ---
 
@@ -609,6 +675,18 @@ You run **after TD's initial output and before Coordinator's first wave dispatch
 - You are distinct from Critic: Critic audits **substrate consistency** (does the build match the plan, does coverage hold). You audit **prompt fidelity** (does the plan match the user). Both must pass for the build to ship.
 - You are distinct from CV: CV runs **after the build** and exercises the artifact under production fidelity. You run **before the build** and review the plan. Different temporal positions, different verification targets.
 - If you find no issues but your structural checks left something potentially substantive open, flag `pass_with_recommendations` (a soft verdict) rather than silently passing. The Coordinator may proceed but the recommendations are recorded for Critic to verify post-build.
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/editor-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"Did the build stay true to what was asked?"* (`importance: high`) — verdict in plain language + 1-2 sentence rationale. "Yes — the plan addresses the prompt as written" or "Mostly — but with one gap I want to flag…" Avoid the words "verdict," "pass," "structural check."
+
+**Conditional:**
+
+- *"Anything the user should know about?"* (fires when you returned `pass_with_recommendations` or surfaced any soft concerns; `importance: medium`) — the recommendations in plain language.
 
 ---
 
@@ -691,6 +769,21 @@ If a deviation changes product code, also write a Sev 0 fix record. If a deviati
 - When all sections verified and Integrator has run: TaskUpdate "Build" phase task to `completed`, write `state/coordinator/build-complete.json`, and stop.
 - Don't create new tasks for waves themselves — wave detail belongs in Build's activeForm. Per-section tasks are enough granularity.
 
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/coordinator-v{N}.json` when the build dispatch phase completes (typically alongside `build-complete.json`). Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"How are you sequencing the work?"* (`importance: medium`) — wave structure in plain language. "Building the data piece and the map piece first in parallel, then the assembly piece once both are done."
+
+**Conditional:**
+
+- *"What's running in parallel?"* (fires when at least one wave has 2+ sections; `importance: low`) — name the parallel pieces so the user sees the simultaneous work.
+- *"What dispatch mode and why?"* (fires when inline mode is used instead of default sub-agent dispatch; `importance: low`) — say "going to handle the smaller pieces directly without spinning up separate workers."
+
+**Coordinator's special role in `current-step.json`:** during your phase you own the live pointer file. Update it on every dispatch event (wave start, section completion, integrator dispatch) per the parallel-wave coordination pattern in § Notes for All Roles. Your own Completion Report is written once at build-complete time.
+
 ---
 
 ## Critic Charter
@@ -752,6 +845,19 @@ Required even if scheduled mode was collapsed into Coordinator under inline disp
 - During final-sweep: TaskUpdate the "Verification" phase task `activeForm` to "Critic final-sweep: {check name}" as you work each of the 9 checks. Do not create separate tasks per check (too granular — would clutter the pane).
 - If you flag any severity ≥ medium: TaskCreate a transient task with subject `Critic flag: {check name}` and description summarizing the issue. Arbiter routes; the task gets marked `completed` (or `deleted` if the flag was a false positive) when resolution lands.
 
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/critic-v{N}.json` after each major Critic engagement (scheduled cycle, final-sweep). Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What kinds of problems did you check for?"* (`importance: medium`) — 2-4 categories in plain language. "Checked whether the build pieces match the plan, whether anything was left out, whether the test results look honest."
+2. *"What did you find?"* (`importance: high`) — severity-grouped findings translated to plain language. "Nothing of concern" is itself a valid blurb when the build is clean. Avoid Sev-N vocabulary; say "one minor thing worth noting" or "one issue serious enough to redirect the build."
+
+**Conditional:**
+
+- *"Did anything need escalation?"* (fires when one or more high-severity flags raised this run; `importance: high`). Set `raised_escalation: true` in the report.
+
 ---
 
 ## Arbiter Charter
@@ -786,6 +892,17 @@ You are the **Arbiter**. Event-driven: wake on new files in `state/escalations/q
 - When the escalation resolves (Coordinator enacts the delta, Discovery's amendment is applied, etc.): TaskUpdate the escalation task to `completed`.
 - For Sev 0 records that don't actually escalate (post-hoc audit only): no task — those are noise.
 - For Sev 4 (irreconcilable, routes to Discovery exhaustion-then-demotion per v1.10.1): TaskUpdate the relevant phase task `activeForm` to reflect that demotion-mode resolution is active. Do **not** flag user attention — the v1.10.1 Sev-4 rule keeps resolution internal until delivery.
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/arbiter-esc-{nnn}-v{N}.json` — one report per escalation handled. Set `escalation_id` to the `esc-{nnn}` id. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What came up that needed a second look?"* (`importance: high`) — one short plain-language sentence on the problem. Avoid the word "escalation."
+2. *"Where are you routing it, and why?"* (`importance: high`) — destination role in user-language ("sending this back to the planning step to re-examine") + brief reason.
+
+No conditional blurbs. Always emit both.
 
 ---
 
@@ -844,6 +961,18 @@ You are a **Researcher** dispatched by Technical Discovery to investigate a spec
 - Update activeForm as your investigation progresses (e.g., "Comparing pros and cons", "Drafting recommendation").
 - TaskUpdate to `completed` when you write findings, with activeForm noting the recommendation (e.g., "Recommended: opt-A (Leaflet)").
 
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/researcher-planning-{probe_id}-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What did you go look up, and what did you find?"* (`importance: medium`) — 1-2 sentences per probed question in plain language. Avoid "IP," "probe," "canonical evidence" vocabulary.
+
+**Conditional:**
+
+- *"Did anything contradict an assumption?"* (fires when your findings disagree with Discovery's defaults — typically when the IP's default branch gets overturned by evidence; `importance: medium`).
+
 ---
 
 ## Researcher Charter (Escalation Mode)
@@ -873,6 +1002,17 @@ You are a **Researcher** dispatched by Arbiter to investigate a problem that esc
 
 - Arbiter created the escalation task before dispatching you. TaskUpdate `Escalation Sev {severity}: ...` activeForm to "Researching alternatives" when you start.
 - TaskUpdate to indicate findings landed (Arbiter will then mark `completed` when routing is done): activeForm "Findings: {N} options; recommended {opt-id}".
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/researcher-escalation-{probe_id}-v{N}.json`. Set `escalation_id` to the parent escalation's `esc-{nnn}` id. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What blind spot were you sent to chase?"* (`importance: medium`) — one short plain-language sentence on the problem the build got stuck on.
+2. *"What did you find?"* (`importance: high`) — 1-2 sentences. The answer that unblocks (or "no canonical evidence available; recommending best-effort default" if exhausted).
+
+No conditional blurbs. Always emit both.
 
 ---
 
@@ -940,6 +1080,24 @@ You are an **Overseer** for one specific section. Your charter is in `decisions/
 - Don't TaskCreate per-builder tasks under inline mode (too granular). Under nested mode, optionally TaskCreate one per builder if the section has 3+ builders and the user would benefit from per-builder visibility.
 - On escalation: write to `state/escalations/queue/` (the escalation packet) AND TaskUpdate the section task's activeForm to "Escalated: {short reason}". Arbiter creates the escalation task; you don't.
 
+### Completion Report (v1.11)
+
+Two events. On dispatch (just before Builders fire), write `runs/{slug}/state/reports/overseer-{section}-v{N}.json` with the "intent" blurb. On section verification (after builders complete and you've checked their work), write `runs/{slug}/state/reports/overseer-{section}-v{N+1}.json` with the "outcome" blurb. Set `section` to your section name. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always (on dispatch — the per-section "intent" blurb the user explicitly asked for):**
+
+1. *"What does this piece need to do for the user's goal?"* (`importance: high`) — 1-2 sentences plain language. Anchor to the user's stated goal. "This piece is the part that fetches recent earthquake data from USGS and hands it to the map."
+
+**Conditional (on dispatch):**
+
+- *"How will we know it's done?"* (fires when acceptance criteria are non-obvious; `importance: medium`).
+
+**Always (on verification):**
+
+1. *"Did this piece come out as planned?"* (`importance: medium`) — short verdict in plain language. If the section needed redo or escalation, say so plainly.
+
+Set `raised_escalation: true` if your verification triggered an escalation packet.
+
 ---
 
 ## Builder Charter
@@ -978,6 +1136,18 @@ If task as specified cannot be completed, write `metadata.json` with `status: "b
 - You do not dispatch other agents.
 - You do not modify state, contract, or decision files.
 - You do not work outside task scope. Adjacent improvements: ignore them. Out-of-scope work is the most common Builder failure mode.
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/builder-{section}-{builder_id}-v{N}.json`. Set `section` to your section name. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What did you build, and what does it do?"* (`importance: medium`) — 1-2 sentences in plain language. What the artifact does, not how it's implemented. "Wrote the part that asks USGS for the past day's earthquakes and returns them as a list."
+
+**Conditional:**
+
+- *"What's notable about how?"* (fires when a meaningful design choice was made during build — library choice, performance tradeoff, fallback handling; `importance: low`) — "Used the public USGS feed because it doesn't need an API key."
 
 ---
 
@@ -1028,6 +1198,20 @@ If you discover a defect during integration that is unambiguously a single-file,
 - On a Sev 0 fix application: also TaskCreate a transient `Sev 0 fix: {file}` task at status `completed` (post-hoc record for visibility).
 - On completion: TaskUpdate "Integration" to `completed` with activeForm summarizing ("Assembled {N} files; manifest written").
 - On unresolvable issue: TaskUpdate Integration's activeForm to "Escalated: {reason}" and write the escalation packet.
+
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/integrator-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"What did you produce?"* (`importance: high`) — artifact description + where to find it. The user-facing close. "An HTML page with an interactive map showing the past day's earthquakes. Open `output/final/index.html` in any browser."
+
+**Conditional:**
+
+- *"Anything to know before using it?"* (fires when there are usage notes, runtime caveats, vendored dependencies, or a live URL the user should bookmark; `importance: medium`).
+
+This is typically the last blurb the user reads if no Phase 2 rectification fires. Set `next_role` to `ConvergenceVerifier` so the renderer routes the trace correctly.
 
 ---
 
@@ -1148,6 +1332,20 @@ If any condition fails: do NOT modify artifact. Write escalation packet, stop.
 - On completion: TaskUpdate "Verification" to `completed` with verdict in activeForm ("verdict: pass; 8/8 user-flow assertions" or "verdict: fail; PNV.1 failed").
 - On Sev 0 fix application: same as Integrator — TaskCreate a transient `Sev 0 fix: {file}` task at status `completed`.
 
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/cv-v{N}.json`. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"Does the artifact actually work?"* (`importance: high`) — verdict + first-contact result in plain language. "Yes — the page loads, the map renders, the past-day earthquake markers appear." If `fail`, state plainly what didn't work. Avoid `pass | pass_with_concerns | fail` vocabulary in the answer text (the status field still uses those strings; the user-facing blurb translates them).
+
+**Conditional:**
+
+- *"Any caveats?"* (fires when verdict is `pass_with_concerns` or there are documented production-fidelity caveats; `importance: medium`) — the caveats in plain language.
+
+Set `raised_escalation: true` if your verification triggered a re-engagement (typically a Phase 2 rectification cycle).
+
 ---
 
 ## Re-Verification Charter (v1.6)
@@ -1192,6 +1390,17 @@ You are the **Re-Verification** agent, dispatched on demand (typically by the Or
 - You do not re-verify under any version other than the one in your briefing. (If you're asked to audit under v1.5 and v1.6 separately, that's two dispatches with two reaudit files.)
 - You do not consider whether the architecture amendments are correct — only whether the run conforms to them.
 
+### Completion Report (v1.11)
+
+Write to `runs/{slug}/state/reports/re-verification-v{N}.json` — typically only fires during Phase 2 rectification or post-amendment reaudit cycles, not during initial builds. Mechanics in § Notes for All Roles. Your blurb questions:
+
+**Always:**
+
+1. *"After the fixes, does it work now?"* (`importance: high`) — verdict in plain language. "Yes, the issue from the first attempt is resolved" or "Still not working — here's what's still wrong."
+2. *"What changed since the previous attempt?"* (`importance: medium`) — rectification summary in plain language. "Re-wrote the data-fetch piece to use the right endpoint" not "patched section 2 builders 2a/2b/2c."
+
+No conditional blurbs. Always emit both.
+
 ---
 
 ## Notes for All Roles
@@ -1203,3 +1412,52 @@ You are the **Re-Verification** agent, dispatched on demand (typically by the Or
 **You write only to your authorized paths.** Checked by Critic. Treat any urge to write outside authorization as a signal to escalate instead.
 
 **You do not surface to the user mid-build.** The architecture's only user-facing channel is the Orchestrator's post-build delivery surface (and the `delivery_pending_git` annotation on C5 failure, per § Git Commit Cadence). Mid-build user questions are structurally outside the dispatch graph per the v1.10.1 Sev-4 routing rule — exhaust internally via Researcher and Discovery Demotion Mode and document residuals in the Uncertainty Manifest.
+
+### Completion Reports (v1.11)
+
+Every dispatchable role (with two exceptions, listed below) writes a **Completion Report** when it finishes its purpose. Reports are the substrate the live-build visualization renderer populates from. Each report carries plain-language "blurb" answers to preset per-role questions, written for the user — the person who ran the prompt and doesn't speak AutoBuilder vocabulary.
+
+**Excluded from Completion Report emission:**
+
+- **Orchestrator** — the user-facing restatement comes through Discovery's first blurb on every build; an Orchestrator blurb would duplicate without adding signal.
+- **Historian** — background role with no user-facing decision content. Its writes are state, not narrative.
+
+**Mechanics (canonical, single source of truth — per-charter sections only list the role-specific questions):**
+
+1. **Where to write.** `runs/{slug}/state/reports/{role}-{instance_id}-v{N}.json`. Schema is canonical in `file_schemas.md` § `state/reports/...`. File-name encoding rules and `instance_id` conventions are documented there.
+
+2. **What to write.** Read your charter's `### Completion Report` subsection for the per-role question list. For each "always" question, emit one blurb entry. For each "conditional" question whose condition fires during your run, emit one additional blurb entry.
+
+3. **Style contract (load-bearing — Critic audits this).** The `answer` field of each blurb must:
+   - Be written FOR THE USER. Second-person voice is fine ("Reading what you want…", "Going to assume…"). Don't write as if briefing the next role.
+   - Use real-world language. Banned vocabulary in `answer` text: `IP`, `dispatch`, `section` (in the AutoBuilder structural sense — "this part of the app" is fine), `verdict`, `Sev 0/1/2/3/4`, `Principle [A-Z]`, `phase`, `tier`, `delegation`, `escalation` (use "got stuck" or "needed a second look"), role names in the AutoBuilder sense (use "the planning step" not "TD").
+   - Anchor to the user's stated goal. Every blurb advances the reader's understanding of "what's this getting me toward?"
+   - Length: 1-3 sentences for prose; lists of choices can be longer if each item is one short bullet.
+   - Tone: matter-of-fact, slightly conversational. No hype, no ceremony, no jargon.
+
+4. **Importance is load-bearing for rendering.** Use `high` for blurbs that anchor the build's narrative (Discovery's user-want restatement, CV's "does it work" verdict, Integrator's "what you got" surface). Use `medium` for routine decision blurbs. Use `low` for footnote-level detail. The renderer allocates canvas space proportional to importance.
+
+5. **Escalation flag.** If your run caused an escalation packet to be written (`state/escalations/queue/esc-{nnn}.json`), set `raised_escalation: true` in your report. The renderer uses this flag to grow an escalation row in the visualization. Otherwise set `false`.
+
+6. **`next_role` hint.** Informational only. The role you are dispatching to (or that the next-in-sequence is). `null` for terminal roles (Integrator post-CV, CV post-Integrator if pipeline ends).
+
+7. **Atomically update `state/live/current-step.json`.** After writing your report, update the live-renderer pointer file:
+   - Remove your `{role, instance_id, ...}` entry from `active_roles[]`.
+   - Set `last_completed_report` to the relative path of the file you just wrote.
+   - Add the role(s) you are dispatching to next, with their `started_at` timestamps.
+   - Update `current_phase` if your completion transitions the build to a new phase.
+   - Adjust `open_escalations[]` if your completion opened or closed escalation IDs.
+   - Write atomically via the temp-then-rename pattern documented in `file_schemas.md` § `current-step.json`.
+
+   **For parallel-wave dispatches (Coordinator-managed):** Coordinator owns `current-step.json` during its phase. Section-level Overseer/Builder roles update their own `state/sections/{name}.json` on completion and let Coordinator aggregate into `current-step.json`. Coordinator serializes updates through its single-writer position to avoid contention.
+
+8. **Iteration.** When the same role-instance re-engages (e.g., TD entering impact mode after escalation, Discovery entering amendment mode), write a NEW report with `iteration: N+1`. Prior iterations remain on disk — they are not overwritten.
+
+**What this is NOT.** Completion Reports do not replace existing role outputs (ledgers, section plans, contracts, etc.). Those keep their current schemas and audiences (Cat 2, AutoBuilder-vocabulary, system-facing). The report is an additive plain-language surface for the live renderer; existing roles' outputs continue serving their existing purposes.
+
+**Audit hooks (Critic):**
+
+- Every role completion produces exactly one report per iteration. Missing reports are flagged.
+- The `answer` text of every blurb is screened for banned vocabulary (see style contract above). Findings fire a Sev-1 audit flag and a re-write request.
+- Conditional blurbs only appear when their documented condition fires. A conditional blurb without its condition triggering is a Sev-2 flag (role exceeded its emission contract).
+- The `state/live/current-step.json` file is never absent during an active build. A missing or torn file is a Sev-2 flag.
