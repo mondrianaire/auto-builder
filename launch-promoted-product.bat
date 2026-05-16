@@ -34,6 +34,14 @@ REM   v0.5 — pointer prompt. Instead of concatenating cc-launch-prompt.md
 REM          into a single 3.8KB argv string, pass a one-line pointer that
 REM          tells Claude Code to read the file itself. Avoids argv length
 REM          truncation that lost the FIRST ACTION instructions in v0.4.
+REM   v0.6 — resume-aware. Detects whether a Claude Code session already
+REM          exists for this fork by checking
+REM          %USERPROFILE%\.claude\projects\<encoded-path>\*.jsonl. If
+REM          present, launches `claude --continue` (no pointer prompt —
+REM          the agent already has full context). If absent, fresh
+REM          bootstrap with the pointer prompt as before. Means repeated
+REM          presses of the Promote button re-enter the same agent rather
+REM          than spawning parallel ones.
 REM ===========================================================================
 
 setlocal EnableDelayedExpansion
@@ -174,18 +182,36 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Construct a SHORT pointer prompt that tells Claude Code to read the
-REM full bootstrap from cc-launch-prompt.md itself. We used to concatenate
-REM the whole file into a single cmd argv string, but that hits Claude
-REM CLI's argv-handling limits and truncates mid-prompt — losing the
-REM FIRST ACTION instructions at the end. The pointer pattern delegates
-REM the full-text load to Claude's Read tool, which has no length issue.
+REM Compute the Claude Code session-storage directory for this fork.
+REM Claude encodes the absolute fork path as a single dir name under
+REM %USERPROFILE%\.claude\projects\, with ':\' replaced by '--' and any
+REM remaining '\' replaced by '-'. Example mapping:
+REM   C:\Users\mondr\Documents\Claude\Projects\gto-poker-async-duel-AB
+REM   -> C--Users-mondr-Documents-Claude-Projects-gto-poker-async-duel-AB
+set "ENCODED=%LOCAL_PATH%"
+set "ENCODED=%ENCODED::\=--%"
+set "ENCODED=%ENCODED:\=-%"
+set "SESSION_DIR=%USERPROFILE%\.claude\projects\%ENCODED%"
+
+REM Detect a prior session by looking for any .jsonl transcript in the
+REM session dir. Wildcard match avoids parsing the dir listing.
+set "HAS_SESSION=0"
+if exist "%SESSION_DIR%\*.jsonl" set "HAS_SESSION=1"
+
+REM Pointer prompt — only used on FRESH bootstraps. We pass a short one-
+REM line cue that tells Claude Code to read the full briefing from
+REM cc-launch-prompt.md itself, sidestepping the CLI's argv length limit.
 set "POINTER=You are picking up %SLUG% — a promoted AutoBuilder build. Read cc-launch-prompt.md in the current directory for your full briefing, then follow the FIRST ACTION instructions at the end of it."
 
 echo === Launching Claude Code CLI in a new window ===
 echo Working directory: %LOCAL_PATH%
 echo Window title:      Claude Code: %SLUG%
-echo Initial prompt:    Read cc-launch-prompt.md ^(pointer^) — %SLUG%
+echo Session dir:       %SESSION_DIR%
+if "%HAS_SESSION%"=="1" (
+    echo Mode:              RESUME prior session via --continue
+) else (
+    echo Mode:              FRESH bootstrap via pointer prompt
+)
 echo.
 
 REM `start` opens a new visible cmd window so the bat is invokable from
@@ -193,7 +219,11 @@ REM Desktop Commander or any hidden shell while still giving the user a
 REM real interactive Claude Code session. `/D` sets the new window's
 REM working directory; `/K` keeps the cmd shell open after claude exits
 REM so the user can see any final output and re-invoke if needed.
-start "Claude Code: %SLUG%" /D "%LOCAL_PATH%" cmd /K claude "%POINTER%"
+if "%HAS_SESSION%"=="1" (
+    start "Claude Code: %SLUG%" /D "%LOCAL_PATH%" cmd /K claude --continue
+) else (
+    start "Claude Code: %SLUG%" /D "%LOCAL_PATH%" cmd /K claude "%POINTER%"
+)
 
 echo === Spawned Claude Code window ===
 echo This launcher exits now; the new window will run independently.
