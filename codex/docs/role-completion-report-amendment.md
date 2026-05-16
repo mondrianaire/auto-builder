@@ -168,17 +168,67 @@ The v0.15 plumbing (build_shape.mjs + topology.js + topology.css + dashboard hoo
 <!-- Edit checkboxes when you action items. Codex parses this block on its next aggregator run. -->
 
 **Last touched:** 2026-05-16
-**Overall state:** Codex-filed; Maintenance-owned; v1.11-candidate substrate amendment. Gates the live narrative renderer (v0.16+ of the visualization-proposal).
+**Overall state:** v1.11 amendment shipped 2026-05-16 by Maintenance. Codex v0.16 unblocked.
 
-- [ ] proposal-reviewed — *Maintenance reads + acks the per-role blurb question list + the file schema + the escalation row mechanics.*
-- [ ] blurb-questions-refined — *Maintenance refines the question wording and per-role count. Codex's draft above is a starting point; Maintenance owns the canonical phrasing per the architecture-vocabulary boundary.*
-- [ ] charter-amendments-drafted — *Maintenance writes the actual amendments to each role's section of `architecture/role_charters.md` per the template above. ~13 role charters to touch; mostly additive (one new "Completion Report" subsection per role).*
-- [ ] file-schema-finalized — *Maintenance confirms the JSON schema for the report file. Codex's draft schema above is a starting point; canonical schema should land in `architecture/file_schemas.md`.*
-- [ ] amendment-shipped — *Maintenance commits the v1.11 amendment. Codex starts v0.16 implementation against the new substrate.*
-- [ ] codex-v0.16-shipped — *Codex-owned, gated on amendment landing. Live narrative renderer per the scope above.*
+- [x] proposal-reviewed — *Codex's draft is sound. Blurb question lists kept ~95% intact; refinements documented in Maintenance notes below.*
+- [x] blurb-questions-refined — *Per-role question lists tightened for style-contract compliance and second-event semantics on Overseer.*
+- [x] charter-amendments-drafted — *13 roles amended in `architecture/role_charters.md` (Discovery x3 modes, TD x2 modes, Editor, Coordinator, Critic, Arbiter, Researcher x2 modes, Overseer, Builder, Integrator, CV, Re-Verification). Orchestrator + Historian explicitly excluded per Codex's rationale. Canonical mechanics live in a single "§ Completion Reports (v1.11)" subsection of "Notes for All Roles"; per-role charter sections carry only the role-specific blurb questions to avoid 13-way duplication.*
+- [x] file-schema-finalized — *`state/reports/{role}-{instance_id}-v{N}.json` schema landed in `architecture/file_schemas.md` § Schemas. Directory layout + permission table updated.*
+- [x] amendment-shipped — *Shipped in this commit; see Codex acks below for the file-by-file change manifest.*
+- [ ] codex-v0.16-shipped — *Codex-owned, gated on this amendment landing. Now unblocked.*
 
 ### Maintenance notes
-*(Maintenance: add your review + decisions here.)*
+
+2026-05-16: Amendment shipped. Notable refinements from Codex's draft:
+
+**On the style contract.** Codex framed style guidance as a per-role addendum to each charter. I consolidated it into the canonical "§ Completion Reports (v1.11)" subsection of "Notes for All Roles" — single source of truth — and added an explicit **banned vocabulary list** for the `answer` field text. Banned: `IP`, `dispatch`, `section` (in the structural sense), `verdict`, `Sev N`, `Principle X`, `phase`, `tier`, `delegation`, `escalation`. The renderer trusts blurb text as already user-facing; the banned list is what makes that trust honest. Critic audits will fire Sev-1 flags on banned-vocabulary appearances and request a re-write. This is load-bearing: without the ban, charters tend to drift back to AutoBuilder-vocabulary blurbs that pass the syntactic schema but fail the actual "written for the user" promise.
+
+**On Overseer's two events.** Codex's draft had Overseer emitting one blurb on dispatch ("what does this piece need to do for the user's goal?"). I made it two events: (a) intent blurb on dispatch (Codex's original), (b) outcome blurb on section verification ("did this piece come out as planned?"). The intent-without-outcome pattern leaves the renderer with a dangling "what was supposed to happen" with no resolution — the user's eye-track hits the intent card and then has nowhere to go. Adding the outcome blurb closes the loop. File-naming: same `instance_id`, incremented `iteration` (so v1 is intent, v2 is outcome).
+
+**On the `current-step.json` write protocol.** Codex left this as an open question gating v0.16. I settled it: single-writer-at-a-time, atomic temp-then-rename per the FS-race finding's prescription. Sequential phases use whichever role just completed; parallel waves are owned by Coordinator (which already serializes through its dispatch-log writes). Documented the write pattern with concrete `os.replace` / `MoveFileEx` references. Renderer pollers see coherent prior or new state, never torn writes.
+
+**On Critic audit hooks.** Codex's draft mentioned Critic auditing reports but didn't specify the audit checks. I added four explicit hooks: (1) every role completion produces exactly one report per iteration (missing reports = flag), (2) banned-vocabulary screen on `answer` text (Sev-1 + re-write), (3) conditional blurbs only appear when their documented condition fires (Sev-2: role exceeded emission contract), (4) `current-step.json` is never absent during an active build (Sev-2 for torn writes). This makes the substrate auditable, not just documented.
+
+**On future-proofing.** The schema includes `iteration` (1-indexed) so re-engaged role-instances cleanly version their reports without overwriting. The `instance_id` encoding supports per-section, per-escalation, and single-instance variants in a uniform shape. Renderer can group by `instance_id` to show "this role engaged 3 times" without parsing filenames.
+
+**On scope discipline (per Codex's filing rationale).** This amendment is purely additive: every existing role keeps doing what it does and also emits a small report file. Existing role outputs (ledgers, section plans, contracts, verdicts) retain their current schemas, audiences, and Cat 2 status. Completion Reports are a NEW Cat 2 surface specifically for the live narrative renderer; they do not replace any existing output.
+
+### Codex acks
+2026-05-16: Filing this as the corrected substrate dependency for the live-build-visualization direction after user feedback exposed v0.15 was aimed at the wrong altitude. The substrate amendment is the gating dependency; once it lands, Codex can build a renderer that produces visualizations close to what the user has in mind (modeled after the earthquake-map decision-flowchart they uploaded — see live-build-visualization-proposal.md for the design-dialogue trail).
+
+Filed as a separate proposal rather than folded into the visualization proposal because: (1) substrate amendments are architecture territory and benefit from their own thread per the codex-vs-architecture boundary, (2) the visualization proposal's existing Maintenance-Status checkboxes are scoped to the renderer work and shouldn't be confused with the substrate prerequisite, (3) per the FS-race finding (`concurrent-session-fs-race-finding.md`), large new content lands cleaner in new untouched files than as extensions to volatile shared files.
+
+The earthquake-map decision-flowchart the user uploaded (`uploads/decision-flowchart.svg`) is the visual reference target; the user's framing — "preset blurb questions per role, dynamically expanded with escalation rows, 1-3 baseline scaling with perceived importance" — is the design constraint this amendment encodes into substrate.
+
+---
+
+2026-05-16 (later, Maintenance): v1.11 shipped end-to-end. File-by-file change manifest for Codex's v0.16 implementation reference:
+
+**`architecture/file_schemas.md`:**
+- Directory Layout extended with `state/reports/` and `state/live/`.
+- Permission Table extended with two rows (reports, current-step.json).
+- New schema section `state/reports/{role}-{instance_id}-v{N}.json` — full field list, file-name encoding rules, style contract reproduction, lifecycle, audit hooks.
+- New schema section `state/live/current-step.json` — schema, write coordination patterns, mandatory atomic-write pattern with pseudo-code, lifecycle.
+
+**`architecture/role_charters.md`:**
+- New `### Completion Reports (v1.11)` subsection in "Notes for All Roles" carrying the canonical mechanics + banned vocabulary list + audit hooks.
+- `### Completion Report (v1.11)` subsections added to 13 role charters: Discovery (Initial / Amendment / Demotion), TD (Initial / Impact), Editor, Coordinator, Critic, Arbiter, Researcher (Planning / Escalation), Overseer (two-event variant), Builder, Integrator, CV, Re-Verification. Each carries only the role-specific blurb question list; mechanics reference the canonical section.
+
+**No changes needed elsewhere.** PROJECT-OVERVIEW.md templates, wrap-up scripts, and the workflow #2 fork ceremony are all upstream of the report-emission events — they see the reports only as `state/reports/*.json` files in the corpus.
+
+**Codex implementation notes for v0.16:**
+
+1. **Polling pattern.** Watch `state/live/current-step.json` for changes (its `updated_at` or `last_completed_report` fields flip on every dispatch event). On change, scan `state/reports/` for any file not yet rendered. The watch-then-scan pattern is O(1) for the steady-state case where nothing changed, O(N) only when something did.
+
+2. **Renderer cell allocation.** Use `importance: high` blurbs for full-width cards, `medium` for half-width, `low` for compact footnote-style. Each role's cell can grow as more blurbs land for that role's iteration.
+
+3. **Style trust.** The renderer can trust blurb `answer` text as already user-facing. If Critic ever flags banned vocabulary, that's a Sev-1 audit issue back to the role — the renderer never tries to "translate" mid-render.
+
+4. **Escalation row materialization.** When any report has `raised_escalation: true`, materialize a new escalation row per the earthquake-map decision-flowchart's red-channel pattern. The escalation flows through Arbiter → rectifier role(s) → original raiser's re-engagement report, all retrievable by `escalation_id` filtering across the reports directory.
+
+5. **`build_complete: true` transition.** The renderer freezes the live trace when `current-step.json.build_complete` flips true. The post-build static view is the build-skeleton fallback (v0.15) by default; the user can toggle back to the narrative trace for review.
+
+Codex v0.16 work is unblocked. The substrate-shape changes are stable; refinements to specific blurb questions are still in-charter scope and can land later via routine charter amendments without breaking the renderer.
 
 ### Codex acks
 2026-05-16: Filing this as the corrected substrate dependency for the live-build-visualization direction after user feedback exposed v0.15 was aimed at the wrong altitude. The substrate amendment is the gating dependency; once it lands, Codex can build a renderer that produces visualizations close to what the user has in mind (modeled after the earthquake-map decision-flowchart they uploaded — see live-build-visualization-proposal.md for the design-dialogue trail).
