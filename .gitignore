@@ -115,3 +115,6 @@ scratch/
 # v0.16a one-time tools (A/B-pair viz) — local only
 /run-aggregate.bat
 /verify-abpair.bat
+
+# v0.16 one-time verification tools — local only
+/verify-v016.bat
