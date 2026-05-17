@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-17T03:29:28.612Z",
+  "generated_at": "2026-05-17T04:32:34.214Z",
   "codex_version": "0.16",
   "architecture_versions_seen": [
     "v1.3",
@@ -11,85 +11,6 @@
   ],
   "run_count": 11,
   "runs": [
-    {
-      "slug": "github-profile-card",
-      "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
-      "date": "2026-05-16",
-      "architecture_version": null,
-      "dispatch_mode": null,
-      "verdict": "pass_with_concerns",
-      "raw_verdict": "`pass_with_concerns` (10/10 first-contact requirements pass; all caveats trace to the user-supplied PAT, intrinsic to the design)",
-      "final_artifact": null,
-      "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
-      "rating": {
-        "telos_fidelity": "adequate",
-        "deliverability": {
-          "tier1_pnv": "verified",
-          "tier2_first_contact": "not_run",
-          "tier3_subgoal": "verified"
-        },
-        "cost": {
-          "minutes": null,
-          "escalations_high": 0,
-          "critic_high": 0
-        },
-        "learning_yield": {
-          "amendment_candidates": 0,
-          "principle_violations_caught_structurally": 0,
-          "principle_violations_escaped": 0
-        },
-        "composite": "shipped_with_concerns"
-      },
-      "counts": {
-        "dispatches": 18,
-        "overseer_dispatches": 5,
-        "builder_dispatches": 5,
-        "researcher_dispatches": 0,
-        "wall_clock_minutes": null,
-        "sections": 5,
-        "edge_cases_total": null,
-        "edge_cases_passing": null,
-        "critic_findings_high": 0,
-        "critic_findings_medium": 0,
-        "critic_findings_low": 0,
-        "sev0_fixes": 0,
-        "escalations_open": 0,
-        "demotions": 0,
-        "editor_iterations": 1,
-        "events_total": 0,
-        "revision_count": 1,
-        "additional_step_count": 0
-      },
-      "deliverable_kind": "web_app",
-      "deliverable_can_run_in_browser": true,
-      "deliverable_index": "index.html",
-      "deliverable_manifest": null,
-      "showcase_assets": null,
-      "live_url": "https://mondrianaire.github.io/auto-builder/runs/github-profile-card/output/final/index.html",
-      "live_url_kind": "artifact",
-      "first_delivery_outcome": "succeeded_with_concerns",
-      "first_delivery_outcome_source": "uncertainty_manifest",
-      "re_audit_present": false,
-      "re_audit_reclassified_verdict": null,
-      "rca_present": false,
-      "completion_ratified_at": null,
-      "ratified_by": null,
-      "ratification_notes": null,
-      "ratification_writer_version": null,
-      "verification_passed": true,
-      "promoted_to": null,
-      "promoted_at": null,
-      "ab_pair": null,
-      "links": {
-        "run_report": "runs/github-profile-card/run-report.md",
-        "verification": "runs/github-profile-card/output/verification/report.json",
-        "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
-        "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
-        "final_dir": "runs/github-profile-card/output/final/",
-        "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
-      },
-      "decision_flowchart_path": null
-    },
     {
       "slug": "gto-poker-async-duel",
       "prompt": null,
@@ -792,6 +713,85 @@
       "decision_flowchart_path": "runs/tic-tac-toe/decision-flowchart-auto.html"
     },
     {
+      "slug": "github-profile-card",
+      "prompt": null,
+      "date": null,
+      "architecture_version": null,
+      "dispatch_mode": null,
+      "verdict": "unknown",
+      "raw_verdict": null,
+      "final_artifact": null,
+      "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
+      "rating": {
+        "telos_fidelity": "adequate",
+        "deliverability": {
+          "tier1_pnv": "not_run",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "not_run"
+        },
+        "cost": {
+          "minutes": null,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "unknown"
+      },
+      "counts": {
+        "dispatches": 18,
+        "overseer_dispatches": 5,
+        "builder_dispatches": 5,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": null,
+        "sections": 5,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 0,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 1,
+        "events_total": 0,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "other",
+      "deliverable_can_run_in_browser": false,
+      "deliverable_index": null,
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/github-profile-card.html",
+      "live_url_kind": "showcase",
+      "first_delivery_outcome": "unverified",
+      "first_delivery_outcome_source": "default",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "completion_ratified_at": null,
+      "ratified_by": null,
+      "ratification_notes": null,
+      "ratification_writer_version": null,
+      "verification_passed": null,
+      "promoted_to": null,
+      "promoted_at": null,
+      "ab_pair": null,
+      "links": {
+        "run_report": "runs/github-profile-card/run-report.md",
+        "verification": "runs/github-profile-card/output/verification/report.json",
+        "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
+        "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/github-profile-card/output/final/",
+        "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
+      },
+      "decision_flowchart_path": null
+    },
+    {
       "slug": "gto-poker-trainer",
       "prompt": "Perform a deep dive into GTO poker theory and create a training application with multiple modes one of which highlights a curated selection of hands to walk through that identify edge cases of GTO play for training. Another mode should be a fully functional 9 person table that tracks stats over sessions and features a sampling of 'classic' poker player archetypes.",
       "date": null,
@@ -1249,10 +1249,10 @@
   },
   "first_delivery_outcome_distribution": {
     "succeeded": 3,
-    "succeeded_with_concerns": 4,
+    "succeeded_with_concerns": 3,
     "failed_user_reprompted": 3,
     "failed_unrecoverable": 0,
-    "unverified": 1
+    "unverified": 2
   },
   "maintenance_handoffs": [
     {

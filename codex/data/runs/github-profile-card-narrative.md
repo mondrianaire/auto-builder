@@ -1,9 +1,9 @@
 # github-profile-card — Codex narrative
 
-**First-delivery outcome:** Succeeded with concerns _(source: uncertainty_manifest)_
-**Composite (architectural):** shipped_with_concerns
-**Verdict (build pipeline):** pass_with_concerns
-**Date:** 2026-05-16  ·  **Architecture:** —
+**First-delivery outcome:** Unverified (no first-delivery signal found) _(source: default)_
+**Composite (architectural):** unknown
+**Verdict (build pipeline):** unknown
+**Date:** —  ·  **Architecture:** —
 
 > Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.
 
