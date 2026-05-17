@@ -8,7 +8,7 @@
 - **Last touched:** 2026-05-16
 - **Overall state:** captured; design TBD; touches Discovery + TD charters, Codex dashboard, and infrastructure layer
 
-- [ ] proposal-reviewed — *Codex reads + acks the frame; surfaces own observations from today's build window.*
+- [x] proposal-reviewed — *Codex acked 2026-05-16 with substantive observations from the github-profile-card build (which completed PASS_WITH_CONCERNS, contrary to the "failed" framing in the original post). See Codex acks below for the symptom-reconciliation pass — 2 of 3 symptoms confirmed structurally, 1 reframed.*
 - [ ] registry-shape-defined — *what fields per resource, who curates, where it lives on disk.*
 - [ ] consumption-mechanism-defined — *how builds discover the registry; charter amendments for Discovery + TD.*
 - [ ] codex-dashboard-surface-decided — *whether the registry has a UI panel in Codex or stays as architecture/ markdown.*
@@ -29,7 +29,55 @@ User's framing: *"we should start to think about keeping a 'settings' panel that
 This is stronger than just adding a static "you are inside AutoBuilder" preamble to charters. It's a **discoverable registry of pre-configured resources** — services, libraries, credentials, hosting — that any new build can evaluate and bind to. Concrete: another build needing async state shouldn't ask the user to set up a new Firebase project; it should see "Firebase project X exists, scoped to build Y, free-tier usage, reusable for read-only access" in the registry, decide whether to reuse or request new, and proceed without forcing user infrastructure setup.
 
 ### Codex acks
-*(Codex writes here; especially welcome — observations from today's build window that corroborate or contradict the symptoms above.)*
+
+2026-05-16 — substantive ack from Codex after walking `runs/github-profile-card/` post-delivery. Build outcome: **PASS_WITH_CONCERNS** (10/10 first-contact requirements pass; all 14 caveats trace to the user-supplied PAT, which IP1 evidence-backed-resolved as intrinsic to the design). The build did deliver a functional artifact — the architecture's always-deliver contract held. The "failed" framing in the original post needs nuance.
+
+**Symptom-by-symptom reconciliation:**
+
+1. **"Local app instead of web app"** — REFRAMED. The build actually delivered a static HTML+CSS+JS bundle (which structurally IS a web app — it runs in a browser). What went wrong is the *deployment framing*: TD's section breakdown produced a deliverable shipped as `output/final/index.html` with `README-RUN.md` instructions saying "double-click index.html." That triggered the file:// CORS failure mode the user reported, which Phase 2 recovered from by inlining everything into a single HTML file. The recovery's `divergence-from-integration.json` contains its own `architectural_lessons_for_next_amendment_loop` section, and **Orchestrator itself pre-figured this proposal verbatim**:
+
+   > "Alternative deliverable form that would have eliminated the entire failure class: deploy as GitHub Pages (HTTPS origin, ES modules work natively, shareable link). The v1.10-candidate 'Shared Pages + shared Firebase across builds' memory entry already points at this direction. For GitHub-themed tools specifically, GitHub Pages is the natural host."
+
+   So the gap isn't "Discovery picked desktop over web" — Discovery + TD did pick web. The gap is **"Discovery didn't know AutoBuilder auto-deploys runs/{slug}/output/final/ to Pages"**, so TD framed the deliverable as file:// rather than HTTPS-served. The registry's `AutoBuilder GitHub Pages` entry closes this — with `binding.automatic: true` + `binding.path` reading "runs/{slug}/output/final/ (during build); auto-served at https://mondrianaire.github.io/auto-builder/runs/{slug}/output/final/", TD designs the deliverable around the served URL, not around file://.
+
+2. **"Required GitHub PAT"** — CORROBORATED with nuance. The PAT requirement is *structurally necessary* for the chosen API surface (GraphQL `pinnedItems` + `contributionsCollection` cannot be reached unauthenticated; that's GitHub's API design, not a TD oversight). Discovery's IP1 resolved this `evidence_backed` with explicit citations to the GitHub auth docs, and TD picked GraphQL precisely because the prompt needed pinned-repos data which the REST API doesn't expose. So the build correctly identified the constraint. The architectural gap is that **AutoBuilder has no concept of "build-time-available credentials"** — there's no signal to Discovery that a workflow-level PAT exists or could be made to exist. The registry's `FORK_PAT GitHub credential` entry needs a companion entry for "a GitHub-API read PAT scoped to anonymous-public-read use cases" (or similar), at which point Discovery would have a non-user path to consider for IP1's resolution.
+
+3. **"Sister repo instead of /runs/"** — CORROBORATED in spirit. The build itself never created a sister repo internally — `runs/github-profile-card/output/final/` exists and contains the deliverable as file_schemas.md prescribes. The "sister repo" surfaced when the **user tried to manually move the deliverable to Pages** and the dispatched agent helping with the deploy suggested creating a new repo (the user said as much in the original post). So the gap is at the *deploy-help* boundary, not at the build boundary itself. Same root cause as symptom 1: agents don't know AutoBuilder's own Pages deployment path. The registry closes both by making the Pages binding discoverable.
+
+**v1.11 emission observations (Codex's other watch-points from the build window):**
+
+- **Top-level role reports emitted: 6 of expected ~13.** `state/reports/` contains `discovery-initial-v1.json`, `td-initial-v1.json`, `editor-v1.json`, `coordinator-v1.json`, `critic-v1.json`, `cv-v1.json`. The dispatched LLM internalized the Completion Report convention for the dispatchable top-level roles — this is the headline pass for v1.11's prompt-level substrate work.
+- **Per-section reports: NOT EMITTED.** Despite 5 sections (api-client, card-renderer, data-derivers, edge-case-testing, ui-shell) all running through Overseer + Builder + Integrator (in inline mode), no `overseer-{section}-v1.json` or `builder-{section}-v1.json` files exist. The inline-mode collapse of Coordinator + Overseer + Builder may be eating the per-section reports — Coordinator's `coordinator-v1.json` is the only artifact carrying section-level narrative. This is a real emission gap for v1.12 to address: under inline mode, either (a) Coordinator's report needs explicit per-section sub-blurbs, or (b) the inline-mode Overseer/Builder roles need to emit their own reports despite being collapsed.
+- **`state/live/current-step.json` NEVER WRITTEN.** Empty `state/live/` directory. The atomic-write substrate Maintenance shipped is unused. Critic did NOT raise a Sev-2 audit finding for the missing file — confirming both ends of watch-point 2: writer not emitting + auditor not catching. v1.12 needs explicit dispatcher hooks for current-step.json (it cannot be charter-text-only because no role's own self-interest pulls them toward writing it).
+- **Banned-vocabulary in blurb answers: 3 of 6 reports have hits.** Spot-check via grep against the banned list:
+  - discovery-initial-v1.json — CLEAN.
+  - td-initial-v1.json — CLEAN.
+  - editor-v1.json — CLEAN.
+  - coordinator-v1.json — leaked `DCA`, `MCA`, `dispatch`, `tier 2`.
+  - critic-v1.json — leaked `MCA`, `DCA`, `tier 2`, `escalation`.
+  - cv-v1.json — leaked `verdict`, `IP1`, `Principle`.
+
+   Pattern: roles whose own work-product naturally uses the banned vocabulary (Coordinator's dispatch language, Critic's audit language, CV's verdict/IP/Principle language) leak it into the user-facing blurbs. Roles closer to prompt-fidelity (Discovery, TD, Editor) stayed clean. Suggests the banned-vocabulary list needs per-role rewrite examples in the charter, not just a flat blacklist.
+
+**Strong endorsement of the registry frame.** The reason the registry is the right shape (rather than just a static "you are in AutoBuilder" charter preamble): it makes the answer to "what's free / what's already configured" *queryable* during Discovery + TD's reasoning, rather than relying on the dispatched LLM to recall a list. Static preamble would tell agents "GitHub Pages exists for you" but couldn't tell them "and the project ID is X, scoped Y, free-tier usage caps Z" — that requires structured data. Worth noting that the existing memory entry `feedback_autobuilder_shared_deployment_infrastructure.md` is the *intent*; the registry is the *mechanism*; this proposal's three-symptom mapping is the *evidence the intent is load-bearing*.
+
+**Codex-side implementation considerations for the registry's UI surface (if it lands as a dashboard panel):**
+
+- Existing dashboard already loads `architecture/README.md` for amendments and `architecture/principles.md` for principles via the aggregator. Adding a parser for `architecture/available-build-resources.md` (or `architecture/resources/registry.md`) fits the same pattern — one helper in aggregate.mjs, one new section in index.html. ~2 hours of work for v0.1 read-only.
+- The panel could surface differently colored badges per resource `kind` (hosting / baas / credential / library) using the existing `.kind-chip` CSS conventions from the deliverable-kind chips.
+- A "Resources" filter button on the roster would let user see "show me builds that bind to Firebase-from-gto-poker-async-duel" — useful for impact analysis when a shared resource needs migration. Defer to v0.2.
+
+**Recommendations on the proposal's 5 open design questions (Codex view):**
+
+1. **Single file vs per-resource files** — single file for v0.1. Per-resource scales better long-term but adds parsing complexity; not warranted with 3-5 starting entries.
+2. **How builds consume** — dispatcher-injected into every role's system prompt. Agreed. Anything optional gets skipped.
+3. **Not-in-registry resources** — agreed with the proposal's path (TD escalates with the 3-option choice, becomes only sanctioned user-infra path). This is exactly the kind of friction that drives the registry's growth — every "not in registry" event becomes a candidate for a new entry.
+4. **Dashboard surface synchronous vs eventual** — start read-only, defer read-write. Per the existing async-coordination convention, user-curated entries can land via Maintenance editing the markdown until the UI write path is justified.
+5. **Multi-tier (AutoBuilder-wide vs build-scoped vs user-wide)** — the `scope` field captures it. UX-tier separation can come later if the registry grows beyond ~10 entries. Don't over-engineer the surface for 3 starting entries.
+
+**Recommended next step from Codex's view:**
+
+Land v1.12-minimal as proposal recommended — single `architecture/available-build-resources.md` file with 3 entries (Pages, FORK_PAT, Firebase-from-gto-poker-async-duel — with the latter's `scope` flipped to `all-builds-with-compatible-auth-model` if user confirms), Discovery + TD charter pointers, no dashboard surface yet. Validates the format. The next build is the test of whether the consumption mechanism works in practice.
 
 ## The proposal in shape
 

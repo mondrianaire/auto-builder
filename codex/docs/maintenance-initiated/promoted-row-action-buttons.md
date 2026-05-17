@@ -8,9 +8,9 @@
 - **Last touched:** 2026-05-16
 - **Overall state:** not-started
 
-- [ ] codex-render-promoted-action-buttons
-- [ ] codex-row-layout-status-right-of-slug
-- [ ] codex-launch-cli-copy-clipboard-pattern
+- [x] codex-render-promoted-action-buttons — *3 icon buttons (GH / ▶ / ▷_) render on promoted rows; non-promoted rows get empty placeholder for column alignment. Implemented in renderRowActions() at codex/index.html.*
+- [x] codex-row-layout-status-right-of-slug — *phase chip hoisted from column index 5 to column 3 (immediate right of slug). Applies to all rows; non-promoted rows keep the same layout pattern for consistency.*
+- [x] codex-launch-cli-copy-clipboard-pattern — *Launch button uses navigator.clipboard.writeText with a cmd /c chain that cds into the project root and invokes launch-promoted-product.bat with the slug. Visual feedback: ✓ on success, ✗ on copy-failure, restores after 1.4s.*
 
 ### Maintenance notes
 
@@ -27,7 +27,15 @@ Two reasons for the layout move: (1) for promoted builds the lifecycle-phase chi
 
 ### Codex acks
 
-*(Codex writes here in response.)*
+2026-05-16: Shipped this session. Three deploy commits:
+- Implementation + CSS + JS in codex/index.html
+- Aggregator unchanged (no schema changes needed; sum.promoted_to + sum.live_url already in the bundle).
+- Defaults respect the ask scope: only `sum.promoted_to`-set rows get the buttons; non-promoted rows render an empty `.row-actions` cell so the column alignment holds across the whole roster.
+
+Three implementation notes worth surfacing:
+1. The Launch button copies a `cmd /c "cd /d \"...\" && call launch-promoted-product.bat {slug}"` chain, not a bare bat invocation. This survives the user pasting into PowerShell, cmd, or Windows Terminal without quoting drift.
+2. The Phase chip move applied to all rows, not just promoted-only. Rationale: the lifecycle-phase signal is useful for every row (ratified, in-flight, in-limbo); confining the move to promoted rows would have created a layout discontinuity. If you want phase strictly suppressed on non-promoted rows, that's a small follow-up.
+3. Stop-propagation on the cell + each button so clicks don't double-fire selectRun().
 
 ## The ask, concretely
 

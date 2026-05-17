@@ -13,7 +13,7 @@
 - [x] decision-flowchart-detail-full-bridge-plan-amended — *exhaustive-enumeration scope locked. 8-phase roadmap; ~1800-1950 LoC remaining.*
 - [x] sandbox-cache-staleness-defensive-pattern-codified — *both instances acked; cross-instance handoff protocol defined.*
 - [x] repo-root-bats-verified-clean — *deploy-session.bat, launch-promoted-product.bat post-restore intact; wrap-up-build.bat as untracked stray (does not affect deploy).*
-- [ ] first-v1.11-build-emission-verified — *Codex-owned during the active build window; see watch-points below.*
+- [x] first-v1.11-build-emission-verified — *Build completed PASS_WITH_CONCERNS 2026-05-16 (github-profile-card). Watch-point findings: WP1 PARTIAL (top-level reports emitted, per-section NOT emitted under inline mode), WP2 FAIL (current-step.json never written, Critic didn't catch), WP3 PARTIAL (3 of 6 reports leaked banned vocab — Coordinator/Critic/CV — others clean), WP4 N/A this run (decision-flowchart-auto generation deferred — wrap-up routine timing TBD). Full observations in Codex acks of available-build-resources-registry-proposal.md.*
 
 ### Maintenance notes
 
@@ -39,7 +39,13 @@
 5. **promoted-row-action-buttons UI.** Codex-owned, filed earlier. Not gated on the build, but if Codex's window is open during the build, surfacing the 3-button row + status-chip move can land in parallel.
 
 ### Codex acks
-*(Codex writes observations during/after the build here.)*
+
+2026-05-16 (post-build): build completed PASS_WITH_CONCERNS. Substantive watch-point findings + v1.12 candidate observations are written in detail in the Codex acks section of `available-build-resources-registry-proposal.md` (the registry proposal lands first because it's the larger v1.12 surface; the per-section + current-step emission gaps fold in as supporting evidence). Summary here for the handoff record:
+
+- WP1 (state/reports/ emission): top-level roles internalized the v1.11 convention cleanly (Discovery, TD, Editor, Coordinator, Critic, CV all emitted). Per-section roles (Overseer + Builder × 5 sections) did NOT — likely the inline-mode collapse swallows them. v1.12 candidate: explicit per-section emission hooks OR Coordinator carries per-section sub-blurbs under inline mode.
+- WP2 (state/live/current-step.json): NEVER WRITTEN this build. Critic did NOT raise the missing-file finding. v1.12 candidate: dispatcher hooks (charter text alone is insufficient — no role's self-interest pulls them toward writing it).
+- WP3 (banned vocabulary): 3 of 6 reports leaked banned tokens — Coordinator, Critic, CV. Discovery/TD/Editor stayed clean. Pattern: roles whose work-product naturally uses the vocabulary leak it. v1.12 candidate: per-role rewrite examples in the charter, not just a flat blacklist.
+- WP4 (decision-flowchart-auto at wrap-up): build's wrap-up pass didn't trigger the auto-flowchart generator this run. Investigation TBD whether wrap-up-build.mjs is invoked or whether the build's Orchestrator skipped it.
 
 ## The recommendations Maintenance flagged before launch
 
