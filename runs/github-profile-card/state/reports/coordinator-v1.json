@@ -1,0 +1,52 @@
+{
+  "schema_version": "report.v1.11",
+  "role": "Coordinator",
+  "instance_id": "coordinator",
+  "iteration": 1,
+  "mode": "inline",
+  "completed_at": "2026-05-16T01:08:30Z",
+  "blurbs": [
+    {
+      "question": "How are you sequencing the work?",
+      "answer": "Five waves. Wave 1 builds the two leaf modules in parallel (api-client + data-derivers — neither depends on the other). Wave 2 builds card-renderer (depends on both leaves). Wave 3 builds ui-shell (depends on api-client + card-renderer). Wave 4 is the integrator pseudo-node that merges all four builder outputs into output/integration/. Wave 5 runs edge-case-testing against the integrated artifact.",
+      "kind": "always",
+      "importance": "medium"
+    },
+    {
+      "question": "What's running in parallel?",
+      "answer": "Only wave 1 — api-client and data-derivers are independent leaves so they ran together. Everything after that is dependency-sequenced.",
+      "kind": "conditional",
+      "importance": "low"
+    },
+    {
+      "question": "What dispatch mode and why?",
+      "answer": "Handling all the pieces directly without spinning up separate workers — this is a small enough build (4 code pieces) that one pass keeps it tight.",
+      "kind": "conditional",
+      "importance": "low"
+    },
+    {
+      "question": "Did anything need to be decided inline that nested dispatch would have round-tripped?",
+      "answer": "Two judgment calls were logged as inline-deviations. dev-001: capped per-repo /languages REST fetches at 30 in api-client (the charter doesn't specify a budget cap, and unbounded fan-out would burn PAT quota for accounts with many repos). dev-002: refined three source-grep patterns (DCA.A3, DCA.OOS.auth-flow, DCA.OOS.mobile) after the initial regexes false-positive'd on legitimate code — the bare word 'login' is GitHub's API field name for username, and '@media' appeared in a comment that documents the rule's absence. Both deviations have the nested-dispatch equivalent recorded.",
+      "kind": "conditional",
+      "importance": "medium"
+    },
+    {
+      "question": "What still needs verification beyond what the build executed?",
+      "answer": "Ten assertions are marked not_exercised_in_static_mode and deferred to CV Tier 2: live api.github.com calls (MCA.api-client.2/3/4, DCA.A2/A6 via fetch, DCA.FC1/FC4/OOS.orgs), browser console cleanliness (MCA.ui-shell.5, DCA.FC1), full scenario walk (DCA.telos, DCA.FC4), and the prompt-named-verb assertion PNV.1. All require a real browser executing against the real GitHub API with a real PAT — Node-side static execution cannot stand in for that.",
+      "kind": "conditional",
+      "importance": "high"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "Critic",
+  "artifact_summary": {
+    "sections_verified": 4,
+    "edge_case_testing_verified": true,
+    "integration_files": 7,
+    "test_assertions_total": 77,
+    "test_pass": 67,
+    "test_fail": 0,
+    "test_deferred_to_cv": 10,
+    "inline_deviations": 2
+  }
+}

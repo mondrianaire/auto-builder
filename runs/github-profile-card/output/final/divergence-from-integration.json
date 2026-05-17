@@ -1,0 +1,44 @@
+{
+  "created_at": "2026-05-17T00:00:00Z",
+  "supersedes_integration_at": "2026-05-16T01:05:55Z",
+  "reason": "recovery_patch",
+  "trigger": {
+    "type": "first_contact_failure_reported_by_user",
+    "evidence_pointer": "user-side browser console: 'CORS policy: Cross origin requests are only supported for protocol schemes...' on file:///.../js/main.js",
+    "summary": "The integration shipped index.html with <script type=\"module\" src=\"js/main.js\"></script>. When the user double-clicked index.html (the natural first-contact action on Windows), the browser blocked the ES module import under file:// origin policy. CV (jsdom-based) did not enforce file:// origin semantics and so missed the failure. User reported the failure on first contact, requested fix."
+  },
+  "modified_files": [
+    {
+      "path": "index.html",
+      "lines_changed": "complete rewrite — all CSS inlined into <style>, all four logical modules (api-client, data-derivers, card-renderer, main) concatenated into a single classic <script> inside the page, IIFE-scoped, no imports / no module loader",
+      "diff_summary": "Replaced <link rel=\"stylesheet\" href=\"css/styles.css\"> with inline <style> block (byte-identical CSS rules). Replaced <script type=\"module\" src=\"js/main.js\"></script> with inline <script>(function(){ ... })()</script> containing the concatenated source of api-client.js, data-derivers.js, card-renderer.js, and main.js. Exported error-class constructors replaced with factory functions returning Error instances with the right .name; behavior identical."
+    },
+    {
+      "path": "README-RUN.md",
+      "lines_changed": "rewrote sections 2 and added 'Why the single-file rebuild?'",
+      "diff_summary": "Section 2 changed from 'serve via local static server' to 'double-click index.html — that's it.' Added explanatory section documenting the file:// CORS root cause and the modular source's continued existence under output/integration/."
+    }
+  ],
+  "added_files": [
+    {
+      "path": "divergence-from-integration.json",
+      "purpose": "This file."
+    }
+  ],
+  "removed_files": [],
+  "preserved_dead_weight_files": [
+    "js/api-client.js",
+    "js/data-derivers.js",
+    "js/card-renderer.js",
+    "js/main.js",
+    "css/styles.css"
+  ],
+  "preserved_dead_weight_rationale": "These are the modular reference build copied from output/integration/. The patched index.html does not load them, so they are dead weight in the deliverable. They are preserved unchanged for audit purposes (a reader inspecting the deliverable can compare the inlined source against the modular source byte-for-byte). The user can delete the css/ and js/ folders without affecting functionality.",
+  "approved_by_role": "orchestrator",
+  "rationale": "First-contact failure under file://. The architecture's North Star (deliverability over principle purity) overrides the modular-is-cleaner aesthetic when the modular form blocks the user's natural first action. The functional artifact is the contract; the modular substrate is a means. The Phase 2 recovery patch makes the artifact functional under the user's actual usage path while preserving the modular substrate intact for the architecture-feedback loop. Architectural lessons captured in run-report.md Uncertainty Manifest update.",
+  "architectural_lessons_for_next_amendment_loop": [
+    "Discovery's simplest-within-reason heuristic resolved 'a tool' on Windows as 'a static HTML file the user opens locally.' That's correct only if the static HTML file actually works when opened locally. For HTML+ES-modules, it does not. Discovery should have either flagged 'file:// vs http://' as an IP for TD (Principle G — first-contact requirements need to be exercisable via the natural action) or TD should have surfaced 'use modules vs single-file' as a TD-introduced IP and chosen single-file given the deliverable's no-server constraint.",
+    "CV's production-fidelity environment used jsdom for browser_runtime. jsdom does not enforce file:// origin semantics around ES module imports. For static-web-page builds where first contact is 'double-click the file', CV must run the artifact via an actual file:// URL in a real headless browser, not via jsdom. This is a hardening direction for the Principle G Tier 2 spec: 'first contact' is defined by the host OS's natural open-action, not by whatever the verifier can simulate.",
+    "Alternative deliverable form that would have eliminated the entire failure class: deploy as GitHub Pages (HTTPS origin, ES modules work natively, shareable link). The v1.10-candidate 'Shared Pages + shared Firebase across builds' memory entry already points at this direction. For GitHub-themed tools specifically, GitHub Pages is the natural host. Future Discovery passes for any web deliverable should consider Pages as the default rather than file:// when the build is meant to be reused / re-opened by the user."
+  ]
+}

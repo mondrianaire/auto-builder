@@ -1,10 +1,18 @@
 {
-  "generated_at": "2026-05-17T03:32:51.441Z",
+  "generated_at": "2026-05-17T03:33:10.439Z",
   "test_environment": {
-    "node_version": "v22.22.0",
-    "platform": "linux",
-    "arch": "x64",
-    "integration_root": "/sessions/jolly-ecstatic-rubin/mnt/github-profile-card/output/integration"
+    "static_checks_env": {
+      "node_version": "v22.22.0",
+      "platform": "linux",
+      "arch": "x64",
+      "integration_root": "/sessions/jolly-ecstatic-rubin/mnt/github-profile-card/output/integration"
+    },
+    "derivers_tests_env": {
+      "node_version": "v22.22.0",
+      "platform": "linux",
+      "arch": "x64",
+      "derivers_module": "file:///sessions/jolly-ecstatic-rubin/mnt/github-profile-card/output/integration/js/data-derivers.js"
+    }
   },
   "github_endpoints_identified_from_source": [
     "https://api.github.com/graphql",
@@ -53,31 +61,6 @@
       "id": "MCA.api-client.7",
       "result": "pass",
       "detail": "Authorization header value is Bearer ${pat}"
-    },
-    {
-      "id": "MCA.data-derivers.1",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
-    },
-    {
-      "id": "MCA.data-derivers.2",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
-    },
-    {
-      "id": "MCA.data-derivers.3",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
-    },
-    {
-      "id": "MCA.data-derivers.4",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
-    },
-    {
-      "id": "MCA.data-derivers.5",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
     },
     {
       "id": "MCA.ui-shell.1",
@@ -195,21 +178,6 @@
       "detail": "pinnedItems(first:6, types:[REPOSITORY])"
     },
     {
-      "id": "DCA.A6",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
-    },
-    {
-      "id": "DCA.A7",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
-    },
-    {
-      "id": "DCA.A8",
-      "result": "not_exercised_in_static_mode",
-      "detail": "Exercised by derivers-tests.js."
-    },
-    {
       "id": "DCA.A9",
       "result": "pass",
       "detail": "all URLs api.github.com (others: 0)"
@@ -233,11 +201,6 @@
       "id": "DCA.IP2",
       "result": "pass",
       "detail": "Current streak label"
-    },
-    {
-      "id": "DCA.IP3",
-      "result": "pass",
-      "detail": "forks excluded; bytes-weighted"
     },
     {
       "id": "DCA.IP4",
@@ -398,12 +361,57 @@
       "id": "PNV.1",
       "result": "not_exercised_in_static_mode",
       "detail": "Prompt-named-verb \"shows\" - full browser scenario; deferred to CV Tier 2."
+    },
+    {
+      "id": "MCA.data-derivers.1",
+      "result": "pass",
+      "detail": "computeCurrentStreak([]) -> {\"streak_days\":0,\"anchor_date\":null}"
+    },
+    {
+      "id": "MCA.data-derivers.2",
+      "result": "pass",
+      "detail": "5-positive-day series -> streak_days=5, anchor_date=2026-05-16"
+    },
+    {
+      "id": "MCA.data-derivers.3",
+      "result": "pass",
+      "detail": "mixed-with-fork -> language=JavaScript, bytes=1000, share_pct=66.7"
+    },
+    {
+      "id": "MCA.data-derivers.4",
+      "result": "pass",
+      "detail": "empty={\"language\":null,\"bytes\":0,\"share_pct\":0}, all-forks={\"language\":null,\"bytes\":0,\"share_pct\":0}, empty-langs={\"language\":null,\"bytes\":0,\"share_pct\":0}"
+    },
+    {
+      "id": "MCA.data-derivers.5",
+      "result": "pass",
+      "detail": "lengths: empty=90, single=90, year=90"
+    },
+    {
+      "id": "DCA.A6",
+      "result": "pass",
+      "detail": "today-is-zero, 5 positive prior -> {\"streak_days\":5,\"anchor_date\":\"2026-05-15\"}"
+    },
+    {
+      "id": "DCA.A7",
+      "result": "pass",
+      "detail": "bytes-weighted excluding fork -> {\"language\":\"TypeScript\",\"bytes\":2300,\"share_pct\":82.1}"
+    },
+    {
+      "id": "DCA.IP3",
+      "result": "pass",
+      "detail": "tie-break alphabetical -> {\"language\":\"Apple\",\"bytes\":1000,\"share_pct\":50}"
+    },
+    {
+      "id": "DCA.A8",
+      "result": "pass",
+      "detail": "1-day input padded to 90; last=2026-05-16/7, first=2026-02-16, leading-zeros=true"
     }
   ],
   "summary": {
     "total": 77,
-    "pass": 59,
+    "pass": 67,
     "fail": 0,
-    "not_exercised_in_static_mode": 18
+    "not_exercised_in_static_mode": 10
   }
 }

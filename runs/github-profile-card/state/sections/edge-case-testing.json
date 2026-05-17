@@ -1,10 +1,22 @@
 {
   "section_id": "edge-case-testing",
-  "status": "active",
+  "status": "verified",
   "wave": 5,
   "started_at": "2026-05-16T01:06:31Z",
+  "verified_at": "2026-05-16T01:07:55Z",
   "dispatch_mode": "inline",
   "builders_dispatched": ["builder-edge-b1"],
-  "blocked_on": [],
-  "note": "Will be flipped to 'verified' after static-checks.js + derivers-tests.js execute and test-report is written."
+  "overseer_verdict": "pass",
+  "overseer_notes": "static-checks.js + derivers-tests.js both executed cleanly under Node v22.22.0. 77 assertions total: 67 pass, 0 fail, 10 not_exercised_in_static_mode (live-network and browser-console assertions deferred to CV Tier 2). One inline-deviation (dev-002) logged for refining DCA.A3 / DCA.OOS.auth-flow / DCA.OOS.mobile source-grep patterns to match assertion intent rather than substring presence.",
+  "artifacts": [
+    "output/builders/edge-case-testing/builder-edge-b1/static-checks.js",
+    "output/builders/edge-case-testing/builder-edge-b1/derivers-tests.js",
+    "output/builders/edge-case-testing/builder-edge-b1/test-report.json",
+    "output/builders/edge-case-testing/builder-edge-b1/test-report.md",
+    "output/builders/edge-case-testing/builder-edge-b1/metadata.json"
+  ],
+  "acceptance_assertions_status": {
+    "MCA.edge-case-testing.1": "pass (all MCA + DCA + PNV ids enumerated in test-report.json)",
+    "MCA.edge-case-testing.2": "pass (test env named; api.github.com URLs identified from source; live exercise deferred to CV Tier 2 with rationale)"
+  }
 }

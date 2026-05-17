@@ -1,0 +1,29 @@
+{
+  "role": "Critic",
+  "instance_id": "critic-final-sweep",
+  "iteration": 1,
+  "mode": "final_sweep",
+  "completed_at": "2026-05-16T01:10:00Z",
+  "blurbs": [
+    {
+      "question": "What kinds of problems did you check for?",
+      "answer": "Nine categories: (1) whether every file under output/, state/, decisions/, contracts/ was written by an authorized writer per the permission table; (2) whether the integrated artifact contains any out-of-scope keywords (localStorage, OAuth, sign-in, @media rules, mutation REST verbs, Notification, i18n); (3) whether required schema fields are present in ledger, sections, contracts, manifest, and build-complete; (4) whether every DAG section has a verified state file plus output artifacts and metadata; (5) whether each machine-checkable assertion's claim holds against the integrated artifact, with runtime/network assertions correctly deferred to CV Tier 2; (6) whether any Sev-0 trivial-fix records exist that should be audited; (7) whether every prose acceptance phrase in sections has at least one acceptance_assertions[] entry covering it; (8) whether every coverage-required prose field listed in file_schemas (ledger restatement/telos/assumptions/inflections/OOS/proper-nouns/first-contact, sections charter/acceptance/OOS/chosen-verb, contracts interface/notes) has at least one assertion whose `covers` field points back to it; and (9) whether each inline-deviation has a plausible nested_equivalent and stays inside the contract_micro_adjustment / implementation_path / test_fix scope.",
+      "kind": "always",
+      "importance": "medium"
+    },
+    {
+      "question": "What did you find?",
+      "answer": "Three low-to-medium severity findings, all in the prose_coverage check; nothing else flagged. (1) Low: the ui-shell section is the only section whose own #sections[id=ui-shell] path is never a `covers` target — its MCAs cover the ledger FC.* requirements directly instead. Functionally fully exercised; just a graph-walk hygiene gap. (2) Low: the per-section sections[].out_of_scope[] items don't each carry a direct `covers` edge, though all 12 ledger-level OOS items are covered (DCA.OOS.* × 12) and the per-section OOS items are structurally ruled out by the static checks anyway. (3) Medium: the contracts/original/*.json `interface` and `notes` fields aren't direct `covers` targets in the assertion graph. Every contract export is exercised by a passing MCA on the implementation side (api-client signatures, error class names, GraphQL body shape, Authorization header form), so coverage is in place in practice — but the graph-walk audit reads as 'contracts not directly targeted', a gap worth surfacing for the v1.10 amendment loop. Everything else clean: writer compliance perfect (Coordinator-as-inline-actor wrote each file in the role's logical capacity; integrator wrote output/integration/; edge-case-testing builder wrote test artifacts; etc.), zero OOS keywords found in the integrated artifact (the lone @media hit is a CSS comment documenting their absence), all 5 sections verified with output + metadata, all 67 static-mode MCAs pass with 10 correctly deferred-to-CV (live network + browser console), both inline deviations have articulated nested_equivalents and stay inside their scope categories (dev-001 = implementation_path_chosen for the 30-repo language cap, dev-002 = test_or_assertion_fix refining three source-grep patterns to match assertion intent).",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "Did anything need escalation?",
+      "answer": "No. All three findings are low or medium severity; none required an escalation packet.",
+      "kind": "conditional",
+      "importance": "high"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "ConvergenceVerifier"
+}

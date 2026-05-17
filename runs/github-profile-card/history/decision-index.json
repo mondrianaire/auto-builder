@@ -1,0 +1,57 @@
+{
+  "updated_at": "2026-05-16T04:00:00Z",
+  "decisions": [
+    {
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "version": 1,
+      "produced_by": "discovery",
+      "trigger": {
+        "type": "initial",
+        "from_prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days."
+      },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {"type": "post_discovery"},
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/editor/review-v1.json",
+      "version": 1,
+      "produced_by": "editor",
+      "trigger": {"type": "post_td"},
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/api-client--data-derivers.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {"type": "post_discovery"},
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/api-client--card-renderer.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {"type": "post_discovery"},
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/data-derivers--card-renderer.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {"type": "post_discovery"},
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/ui-shell--api-client.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": {"type": "post_discovery"},
+      "supersedes": null
+    }
+  ]
+}

@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitHub Profile Card</title>
+  <style>
+    /* GitHub Profile Card - GitHub-native dark theme.
+       Palette: bg #0d1117, card #161b22, border #30363d, text #c9d1d9,
+                accent #58a6ff, success/button #238636, success-bright #39d353. */
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      max-width: 920px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.5;
+    }
+
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page-header h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.5rem;
+      color: #f0f6fc;
+    }
+    .page-sub {
+      margin: 0 0 1rem;
+      color: #8b949e;
+      font-size: 0.95rem;
+    }
+
+    /* Lookup form */
+    .lookup-form {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .form-row { margin-bottom: 0.75rem; }
+    .form-row:last-child { margin-bottom: 0; }
+    .form-row label {
+      display: block;
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.25rem;
+    }
+    .form-row input[type="text"],
+    .form-row input[type="password"] {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background: #0d1117;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .form-row input[type="text"]:focus,
+    .form-row input[type="password"]:focus {
+      border-color: #58a6ff;
+      box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.15);
+    }
+    .pat-note {
+      margin: 0.4rem 0 0;
+      font-size: 0.8rem;
+      color: #8b949e;
+    }
+    .pat-note code {
+      background: #0d1117;
+      padding: 0.05rem 0.3rem;
+      border-radius: 3px;
+      color: #c9d1d9;
+    }
+    #lookup-button {
+      background: #238636;
+      color: #ffffff;
+      border: 1px solid rgba(240, 246, 252, 0.1);
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #lookup-button:hover { background: #2ea043; }
+    #lookup-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Status region */
+    #status-region {
+      min-height: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+    }
+    #status-region.status-loading { color: #8b949e; }
+    #status-region.status-info { color: #8b949e; }
+    #status-region.status-error {
+      color: #f85149;
+      background: rgba(248, 81, 73, 0.08);
+      border: 1px solid rgba(248, 81, 73, 0.4);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+    }
+    #status-region.status-success { color: #56d364; }
+
+    /* Card */
+    .profile-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 1.25rem;
+    }
+    .card-header {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #30363d;
+    }
+    .card-avatar-wrap { flex: 0 0 auto; }
+    .card-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 1px solid #30363d;
+      display: block;
+      background: #0d1117;
+    }
+    .card-meta { flex: 1 1 auto; min-width: 0; }
+    .card-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #f0f6fc;
+      line-height: 1.2;
+    }
+    .card-handle {
+      font-size: 1rem;
+      color: #8b949e;
+      margin-bottom: 0.5rem;
+    }
+    .card-bio { color: #c9d1d9; margin-bottom: 0.5rem; }
+    .card-counts {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: #8b949e;
+      font-size: 0.85rem;
+    }
+    .card-count { display: inline-block; }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .stat-block {
+      flex: 1 1 200px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      min-width: 0;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #8b949e;
+      margin-bottom: 0.25rem;
+    }
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+
+    /* Pinned section */
+    .section-label {
+      font-size: 0.95rem;
+      color: #c9d1d9;
+      margin: 0 0 0.5rem;
+      font-weight: 600;
+    }
+    .pinned-section { margin-bottom: 1rem; }
+    .pinned-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .pinned-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .pinned-name-row .pinned-name {
+      font-weight: 600;
+      color: #58a6ff;
+    }
+    .pinned-desc { color: #8b949e; font-size: 0.9rem; }
+    .pinned-footer {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-top: auto;
+    }
+    .lang-wrap { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .lang-dot {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .empty-state {
+      color: #8b949e;
+      font-style: italic;
+      padding: 0.5rem 0;
+    }
+
+    /* Heatmap */
+    .heatmap-section { margin-bottom: 0; }
+    .heatmap-caption {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.4rem;
+    }
+    .heatmap { display: block; }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>GitHub Profile Card</h1>
+    <p class="page-sub">Type a GitHub username and paste a Personal Access Token to fetch a profile card.</p>
+  </header>
+
+  <section class="lookup-form" aria-label="GitHub profile lookup">
+    <div class="form-row">
+      <label for="username-input">GitHub username</label>
+      <input id="username-input" type="text" autocomplete="off" spellcheck="false" placeholder="GitHub username (e.g. octocat)">
+    </div>
+    <div class="form-row">
+      <label for="pat-input">GitHub Personal Access Token</label>
+      <input id="pat-input" type="password" autocomplete="off" spellcheck="false" placeholder="GitHub PAT (paste your token)">
+      <p class="pat-note">
+        A Personal Access Token is required to fetch pinned repos and contribution data.
+        <a id="pat-link" href="https://github.com/settings/tokens/new?description=GitHub%20Profile%20Card&amp;scopes=" target="_blank" rel="noopener">Create one</a>
+        (only the <code>read:user</code> scope is needed for public profiles).
+      </p>
+    </div>
+    <div class="form-row form-actions">
+      <button id="lookup-button" type="button">Look up</button>
+    </div>
+  </section>
+
+  <div id="status-region" role="status" aria-live="polite"></div>
+  <div id="card-container"></div>
+
+  <script>
+  /* =========================================================================
+   * Single-file build of the GitHub Profile Card.
+   *
+   * The original modular build (output/integration/js/{api-client,
+   * data-derivers,card-renderer,main}.js) used ES modules. Browsers block ES
+   * module imports under file:// (every file:// URL is its own unique origin,
+   * so import statements fail CORS). To make the deliverable work via a plain
+   * double-click on index.html without a local web server, the four modules
+   * are concatenated here as ordinary functions inside a single IIFE.
+   *
+   * The modular source is preserved unchanged under output/integration/ for
+   * audit / future re-build purposes. Divergence is recorded in
+   * output/final/divergence-from-integration.json.
+   * ========================================================================= */
+  (function () {
+    'use strict';
+
+    // ------------------------------------------------------------------
+    // Module: api-client
+    // ------------------------------------------------------------------
+
+    function UserNotFoundError(message) {
+      const e = new Error(message); e.name = 'UserNotFoundError'; return e;
+    }
+    function AuthError(message) {
+      const e = new Error(message); e.name = 'AuthError'; return e;
+    }
+    function RateLimitError(message) {
+      const e = new Error(message); e.name = 'RateLimitError'; return e;
+    }
+    function NetworkError(message) {
+      const e = new Error(message); e.name = 'NetworkError'; return e;
+    }
+
+    const GITHUB_API_BASE = 'https://api.github.com';
+    const GRAPHQL_URL = GITHUB_API_BASE + '/graphql';
+    const MAX_LANGUAGE_FETCHES = 30;
+
+    const GRAPHQL_QUERY = [
+      'query ProfileQuery($login: String!, $from: DateTime!, $to: DateTime!) {',
+      '  user(login: $login) {',
+      '    pinnedItems(first: 6, types: [REPOSITORY]) {',
+      '      nodes {',
+      '        ... on Repository {',
+      '          name description url stargazerCount forkCount isFork isPrivate',
+      '          primaryLanguage { name color }',
+      '        }',
+      '      }',
+      '    }',
+      '    contributionsCollection(from: $from, to: $to) {',
+      '      contributionCalendar {',
+      '        totalContributions',
+      '        weeks { contributionDays { date contributionCount weekday } }',
+      '      }',
+      '    }',
+      '  }',
+      '}'
+    ].join('\n');
+
+    function isoZ(d) { return d.toISOString(); }
+    function emptyContributionCalendar() { return { total_contributions: 0, days: [] }; }
+
+    async function safeFetch(url, init) {
+      try {
+        return await fetch(url, init);
+      } catch (err) {
+        throw NetworkError('Could not reach ' + url + ': ' + (err && err.message ? err.message : String(err)));
+      }
+    }
+
+    function classifyRestStatus(status, headers, url) {
+      if (status === 404) return UserNotFoundError('Not found: ' + url);
+      if (status === 401) return AuthError('Unauthorized: ' + url);
+      if (status === 403) {
+        const rem = headers && headers.get ? headers.get('x-ratelimit-remaining') : null;
+        if (rem === '0') return RateLimitError('Rate limit hit at ' + url);
+        return AuthError('Forbidden: ' + url);
+      }
+      return new Error('HTTP ' + status + ' at ' + url);
+    }
+
+    async function fetchUserBasic(username, pat) {
+      const url = GITHUB_API_BASE + '/users/' + encodeURIComponent(username);
+      const headers = { Accept: 'application/vnd.github+json' };
+      if (pat) headers.Authorization = 'Bearer ' + pat;
+      const res = await safeFetch(url, { headers });
+      if (!res.ok) throw classifyRestStatus(res.status, res.headers, url);
+      const data = await res.json();
+      return {
+        login: data.login,
+        name: data.name == null ? null : data.name,
+        avatar_url: data.avatar_url,
+        html_url: data.html_url,
+        bio: data.bio == null ? null : data.bio,
+        public_repos: data.public_repos || 0,
+        followers: data.followers || 0,
+        following: data.following || 0
+      };
+    }
+
+    async function fetchOwnedReposWithLanguages(username, pat) {
+      const url = GITHUB_API_BASE + '/users/' + encodeURIComponent(username) +
+                  '/repos?per_page=100&type=owner&sort=updated';
+      const headers = { Accept: 'application/vnd.github+json' };
+      if (pat) headers.Authorization = 'Bearer ' + pat;
+      const res = await safeFetch(url, { headers });
+      if (!res.ok) throw classifyRestStatus(res.status, res.headers, url);
+      const repos = await res.json();
+      const nonForks = (repos || []).filter(function (r) { return r && r.fork === false; });
+      const out = [];
+      const toFetch = nonForks.slice(0, MAX_LANGUAGE_FETCHES);
+      for (const repo of toFetch) {
+        const langsUrl = GITHUB_API_BASE + '/repos/' + repo.owner.login + '/' + repo.name + '/languages';
+        let langs = {};
+        try {
+          const lres = await safeFetch(langsUrl, { headers });
+          if (lres.ok) langs = await lres.json();
+          else langs = {};
+        } catch (_e) { langs = {}; }
+        out.push({ name: repo.name, is_fork: false, languages_bytes: langs || {} });
+      }
+      return out;
+    }
+
+    function flattenContributionDays(contributionCalendar) {
+      if (!contributionCalendar || !Array.isArray(contributionCalendar.weeks)) {
+        return { total_contributions: 0, days: [] };
+      }
+      const days = [];
+      for (const week of contributionCalendar.weeks) {
+        if (!week || !Array.isArray(week.contributionDays)) continue;
+        for (const d of week.contributionDays) {
+          days.push({
+            date: d.date,
+            contribution_count: d.contributionCount || 0,
+            weekday: d.weekday || 0
+          });
+        }
+      }
+      days.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+      return {
+        total_contributions: contributionCalendar.totalContributions || 0,
+        days: days
+      };
+    }
+
+    function mapPinnedRepos(pinnedItems) {
+      if (!pinnedItems || !Array.isArray(pinnedItems.nodes)) return [];
+      return pinnedItems.nodes.filter(Boolean).map(function (n) {
+        return {
+          name: n.name,
+          description: n.description == null ? null : n.description,
+          primary_language_name: n.primaryLanguage ? (n.primaryLanguage.name || null) : null,
+          primary_language_color: n.primaryLanguage ? (n.primaryLanguage.color || null) : null,
+          stargazer_count: n.stargazerCount || 0,
+          fork_count: n.forkCount || 0,
+          url: n.url
+        };
+      });
+    }
+
+    async function fetchGraphQL(username, pat) {
+      const now = new Date();
+      const from = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+      const variables = { login: username, from: isoZ(from), to: isoZ(now) };
+      const body = JSON.stringify({ query: GRAPHQL_QUERY, variables: variables });
+      const headers = {
+        'Content-Type': 'application/json',
+        Accept: 'application/vnd.github+json',
+        Authorization: 'Bearer ' + pat
+      };
+      const res = await safeFetch(GRAPHQL_URL, { method: 'POST', headers: headers, body: body });
+      if (res.status === 401) throw AuthError('GraphQL 401 - token rejected');
+      if (res.status === 403) {
+        const rem = res.headers && res.headers.get ? res.headers.get('x-ratelimit-remaining') : null;
+        if (rem === '0') throw RateLimitError('GraphQL rate limit hit');
+        throw AuthError('GraphQL 403 - token forbidden');
+      }
+      if (!res.ok) throw new Error('GraphQL HTTP ' + res.status);
+      const json = await res.json();
+      if (json && Array.isArray(json.errors) && json.errors.length > 0) {
+        const msg = json.errors.map(function (e) { return e.message || ''; }).join('; ');
+        if (/rate limit/i.test(msg)) throw RateLimitError('GraphQL rate-limit: ' + msg);
+        if (/bad credentials|unauthorized|authentication/i.test(msg)) throw AuthError('GraphQL auth: ' + msg);
+        if (/could not resolve|not exist|not found/i.test(msg) && json.data && !json.data.user) {
+          throw UserNotFoundError('GraphQL: user not found - ' + msg);
+        }
+      }
+      const user = json && json.data ? json.data.user : null;
+      if (!user) {
+        return { pinned_repos: [], contribution_calendar_year: emptyContributionCalendar() };
+      }
+      return {
+        pinned_repos: mapPinnedRepos(user.pinnedItems),
+        contribution_calendar_year: flattenContributionDays(
+          user.contributionsCollection ? user.contributionsCollection.contributionCalendar : null
+        )
+      };
+    }
+
+    async function fetchProfilePayload(username, pat) {
+      if (!username || typeof username !== 'string') {
+        throw UserNotFoundError('Username is required.');
+      }
+      const trimmedPat = pat && typeof pat === 'string' && pat.trim().length > 0 ? pat.trim() : null;
+
+      const user = await fetchUserBasic(username, trimmedPat);
+
+      let owned_non_fork_repos_with_languages = [];
+      try {
+        owned_non_fork_repos_with_languages = await fetchOwnedReposWithLanguages(username, trimmedPat);
+      } catch (err) {
+        if (err && (err.name === 'RateLimitError' || err.name === 'AuthError' ||
+                    err.name === 'NetworkError' || err.name === 'UserNotFoundError')) {
+          throw err;
+        }
+        owned_non_fork_repos_with_languages = [];
+      }
+
+      let pinned_repos = [];
+      let contribution_calendar_year = emptyContributionCalendar();
+      if (trimmedPat) {
+        const gql = await fetchGraphQL(username, trimmedPat);
+        pinned_repos = gql.pinned_repos;
+        contribution_calendar_year = gql.contribution_calendar_year;
+      }
+
+      return {
+        user: user,
+        pinned_repos: pinned_repos,
+        contribution_calendar_year: contribution_calendar_year,
+        owned_non_fork_repos_with_languages: owned_non_fork_repos_with_languages
+      };
+    }
+
+    // ------------------------------------------------------------------
+    // Module: data-derivers
+    // ------------------------------------------------------------------
+
+    function computeCurrentStreak(days) {
+      if (!Array.isArray(days) || days.length === 0) {
+        return { streak_days: 0, anchor_date: null };
+      }
+      let anchorIdx = -1;
+      for (let i = days.length - 1; i >= 0; i--) {
+        if ((days[i].contribution_count || 0) > 0) { anchorIdx = i; break; }
+      }
+      if (anchorIdx === -1) return { streak_days: 0, anchor_date: null };
+      let count = 0;
+      for (let i = anchorIdx; i >= 0; i--) {
+        if ((days[i].contribution_count || 0) > 0) count += 1;
+        else break;
+      }
+      return { streak_days: count, anchor_date: days[anchorIdx].date };
+    }
+
+    function computeMostUsedLanguage(repos) {
+      if (!Array.isArray(repos) || repos.length === 0) {
+        return { language: null, bytes: 0, share_pct: 0 };
+      }
+      const totals = Object.create(null);
+      let grandTotal = 0;
+      for (const repo of repos) {
+        if (!repo || repo.is_fork === true) continue;
+        const langs = repo.languages_bytes;
+        if (!langs || typeof langs !== 'object') continue;
+        for (const lang of Object.keys(langs)) {
+          const n = Number(langs[lang]);
+          if (!Number.isFinite(n) || n <= 0) continue;
+          totals[lang] = (totals[lang] || 0) + n;
+          grandTotal += n;
+        }
+      }
+      const langs = Object.keys(totals);
+      if (langs.length === 0 || grandTotal === 0) {
+        return { language: null, bytes: 0, share_pct: 0 };
+      }
+      langs.sort(function (a, b) {
+        const db = totals[b] - totals[a];
+        if (db !== 0) return db;
+        return a < b ? -1 : a > b ? 1 : 0;
+      });
+      const winner = langs[0];
+      const wb = totals[winner];
+      const share = Math.round((wb / grandTotal) * 1000) / 10;
+      return { language: winner, bytes: wb, share_pct: share };
+    }
+
+    function sliceLast90Days(days, today_utc_yyyy_mm_dd) {
+      if (!today_utc_yyyy_mm_dd || typeof today_utc_yyyy_mm_dd !== 'string') {
+        throw new Error('sliceLast90Days requires today_utc_yyyy_mm_dd as YYYY-MM-DD string');
+      }
+      const endParts = today_utc_yyyy_mm_dd.split('-').map(Number);
+      const end = new Date(Date.UTC(endParts[0], endParts[1] - 1, endParts[2]));
+      const expectedDates = [];
+      for (let i = 89; i >= 0; i--) {
+        const d = new Date(end.getTime() - i * 24 * 60 * 60 * 1000);
+        const yyyy = d.getUTCFullYear();
+        const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(d.getUTCDate()).padStart(2, '0');
+        expectedDates.push(yyyy + '-' + mm + '-' + dd);
+      }
+      const byDate = Object.create(null);
+      if (Array.isArray(days)) {
+        for (const d of days) {
+          if (d && typeof d.date === 'string') byDate[d.date] = d;
+        }
+      }
+      return expectedDates.map(function (date) {
+        const found = byDate[date];
+        if (found) {
+          return {
+            date: date,
+            contribution_count: found.contribution_count || 0,
+            weekday: typeof found.weekday === 'number'
+              ? found.weekday
+              : new Date(date + 'T00:00:00Z').getUTCDay()
+          };
+        }
+        return {
+          date: date,
+          contribution_count: 0,
+          weekday: new Date(date + 'T00:00:00Z').getUTCDay()
+        };
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // Module: card-renderer
+    // ------------------------------------------------------------------
+
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const INTENSITY_COLORS = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'];
+
+    function intensityLevel(count) {
+      if (count <= 0) return 0;
+      if (count <= 3) return 1;
+      if (count <= 6) return 2;
+      if (count <= 9) return 3;
+      return 4;
+    }
+
+    function isSafeHttpUrl(s) {
+      if (typeof s !== 'string') return false;
+      try {
+        const u = new URL(s);
+        return u.protocol === 'https:' || u.protocol === 'http:';
+      } catch (_e) { return false; }
+    }
+
+    function el(tag, opts) {
+      const e = document.createElement(tag);
+      if (opts && opts.cls) e.className = opts.cls;
+      if (opts && opts.text != null) e.textContent = String(opts.text);
+      return e;
+    }
+
+    function svgEl(tag, attrs) {
+      const e = document.createElementNS(SVG_NS, tag);
+      if (attrs) {
+        for (const k of Object.keys(attrs)) e.setAttribute(k, String(attrs[k]));
+      }
+      return e;
+    }
+
+    function renderHeader(payload) {
+      const header = el('div', { cls: 'card-header' });
+
+      const avatarWrap = el('div', { cls: 'card-avatar-wrap' });
+      const img = document.createElement('img');
+      img.className = 'card-avatar';
+      if (isSafeHttpUrl(payload.user.avatar_url)) img.setAttribute('src', payload.user.avatar_url);
+      img.setAttribute('alt', payload.user.login || '');
+      img.setAttribute('width', '96');
+      img.setAttribute('height', '96');
+      avatarWrap.appendChild(img);
+      header.appendChild(avatarWrap);
+
+      const meta = el('div', { cls: 'card-meta' });
+      meta.appendChild(el('div', { cls: 'card-name', text: payload.user.name || payload.user.login || '' }));
+
+      const handleEl = el('div', { cls: 'card-handle' });
+      if (payload.user.html_url && isSafeHttpUrl(payload.user.html_url)) {
+        const a = document.createElement('a');
+        a.setAttribute('href', payload.user.html_url);
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener');
+        a.textContent = '@' + (payload.user.login || '');
+        handleEl.appendChild(a);
+      } else {
+        handleEl.textContent = '@' + (payload.user.login || '');
+      }
+      meta.appendChild(handleEl);
+
+      if (payload.user.bio) meta.appendChild(el('div', { cls: 'card-bio', text: payload.user.bio }));
+
+      const counts = el('div', { cls: 'card-counts' });
+      counts.appendChild(el('span', { cls: 'card-count', text: (payload.user.followers || 0) + ' followers' }));
+      counts.appendChild(el('span', { cls: 'card-count', text: (payload.user.following || 0) + ' following' }));
+      counts.appendChild(el('span', { cls: 'card-count', text: (payload.user.public_repos || 0) + ' public repos' }));
+      meta.appendChild(counts);
+
+      header.appendChild(meta);
+      return header;
+    }
+
+    function renderPinnedSection(pinnedRepos) {
+      const section = el('section', { cls: 'pinned-section' });
+      section.appendChild(el('h2', { cls: 'section-label', text: 'Pinned repositories' }));
+
+      if (!Array.isArray(pinnedRepos) || pinnedRepos.length === 0) {
+        section.appendChild(el('div', { cls: 'empty-state', text: 'No pinned repositories' }));
+        return section;
+      }
+
+      const grid = el('div', { cls: 'pinned-grid' });
+      const cap = Math.min(pinnedRepos.length, 6);
+      for (let i = 0; i < cap; i++) {
+        const repo = pinnedRepos[i];
+        const card = el('div', { cls: 'pinned-card' });
+
+        const nameRow = el('div', { cls: 'pinned-name-row' });
+        if (repo.url && isSafeHttpUrl(repo.url)) {
+          const a = document.createElement('a');
+          a.setAttribute('href', repo.url);
+          a.setAttribute('target', '_blank');
+          a.setAttribute('rel', 'noopener');
+          a.className = 'pinned-name';
+          a.textContent = repo.name || '';
+          nameRow.appendChild(a);
+        } else {
+          nameRow.appendChild(el('span', { cls: 'pinned-name', text: repo.name || '' }));
+        }
+        card.appendChild(nameRow);
+
+        if (repo.description) card.appendChild(el('div', { cls: 'pinned-desc', text: repo.description }));
+
+        const footer = el('div', { cls: 'pinned-footer' });
+        if (repo.primary_language_name) {
+          const langWrap = el('span', { cls: 'lang-wrap' });
+          const dot = el('span', { cls: 'lang-dot' });
+          if (typeof repo.primary_language_color === 'string' && /^#[0-9A-Fa-f]{3,8}$/.test(repo.primary_language_color)) {
+            dot.style.backgroundColor = repo.primary_language_color;
+          } else {
+            dot.style.backgroundColor = '#586069';
+          }
+          langWrap.appendChild(dot);
+          langWrap.appendChild(el('span', { cls: 'lang-name', text: repo.primary_language_name }));
+          footer.appendChild(langWrap);
+        }
+        footer.appendChild(el('span', { cls: 'pinned-stars', text: '★ ' + (repo.stargazer_count || 0) }));
+        card.appendChild(footer);
+
+        grid.appendChild(card);
+      }
+      section.appendChild(grid);
+      return section;
+    }
+
+    function renderStatsRow(payload, derived) {
+      const row = el('section', { cls: 'stats-row' });
+
+      const streakBlock = el('div', { cls: 'stat-block' });
+      streakBlock.appendChild(el('div', { cls: 'stat-label', text: 'Current streak' }));
+      streakBlock.appendChild(el('div', { cls: 'stat-value', text: derived.streak.streak_days + ' days' }));
+      row.appendChild(streakBlock);
+
+      const langBlock = el('div', { cls: 'stat-block' });
+      langBlock.appendChild(el('div', { cls: 'stat-label', text: 'Most-used language across public repos' }));
+      langBlock.appendChild(el('div', { cls: 'stat-value', text: derived.language.language ? derived.language.language : '—' }));
+      row.appendChild(langBlock);
+
+      const totalBlock = el('div', { cls: 'stat-block' });
+      totalBlock.appendChild(el('div', { cls: 'stat-label', text: 'Total contributions (year)' }));
+      const total = (payload.contribution_calendar_year && payload.contribution_calendar_year.total_contributions != null)
+        ? payload.contribution_calendar_year.total_contributions : 0;
+      totalBlock.appendChild(el('div', { cls: 'stat-value', text: String(total) }));
+      row.appendChild(totalBlock);
+
+      return row;
+    }
+
+    function renderHeatmap(ninetyDaySlice) {
+      const wrap = el('section', { cls: 'heatmap-section' });
+      wrap.appendChild(el('div', { cls: 'heatmap-caption', text: 'Contribution activity (last 90 days)' }));
+
+      const WEEKS = 13;
+      const DAYS = 7;
+      const CELL = 10;
+      const GAP = 2;
+      const width = WEEKS * (CELL + GAP);
+      const height = DAYS * (CELL + GAP);
+
+      const svg = svgEl('svg', {
+        'class': 'heatmap',
+        width: String(width),
+        height: String(height),
+        viewBox: '0 0 ' + width + ' ' + height,
+        xmlns: SVG_NS
+      });
+
+      const slice = Array.isArray(ninetyDaySlice) ? ninetyDaySlice : [];
+      let lastWeekday = 0;
+      if (slice.length > 0) {
+        const lastDay = slice[slice.length - 1];
+        if (typeof lastDay.weekday === 'number') lastWeekday = lastDay.weekday;
+        else if (typeof lastDay.date === 'string') lastWeekday = new Date(lastDay.date + 'T00:00:00Z').getUTCDay();
+      }
+      const lastLinear = 12 * DAYS + lastWeekday;
+      const counts = new Array(WEEKS * DAYS).fill(0);
+      for (let i = 0; i < slice.length; i++) {
+        const linear = lastLinear - (slice.length - 1 - i);
+        if (linear >= 0 && linear < counts.length) counts[linear] = slice[i].contribution_count || 0;
+      }
+
+      for (let col = 0; col < WEEKS; col++) {
+        for (let row = 0; row < DAYS; row++) {
+          const linear = col * DAYS + row;
+          const count = counts[linear];
+          const level = intensityLevel(count);
+          const rect = svgEl('rect', {
+            x: String(col * (CELL + GAP)),
+            y: String(row * (CELL + GAP)),
+            width: String(CELL),
+            height: String(CELL),
+            rx: '2',
+            ry: '2',
+            fill: INTENSITY_COLORS[level]
+          });
+          svg.appendChild(rect);
+        }
+      }
+
+      wrap.appendChild(svg);
+      return wrap;
+    }
+
+    function renderCard(container, payload, derived) {
+      if (!container) throw new Error('renderCard requires a container element');
+      if (!payload || !payload.user) throw new Error('renderCard requires a valid payload');
+      const safeDerived = derived || {
+        streak: { streak_days: 0, anchor_date: null },
+        language: { language: null, bytes: 0, share_pct: 0 },
+        ninety_day_slice: []
+      };
+
+      while (container.firstChild) container.removeChild(container.firstChild);
+
+      const card = el('article', { cls: 'profile-card' });
+      card.appendChild(renderHeader(payload));
+      card.appendChild(renderStatsRow(payload, safeDerived));
+      card.appendChild(renderPinnedSection(payload.pinned_repos));
+      card.appendChild(renderHeatmap(safeDerived.ninety_day_slice));
+      container.appendChild(card);
+    }
+
+    // ------------------------------------------------------------------
+    // Module: main (ui-shell wiring)
+    // ------------------------------------------------------------------
+
+    const usernameInput = document.getElementById('username-input');
+    const patInput = document.getElementById('pat-input');
+    const lookupButton = document.getElementById('lookup-button');
+    const statusRegion = document.getElementById('status-region');
+    const cardContainer = document.getElementById('card-container');
+
+    function setStatus(message, kind) {
+      if (!statusRegion) return;
+      statusRegion.className = '';
+      if (kind) statusRegion.classList.add('status-' + kind);
+      statusRegion.textContent = message || '';
+    }
+
+    function todayUtcDateString() {
+      const now = new Date();
+      const yyyy = now.getUTCFullYear();
+      const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
+      const dd = String(now.getUTCDate()).padStart(2, '0');
+      return yyyy + '-' + mm + '-' + dd;
+    }
+
+    function errorToMessage(err, username) {
+      if (!err) return 'An unknown error occurred.';
+      switch (err.name) {
+        case 'UserNotFoundError':
+          return 'No GitHub user found with handle "' + username + '". Check the spelling and try again.';
+        case 'AuthError':
+          return 'GitHub rejected the token. Check that your PAT is valid and hasn\'t expired.';
+        case 'RateLimitError':
+          return "GitHub's rate limit was hit. Wait a few minutes and try again, or use a PAT with a higher limit.";
+        case 'NetworkError':
+          return 'Could not reach api.github.com. Check your internet connection.';
+        case 'MissingTokenError':
+          return 'A Personal Access Token is required to fetch pinned repos and contribution data. Paste a token in the field above (link: github.com/settings/tokens).';
+        default:
+          return 'Unexpected error: ' + (err.message || err.name || 'unknown');
+      }
+    }
+
+    async function runLookup() {
+      if (!usernameInput) return;
+      const username = (usernameInput.value || '').trim();
+      if (!username) { setStatus('Enter a GitHub username to look up.', 'info'); return; }
+      const pat = (patInput && patInput.value) ? patInput.value.trim() : '';
+
+      while (cardContainer && cardContainer.firstChild) cardContainer.removeChild(cardContainer.firstChild);
+
+      setStatus('Loading profile for ' + username + '...', 'loading');
+      if (lookupButton) lookupButton.disabled = true;
+
+      try {
+        const payload = await fetchProfilePayload(username, pat || null);
+
+        const days = (payload.contribution_calendar_year && Array.isArray(payload.contribution_calendar_year.days))
+          ? payload.contribution_calendar_year.days : [];
+        const today = todayUtcDateString();
+        const ninetyDaySlice = sliceLast90Days(days, today);
+        const streak = computeCurrentStreak(days);
+        const language = computeMostUsedLanguage(payload.owned_non_fork_repos_with_languages || []);
+
+        renderCard(cardContainer, payload, {
+          streak: streak,
+          language: language,
+          ninety_day_slice: ninetyDaySlice
+        });
+
+        if (!pat) {
+          setStatus(
+            'Loaded basic profile and language stats. Pinned repos and contribution data require a Personal Access Token — paste one above and look up again.',
+            'info'
+          );
+        } else {
+          setStatus('Showing profile for ' + username + '.', 'success');
+        }
+      } catch (err) {
+        setStatus(errorToMessage(err, username), 'error');
+      } finally {
+        if (lookupButton) lookupButton.disabled = false;
+      }
+    }
+
+    if (lookupButton) lookupButton.addEventListener('click', function () { runLookup(); });
+    if (usernameInput) {
+      usernameInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); runLookup(); }
+      });
+    }
+    if (patInput) {
+      patInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); runLookup(); }
+      });
+    }
+
+    window.addEventListener('error', function (event) {
+      if (event && event.error) {
+        setStatus('Page error: ' + (event.error.message || event.error.name || 'unknown'), 'error');
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
