@@ -12,7 +12,7 @@
     "final_artifact": null,
     "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
     "rating": {
-      "telos_fidelity": "unknown",
+      "telos_fidelity": "adequate",
       "deliverability": {
         "tier1_pnv": "not_run",
         "tier2_first_contact": "not_run",
@@ -31,9 +31,9 @@
       "composite": "unknown"
     },
     "counts": {
-      "dispatches": 0,
-      "overseer_dispatches": 0,
-      "builder_dispatches": 0,
+      "dispatches": 18,
+      "overseer_dispatches": 5,
+      "builder_dispatches": 5,
       "researcher_dispatches": 0,
       "wall_clock_minutes": null,
       "sections": 5,
@@ -45,7 +45,7 @@
       "sev0_fixes": 0,
       "escalations_open": 0,
       "demotions": 0,
-      "editor_iterations": 0,
+      "editor_iterations": 1,
       "events_total": 0,
       "revision_count": 1,
       "additional_step_count": 0
@@ -312,12 +312,12 @@
     "waves": [],
     "researcher_dispatch_count": 0,
     "builder_dispatch_count": 0,
-    "overseer_dispatch_count": 0,
+    "overseer_dispatch_count": 5,
     "critic_high": 0,
     "critic_medium": 0,
     "critic_low": 0,
-    "editor_iterations": 0,
-    "editor_final_verdict": null,
+    "editor_iterations": 1,
+    "editor_final_verdict": "pass_with_recommendations",
     "demotion_count": 0,
     "cv_verdict": null,
     "cv_tier1_pnv": "not_run",
@@ -333,7 +333,7 @@
       "builders": 0,
       "waves": 0,
       "escalations": 0,
-      "dispatches": 0
+      "dispatches": 18
     },
     "phase_band_states": {
       "kickoff": "done",
@@ -416,20 +416,48 @@
         "raised_escalation": false,
         "next_role": "Editor",
         "_filename": "td-initial-v1.json"
+      },
+      {
+        "role": "Editor",
+        "instance_id": "editor",
+        "iteration": 1,
+        "mode": null,
+        "completed_at": "2026-05-16T01:00:00Z",
+        "section": null,
+        "escalation_id": null,
+        "blurbs": [
+          {
+            "question": "Did the build stay true to what was asked?",
+            "answer": "Yes. The plan covers all four card elements you named (pinned repos, contribution streak, most-used language, 90-day commit activity), targets the right GitHub APIs for each, and includes graceful handling for the obvious failure modes (no token, bad token, user not found, rate limit, no pinned repos, second lookup). Two minor documentation tidiness items noted but nothing that would change what gets built.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "Anything the user should know about?",
+            "answer": "Two notes, both housekeeping: (1) the GitHub-specific terms in the prompt (pinned repos, contribution streak, etc.) were locked against the official GitHub docs but not formally re-stamped as verified in one internal field, which is harmless but worth tidying in the next pass; (2) one assertion that checks how the tool inserts your username into GitHub URLs is tagged 'our own plan' rather than 'GitHub's documented URL shape' — same content, slightly looser attribution.",
+            "kind": "conditional",
+            "importance": "medium"
+          }
+        ],
+        "raised_escalation": false,
+        "next_role": "Coordinator",
+        "_filename": "editor-v1.json"
       }
     ],
     "current_step": null
   },
   "history": {
-    "entry_count": 8,
+    "entry_count": 17,
     "earliest": "2026-05-16T00:00:00Z",
-    "latest": "2026-05-16T00:45:00Z"
+    "latest": "2026-05-16T01:08:30Z"
   },
   "run_report_excerpts": null,
   "uncertainty_manifest": [],
   "editor": {
-    "iterations": 0,
-    "verdicts": []
+    "iterations": 1,
+    "verdicts": [
+      "pass_with_recommendations"
+    ]
   },
   "demotion_count": 0,
   "events": [],
