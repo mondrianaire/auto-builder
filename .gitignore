@@ -111,3 +111,7 @@ scratch/
 
 /wrap-clean.bat
 /fix-wrap.bat
+
+# v0.16a one-time tools (A/B-pair viz) — local only
+/run-aggregate.bat
+/verify-abpair.bat
