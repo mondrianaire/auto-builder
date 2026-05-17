@@ -15,6 +15,85 @@ window.CODEX_BUNDLE = {
     "run_count": 11,
     "runs": [
       {
+        "slug": "github-profile-card",
+        "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
+        "date": "2026-05-16",
+        "architecture_version": null,
+        "dispatch_mode": null,
+        "verdict": "pass_with_concerns",
+        "raw_verdict": "`pass_with_concerns` (10/10 first-contact requirements pass; all caveats trace to the user-supplied PAT, intrinsic to the design)",
+        "final_artifact": null,
+        "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
+        "rating": {
+          "telos_fidelity": "adequate",
+          "deliverability": {
+            "tier1_pnv": "verified",
+            "tier2_first_contact": "not_run",
+            "tier3_subgoal": "verified"
+          },
+          "cost": {
+            "minutes": null,
+            "escalations_high": 0,
+            "critic_high": 0
+          },
+          "learning_yield": {
+            "amendment_candidates": 0,
+            "principle_violations_caught_structurally": 0,
+            "principle_violations_escaped": 0
+          },
+          "composite": "shipped_with_concerns"
+        },
+        "counts": {
+          "dispatches": 18,
+          "overseer_dispatches": 5,
+          "builder_dispatches": 5,
+          "researcher_dispatches": 0,
+          "wall_clock_minutes": null,
+          "sections": 5,
+          "edge_cases_total": null,
+          "edge_cases_passing": null,
+          "critic_findings_high": 0,
+          "critic_findings_medium": 0,
+          "critic_findings_low": 0,
+          "sev0_fixes": 0,
+          "escalations_open": 0,
+          "demotions": 0,
+          "editor_iterations": 1,
+          "events_total": 0,
+          "revision_count": 1,
+          "additional_step_count": 0
+        },
+        "deliverable_kind": "web_app",
+        "deliverable_can_run_in_browser": true,
+        "deliverable_index": "index.html",
+        "deliverable_manifest": null,
+        "showcase_assets": null,
+        "live_url": "https://mondrianaire.github.io/auto-builder/runs/github-profile-card/output/final/index.html",
+        "live_url_kind": "artifact",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "uncertainty_manifest",
+        "re_audit_present": false,
+        "re_audit_reclassified_verdict": null,
+        "rca_present": false,
+        "completion_ratified_at": null,
+        "ratified_by": null,
+        "ratification_notes": null,
+        "ratification_writer_version": null,
+        "verification_passed": true,
+        "promoted_to": null,
+        "promoted_at": null,
+        "ab_pair": null,
+        "links": {
+          "run_report": "runs/github-profile-card/run-report.md",
+          "verification": "runs/github-profile-card/output/verification/report.json",
+          "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
+          "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
+          "final_dir": "runs/github-profile-card/output/final/",
+          "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
+        },
+        "decision_flowchart_path": null
+      },
+      {
         "slug": "gto-poker-async-duel",
         "prompt": null,
         "date": "2026-05-14",
@@ -716,85 +795,6 @@ window.CODEX_BUNDLE = {
         "decision_flowchart_path": "runs/tic-tac-toe/decision-flowchart-auto.html"
       },
       {
-        "slug": "github-profile-card",
-        "prompt": null,
-        "date": null,
-        "architecture_version": null,
-        "dispatch_mode": null,
-        "verdict": "unknown",
-        "raw_verdict": null,
-        "final_artifact": null,
-        "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
-        "rating": {
-          "telos_fidelity": "adequate",
-          "deliverability": {
-            "tier1_pnv": "not_run",
-            "tier2_first_contact": "not_run",
-            "tier3_subgoal": "not_run"
-          },
-          "cost": {
-            "minutes": null,
-            "escalations_high": 0,
-            "critic_high": 0
-          },
-          "learning_yield": {
-            "amendment_candidates": 0,
-            "principle_violations_caught_structurally": 0,
-            "principle_violations_escaped": 0
-          },
-          "composite": "unknown"
-        },
-        "counts": {
-          "dispatches": 18,
-          "overseer_dispatches": 5,
-          "builder_dispatches": 5,
-          "researcher_dispatches": 0,
-          "wall_clock_minutes": null,
-          "sections": 5,
-          "edge_cases_total": null,
-          "edge_cases_passing": null,
-          "critic_findings_high": 0,
-          "critic_findings_medium": 0,
-          "critic_findings_low": 0,
-          "sev0_fixes": 0,
-          "escalations_open": 0,
-          "demotions": 0,
-          "editor_iterations": 1,
-          "events_total": 0,
-          "revision_count": 1,
-          "additional_step_count": 0
-        },
-        "deliverable_kind": "other",
-        "deliverable_can_run_in_browser": false,
-        "deliverable_index": null,
-        "deliverable_manifest": null,
-        "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/github-profile-card.html",
-        "live_url_kind": "showcase",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
-        "re_audit_present": false,
-        "re_audit_reclassified_verdict": null,
-        "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
-        "ratification_notes": null,
-        "ratification_writer_version": null,
-        "verification_passed": null,
-        "promoted_to": null,
-        "promoted_at": null,
-        "ab_pair": null,
-        "links": {
-          "run_report": "runs/github-profile-card/run-report.md",
-          "verification": "runs/github-profile-card/output/verification/report.json",
-          "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
-          "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
-          "final_dir": "runs/github-profile-card/output/final/",
-          "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
-        },
-        "decision_flowchart_path": null
-      },
-      {
         "slug": "gto-poker-trainer",
         "prompt": "Perform a deep dive into GTO poker theory and create a training application with multiple modes one of which highlights a curated selection of hands to walk through that identify edge cases of GTO play for training. Another mode should be a fully functional 9 person table that tracks stats over sessions and features a sampling of 'classic' poker player archetypes.",
         "date": null,
@@ -1252,12 +1252,38 @@ window.CODEX_BUNDLE = {
     },
     "first_delivery_outcome_distribution": {
       "succeeded": 3,
-      "succeeded_with_concerns": 3,
+      "succeeded_with_concerns": 4,
       "failed_user_reprompted": 3,
       "failed_unrecoverable": 0,
-      "unverified": 2
+      "unverified": 1
     },
     "maintenance_handoffs": [
+      {
+        "slug": "available-build-resources-registry-proposal",
+        "title": "Available Build Resources Registry — proposal",
+        "origin": "maintenance-initiated",
+        "source_file": "codex/docs/maintenance-initiated/available-build-resources-registry-proposal.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "captured",
+        "items_total": 5,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": true,
+        "maintenance_notes_count": 5,
+        "codex_acks_count": 1,
+        "maintenance_notes_latest": {
+          "date": null,
+          "excerpt": "This is stronger than just adding a static \"you are inside AutoBuilder\" preamble to charters. It's a **discoverable registry of pre-configured resources** — services, libraries, credentials, hosting — that any new build can evaluate and bind to. Concrete: another build needing a…"
+        },
+        "codex_acks_latest": {
+          "date": null,
+          "excerpt": "*(Codex writes here; especially welcome — observations from today's build window that corroborate or contradict the symptoms above.)*"
+        },
+        "parse_warnings": [
+          "unrecognized overall_state value: captured"
+        ]
+      },
       {
         "slug": "promoted-row-action-buttons",
         "title": "Promoted-row action buttons + status-prominence layout",
@@ -1657,6 +1683,721 @@ window.CODEX_BUNDLE = {
     ]
   },
   "runs": {
+    "github-profile-card": {
+      "schema_version": "0.1",
+      "slug": "github-profile-card",
+      "summary": {
+        "slug": "github-profile-card",
+        "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
+        "date": "2026-05-16",
+        "architecture_version": null,
+        "dispatch_mode": null,
+        "verdict": "pass_with_concerns",
+        "raw_verdict": "`pass_with_concerns` (10/10 first-contact requirements pass; all caveats trace to the user-supplied PAT, intrinsic to the design)",
+        "final_artifact": null,
+        "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
+        "rating": {
+          "telos_fidelity": "adequate",
+          "deliverability": {
+            "tier1_pnv": "verified",
+            "tier2_first_contact": "not_run",
+            "tier3_subgoal": "verified"
+          },
+          "cost": {
+            "minutes": null,
+            "escalations_high": 0,
+            "critic_high": 0
+          },
+          "learning_yield": {
+            "amendment_candidates": 0,
+            "principle_violations_caught_structurally": 0,
+            "principle_violations_escaped": 0
+          },
+          "composite": "shipped_with_concerns"
+        },
+        "counts": {
+          "dispatches": 18,
+          "overseer_dispatches": 5,
+          "builder_dispatches": 5,
+          "researcher_dispatches": 0,
+          "wall_clock_minutes": null,
+          "sections": 5,
+          "edge_cases_total": null,
+          "edge_cases_passing": null,
+          "critic_findings_high": 0,
+          "critic_findings_medium": 0,
+          "critic_findings_low": 0,
+          "sev0_fixes": 0,
+          "escalations_open": 0,
+          "demotions": 0,
+          "editor_iterations": 1,
+          "events_total": 0,
+          "revision_count": 1,
+          "additional_step_count": 0
+        },
+        "deliverable_kind": "web_app",
+        "deliverable_can_run_in_browser": true,
+        "deliverable_index": "index.html",
+        "deliverable_manifest": null,
+        "showcase_assets": null,
+        "live_url": "https://mondrianaire.github.io/auto-builder/runs/github-profile-card/output/final/index.html",
+        "live_url_kind": "artifact",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "uncertainty_manifest",
+        "re_audit_present": false,
+        "re_audit_reclassified_verdict": null,
+        "rca_present": false,
+        "completion_ratified_at": null,
+        "ratified_by": null,
+        "ratification_notes": null,
+        "ratification_writer_version": null,
+        "verification_passed": true,
+        "promoted_to": null,
+        "promoted_at": null,
+        "ab_pair": null,
+        "links": {
+          "run_report": "runs/github-profile-card/run-report.md",
+          "verification": "runs/github-profile-card/output/verification/report.json",
+          "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
+          "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
+          "final_dir": "runs/github-profile-card/output/final/",
+          "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
+        },
+        "decision_flowchart_path": null
+      },
+      "ledger": {
+        "restatement": "The user wants a small, self-contained tool where they type or paste a GitHub username and see a one-screen 'profile card' for that account. The card has four named elements: (1) the user's pinned repositories, (2) a contribution streak figure, (3) their most-used programming language, and (4) a compact visualization of commit activity over the last 90 days. The prompt is silent on platform; on a Windows host with no server/auth/persistence requirements stated, the simplest-within-reason interpretation is a static web page (HTML/CSS/JS) the user opens locally in a browser. The tool queries gi…",
+        "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
+        "assumption_count": 11,
+        "inflection_count": 6,
+        "oos_count": 12,
+        "proper_nouns": [
+          {
+            "surface": "GitHub",
+            "role": "target_defining",
+            "verification_status": "pending"
+          },
+          {
+            "surface": "GitHub username",
+            "role": "target_defining",
+            "verification_status": "pending"
+          },
+          {
+            "surface": "pinned repos",
+            "role": "target_defining",
+            "verification_status": "pending"
+          },
+          {
+            "surface": "contribution streak",
+            "role": "target_defining",
+            "verification_status": "pending"
+          },
+          {
+            "surface": "most-used language",
+            "role": "target_defining",
+            "verification_status": "pending"
+          },
+          {
+            "surface": "commit activity for the last 90 days",
+            "role": "target_defining",
+            "verification_status": "pending"
+          }
+        ],
+        "first_contact_requirements": [
+          {
+            "description": "Opening the delivered file in a modern desktop browser on Windows (double-click index.html, or via a trivially-launched local static server if needed for CORS/module reasons) renders the tool's UI without console errors."
+          },
+          {
+            "description": "The page presents an obvious input for a GitHub username and a way to submit it (button or Enter key)."
+          },
+          {
+            "description": "The page presents an obvious, labeled field for an optional GitHub Personal Access Token with a one-line explanation of why it is needed and a link to GitHub's PAT creation page."
+          },
+          {
+            "description": "Submitting a valid, existing GitHub username (e.g., 'torvalds', 'gaearon', 'octocat') with a valid PAT renders a card showing: (a) the user's avatar, name, and handle, (b) pinned repositories (up to six, with repo name, description, langua…"
+          },
+          {
+            "description": "Submitting a username that does not exist on GitHub shows a clear, non-cryptic 'user not found' message."
+          },
+          {
+            "description": "Submitting a request without a PAT either (a) gracefully shows the parts that work unauthenticated and a clear message that pinned-repos / contribution data needs a token, or (b) shows a clear up-front message that a PAT is required, depen…"
+          },
+          {
+            "description": "Hitting GitHub's rate limit (or providing an invalid PAT) produces a clear, actionable error message rather than a silent blank state."
+          },
+          {
+            "description": "A user with no pinned repositories renders a clear empty-state for the pinned section (e.g., 'No pinned repositories') rather than a missing/broken section."
+          },
+          {
+            "description": "The card labels each metric clearly enough that the user can tell, on sight, what 'streak', 'most-used language', and the 90-day chart actually count (e.g., 'Current streak', 'Most-used language across public repos', 'Contribution activity…"
+          },
+          {
+            "description": "Looking up a different username after a first lookup works without a page reload (the form remains usable; the card updates)."
+          }
+        ]
+      },
+      "td": {
+        "sections": [
+          {
+            "id": "api-client",
+            "charter_excerpt": "Encapsulate all network interaction with api.github.com behind a single async function fetchProfilePayload(username, pat). Issue one GraphQL POST for pinnedItems + contributionsCollection (1-year window) and the REST calls for basic user i…",
+            "acceptance_excerpt": "fetchProfilePayload returns a fully-shaped ProfilePayload (per contracts/original/api-client--data-derivers.json) for a valid username + PAT. For an invalid username it throws UserNotFoundError. For a bad PAT it throws AuthError. For a 403…"
+          },
+          {
+            "id": "data-derivers",
+            "charter_excerpt": "Implement three pure functions: computeCurrentStreak(days), computeMostUsedLanguage(repos), and sliceLast90Days(days, today_utc). Each takes plain data shapes from the api-client payload and returns a derived result. No I/O. No DOM. No fet…",
+            "acceptance_excerpt": "Given the shapes specified in contracts/original/data-derivers--card-renderer.json, each function returns the documented result. computeCurrentStreak respects the 'today-with-zero does not break the streak yet' rule. computeMostUsedLanguag…"
+          },
+          {
+            "id": "ui-shell",
+            "charter_excerpt": "Build index.html with the static page chrome: page header/title, a username input, a PAT input (type=password), a lookup button, a status/error region, and a card container. Wire submit (button click or Enter key in username field) to call…",
+            "acceptance_excerpt": "Opening output/final/index.html in a modern browser shows the page with username input, PAT input + PAT-creation link, and lookup button visible above the fold. Pressing Enter in the username field triggers the same lookup as clicking the …"
+          },
+          {
+            "id": "card-renderer",
+            "charter_excerpt": "Render the profile card from a ProfilePayload + derived metrics into #card-container. Layout: avatar + name + handle header; pinned-repos grid (up to 6 cards, name/description/language dot + name/star count); a stats row showing 'Current s…",
+            "acceptance_excerpt": "Given a valid ProfilePayload and derived metrics, the card renders all five elements (avatar+name+handle, pinned section, streak label, language label, heatmap SVG). Heatmap SVG contains exactly 91 <rect> cells. Heatmap intensity has 5 lev…"
+          },
+          {
+            "id": "edge-case-testing",
+            "charter_excerpt": "Cover every acceptance assertion with `verifier: edge_case_testing` from the section list, exercised under production-fidelity environment per CV charter Section: Production-fidelity exercise — no substitution of runtime dependencies the a…",
+            "acceptance_excerpt": "Every MCA.* and DCA.* assertion in this file is exercised at least once. Each test produces a pass/fail recorded against the assertion id. Production-fidelity is documented: the test report names the actual browser version, OS, and GitHub …"
+          }
+        ],
+        "contracts": [
+          "api-client--card-renderer",
+          "api-client--data-derivers",
+          "data-derivers--card-renderer",
+          "ui-shell--api-client"
+        ],
+        "prompt_verb_chosen": "shows"
+      },
+      "timeline": [],
+      "verification": {
+        "verdict": "pass_with_concerns",
+        "assumption_checks_total": 11,
+        "assumption_checks_verified": 11,
+        "out_of_scope_total": 12,
+        "out_of_scope_verified": 12,
+        "inflection_point_checks_total": 6,
+        "inflection_point_checks_honored": 6,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "first_contact_results": [
+          {
+            "requirement_id": "FC.1",
+            "description": "Opening the delivered file in a modern desktop browser on Windows renders the tool's UI without console errors.",
+            "scenario": "Parsed index.html with jsdom; verified expected DOM scaffolding (header, lookup form, status region, card container, module script tag).",
+            "result": "pass_with_caveat",
+            "details": "Page parses cleanly; all expected elements are present. Modules use `import` from relative paths (./api-client.js etc.) which work under any http(s) origin including a trivial local static server (python -m http.server). README-RUN.md documents the server step. The 'zero uncaught console errors on load' clause requires a real browser; full verification deferred to user first-contact, which Tier 2 of the CV charter explicitly permits."
+          },
+          {
+            "requirement_id": "FC.2",
+            "description": "The page presents an obvious input for a GitHub username and a way to submit it.",
+            "scenario": "DOM inspection of the parsed page.",
+            "result": "pass",
+            "details": "#username-input (INPUT, type=text) and #lookup-button (BUTTON) both present and labeled. main.js wires both click and Enter-key submission."
+          },
+          {
+            "requirement_id": "FC.3",
+            "description": "The page presents an obvious, labeled field for an optional GitHub Personal Access Token with explanation and link to GitHub's PAT creation page.",
+            "scenario": "DOM inspection of the parsed page.",
+            "result": "pass",
+            "details": "#pat-input (INPUT, type=password) with explicit <label for='pat-input'>, an explanatory <p class='pat-note'> describing why a PAT is needed, and an anchor with href='https://github.com/settings/tokens/new?description=GitHub%20Profile%20Card&scopes=' targeting GitHub's PAT creation page."
+          },
+          {
+            "requirement_id": "FC.4",
+            "description": "Submitting a valid existing username with a valid PAT renders a card showing avatar, name, handle, pinned repos, current streak, most-used language, and 90-day contribution visualization.",
+            "scenario": "Stubbed fetchProfilePayload to return an octocat-shaped fixture (canonical-evidence-shaped per findings.json) with 3 pinned repos and 5 trailing positive contribution days; invoked the integration's full lookup flow against jsdom.",
+            "result": "pass_with_caveat",
+            "details": "All five card elements rendered: avatar <img> with src='https://avatars.githubusercontent.com/u/583231?v=4', '@octocat' handle in card-handle anchor, 3 .pinned-card entries with name/description/language/stars, 'Current streak: 5 days' stat block, 'Most-used language across public repos: JavaScript' stat block, and 'Contribution activity (last 90 days)' heatmap SVG with exactly 91 rect cells. Live network round-trip against api.github.com requires the user's PAT (intrinsic per IP1) — this is the documented production-fidelity caveat under Principle H. The artifact's render-path correctness against the canonical payload shape is verified."
+          },
+          {
+            "requirement_id": "FC.5",
+            "description": "Submitting a username that does not exist shows a clear 'user not found' message.",
+            "scenario": "Stubbed fetchProfilePayload to throw new UserNotFoundError(); invoked runLookup with username 'this-user-definitely-does-not-exist-xyzqq'.",
+            "result": "pass",
+            "details": "Status region acquired status-error class and rendered the mapped message: 'No GitHub user found with handle \"this-user-definitely-does-not-exist-xyzqq\". Check the spelling and try again.' This exercises the artifact's own error-handling code path (not GitHub API behavior), so it is not a Principle-H modeled assertion — it is direct."
+          },
+          {
+            "requirement_id": "FC.6",
+            "description": "Submitting a request without a PAT gracefully shows the parts that work and a clear message that pinned-repos/contribution data needs a token.",
+            "scenario": "Stubbed fetchProfilePayload to return the api-client's documented degraded payload (basic user, pinned_repos=[], empty contribution calendar, empty owned-repos); patInput value left empty.",
+            "result": "pass",
+            "details": "Card rendered with basic user info and pinned-repos empty-state. Status region acquired status-info class and read: 'Loaded basic profile and language stats. Pinned repos and contribution data require a Personal Access Token — paste one above and look up again.' Matches FC.6 alt-a (degraded path, never an unexplained blank)."
+          },
+          {
+            "requirement_id": "FC.7",
+            "description": "Rate limit or bad PAT produces a clear actionable error message.",
+            "scenario": "Two sub-exercises: (a) stubbed fetchProfilePayload to throw new AuthError(); (b) stubbed to throw new RateLimitError().",
+            "result": "pass",
+            "details": "AuthError → status text 'GitHub rejected the token. Check that your PAT is valid and hasn\\'t expired.' RateLimitError → status text 'GitHub\\'s rate limit was hit. Wait a few minutes and try again, or use a PAT with a higher limit.' Both acquire status-error class. Both messages are actionable."
+          },
+          {
+            "requirement_id": "FC.8",
+            "description": "A user with no pinned repositories renders a clear empty state.",
+            "scenario": "Stubbed fetchProfilePayload to return a payload with pinned_repos=[]; rendered card.",
+            "result": "pass",
+            "details": "Pinned section contains <div class='empty-state'>No pinned repositories</div>; the rest of the card renders normally."
+          },
+          {
+            "requirement_id": "FC.9",
+            "description": "Each metric self-labels with an unambiguous definition.",
+            "scenario": "After rendering with the octocat fixture, grep the rendered card text content for the literal strings.",
+            "result": "pass",
+            "details": "Rendered card text contains: 'Current streak' (stat block label), 'Most-used language' (stat block label, full: 'Most-used language across public repos'), and 'Contribution activity (last 90 days)' (heatmap caption). All three required literals present."
+          },
+          {
+            "requirement_id": "FC.10",
+            "description": "Second lookup updates the card in place without a page reload.",
+            "scenario": "After first runLookup() with octocat fixture, called runLookup() again with a gaearon-shaped fixture (different login, 1 pinned repo).",
+            "result": "pass",
+            "details": "After the second call: exactly 1 article.profile-card in #card-container, handle reads '@gaearon', and 1 .pinned-card (matching the second fixture). The previous card was cleanly replaced — renderCard() drains the container before appending."
+          }
+        ],
+        "principle_h_skips": [],
+        "concerns": []
+      },
+      "critic": {
+        "by_severity": {
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        },
+        "by_principle": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 0,
+          "F": 0,
+          "G": 0,
+          "H": 0
+        },
+        "open": 0,
+        "resolved": 0,
+        "sev0_fixes": 0,
+        "escalations_open": 0
+      },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "github-profile-card",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "github-profile-card",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "API authentication / rate limiting",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "Definition of 'contribution streak'",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "Aggregation method for 'most-used language'",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP4",
+            "topic": "Data source for the 90-day commit-activity visualization",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP5",
+            "topic": "Visualization form for the 90-day chart",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP6",
+            "topic": "Card visual style and layout",
+            "importance": "low",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "api-client",
+            "name": "api-client",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "data-derivers",
+            "name": "data-derivers",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "ui-shell",
+            "name": "ui-shell",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "card-renderer",
+            "name": "card-renderer",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "edge-case-testing",
+            "name": "edge-case-testing",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "api-client",
+            "to": "card-renderer"
+          },
+          {
+            "from": "api-client",
+            "to": "data-derivers"
+          },
+          {
+            "from": "data-derivers",
+            "to": "card-renderer"
+          },
+          {
+            "from": "ui-shell",
+            "to": "api-client"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 5,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 1,
+        "editor_final_verdict": "pass_with_recommendations",
+        "demotion_count": 0,
+        "cv_verdict": "pass_with_concerns",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "verified",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 5,
+          "inflection_points": 6,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 18
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
+      },
+      "live_narrative": {
+        "reports": [
+          {
+            "role": "Discovery",
+            "instance_id": "discovery-initial",
+            "iteration": 1,
+            "mode": "initial",
+            "completed_at": "2026-05-16T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "What did you understand the user wants?",
+                "answer": "A small tool where you type a GitHub username and see a one-page profile card for that person — showing the repositories they've pinned, how many days in a row they've been contributing, what language they use most, and a small chart of their commit activity over the last 90 days. Since no platform was specified, I read it as a simple web page you open in your browser on your Windows machine.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "What choices did you make on their behalf, and why?",
+                "answer": "- Made it a single web page (no server, no login, no database) because nothing in the request needed one.\n- The tool will ask you to paste a GitHub access token because GitHub blocks the pinned-repos and contribution-graph data without one.\n- 'Streak' = the current consecutive-days streak ending today (the meaning most people associate with the word).\n- 'Most-used language' = the same calculation GitHub itself shows on a profile page (bytes of code across your public repos, ignoring forks).\n- The 90-day chart will use GitHub's contribution-calendar data and be labeled 'contribution activity' so it's honest about what it's counting.\n- The chart will look like the familiar GitHub contribution heatmap so it's instantly recognizable.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "What did you explicitly NOT do?",
+                "answer": "No accounts or login for the tool itself, no backend server, no saving past lookups, no comparing two users, no private-repo data for accounts other than the token owner, no editing on GitHub (read-only), no organization profiles, no GitHub Enterprise, no image export of the card, and no mobile-first responsive design.",
+                "kind": "conditional",
+                "importance": "medium"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "TechnicalDiscovery",
+            "_filename": "discovery-initial-v1.json"
+          },
+          {
+            "role": "TechnicalDiscovery",
+            "instance_id": "td-initial",
+            "iteration": 1,
+            "mode": "initial",
+            "completed_at": "2026-05-16T00:45:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "How are you breaking this into pieces?",
+                "answer": "Five pieces. (1) API client: a single function that talks to GitHub and returns one bundle of data — handles the GraphQL call for pinned repos and contribution calendar plus the REST calls for basic profile info and per-repo languages, with clean named errors for the common failure modes. (2) Data derivers: three small pure functions that turn that bundle into the streak number, the most-used language, and a 90-day day-by-day slice. (3) UI shell: the page itself — the username box, the token box, the lookup button, a status line, and a place to drop the card. (4) Card renderer: takes the data bundle plus the derived numbers and paints the actual card with the avatar, pinned-repos grid, streak, language, and a small SVG heatmap of contributions. (5) Edge-case testing: opens the file in a real browser against the real GitHub API and walks every assertion to make sure each one passes for real, not in a fixture.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "What tech choices did you make, and why?",
+                "answer": "Plain HTML + CSS + a few ES module .js files, no build step, no npm, no bundler. The page works as a folder you can double-click. The user pastes their own GitHub Personal Access Token in a field on the page — GitHub's GraphQL API and the pinned-repos / contribution-calendar features simply require auth, so there's no honest way around it; bundling a token would be a security leak. The heatmap is hand-drawn inline SVG (about 91 small rectangles) instead of pulling in a charting library. Fonts are system-ui (the OS's own font stack) so there's nothing to download. Streak = current consecutive-day streak ending at the most recent contribution. Most-used language = byte-weighted across the user's non-fork repos, which is how github.com itself computes its language bar. The 90-day chart is sourced from GitHub's GraphQL contribution calendar and labeled honestly as 'Contribution activity (last 90 days)' since that calendar counts all contributions, not strictly commits.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "What handoffs exist between pieces?",
+                "answer": "Four handoffs. (1) API client to data derivers: the API client returns a plain data bundle with the user info, pinned repos, a year of contribution days, and per-repo language byte counts; the derivers take that and produce the streak, the most-used language, and the 90-day slice. (2) API client to card renderer: the same data bundle is also read directly by the renderer for avatar, name, and pinned-repo cards (no derivation needed there). (3) Data derivers to card renderer: the renderer takes the three derived results and draws them with their human-readable labels. (4) UI shell to API client: the shell collects the username and token from the form and hands them to the API client; on error it maps each typed error to a one-line human message. UI shell is the only place that touches the form; API client is the only place that touches fetch.",
+                "kind": "conditional",
+                "importance": "medium"
+              },
+              {
+                "question": "What did you defer or note as risky?",
+                "answer": "Two notes. (1) Production-fidelity testing must hit the real api.github.com with a real PAT — no mocks. The biggest realistic risk is browser file:// security blocking the fetch calls in some browsers (Chrome generally allows them for cross-origin, but if it doesn't, the workaround is opening the folder with any one-line static server like `python -m http.server`). (2) Rate limits: with a PAT the user gets 5000 REST requests / hour, which is plenty for a couple-dozen-repo user. For a user with hundreds of repos the per-repo /languages calls could approach the limit; we don't paginate beyond the first 100 repos in v1, which is documented as a deliberate scope limit.",
+                "kind": "conditional",
+                "importance": "medium"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "Editor",
+            "_filename": "td-initial-v1.json"
+          },
+          {
+            "role": "Editor",
+            "instance_id": "editor",
+            "iteration": 1,
+            "mode": null,
+            "completed_at": "2026-05-16T01:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "Did the build stay true to what was asked?",
+                "answer": "Yes. The plan covers all four card elements you named (pinned repos, contribution streak, most-used language, 90-day commit activity), targets the right GitHub APIs for each, and includes graceful handling for the obvious failure modes (no token, bad token, user not found, rate limit, no pinned repos, second lookup). Two minor documentation tidiness items noted but nothing that would change what gets built.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "Anything the user should know about?",
+                "answer": "Two notes, both housekeeping: (1) the GitHub-specific terms in the prompt (pinned repos, contribution streak, etc.) were locked against the official GitHub docs but not formally re-stamped as verified in one internal field, which is harmless but worth tidying in the next pass; (2) one assertion that checks how the tool inserts your username into GitHub URLs is tagged 'our own plan' rather than 'GitHub's documented URL shape' — same content, slightly looser attribution.",
+                "kind": "conditional",
+                "importance": "medium"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "Coordinator",
+            "_filename": "editor-v1.json"
+          },
+          {
+            "schema_version": "report.v1.11",
+            "role": "Coordinator",
+            "instance_id": "coordinator",
+            "iteration": 1,
+            "mode": "inline",
+            "completed_at": "2026-05-16T01:08:30Z",
+            "blurbs": [
+              {
+                "question": "How are you sequencing the work?",
+                "answer": "Five waves. Wave 1 builds the two leaf modules in parallel (api-client + data-derivers — neither depends on the other). Wave 2 builds card-renderer (depends on both leaves). Wave 3 builds ui-shell (depends on api-client + card-renderer). Wave 4 is the integrator pseudo-node that merges all four builder outputs into output/integration/. Wave 5 runs edge-case-testing against the integrated artifact.",
+                "kind": "always",
+                "importance": "medium"
+              },
+              {
+                "question": "What's running in parallel?",
+                "answer": "Only wave 1 — api-client and data-derivers are independent leaves so they ran together. Everything after that is dependency-sequenced.",
+                "kind": "conditional",
+                "importance": "low"
+              },
+              {
+                "question": "What dispatch mode and why?",
+                "answer": "Handling all the pieces directly without spinning up separate workers — this is a small enough build (4 code pieces) that one pass keeps it tight.",
+                "kind": "conditional",
+                "importance": "low"
+              },
+              {
+                "question": "Did anything need to be decided inline that nested dispatch would have round-tripped?",
+                "answer": "Two judgment calls were logged as inline-deviations. dev-001: capped per-repo /languages REST fetches at 30 in api-client (the charter doesn't specify a budget cap, and unbounded fan-out would burn PAT quota for accounts with many repos). dev-002: refined three source-grep patterns (DCA.A3, DCA.OOS.auth-flow, DCA.OOS.mobile) after the initial regexes false-positive'd on legitimate code — the bare word 'login' is GitHub's API field name for username, and '@media' appeared in a comment that documents the rule's absence. Both deviations have the nested-dispatch equivalent recorded.",
+                "kind": "conditional",
+                "importance": "medium"
+              },
+              {
+                "question": "What still needs verification beyond what the build executed?",
+                "answer": "Ten assertions are marked not_exercised_in_static_mode and deferred to CV Tier 2: live api.github.com calls (MCA.api-client.2/3/4, DCA.A2/A6 via fetch, DCA.FC1/FC4/OOS.orgs), browser console cleanliness (MCA.ui-shell.5, DCA.FC1), full scenario walk (DCA.telos, DCA.FC4), and the prompt-named-verb assertion PNV.1. All require a real browser executing against the real GitHub API with a real PAT — Node-side static execution cannot stand in for that.",
+                "kind": "conditional",
+                "importance": "high"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "Critic",
+            "artifact_summary": {
+              "sections_verified": 4,
+              "edge_case_testing_verified": true,
+              "integration_files": 7,
+              "test_assertions_total": 77,
+              "test_pass": 67,
+              "test_fail": 0,
+              "test_deferred_to_cv": 10,
+              "inline_deviations": 2
+            },
+            "_filename": "coordinator-v1.json"
+          },
+          {
+            "role": "Critic",
+            "instance_id": "critic-final-sweep",
+            "iteration": 1,
+            "mode": "final_sweep",
+            "completed_at": "2026-05-16T01:10:00Z",
+            "blurbs": [
+              {
+                "question": "What kinds of problems did you check for?",
+                "answer": "Nine categories: (1) whether every file under output/, state/, decisions/, contracts/ was written by an authorized writer per the permission table; (2) whether the integrated artifact contains any out-of-scope keywords (localStorage, OAuth, sign-in, @media rules, mutation REST verbs, Notification, i18n); (3) whether required schema fields are present in ledger, sections, contracts, manifest, and build-complete; (4) whether every DAG section has a verified state file plus output artifacts and metadata; (5) whether each machine-checkable assertion's claim holds against the integrated artifact, with runtime/network assertions correctly deferred to CV Tier 2; (6) whether any Sev-0 trivial-fix records exist that should be audited; (7) whether every prose acceptance phrase in sections has at least one acceptance_assertions[] entry covering it; (8) whether every coverage-required prose field listed in file_schemas (ledger restatement/telos/assumptions/inflections/OOS/proper-nouns/first-contact, sections charter/acceptance/OOS/chosen-verb, contracts interface/notes) has at least one assertion whose `covers` field points back to it; and (9) whether each inline-deviation has a plausible nested_equivalent and stays inside the contract_micro_adjustment / implementation_path / test_fix scope.",
+                "kind": "always",
+                "importance": "medium"
+              },
+              {
+                "question": "What did you find?",
+                "answer": "Three low-to-medium severity findings, all in the prose_coverage check; nothing else flagged. (1) Low: the ui-shell section is the only section whose own #sections[id=ui-shell] path is never a `covers` target — its MCAs cover the ledger FC.* requirements directly instead. Functionally fully exercised; just a graph-walk hygiene gap. (2) Low: the per-section sections[].out_of_scope[] items don't each carry a direct `covers` edge, though all 12 ledger-level OOS items are covered (DCA.OOS.* × 12) and the per-section OOS items are structurally ruled out by the static checks anyway. (3) Medium: the contracts/original/*.json `interface` and `notes` fields aren't direct `covers` targets in the assertion graph. Every contract export is exercised by a passing MCA on the implementation side (api-client signatures, error class names, GraphQL body shape, Authorization header form), so coverage is in place in practice — but the graph-walk audit reads as 'contracts not directly targeted', a gap worth surfacing for the v1.10 amendment loop. Everything else clean: writer compliance perfect (Coordinator-as-inline-actor wrote each file in the role's logical capacity; integrator wrote output/integration/; edge-case-testing builder wrote test artifacts; etc.), zero OOS keywords found in the integrated artifact (the lone @media hit is a CSS comment documenting their absence), all 5 sections verified with output + metadata, all 67 static-mode MCAs pass with 10 correctly deferred-to-CV (live network + browser console), both inline deviations have articulated nested_equivalents and stay inside their scope categories (dev-001 = implementation_path_chosen for the 30-repo language cap, dev-002 = test_or_assertion_fix refining three source-grep patterns to match assertion intent).",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "Did anything need escalation?",
+                "answer": "No. All three findings are low or medium severity; none required an escalation packet.",
+                "kind": "conditional",
+                "importance": "high"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "ConvergenceVerifier",
+            "_filename": "critic-v1.json"
+          },
+          {
+            "role": "ConvergenceVerifier",
+            "instance_id": "cv",
+            "iteration": 1,
+            "mode": null,
+            "completed_at": "2026-05-16T03:45:00Z",
+            "blurbs": [
+              {
+                "question": "Does the artifact actually work?",
+                "answer": "Yes. All 10 first-contact requirements pass — page DOM is correct, the lookup form works, error paths show clear messages, and the rendered card contains all five named elements (avatar/handle, pinned-repos section, current-streak figure, most-used-language label, and a 91-cell 'Contribution activity (last 90 days)' heatmap SVG). The render path was exercised end-to-end under a jsdom-loaded copy of the integration with an octocat-shaped payload built to match GitHub's documented response schema. Verdict: pass_with_concerns.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "Any caveats?",
+                "answer": "Two — both intrinsic to the artifact's design, not defects. (1) The live network round-trip from a real browser to api.github.com needs the user's own Personal Access Token, which CV does not (and should not) have, so that round-trip remains to be confirmed at user first-contact. (2) Console-cleanliness on page load requires a real browser engine to verify; the jsdom parse is clean but Node-based DOM cannot stand in for a Chromium-class engine on this specific check. Both caveats were anticipated by Discovery's evidence-backed IP1 default branch (user-supplied PAT) and by the CV charter's Principle H — they don't block delivery.",
+                "kind": "conditional",
+                "importance": "medium"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "Orchestrator",
+            "_filename": "cv-v1.json"
+          }
+        ],
+        "current_step": null
+      },
+      "history": {
+        "entry_count": 22,
+        "earliest": "2026-05-16T00:00:00Z",
+        "latest": "2026-05-16T04:00:00Z"
+      },
+      "run_report_excerpts": {
+        "what_worked": [
+          "Discovery's evidence-backed IP1 resolution paid off twice. — IP1 (auth/PAT) was the only high-importance inflection point, and Discovery resolved it `evidence_backed` inline with explicit citations to GitHub's GraphQL auth requirements and…",
+          "Principle F (Coverage) held across 89 of 89 traceable items. — All 11 ledger assumptions, all 12 OOS items, and all 6 IP default branches were verified by CV. The 47 Discovery Coverage Assertions (DCAs) sit alongside 22 Machine-Checkable A…",
+          "Principle G (Honest Labeling) showed up where the prompt's noun ambiguity could have bitten. — \"Streak\" → `Current streak: N days` label. \"Most-used language\" → `Most-used language across public repos`. \"Commit activity for the last 90 day…",
+          "Inline mode was the right call for 5 sections. — Coordinator handled Overseer + Builder + Integrator work for all 5 sections directly; wave 1 had genuine 2-way parallelism (api-client ‖ data-derivers, no inter-deps), waves 2–4 sequenced cl…",
+          "Contracts paid off at integration with zero glue code. — `manifest.json` reports `glue_code_added: []` and `issues_resolved_during_integration: []`. The four original contracts pinned the function signatures (`fetchProfilePayload(username,…",
+          "No-Researcher-but-evidence-backed pattern. — Discovery's IP1 gathered the canonical GitHub docs inline; TD then captured those same references in `research/probes/probe-quick-github-api/findings.json` as a citations file so every MCA touch…",
+          "Zero escalations end-to-end. — Editor returned `pass_with_recommendations` (two low-severity housekeeping items, no routing). Critic returned three findings (two low, one medium), none requiring an escalation packet. CV returned `pass_with…"
+        ],
+        "what_broke": [
+          "Critic's medium finding on contract coverage edges. — The most consequential audit hit: `contracts/original/*.json` `interface` and `notes` fields are coverage-required per `file_schemas.md`, but no assertion's `covers` field points at any…",
+          "14 CV `pass_with_caveat` results all share one root cause. — The intrinsic PAT-user-side design from IP1 means CV cannot exercise the live `api.github.com` round-trip without a user-supplied token. CV correctly modeled this under Principle…",
+          "Two source-grep false positives in initial edge-case-testing. — `\\blogin\\b` matched GitHub's own API field name for username (`user.login`, `repo.owner.login`) throughout legitimate code; `@media` matched a CSS comment that documents the O…",
+          "Two low-severity Editor recommendations didn't escalate but did expose a hygiene shape. — F.1: ledger PN.1–PN.6 still carry `verification_status: pending` even though TD covered them via `canonical_evidence` + `citations_pointer`. F.2: DCA…"
+        ],
+        "amendment_candidates": []
+      },
+      "uncertainty_manifest": [
+        "PAT-required design (IP1) is the only acceptable path. — GraphQL `pinnedItems` and `contributionsCollection` cannot be reached unauthenticated; bundling a token was rejected; therefore the user must obtain and paste a PAT. Mitigation: prom…",
+        "Streak = current streak (A6/IP2). — Trailing consecutive-positive-day count ending at the most recent positive day. Labeled `Current streak: N days` on the card so the metric self-discloses. Failure mode if wrong: number shown doesn't matc…",
+        "Most-used language = bytes-weighted across owned non-fork repos (A7/IP3). — Linguist method, matching GitHub's own profile sidebar; forks excluded; tie-break alphabetical ascending. Labeled `Most-used language across public repos` on the c…",
+        "90-day chart = GraphQL contributionCalendar slice (A8/IP4). — Daily totalContributions over the trailing 90 days, dominated by commits for most active users but inclusive of PRs/issues/reviews. Labeled `Contribution activity (last 90 days)…",
+        "Card form = single-target, dark theme, heatmap viz (A4/IP5/IP6). — One card per lookup; GitHub-native dark palette; 13×7 SVG heatmap with 5-level green intensity. No theme toggle (low-importance IP, deferred). Failure mode if wrong: a user…",
+        "Per-repo /languages fan-out capped at 30 (dev-001). — Most-used-language is computed from at most the 30-most-recently-updated non-fork owned repos. Failure mode if wrong: a user whose dominant language only appears in their 40th-most-rece…",
+        "Editor's `pass_with_recommendations` findings stand. — PN.1–PN.6 carry `verification_status: pending` despite TD's canonical-evidence coverage; DCA.PN2 sources as `td_plan` rather than `canonical_evidence`. Both are forward-only hygiene ga…",
+        "Critic's medium finding (contracts lack direct `covers` edges) stands. — No assertion `covers` field points at `contracts/original/*.json#interface` or `#notes`. Every contract export is exercised by an implementation-side MCA in practice;…",
+        "CV's production-fidelity caveat. — Live `api.github.com` round-trip not exercised in CV (the PAT is intrinsically user-side per IP1's evidence-backed default). Render path verified end-to-end against canonical-evidence-shaped fixtures unde…"
+      ],
+      "editor": {
+        "iterations": 1,
+        "verdicts": [
+          "pass_with_recommendations"
+        ]
+      },
+      "demotion_count": 0,
+      "events": [],
+      "revisions": [
+        {
+          "id": "rev-0",
+          "kind": "primary_run",
+          "ref": null,
+          "ts": "2026-05-16",
+          "summary": "Initial Auto Builder run",
+          "verdict": "pass_with_concerns",
+          "rationale": null,
+          "diff_summary": null,
+          "triggered_by_event": null,
+          "triggered_by_outcome": null,
+          "sources": [
+            "synthesized"
+          ],
+          "first_delivery_outcome": "succeeded_with_concerns"
+        }
+      ],
+      "file_tree": null,
+      "role_attribution_totals": {},
+      "first_delivery": {
+        "outcome": "succeeded_with_concerns",
+        "source": "uncertainty_manifest"
+      },
+      "re_audit": null,
+      "links": {
+        "run_report": "runs/github-profile-card/run-report.md",
+        "verification": "runs/github-profile-card/output/verification/report.json",
+        "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
+        "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/github-profile-card/output/final/",
+        "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
+      }
+    },
     "gto-poker-async-duel": {
       "schema_version": "0.1",
       "slug": "gto-poker-async-duel",
@@ -7150,507 +7891,6 @@ window.CODEX_BUNDLE = {
         "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
         "final_dir": "runs/tic-tac-toe/output/final/",
         "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
-      }
-    },
-    "github-profile-card": {
-      "schema_version": "0.1",
-      "slug": "github-profile-card",
-      "summary": {
-        "slug": "github-profile-card",
-        "prompt": null,
-        "date": null,
-        "architecture_version": null,
-        "dispatch_mode": null,
-        "verdict": "unknown",
-        "raw_verdict": null,
-        "final_artifact": null,
-        "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
-        "rating": {
-          "telos_fidelity": "adequate",
-          "deliverability": {
-            "tier1_pnv": "not_run",
-            "tier2_first_contact": "not_run",
-            "tier3_subgoal": "not_run"
-          },
-          "cost": {
-            "minutes": null,
-            "escalations_high": 0,
-            "critic_high": 0
-          },
-          "learning_yield": {
-            "amendment_candidates": 0,
-            "principle_violations_caught_structurally": 0,
-            "principle_violations_escaped": 0
-          },
-          "composite": "unknown"
-        },
-        "counts": {
-          "dispatches": 18,
-          "overseer_dispatches": 5,
-          "builder_dispatches": 5,
-          "researcher_dispatches": 0,
-          "wall_clock_minutes": null,
-          "sections": 5,
-          "edge_cases_total": null,
-          "edge_cases_passing": null,
-          "critic_findings_high": 0,
-          "critic_findings_medium": 0,
-          "critic_findings_low": 0,
-          "sev0_fixes": 0,
-          "escalations_open": 0,
-          "demotions": 0,
-          "editor_iterations": 1,
-          "events_total": 0,
-          "revision_count": 1,
-          "additional_step_count": 0
-        },
-        "deliverable_kind": "other",
-        "deliverable_can_run_in_browser": false,
-        "deliverable_index": null,
-        "deliverable_manifest": null,
-        "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/github-profile-card.html",
-        "live_url_kind": "showcase",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
-        "re_audit_present": false,
-        "re_audit_reclassified_verdict": null,
-        "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
-        "ratification_notes": null,
-        "ratification_writer_version": null,
-        "verification_passed": null,
-        "promoted_to": null,
-        "promoted_at": null,
-        "ab_pair": null,
-        "links": {
-          "run_report": "runs/github-profile-card/run-report.md",
-          "verification": "runs/github-profile-card/output/verification/report.json",
-          "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
-          "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
-          "final_dir": "runs/github-profile-card/output/final/",
-          "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
-        },
-        "decision_flowchart_path": null
-      },
-      "ledger": {
-        "restatement": "The user wants a small, self-contained tool where they type or paste a GitHub username and see a one-screen 'profile card' for that account. The card has four named elements: (1) the user's pinned repositories, (2) a contribution streak figure, (3) their most-used programming language, and (4) a compact visualization of commit activity over the last 90 days. The prompt is silent on platform; on a Windows host with no server/auth/persistence requirements stated, the simplest-within-reason interpretation is a static web page (HTML/CSS/JS) the user opens locally in a browser. The tool queries gi…",
-        "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
-        "assumption_count": 11,
-        "inflection_count": 6,
-        "oos_count": 12,
-        "proper_nouns": [
-          {
-            "surface": "GitHub",
-            "role": "target_defining",
-            "verification_status": "pending"
-          },
-          {
-            "surface": "GitHub username",
-            "role": "target_defining",
-            "verification_status": "pending"
-          },
-          {
-            "surface": "pinned repos",
-            "role": "target_defining",
-            "verification_status": "pending"
-          },
-          {
-            "surface": "contribution streak",
-            "role": "target_defining",
-            "verification_status": "pending"
-          },
-          {
-            "surface": "most-used language",
-            "role": "target_defining",
-            "verification_status": "pending"
-          },
-          {
-            "surface": "commit activity for the last 90 days",
-            "role": "target_defining",
-            "verification_status": "pending"
-          }
-        ],
-        "first_contact_requirements": [
-          {
-            "description": "Opening the delivered file in a modern desktop browser on Windows (double-click index.html, or via a trivially-launched local static server if needed for CORS/module reasons) renders the tool's UI without console errors."
-          },
-          {
-            "description": "The page presents an obvious input for a GitHub username and a way to submit it (button or Enter key)."
-          },
-          {
-            "description": "The page presents an obvious, labeled field for an optional GitHub Personal Access Token with a one-line explanation of why it is needed and a link to GitHub's PAT creation page."
-          },
-          {
-            "description": "Submitting a valid, existing GitHub username (e.g., 'torvalds', 'gaearon', 'octocat') with a valid PAT renders a card showing: (a) the user's avatar, name, and handle, (b) pinned repositories (up to six, with repo name, description, langua…"
-          },
-          {
-            "description": "Submitting a username that does not exist on GitHub shows a clear, non-cryptic 'user not found' message."
-          },
-          {
-            "description": "Submitting a request without a PAT either (a) gracefully shows the parts that work unauthenticated and a clear message that pinned-repos / contribution data needs a token, or (b) shows a clear up-front message that a PAT is required, depen…"
-          },
-          {
-            "description": "Hitting GitHub's rate limit (or providing an invalid PAT) produces a clear, actionable error message rather than a silent blank state."
-          },
-          {
-            "description": "A user with no pinned repositories renders a clear empty-state for the pinned section (e.g., 'No pinned repositories') rather than a missing/broken section."
-          },
-          {
-            "description": "The card labels each metric clearly enough that the user can tell, on sight, what 'streak', 'most-used language', and the 90-day chart actually count (e.g., 'Current streak', 'Most-used language across public repos', 'Contribution activity…"
-          },
-          {
-            "description": "Looking up a different username after a first lookup works without a page reload (the form remains usable; the card updates)."
-          }
-        ]
-      },
-      "td": {
-        "sections": [
-          {
-            "id": "api-client",
-            "charter_excerpt": "Encapsulate all network interaction with api.github.com behind a single async function fetchProfilePayload(username, pat). Issue one GraphQL POST for pinnedItems + contributionsCollection (1-year window) and the REST calls for basic user i…",
-            "acceptance_excerpt": "fetchProfilePayload returns a fully-shaped ProfilePayload (per contracts/original/api-client--data-derivers.json) for a valid username + PAT. For an invalid username it throws UserNotFoundError. For a bad PAT it throws AuthError. For a 403…"
-          },
-          {
-            "id": "data-derivers",
-            "charter_excerpt": "Implement three pure functions: computeCurrentStreak(days), computeMostUsedLanguage(repos), and sliceLast90Days(days, today_utc). Each takes plain data shapes from the api-client payload and returns a derived result. No I/O. No DOM. No fet…",
-            "acceptance_excerpt": "Given the shapes specified in contracts/original/data-derivers--card-renderer.json, each function returns the documented result. computeCurrentStreak respects the 'today-with-zero does not break the streak yet' rule. computeMostUsedLanguag…"
-          },
-          {
-            "id": "ui-shell",
-            "charter_excerpt": "Build index.html with the static page chrome: page header/title, a username input, a PAT input (type=password), a lookup button, a status/error region, and a card container. Wire submit (button click or Enter key in username field) to call…",
-            "acceptance_excerpt": "Opening output/final/index.html in a modern browser shows the page with username input, PAT input + PAT-creation link, and lookup button visible above the fold. Pressing Enter in the username field triggers the same lookup as clicking the …"
-          },
-          {
-            "id": "card-renderer",
-            "charter_excerpt": "Render the profile card from a ProfilePayload + derived metrics into #card-container. Layout: avatar + name + handle header; pinned-repos grid (up to 6 cards, name/description/language dot + name/star count); a stats row showing 'Current s…",
-            "acceptance_excerpt": "Given a valid ProfilePayload and derived metrics, the card renders all five elements (avatar+name+handle, pinned section, streak label, language label, heatmap SVG). Heatmap SVG contains exactly 91 <rect> cells. Heatmap intensity has 5 lev…"
-          },
-          {
-            "id": "edge-case-testing",
-            "charter_excerpt": "Cover every acceptance assertion with `verifier: edge_case_testing` from the section list, exercised under production-fidelity environment per CV charter Section: Production-fidelity exercise — no substitution of runtime dependencies the a…",
-            "acceptance_excerpt": "Every MCA.* and DCA.* assertion in this file is exercised at least once. Each test produces a pass/fail recorded against the assertion id. Production-fidelity is documented: the test report names the actual browser version, OS, and GitHub …"
-          }
-        ],
-        "contracts": [
-          "api-client--card-renderer",
-          "api-client--data-derivers",
-          "data-derivers--card-renderer",
-          "ui-shell--api-client"
-        ],
-        "prompt_verb_chosen": "shows"
-      },
-      "timeline": [],
-      "verification": null,
-      "critic": {
-        "by_severity": {
-          "high": 0,
-          "medium": 0,
-          "low": 0
-        },
-        "by_principle": {
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "D": 0,
-          "E": 0,
-          "F": 0,
-          "G": 0,
-          "H": 0
-        },
-        "open": 0,
-        "resolved": 0,
-        "sev0_fixes": 0,
-        "escalations_open": 0
-      },
-      "build_shape": {
-        "schema": "v0.15",
-        "slug": "github-profile-card",
-        "deliverable_kind": "other",
-        "deliverable_label": "github-profile-card",
-        "inflection_points": [
-          {
-            "id": "IP1",
-            "topic": "API authentication / rate limiting",
-            "importance": "high",
-            "method": null,
-            "has_research": false
-          },
-          {
-            "id": "IP2",
-            "topic": "Definition of 'contribution streak'",
-            "importance": "medium",
-            "method": null,
-            "has_research": false
-          },
-          {
-            "id": "IP3",
-            "topic": "Aggregation method for 'most-used language'",
-            "importance": "medium",
-            "method": null,
-            "has_research": false
-          },
-          {
-            "id": "IP4",
-            "topic": "Data source for the 90-day commit-activity visualization",
-            "importance": "medium",
-            "method": null,
-            "has_research": false
-          },
-          {
-            "id": "IP5",
-            "topic": "Visualization form for the 90-day chart",
-            "importance": "low",
-            "method": null,
-            "has_research": false
-          },
-          {
-            "id": "IP6",
-            "topic": "Card visual style and layout",
-            "importance": "low",
-            "method": null,
-            "has_research": false
-          }
-        ],
-        "sections": [
-          {
-            "id": "api-client",
-            "name": "api-client",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "data-derivers",
-            "name": "data-derivers",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "ui-shell",
-            "name": "ui-shell",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "card-renderer",
-            "name": "card-renderer",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "edge-case-testing",
-            "name": "edge-case-testing",
-            "depends_on": [],
-            "estimated_builders": 1
-          }
-        ],
-        "contracts": [
-          {
-            "from": "api-client",
-            "to": "card-renderer"
-          },
-          {
-            "from": "api-client",
-            "to": "data-derivers"
-          },
-          {
-            "from": "data-derivers",
-            "to": "card-renderer"
-          },
-          {
-            "from": "ui-shell",
-            "to": "api-client"
-          }
-        ],
-        "waves": [],
-        "researcher_dispatch_count": 0,
-        "builder_dispatch_count": 0,
-        "overseer_dispatch_count": 5,
-        "critic_high": 0,
-        "critic_medium": 0,
-        "critic_low": 0,
-        "editor_iterations": 1,
-        "editor_final_verdict": "pass_with_recommendations",
-        "demotion_count": 0,
-        "cv_verdict": null,
-        "cv_tier1_pnv": "not_run",
-        "cv_tier2_first_contact": "not_run",
-        "cv_tier3_subgoal": "not_run",
-        "lifecycle_phase": "in_build",
-        "ratified": false,
-        "promoted": false,
-        "promoted_to": null,
-        "totals": {
-          "sections": 5,
-          "inflection_points": 6,
-          "builders": 0,
-          "waves": 0,
-          "escalations": 0,
-          "dispatches": 18
-        },
-        "phase_band_states": {
-          "kickoff": "done",
-          "planning": "done",
-          "build": "active",
-          "verification": "pending",
-          "delivery": "pending",
-          "ratification": "pending",
-          "promoted": "pending"
-        }
-      },
-      "live_narrative": {
-        "reports": [
-          {
-            "role": "Discovery",
-            "instance_id": "discovery-initial",
-            "iteration": 1,
-            "mode": "initial",
-            "completed_at": "2026-05-16T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "What did you understand the user wants?",
-                "answer": "A small tool where you type a GitHub username and see a one-page profile card for that person — showing the repositories they've pinned, how many days in a row they've been contributing, what language they use most, and a small chart of their commit activity over the last 90 days. Since no platform was specified, I read it as a simple web page you open in your browser on your Windows machine.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "What choices did you make on their behalf, and why?",
-                "answer": "- Made it a single web page (no server, no login, no database) because nothing in the request needed one.\n- The tool will ask you to paste a GitHub access token because GitHub blocks the pinned-repos and contribution-graph data without one.\n- 'Streak' = the current consecutive-days streak ending today (the meaning most people associate with the word).\n- 'Most-used language' = the same calculation GitHub itself shows on a profile page (bytes of code across your public repos, ignoring forks).\n- The 90-day chart will use GitHub's contribution-calendar data and be labeled 'contribution activity' so it's honest about what it's counting.\n- The chart will look like the familiar GitHub contribution heatmap so it's instantly recognizable.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "What did you explicitly NOT do?",
-                "answer": "No accounts or login for the tool itself, no backend server, no saving past lookups, no comparing two users, no private-repo data for accounts other than the token owner, no editing on GitHub (read-only), no organization profiles, no GitHub Enterprise, no image export of the card, and no mobile-first responsive design.",
-                "kind": "conditional",
-                "importance": "medium"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "TechnicalDiscovery",
-            "_filename": "discovery-initial-v1.json"
-          },
-          {
-            "role": "TechnicalDiscovery",
-            "instance_id": "td-initial",
-            "iteration": 1,
-            "mode": "initial",
-            "completed_at": "2026-05-16T00:45:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "How are you breaking this into pieces?",
-                "answer": "Five pieces. (1) API client: a single function that talks to GitHub and returns one bundle of data — handles the GraphQL call for pinned repos and contribution calendar plus the REST calls for basic profile info and per-repo languages, with clean named errors for the common failure modes. (2) Data derivers: three small pure functions that turn that bundle into the streak number, the most-used language, and a 90-day day-by-day slice. (3) UI shell: the page itself — the username box, the token box, the lookup button, a status line, and a place to drop the card. (4) Card renderer: takes the data bundle plus the derived numbers and paints the actual card with the avatar, pinned-repos grid, streak, language, and a small SVG heatmap of contributions. (5) Edge-case testing: opens the file in a real browser against the real GitHub API and walks every assertion to make sure each one passes for real, not in a fixture.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "What tech choices did you make, and why?",
-                "answer": "Plain HTML + CSS + a few ES module .js files, no build step, no npm, no bundler. The page works as a folder you can double-click. The user pastes their own GitHub Personal Access Token in a field on the page — GitHub's GraphQL API and the pinned-repos / contribution-calendar features simply require auth, so there's no honest way around it; bundling a token would be a security leak. The heatmap is hand-drawn inline SVG (about 91 small rectangles) instead of pulling in a charting library. Fonts are system-ui (the OS's own font stack) so there's nothing to download. Streak = current consecutive-day streak ending at the most recent contribution. Most-used language = byte-weighted across the user's non-fork repos, which is how github.com itself computes its language bar. The 90-day chart is sourced from GitHub's GraphQL contribution calendar and labeled honestly as 'Contribution activity (last 90 days)' since that calendar counts all contributions, not strictly commits.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "What handoffs exist between pieces?",
-                "answer": "Four handoffs. (1) API client to data derivers: the API client returns a plain data bundle with the user info, pinned repos, a year of contribution days, and per-repo language byte counts; the derivers take that and produce the streak, the most-used language, and the 90-day slice. (2) API client to card renderer: the same data bundle is also read directly by the renderer for avatar, name, and pinned-repo cards (no derivation needed there). (3) Data derivers to card renderer: the renderer takes the three derived results and draws them with their human-readable labels. (4) UI shell to API client: the shell collects the username and token from the form and hands them to the API client; on error it maps each typed error to a one-line human message. UI shell is the only place that touches the form; API client is the only place that touches fetch.",
-                "kind": "conditional",
-                "importance": "medium"
-              },
-              {
-                "question": "What did you defer or note as risky?",
-                "answer": "Two notes. (1) Production-fidelity testing must hit the real api.github.com with a real PAT — no mocks. The biggest realistic risk is browser file:// security blocking the fetch calls in some browsers (Chrome generally allows them for cross-origin, but if it doesn't, the workaround is opening the folder with any one-line static server like `python -m http.server`). (2) Rate limits: with a PAT the user gets 5000 REST requests / hour, which is plenty for a couple-dozen-repo user. For a user with hundreds of repos the per-repo /languages calls could approach the limit; we don't paginate beyond the first 100 repos in v1, which is documented as a deliberate scope limit.",
-                "kind": "conditional",
-                "importance": "medium"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "Editor",
-            "_filename": "td-initial-v1.json"
-          },
-          {
-            "role": "Editor",
-            "instance_id": "editor",
-            "iteration": 1,
-            "mode": null,
-            "completed_at": "2026-05-16T01:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "Did the build stay true to what was asked?",
-                "answer": "Yes. The plan covers all four card elements you named (pinned repos, contribution streak, most-used language, 90-day commit activity), targets the right GitHub APIs for each, and includes graceful handling for the obvious failure modes (no token, bad token, user not found, rate limit, no pinned repos, second lookup). Two minor documentation tidiness items noted but nothing that would change what gets built.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "Anything the user should know about?",
-                "answer": "Two notes, both housekeeping: (1) the GitHub-specific terms in the prompt (pinned repos, contribution streak, etc.) were locked against the official GitHub docs but not formally re-stamped as verified in one internal field, which is harmless but worth tidying in the next pass; (2) one assertion that checks how the tool inserts your username into GitHub URLs is tagged 'our own plan' rather than 'GitHub's documented URL shape' — same content, slightly looser attribution.",
-                "kind": "conditional",
-                "importance": "medium"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "Coordinator",
-            "_filename": "editor-v1.json"
-          }
-        ],
-        "current_step": null
-      },
-      "history": {
-        "entry_count": 17,
-        "earliest": "2026-05-16T00:00:00Z",
-        "latest": "2026-05-16T01:08:30Z"
-      },
-      "run_report_excerpts": null,
-      "uncertainty_manifest": [],
-      "editor": {
-        "iterations": 1,
-        "verdicts": [
-          "pass_with_recommendations"
-        ]
-      },
-      "demotion_count": 0,
-      "events": [],
-      "revisions": [
-        {
-          "id": "rev-0",
-          "kind": "primary_run",
-          "ref": null,
-          "ts": null,
-          "summary": "Initial Auto Builder run",
-          "verdict": "unknown",
-          "rationale": null,
-          "diff_summary": null,
-          "triggered_by_event": null,
-          "triggered_by_outcome": null,
-          "sources": [
-            "synthesized"
-          ],
-          "first_delivery_outcome": "unverified"
-        }
-      ],
-      "file_tree": {
-        "tree": [],
-        "node_count": 0,
-        "truncated": false
-      },
-      "role_attribution_totals": {},
-      "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
-      },
-      "re_audit": null,
-      "links": {
-        "run_report": "runs/github-profile-card/run-report.md",
-        "verification": "runs/github-profile-card/output/verification/report.json",
-        "ledger": "runs/github-profile-card/decisions/discovery/ledger-v1.json",
-        "sections": "runs/github-profile-card/decisions/technical-discovery/sections-v1.json",
-        "final_dir": "runs/github-profile-card/output/final/",
-        "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
       }
     },
     "gto-poker-trainer": {
