@@ -1452,6 +1452,32 @@ window.CODEX_BUNDLE = {
         ]
       },
       {
+        "slug": "session-handoff-pre-first-v1.11-build",
+        "title": "Session handoff — pre-first-v1.11-build state",
+        "origin": "maintenance-initiated",
+        "source_file": "codex/docs/maintenance-initiated/session-handoff-pre-first-v1.11-build.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "zzz",
+        "items_total": 5,
+        "items_done": 4,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 9,
+        "codex_acks_count": 1,
+        "maintenance_notes_latest": {
+          "date": null,
+          "excerpt": "5. **promoted-row-action-buttons UI.** Codex-owned, filed earlier. Not gated on the build, but if Codex's window is open during the build, surfacing the 3-button row + status-chip move can land in parallel."
+        },
+        "codex_acks_latest": {
+          "date": null,
+          "excerpt": "*(Codex writes observations during/after the build here.)*"
+        },
+        "parse_warnings": [
+          "unrecognized overall_state value: zzz"
+        ]
+      },
+      {
         "slug": "coordination-proposal",
         "title": "Async coordination — proposal for AutoBuilder-Maintenance",
         "origin": "codex-initiated",
