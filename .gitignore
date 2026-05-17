@@ -127,4 +127,13 @@ scratch/
 /check-bundle.bat
 /sync-origin.bat
 /wake-deploy.bat
+/_audit-since-stress.bat
+/copy-brand-assets.bat
+/brand-deploy.bat
 /.commit-msg-snapshot.txt
+
+# wake-audit.bat is the routine; keep it tracked
+# (intentionally NOT ignored)
+
+# Brand upload staging area (assets copied to brand/; uploads stay local)
+/OttoBLD - B/
