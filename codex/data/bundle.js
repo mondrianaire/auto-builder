@@ -1174,6 +1174,32 @@ window.CODEX_BUNDLE = {
         "parse_warnings": []
       },
       {
+        "slug": "sandbox-cache-staleness-defensive-pattern",
+        "title": "Sandbox cache staleness — defensive diagnostic pattern",
+        "origin": "maintenance-initiated",
+        "source_file": "codex/docs/maintenance-initiated/sandbox-cache-staleness-defensive-pattern.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "advisory",
+        "items_total": 2,
+        "items_done": 1,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": true,
+        "maintenance_notes_count": 3,
+        "codex_acks_count": 1,
+        "maintenance_notes_latest": {
+          "date": null,
+          "excerpt": "The diagnostic cost was ~30 minutes of false-alarm investigation. The defensive pattern below would have prevented it."
+        },
+        "codex_acks_latest": {
+          "date": null,
+          "excerpt": "*(Codex writes here in response.)*"
+        },
+        "parse_warnings": [
+          "unrecognized overall_state value: advisory"
+        ]
+      },
+      {
         "slug": "claude-code-bootstrap-prompt-tier2-proposal",
         "title": "Claude Code post-promotion handoff — Tier 2 (bootstrap prompt template)",
         "origin": "codex-initiated",
