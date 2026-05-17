@@ -1,0 +1,24 @@
+{
+  "section_id": "api-client",
+  "status": "verified",
+  "wave": 1,
+  "started_at": "2026-05-16T01:00:31Z",
+  "verified_at": "2026-05-16T01:01:35Z",
+  "dispatch_mode": "inline",
+  "builders_dispatched": ["builder-api-client-b1"],
+  "overseer_verdict": "pass",
+  "overseer_notes": "Builder output matches contract api-client--data-derivers.json. fetchProfilePayload signature correct; 5 typed error classes exported; GraphQL POST + REST GETs implemented; degraded-payload (no PAT) path returns user + repo info with empty pinned_repos and contribution_calendar_year.days. One inline-deviation logged (dev-001) capping per-repo language fetches at 30 to keep within a session-sized budget.",
+  "artifacts": [
+    "output/builders/api-client/builder-api-client-b1/output.js",
+    "output/builders/api-client/builder-api-client-b1/metadata.json"
+  ],
+  "acceptance_assertions_status": {
+    "MCA.api-client.1": "pass (source-grep — async function fetchProfilePayload export)",
+    "MCA.api-client.2": "deferred_to_edge_case_testing (live network call)",
+    "MCA.api-client.3": "deferred_to_edge_case_testing (live network call)",
+    "MCA.api-client.4": "deferred_to_edge_case_testing (live network call)",
+    "MCA.api-client.5": "pass (source path inspection — pat=null short-circuit returns degraded payload)",
+    "MCA.api-client.6": "pass (source-grep — query string contains pinnedItems(first: 6, types: [REPOSITORY]) and contributionsCollection(from:, to:))",
+    "MCA.api-client.7": "pass (source-grep — Authorization: Bearer ${pat})"
+  }
+}

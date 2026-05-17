@@ -1,0 +1,24 @@
+{
+  "builder_id": "builder-ui-shell-b1",
+  "section_id": "ui-shell",
+  "produced_at": "2026-05-16T01:04:50Z",
+  "dispatch_mode": "inline",
+  "output_files": ["index.html", "styles.css", "main.js"],
+  "contract_pointers": [
+    "contracts/original/ui-shell--api-client.json"
+  ],
+  "assertions_addressed": [
+    "MCA.ui-shell.1", "MCA.ui-shell.2", "MCA.ui-shell.3", "MCA.ui-shell.4", "MCA.ui-shell.5", "MCA.ui-shell.6",
+    "DCA.A1", "DCA.A3", "DCA.A4", "DCA.A11", "DCA.IP1", "DCA.IP6",
+    "DCA.FC1", "DCA.FC2", "DCA.FC3", "DCA.FC5", "DCA.FC6", "DCA.FC7", "DCA.FC10",
+    "DCA.OOS.mobile", "DCA.OOS.auth-flow"
+  ],
+  "implementation_notes": [
+    "index.html uses <script type=\"module\"> for ES module loading; relative imports resolve in same /js/ directory after integration.",
+    "main.js handles MissingTokenError mapping per UI message contract even though api-client doesn't throw it (defensive coverage if api-client behavior changes).",
+    "window error handler surfaces a hint about local-server requirement if file:// blocks module loading.",
+    "Enter key on either input triggers runLookup; click on #lookup-button triggers same.",
+    "No @media queries in CSS — desktop-first per OOS.mobile.",
+    "No external font fetches — system-ui font stack only."
+  ]
+}

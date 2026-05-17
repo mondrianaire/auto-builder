@@ -1,0 +1,25 @@
+{
+  "builder_id": "builder-api-client-b1",
+  "section_id": "api-client",
+  "produced_at": "2026-05-16T01:01:30Z",
+  "dispatch_mode": "inline",
+  "output_files": ["output.js"],
+  "contract_pointers": [
+    "contracts/original/api-client--data-derivers.json",
+    "contracts/original/api-client--card-renderer.json",
+    "contracts/original/ui-shell--api-client.json"
+  ],
+  "assertions_addressed": [
+    "MCA.api-client.1", "MCA.api-client.2", "MCA.api-client.3", "MCA.api-client.4",
+    "MCA.api-client.5", "MCA.api-client.6", "MCA.api-client.7",
+    "DCA.A9", "DCA.A11", "DCA.IP1", "DCA.PN1", "DCA.PN2", "DCA.PN3", "DCA.PN5",
+    "DCA.FC5", "DCA.FC6", "DCA.FC7"
+  ],
+  "implementation_notes": [
+    "GraphQL query is hard-coded with $login, $from, $to parameters; 1-year window ending now (UTC).",
+    "Per-repo /languages calls are sequential and capped at MAX_LANGUAGE_FETCHES = 30 (inline-deviation dev-001).",
+    "MissingTokenError class is exported but not currently thrown internally — caller (ui-shell main.js) may opt to throw it before calling fetchProfilePayload. The contract documents both error classes; this builder chose alt-a degraded behavior over alt-b explicit MissingTokenError throw for the pinned/contribution sections, matching FC.6 alt-a.",
+    "No retry/backoff; rate-limit error message instructs user to retry."
+  ],
+  "test_strategy": "Static checks via source-grep + module structure inspection (run by edge-case-testing). Live MCA.api-client.2/3/4 deferred to first-contact CV verification on a real browser execution path."
+}

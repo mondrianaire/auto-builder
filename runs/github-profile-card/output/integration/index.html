@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitHub Profile Card</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1>GitHub Profile Card</h1>
+    <p class="page-sub">Type a GitHub username and paste a Personal Access Token to fetch a profile card.</p>
+  </header>
+
+  <section class="lookup-form" aria-label="GitHub profile lookup">
+    <div class="form-row">
+      <label for="username-input">GitHub username</label>
+      <input id="username-input" type="text" autocomplete="off" spellcheck="false" placeholder="GitHub username (e.g. octocat)">
+    </div>
+    <div class="form-row">
+      <label for="pat-input">GitHub Personal Access Token</label>
+      <input id="pat-input" type="password" autocomplete="off" spellcheck="false" placeholder="GitHub PAT (paste your token)">
+      <p class="pat-note">
+        A Personal Access Token is required to fetch pinned repos and contribution data.
+        <a id="pat-link" href="https://github.com/settings/tokens/new?description=GitHub%20Profile%20Card&amp;scopes=" target="_blank" rel="noopener">Create one</a>
+        (only the <code>read:user</code> scope is needed for public profiles).
+      </p>
+    </div>
+    <div class="form-row form-actions">
+      <button id="lookup-button" type="button">Look up</button>
+    </div>
+  </section>
+
+  <div id="status-region" role="status" aria-live="polite"></div>
+  <div id="card-container"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

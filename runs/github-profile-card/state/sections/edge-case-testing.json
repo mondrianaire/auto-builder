@@ -1,0 +1,10 @@
+{
+  "section_id": "edge-case-testing",
+  "status": "active",
+  "wave": 5,
+  "started_at": "2026-05-16T01:06:31Z",
+  "dispatch_mode": "inline",
+  "builders_dispatched": ["builder-edge-b1"],
+  "blocked_on": [],
+  "note": "Will be flipped to 'verified' after static-checks.js + derivers-tests.js execute and test-report is written."
+}

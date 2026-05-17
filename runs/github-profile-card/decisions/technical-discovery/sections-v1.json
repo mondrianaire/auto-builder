@@ -1,0 +1,943 @@
+{
+  "version": 1,
+  "schema_version": "td.sections.v1",
+  "created_at": "2026-05-16T00:30:00Z",
+  "project_name": "github-profile-card",
+  "td_instance": "td-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "coordination_mode": "inline",
+  "discovery_ledger_pointer": "decisions/discovery/ledger-v1.json",
+
+  "prompt_verb_analysis": {
+    "prompt_literal": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
+    "candidate_verbs": ["build", "takes", "shows", "visualization"],
+    "chosen_verb": "shows",
+    "rationale": "'build' refers to construction of the tool (AutoBuilder's job, not the user-facing verb). 'takes' is the input action. 'shows' is the user-observable verb that names what the tool does for the user: it shows a profile card with the four named elements. PNV.1 must therefore exercise opening the artifact, entering a username + PAT, submitting, and observing that all four card elements are shown."
+  },
+
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "shows",
+    "scenario": "User double-clicks output/final/index.html in Windows Explorer (or opens via a trivial local static server if browser file:// security blocks fetch). The page loads without console errors. User types 'octocat' into the username field, pastes a valid GitHub PAT into the PAT field, clicks the lookup button. The page issues a GraphQL POST to https://api.github.com/graphql plus REST GETs to https://api.github.com/users/octocat and /users/octocat/repos (and per-repo /languages) under real network conditions with the real GitHub API responding.",
+    "expected_result": "A card is shown that contains, all visibly labeled: (a) octocat's avatar image, display name, and @octocat handle; (b) a 'Pinned repositories' section listing the pinned repos with name, description, language, and star count (or 'No pinned repositories' empty state); (c) a 'Current streak' figure in days; (d) a 'Most-used language across public repos' label with a language name; (e) a 'Contribution activity (last 90 days)' visualization showing 90 days of activity as a heatmap of 13 weeks x 7 days.",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "covers": "decisions/technical-discovery/sections-v1.json#prompt_verb_analysis.chosen_verb",
+    "source": "prompt"
+  },
+
+  "td_decisions_summary": {
+    "deliverable_form": "Single-folder static web page (output/final/index.html + css/ + js/ + research/). Pure ES modules loaded via <script type=\"module\">. No build step. No CDN dependencies. No npm. No bundler.",
+    "auth_strategy": "User-supplied PAT (IP1 default branch). PAT held in memory for the session only — never persisted, never sent anywhere except api.github.com Authorization header.",
+    "data_sources": "GraphQL for pinnedItems + contributionsCollection (single query, requires PAT). REST /users/{login} for basic user info. REST /users/{login}/repos + per-repo /languages for byte-weighted language aggregation.",
+    "streak_definition": "Current consecutive-day streak ending at most-recent contribution day (per IP2 default).",
+    "most_used_language": "Bytes-weighted across owned non-fork public repos (per IP3 default / GitHub Linguist convention).",
+    "ninety_day_viz": "Heatmap strip 13 weeks x 7 days = 91 cells (90-day window padded to a clean grid), pure inline SVG, no charting library (per IP5 default).",
+    "style": "GitHub-native dark theme using GitHub color palette + system-ui font stack (per IP6 default). No web-font fetch, no Inter font download — system-ui covers the case at zero runtime dependency cost.",
+    "section_count": 5,
+    "rationale_for_5_sections": "api-client (network + auth), data-derivers (pure metric computations), ui-shell (page chrome + form + status), card-renderer (DOM/SVG rendering of card), edge-case-testing (coverage). Each is small enough to be one logical builder pass and independent enough to be testable in isolation."
+  },
+
+  "sections": [
+    {
+      "id": "api-client",
+      "name": "GitHub API Client",
+      "charter": "Encapsulate all network interaction with api.github.com behind a single async function fetchProfilePayload(username, pat). Issue one GraphQL POST for pinnedItems + contributionsCollection (1-year window) and the REST calls for basic user info, owned non-fork repo list, and per-repo language byte breakdowns. Classify every failure into one of {UserNotFoundError, AuthError, RateLimitError, NetworkError, MissingTokenError} and throw a typed error rather than returning a partial payload silently. No DOM access. No global state.",
+      "acceptance": "fetchProfilePayload returns a fully-shaped ProfilePayload (per contracts/original/api-client--data-derivers.json) for a valid username + PAT. For an invalid username it throws UserNotFoundError. For a bad PAT it throws AuthError. For a 403 with X-RateLimit-Remaining: 0 it throws RateLimitError. For a fetch network failure it throws NetworkError. If pat is null, it returns a degraded payload with empty pinned_repos and empty contribution calendar (does NOT throw — that's MissingTokenError only when the caller explicitly required graph data).",
+      "acceptance_assertions": [
+        "MCA.api-client.1", "MCA.api-client.2", "MCA.api-client.3", "MCA.api-client.4",
+        "MCA.api-client.5", "MCA.api-client.6", "MCA.api-client.7"
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Caching responses across lookups",
+        "Retry/backoff logic (single attempt per call; rate-limit error message instructs user to retry)",
+        "OAuth flow (PAT only)",
+        "Mutation queries (read-only)"
+      ]
+    },
+    {
+      "id": "data-derivers",
+      "name": "Metric Derivation Functions",
+      "charter": "Implement three pure functions: computeCurrentStreak(days), computeMostUsedLanguage(repos), and sliceLast90Days(days, today_utc). Each takes plain data shapes from the api-client payload and returns a derived result. No I/O. No DOM. No fetch. No timers. Fully deterministic.",
+      "acceptance": "Given the shapes specified in contracts/original/data-derivers--card-renderer.json, each function returns the documented result. computeCurrentStreak respects the 'today-with-zero does not break the streak yet' rule. computeMostUsedLanguage excludes forks and ties-break alphabetically. sliceLast90Days always returns exactly 90 entries (padding with zero days on the leading edge if necessary).",
+      "acceptance_assertions": [
+        "MCA.data-derivers.1", "MCA.data-derivers.2", "MCA.data-derivers.3", "MCA.data-derivers.4", "MCA.data-derivers.5"
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Network calls",
+        "DOM rendering",
+        "Reading from GitHub API directly (consumes shapes only)"
+      ]
+    },
+    {
+      "id": "ui-shell",
+      "name": "Page Shell, Form, and Status",
+      "charter": "Build index.html with the static page chrome: page header/title, a username input, a PAT input (type=password), a lookup button, a status/error region, and a card container. Wire submit (button click or Enter key in username field) to call api-client.fetchProfilePayload, then hand the payload to card-renderer. On error, render the matching message from the error_handling_mapping in contracts/original/ui-shell--api-client.json. Include a visible link to GitHub's PAT creation page (FC.3). Handle repeat lookups in place (FC.10) without page reload.",
+      "acceptance": "Opening output/final/index.html in a modern browser shows the page with username input, PAT input + PAT-creation link, and lookup button visible above the fold. Pressing Enter in the username field triggers the same lookup as clicking the button. After a successful lookup, the card area is populated; a second lookup with a different username replaces the card content in place. Each error_type from the api-client throws maps to its documented UI message.",
+      "acceptance_assertions": [
+        "MCA.ui-shell.1", "MCA.ui-shell.2", "MCA.ui-shell.3", "MCA.ui-shell.4",
+        "MCA.ui-shell.5", "MCA.ui-shell.6"
+      ],
+      "depends_on": ["api-client", "card-renderer"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Persistence of username/PAT in localStorage (per A10)",
+        "History of looked-up users",
+        "Theme toggle (single dark theme per IP6)",
+        "Mobile-specific responsive breakpoints beyond what falls out of a simple max-width centered layout"
+      ]
+    },
+    {
+      "id": "card-renderer",
+      "name": "Profile Card Renderer",
+      "charter": "Render the profile card from a ProfilePayload + derived metrics into #card-container. Layout: avatar + name + handle header; pinned-repos grid (up to 6 cards, name/description/language dot + name/star count); a stats row showing 'Current streak: N days', 'Most-used language across public repos: <language>', total contributions for the year; and a 90-day contribution-activity heatmap rendered as pure inline SVG (13 weeks x 7 days = 91 cells, GitHub-style green intensity scale, with the rightmost column = current week). Every metric self-labels per FC.9. Empty pinned_repos renders a 'No pinned repositories' state (FC.8). All user-controlled strings written via textContent (never innerHTML) to prevent XSS.",
+      "acceptance": "Given a valid ProfilePayload and derived metrics, the card renders all five elements (avatar+name+handle, pinned section, streak label, language label, heatmap SVG). Heatmap SVG contains exactly 91 <rect> cells. Heatmap intensity has 5 levels (0, 1-3, 4-6, 7-9, 10+ contributions) using GitHub's documented green palette. Streak label literally contains the string 'Current streak'. Language label literally contains the string 'Most-used language'. Heatmap caption literally contains the string 'Contribution activity (last 90 days)'.",
+      "acceptance_assertions": [
+        "MCA.card-renderer.1", "MCA.card-renderer.2", "MCA.card-renderer.3", "MCA.card-renderer.4",
+        "MCA.card-renderer.5", "MCA.card-renderer.6", "MCA.card-renderer.7", "MCA.card-renderer.8"
+      ],
+      "depends_on": ["api-client", "data-derivers"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Sharing/exporting the card as an image",
+        "Theme switcher",
+        "Animated transitions between cards"
+      ]
+    },
+    {
+      "id": "edge-case-testing",
+      "name": "Edge-Case Testing",
+      "charter": "Cover every acceptance assertion with `verifier: edge_case_testing` from the section list, exercised under production-fidelity environment per CV charter Section: Production-fidelity exercise — no substitution of runtime dependencies the artifact loads in production. Specifically: open output/final/index.html in a real browser (file:// or local static server), execute real fetch calls against api.github.com with a real PAT, and visually inspect the rendered card. Cover both successful flows (known-good usernames like octocat, torvalds, gaearon) and the error cases (nonexistent username, bad PAT, missing PAT, simulated network failure via DevTools offline mode).",
+      "acceptance": "Every MCA.* and DCA.* assertion in this file is exercised at least once. Each test produces a pass/fail recorded against the assertion id. Production-fidelity is documented: the test report names the actual browser version, OS, and GitHub API endpoints hit.",
+      "acceptance_assertions": [
+        "MCA.edge-case-testing.1", "MCA.edge-case-testing.2"
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Automated headless browser tests (Playwright/Puppeteer) — manual exercise under real browser is sufficient for v1 INLINE-mode build",
+        "Cross-browser matrix beyond user's actual browser",
+        "Performance benchmarks"
+      ]
+    }
+  ],
+
+  "machine_checkable_assertions": [
+    {
+      "id": "MCA.api-client.1",
+      "statement": "api-client module exports an async function named fetchProfilePayload.",
+      "check_type": "module_export_exists",
+      "target_module": "js/api-client.js",
+      "target_symbol": "fetchProfilePayload",
+      "expected_value": "function (async)",
+      "covers": "decisions/technical-discovery/sections-v1.json#sections[id=api-client]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.api-client.2",
+      "statement": "fetchProfilePayload('octocat', '<valid_pat>') resolves to a ProfilePayload whose user.login === 'octocat'.",
+      "check_type": "runtime_invocation",
+      "target_module": "js/api-client.js",
+      "target_symbol": "fetchProfilePayload",
+      "expected_value": "payload.user.login === 'octocat'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.4]",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.5]"
+    },
+    {
+      "id": "MCA.api-client.3",
+      "statement": "fetchProfilePayload('this-user-definitely-does-not-exist-xyzqq', '<valid_pat>') rejects with an Error whose name === 'UserNotFoundError'.",
+      "check_type": "runtime_invocation_throws",
+      "target_module": "js/api-client.js",
+      "target_symbol": "fetchProfilePayload",
+      "expected_value": "error.name === 'UserNotFoundError'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.5]",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.5]"
+    },
+    {
+      "id": "MCA.api-client.4",
+      "statement": "fetchProfilePayload('octocat', 'ghp_definitely_invalid_token_xyz') rejects with an Error whose name === 'AuthError'.",
+      "check_type": "runtime_invocation_throws",
+      "target_module": "js/api-client.js",
+      "target_symbol": "fetchProfilePayload",
+      "expected_value": "error.name === 'AuthError'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.7]",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.1]"
+    },
+    {
+      "id": "MCA.api-client.5",
+      "statement": "fetchProfilePayload('octocat', null) returns a payload with pinned_repos = [] and contribution_calendar_year.days = [], and does NOT throw (degraded-but-non-fatal behavior per FC.6 alt-a).",
+      "check_type": "runtime_invocation",
+      "target_module": "js/api-client.js",
+      "target_symbol": "fetchProfilePayload",
+      "expected_value": "payload.pinned_repos.length === 0 && payload.contribution_calendar_year.days.length === 0 && payload.user.login === 'octocat'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.6]",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.4]"
+    },
+    {
+      "id": "MCA.api-client.6",
+      "statement": "The GraphQL request body sent by api-client includes both pinnedItems(first: 6, types: [REPOSITORY]) and contributionsCollection(from: ..., to: ...) selections.",
+      "check_type": "network_request_body_inspection",
+      "target_module": "js/api-client.js",
+      "target_symbol": "GraphQL POST body",
+      "expected_value": "body.query contains 'pinnedItems' AND body.query contains 'contributionsCollection'",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.3]",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.2,C.3]"
+    },
+    {
+      "id": "MCA.api-client.7",
+      "statement": "The Authorization header on requests with a PAT uses the form 'Bearer <pat>'.",
+      "check_type": "network_request_header_inspection",
+      "target_module": "js/api-client.js",
+      "target_symbol": "Authorization header",
+      "expected_value": "header value matches /^Bearer ghp_/ or /^Bearer github_pat_/",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP1]",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.1]"
+    },
+    {
+      "id": "MCA.data-derivers.1",
+      "statement": "computeCurrentStreak([]) returns {streak_days: 0, anchor_date: null}.",
+      "check_type": "pure_function_invocation",
+      "target_module": "js/data-derivers.js",
+      "target_symbol": "computeCurrentStreak",
+      "expected_value": "{streak_days: 0, anchor_date: null}",
+      "covers": "decisions/technical-discovery/sections-v1.json#sections[id=data-derivers]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.data-derivers.2",
+      "statement": "computeCurrentStreak with the last 5 days [1,1,1,1,1] returns streak_days >= 5.",
+      "check_type": "pure_function_invocation",
+      "target_module": "js/data-derivers.js",
+      "target_symbol": "computeCurrentStreak",
+      "expected_value": "result.streak_days >= 5",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A6]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.data-derivers.3",
+      "statement": "computeMostUsedLanguage with repos = [{is_fork:false, languages_bytes:{JavaScript: 1000, Python: 500}}, {is_fork:true, languages_bytes:{Ruby: 9999}}] returns language === 'JavaScript' (forks excluded).",
+      "check_type": "pure_function_invocation",
+      "target_module": "js/data-derivers.js",
+      "target_symbol": "computeMostUsedLanguage",
+      "expected_value": "result.language === 'JavaScript'",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.data-derivers.4",
+      "statement": "computeMostUsedLanguage with no eligible repos returns {language: null, bytes: 0, share_pct: 0}.",
+      "check_type": "pure_function_invocation",
+      "target_module": "js/data-derivers.js",
+      "target_symbol": "computeMostUsedLanguage",
+      "expected_value": "result.language === null && result.bytes === 0",
+      "covers": "decisions/technical-discovery/sections-v1.json#sections[id=data-derivers]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.data-derivers.5",
+      "statement": "sliceLast90Days output length === 90 for any input.",
+      "check_type": "pure_function_invocation",
+      "target_module": "js/data-derivers.js",
+      "target_symbol": "sliceLast90Days",
+      "expected_value": "result.length === 90",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.ui-shell.1",
+      "statement": "output/final/index.html contains an input element with id='username-input'.",
+      "check_type": "dom_selector_exists",
+      "target_module": "output/final/index.html",
+      "target_symbol": "#username-input",
+      "expected_value": "element exists, tagName === 'INPUT'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.2]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.ui-shell.2",
+      "statement": "output/final/index.html contains an input element with id='pat-input' and type='password'.",
+      "check_type": "dom_selector_exists",
+      "target_module": "output/final/index.html",
+      "target_symbol": "#pat-input",
+      "expected_value": "element exists, tagName === 'INPUT', type === 'password'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.ui-shell.3",
+      "statement": "output/final/index.html contains a button with id='lookup-button'.",
+      "check_type": "dom_selector_exists",
+      "target_module": "output/final/index.html",
+      "target_symbol": "#lookup-button",
+      "expected_value": "element exists, tagName === 'BUTTON'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.2]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.ui-shell.4",
+      "statement": "output/final/index.html contains an anchor element with href starting with 'https://github.com/settings/tokens' (PAT creation link).",
+      "check_type": "dom_selector_exists",
+      "target_module": "output/final/index.html",
+      "target_symbol": "a[href^=\"https://github.com/settings/tokens\"]",
+      "expected_value": "element exists",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.ui-shell.5",
+      "statement": "Opening output/final/index.html in a modern browser produces zero uncaught exceptions in the console before any user interaction.",
+      "check_type": "browser_console_clean",
+      "target_module": "output/final/index.html",
+      "target_symbol": "DevTools Console",
+      "expected_value": "no errors or uncaught exceptions on page load",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.1]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.ui-shell.6",
+      "statement": "After a successful lookup, performing a second lookup with a different username updates #card-container without a page reload.",
+      "check_type": "interaction_observation",
+      "target_module": "output/final/index.html",
+      "target_symbol": "#card-container after second lookup",
+      "expected_value": "card content reflects second username; no full-page reload event fires",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.10]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.card-renderer.1",
+      "statement": "After rendering, #card-container contains an <img> element with src equal to user.avatar_url.",
+      "check_type": "dom_selector_attribute",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "#card-container img",
+      "expected_value": "img.src === payload.user.avatar_url",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.4]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.card-renderer.2",
+      "statement": "After rendering, #card-container contains a section labeled 'Pinned' with one repo card per pinned_repos entry (or a 'No pinned repositories' empty state if zero).",
+      "check_type": "dom_text_and_structure",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "#card-container .pinned-section",
+      "expected_value": "child count === pinned_repos.length OR text content includes 'No pinned repositories'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.8]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.card-renderer.3",
+      "statement": "After rendering, #card-container text content includes the literal string 'Current streak'.",
+      "check_type": "dom_text_contains",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "#card-container",
+      "expected_value": "text includes 'Current streak'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.9]",
+      "source": "prompt"
+    },
+    {
+      "id": "MCA.card-renderer.4",
+      "statement": "After rendering, #card-container text content includes the literal string 'Most-used language'.",
+      "check_type": "dom_text_contains",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "#card-container",
+      "expected_value": "text includes 'Most-used language'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.9]",
+      "source": "prompt"
+    },
+    {
+      "id": "MCA.card-renderer.5",
+      "statement": "After rendering, #card-container text content includes the literal string 'Contribution activity (last 90 days)'.",
+      "check_type": "dom_text_contains",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "#card-container",
+      "expected_value": "text includes 'Contribution activity (last 90 days)'",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.9]",
+      "source": "prompt"
+    },
+    {
+      "id": "MCA.card-renderer.6",
+      "statement": "After rendering, the heatmap SVG within #card-container contains exactly 91 <rect> cells (13 weeks x 7 days).",
+      "check_type": "dom_selector_count",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "#card-container svg.heatmap rect",
+      "expected_value": "count === 91",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.card-renderer.7",
+      "statement": "card-renderer writes all user-controlled strings (login, name, bio, repo names, descriptions) via textContent, not innerHTML — verified by source-level grep showing zero occurrences of '.innerHTML =' against user-data variables.",
+      "check_type": "source_grep",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "innerHTML usage",
+      "expected_value": "no assignment of user-supplied strings to innerHTML",
+      "covers": "decisions/technical-discovery/sections-v1.json#sections[id=card-renderer]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.card-renderer.8",
+      "statement": "Heatmap cells use a 5-level GitHub-style green intensity scale; intensity 0 (zero contributions) uses a distinct color from intensity 1+.",
+      "check_type": "dom_attribute_values",
+      "target_module": "js/card-renderer.js",
+      "target_symbol": "#card-container svg.heatmap rect[fill]",
+      "expected_value": "distinct fill values count === 5 (or 4 if no zero-contribution cells present in the period)",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.edge-case-testing.1",
+      "statement": "Every MCA.* and DCA.* assertion in this file is exercised at least once during edge-case-testing and recorded pass/fail.",
+      "check_type": "coverage_audit",
+      "target_module": "edge-case-testing report",
+      "target_symbol": "assertions_exercised",
+      "expected_value": "set(exercised) >= set(all MCA.* and DCA.* ids)",
+      "covers": "decisions/technical-discovery/sections-v1.json#sections[id=edge-case-testing]",
+      "source": "td_plan"
+    },
+    {
+      "id": "MCA.edge-case-testing.2",
+      "statement": "Edge-case testing is performed against the real api.github.com endpoint with a real PAT (no mocks, no stubs, no fixtures substituted for the network layer the artifact loads in production).",
+      "check_type": "production_fidelity_audit",
+      "target_module": "edge-case-testing report",
+      "target_symbol": "test environment",
+      "expected_value": "report names browser, OS, and at least three real api.github.com URLs hit during the test",
+      "covers": "decisions/technical-discovery/sections-v1.json#sections[id=edge-case-testing]",
+      "source": "td_plan"
+    }
+  ],
+
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.telos",
+      "covers": "decisions/discovery/ledger-v1.json#telos",
+      "statement": "The delivered tool accepts a GitHub username and renders a single profile card summarizing pinned repos, contribution streak, most-used language, and 90-day commit activity.",
+      "check_type": "scenario_walk",
+      "scenario": "Open output/final/index.html, enter 'octocat' + valid PAT, click lookup.",
+      "expected_result": "A single card appears containing all four named elements (pinned repos, streak, most-used language, 90-day viz).",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.restatement",
+      "covers": "decisions/discovery/ledger-v1.json#restatement",
+      "statement": "Deliverable is a small self-contained static web page (HTML/CSS/JS) the user opens locally in a browser, querying github.com's public APIs at lookup time, no database, no login.",
+      "check_type": "artifact_inspection",
+      "scenario": "Inspect output/final/ folder structure.",
+      "expected_result": "Folder contains index.html + css + js + research only; no server code, no database files, no auth/session storage logic.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A1",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A1]",
+      "statement": "Tool is a static web page openable as index.html (no build step required).",
+      "check_type": "file_structure",
+      "scenario": "Run output/final/index.html through a browser directly.",
+      "expected_result": "Page loads and renders without a build/bundle step. No package.json, no node_modules required for delivery.",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A2",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A2]",
+      "statement": "Input is treated as a GitHub login handle (string), not a numeric id or URL.",
+      "check_type": "interaction_observation",
+      "scenario": "Submit 'torvalds' as username.",
+      "expected_result": "Lookup succeeds against GET /users/torvalds.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A3",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A3]",
+      "statement": "Only public data is shown; no OAuth or login flow exists in the artifact.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for 'oauth', 'login', 'signin', 'sign-in'.",
+      "expected_result": "Zero matches (no auth flow code).",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A4",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A4]",
+      "statement": "Card is rendered for one username at a time (single-target view).",
+      "check_type": "dom_structure",
+      "scenario": "After lookup, inspect #card-container.",
+      "expected_result": "Exactly one card element, not a list of cards.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A5",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A5]",
+      "statement": "Pinned repos section shows up to 6 repos sourced from GraphQL user.pinnedItems(types: [REPOSITORY]).",
+      "check_type": "network_request_body_inspection",
+      "scenario": "Inspect the GraphQL POST body.",
+      "expected_result": "Query string includes 'pinnedItems(first: 6, types: [REPOSITORY])'.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.3]"
+    },
+    {
+      "id": "DCA.A6",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A6]",
+      "statement": "Streak is computed as current-consecutive-day-count ending at the most recent contribution day.",
+      "check_type": "pure_function_invocation",
+      "scenario": "Feed a known calendar pattern to computeCurrentStreak.",
+      "expected_result": "Result matches the trailing-consecutive-days calculation per A6 / IP2 default.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A7",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7]",
+      "statement": "Most-used language is bytes-weighted across owned non-fork repos.",
+      "check_type": "pure_function_invocation",
+      "scenario": "Feed repos with known byte counts including a fork; compute language.",
+      "expected_result": "Fork bytes are excluded; max-byte language wins.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.6]"
+    },
+    {
+      "id": "DCA.A8",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8]",
+      "statement": "90-day visualization shows daily contribution counts for trailing 90 days ending at lookup date.",
+      "check_type": "dom_selector_count",
+      "scenario": "Inspect heatmap SVG after lookup.",
+      "expected_result": "91 rect cells (13 weeks x 7 days, covering >= 90 days).",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.2]"
+    },
+    {
+      "id": "DCA.A9",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A9]",
+      "statement": "Network calls go direct from browser to api.github.com (no proxy).",
+      "check_type": "network_request_origin_inspection",
+      "scenario": "Monitor DevTools Network tab during a lookup.",
+      "expected_result": "All requests target api.github.com; no other origin involved.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.7]"
+    },
+    {
+      "id": "DCA.A10",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A10]",
+      "statement": "No persistence; PAT and username are in-memory only.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for 'localStorage', 'sessionStorage', 'IndexedDB', 'document.cookie'.",
+      "expected_result": "Zero matches (no persistence APIs used).",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A11",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A11]",
+      "statement": "Nonexistent username shows a clear 'user not found' message.",
+      "check_type": "interaction_observation",
+      "scenario": "Submit a nonsense username like 'this-user-definitely-does-not-exist-xyzqq'.",
+      "expected_result": "Status region shows the documented UserNotFoundError UI message.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP1",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP1]",
+      "statement": "PAT auth path is implemented as the default; PAT input is in the UI with explanation and link.",
+      "check_type": "dom_selector_exists",
+      "scenario": "Inspect index.html.",
+      "expected_result": "#pat-input exists; nearby anchor links to github.com/settings/tokens.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.1,C.4]"
+    },
+    {
+      "id": "DCA.IP2",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP2]",
+      "statement": "Streak chosen = current streak; UI label literally says 'Current streak'.",
+      "check_type": "dom_text_contains",
+      "scenario": "Render card, inspect streak label.",
+      "expected_result": "Text includes 'Current streak'.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.IP3",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP3]",
+      "statement": "Most-used language uses bytes-weighted aggregation excluding forks.",
+      "check_type": "pure_function_invocation",
+      "scenario": "Pass mixed repos to computeMostUsedLanguage including a fork.",
+      "expected_result": "Fork excluded; bytes-weighted winner returned.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.6]"
+    },
+    {
+      "id": "DCA.IP4",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP4]",
+      "statement": "90-day chart sources from GraphQL contributionsCollection.contributionCalendar; label honestly reads 'Contribution activity (last 90 days)' rather than 'commits only'.",
+      "check_type": "dom_text_contains",
+      "scenario": "Render card, inspect chart caption.",
+      "expected_result": "Text includes 'Contribution activity (last 90 days)'.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.2]"
+    },
+    {
+      "id": "DCA.IP5",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5]",
+      "statement": "Visualization form is heatmap strip (13 weeks x 7 days).",
+      "check_type": "dom_selector_count",
+      "scenario": "Inspect SVG rect count.",
+      "expected_result": "Count === 91.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP6",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP6]",
+      "statement": "Card uses GitHub-native dark theme styling with system-ui font.",
+      "check_type": "computed_style_inspection",
+      "scenario": "Inspect background color of body and font-family.",
+      "expected_result": "Background is a GitHub-dark color (e.g., #0d1117 or #161b22); font-family includes system-ui.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.PN1",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1]",
+      "statement": "Tool targets github.com (not GitHub Enterprise, not a fork).",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for endpoint URLs.",
+      "expected_result": "All API URLs use api.github.com host; zero other GitHub-flavored hosts.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.5]"
+    },
+    {
+      "id": "DCA.PN2",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.2]",
+      "statement": "Input is a GitHub login handle (string), used as the {username} path segment in REST and the login: argument in GraphQL.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/api-client.js for URL/query templates.",
+      "expected_result": "username variable substituted into /users/{login} and user(login: \"...\") query.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.PN3",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.3]",
+      "statement": "Pinned repos are sourced from GraphQL user.pinnedItems(types: [REPOSITORY]).",
+      "check_type": "network_request_body_inspection",
+      "scenario": "Inspect GraphQL body.",
+      "expected_result": "Body contains 'pinnedItems' selection with types: [REPOSITORY] filter.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.3]"
+    },
+    {
+      "id": "DCA.PN4",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.4]",
+      "statement": "Contribution streak is derived client-side from contributionCalendar.weeks[].contributionDays[].",
+      "check_type": "source_grep",
+      "scenario": "Grep data-derivers.js for computeCurrentStreak; confirm input is the calendar day array.",
+      "expected_result": "Function signature consumes day array as documented.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.2]"
+    },
+    {
+      "id": "DCA.PN5",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.5]",
+      "statement": "Most-used language uses GitHub Linguist byte-counts via REST /repos/{owner}/{repo}/languages.",
+      "check_type": "network_request_origin_inspection",
+      "scenario": "Monitor DevTools network during lookup.",
+      "expected_result": "Per-repo /languages requests hit api.github.com for each non-fork owned repo.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.6]"
+    },
+    {
+      "id": "DCA.PN6",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.6]",
+      "statement": "90-day commit activity is derived from GraphQL contributionsCollection.contributionCalendar sliced to trailing 90 days.",
+      "check_type": "dom_selector_count",
+      "scenario": "Inspect heatmap; confirm 90+ days represented.",
+      "expected_result": "Heatmap covers 91 cells / 13 weeks ending at lookup date.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-quick-github-api/findings.json#citations[id=C.2]"
+    },
+    {
+      "id": "DCA.FC1",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.1]",
+      "statement": "Opening index.html in a modern desktop browser on Windows renders the UI without console errors.",
+      "check_type": "browser_console_clean",
+      "scenario": "Double-click output/final/index.html in Windows Explorer, or open via local static server. Open DevTools Console.",
+      "expected_result": "Console has zero uncaught errors on initial load.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.FC2",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.2]",
+      "statement": "Page presents an obvious input for the GitHub username and a way to submit it.",
+      "check_type": "dom_selector_exists",
+      "scenario": "Inspect index.html.",
+      "expected_result": "#username-input and #lookup-button both visible above the fold.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.FC3",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]",
+      "statement": "PAT field is present and labeled with explanation and PAT-creation link.",
+      "check_type": "dom_selector_exists",
+      "scenario": "Inspect index.html.",
+      "expected_result": "#pat-input present (type=password), label/explanation text nearby, anchor link to github.com/settings/tokens.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.FC4",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.4]",
+      "statement": "Valid username + valid PAT renders card with avatar, name, handle, pinned repos, streak, language, and 90-day chart.",
+      "check_type": "scenario_walk",
+      "scenario": "Submit 'octocat' + valid PAT.",
+      "expected_result": "All five card elements rendered with their respective data.",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC5",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.5]",
+      "statement": "Nonexistent username shows clear 'user not found' message.",
+      "check_type": "interaction_observation",
+      "scenario": "Submit 'this-user-definitely-does-not-exist-xyzqq'.",
+      "expected_result": "Status region shows the UserNotFoundError mapped message.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.FC6",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.6]",
+      "statement": "Missing PAT shows either graceful degradation OR a clear 'PAT required' message — never an unexplained blank.",
+      "check_type": "interaction_observation",
+      "scenario": "Submit a username with the PAT field empty.",
+      "expected_result": "Either degraded card with explanation, or 'PAT required' message. Either way, no silent blank.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.FC7",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.7]",
+      "statement": "Rate limit or bad PAT produces actionable error message, not silent blank.",
+      "check_type": "interaction_observation",
+      "scenario": "Submit with a deliberately bad PAT.",
+      "expected_result": "AuthError-mapped message appears.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.FC8",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.8]",
+      "statement": "User with zero pinned repos renders an empty-state 'No pinned repositories' message, not a broken section.",
+      "check_type": "interaction_observation",
+      "scenario": "Look up a user known to have no pinned repos.",
+      "expected_result": "Pinned section displays the documented empty-state text.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.FC9",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.9]",
+      "statement": "Each metric on the card self-labels with an unambiguous definition.",
+      "check_type": "dom_text_contains",
+      "scenario": "Inspect card text after lookup.",
+      "expected_result": "Card text contains 'Current streak', 'Most-used language', and 'Contribution activity (last 90 days)'.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC10",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.10]",
+      "statement": "Second lookup updates the card without page reload.",
+      "check_type": "interaction_observation",
+      "scenario": "Do two lookups in sequence with different usernames.",
+      "expected_result": "Card updates in place; no full page reload.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.auth-flow",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=0]",
+      "statement": "No user authentication flow for the tool itself (no accounts, no login).",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for 'oauth', 'login', 'signin', 'account'.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.server",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=1]",
+      "statement": "No server-side component, hosted backend, or proxy.",
+      "check_type": "file_structure",
+      "scenario": "Inspect output/final/.",
+      "expected_result": "No server files (.py/.js Node/.go), no Procfile, no Dockerfile, no proxy configuration.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.database",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=2]",
+      "statement": "No database or persistent storage of looked-up users.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for 'localStorage', 'IndexedDB', 'sqlite', 'database'.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.compare",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=3]",
+      "statement": "No multi-user comparison UI.",
+      "check_type": "dom_structure",
+      "scenario": "Inspect rendered card.",
+      "expected_result": "Exactly one card per lookup; no compare panel.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.private-data",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=4]",
+      "statement": "No private-repository or private-contribution data shown.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for 'isPrivate' true-path or visibility filters allowing private.",
+      "expected_result": "Public-only filter or no private-repo handling in the UI.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.writes",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=5]",
+      "statement": "Tool is read-only; no follow, star, or issue creation.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for 'PUT', 'POST', 'PATCH', 'DELETE' against api.github.com excluding the single GraphQL POST.",
+      "expected_result": "Only the GraphQL POST is non-GET; no mutation REST calls.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.orgs",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=6]",
+      "statement": "Tool targets user accounts, not organizations.",
+      "check_type": "interaction_observation",
+      "scenario": "Submit an organization handle (e.g., 'anthropics').",
+      "expected_result": "Either renders graceful 'not a user account' message OR renders with documented limitations; does not crash.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.enterprise",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=7]",
+      "statement": "Tool targets github.com only, not GitHub Enterprise Server.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for API host URLs.",
+      "expected_result": "All requests go to api.github.com; no configurable endpoint.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.mobile",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=8]",
+      "statement": "Desktop-browser primary target; mobile-specific layout not in scope.",
+      "check_type": "css_inspection",
+      "scenario": "Grep css/ for @media queries.",
+      "expected_result": "Zero or minimal media queries; no separate mobile layout.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.export",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=9]",
+      "statement": "No image-export, share link, or embed feature.",
+      "check_type": "dom_selector_exists",
+      "scenario": "Inspect index.html.",
+      "expected_result": "No 'share', 'export', 'download', or 'embed' button.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.background-poll",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=10]",
+      "statement": "No notifications, scheduled refresh, or background polling.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for setInterval, setTimeout > 1000, notification API.",
+      "expected_result": "No long-running timers, no Notification API usage.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.i18n",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[index=11]",
+      "statement": "No internationalization or multi-language UI.",
+      "check_type": "source_grep",
+      "scenario": "Grep js/ for 'i18n', 'translate', 'locale'.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    }
+  ],
+
+  "contracts": [
+    {
+      "path": "contracts/original/api-client--data-derivers.json",
+      "from": "api-client",
+      "to": "data-derivers"
+    },
+    {
+      "path": "contracts/original/api-client--card-renderer.json",
+      "from": "api-client",
+      "to": "card-renderer"
+    },
+    {
+      "path": "contracts/original/data-derivers--card-renderer.json",
+      "from": "data-derivers",
+      "to": "card-renderer"
+    },
+    {
+      "path": "contracts/original/ui-shell--api-client.json",
+      "from": "ui-shell",
+      "to": "api-client"
+    }
+  ],
+
+  "deliverable_layout": {
+    "root": "output/final/",
+    "files": [
+      "index.html",
+      "css/styles.css",
+      "js/api-client.js",
+      "js/data-derivers.js",
+      "js/card-renderer.js",
+      "js/main.js (ui-shell wiring + entry point loaded via <script type='module'>)"
+    ],
+    "self_contained": true,
+    "external_runtime_dependencies": [
+      "api.github.com (GraphQL + REST) — intrinsic to the prompt; the only acceptable runtime network dependency"
+    ],
+    "build_step": "none"
+  }
+}

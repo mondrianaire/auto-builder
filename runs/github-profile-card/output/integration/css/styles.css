@@ -1,0 +1,273 @@
+/* GitHub Profile Card — GitHub-native dark theme.
+   Palette: bg #0d1117, card #161b22, border #30363d, text #c9d1d9,
+            accent #58a6ff, success/button #238636, success-bright #39d353.
+   No @media queries (per OOS.mobile). No web-font fetches. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: #0d1117;
+  color: #c9d1d9;
+  max-width: 920px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+
+a {
+  color: #58a6ff;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  color: #f0f6fc;
+}
+.page-sub {
+  margin: 0 0 1rem;
+  color: #8b949e;
+  font-size: 0.95rem;
+}
+
+/* Lookup form */
+.lookup-form {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.form-row {
+  margin-bottom: 0.75rem;
+}
+.form-row:last-child {
+  margin-bottom: 0;
+}
+.form-row label {
+  display: block;
+  font-size: 0.85rem;
+  color: #8b949e;
+  margin-bottom: 0.25rem;
+}
+.form-row input[type="text"],
+.form-row input[type="password"] {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: #0d1117;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+.form-row input[type="text"]:focus,
+.form-row input[type="password"]:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.15);
+}
+.pat-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: #8b949e;
+}
+.pat-note code {
+  background: #0d1117;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  color: #c9d1d9;
+}
+#lookup-button {
+  background: #238636;
+  color: #ffffff;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+#lookup-button:hover {
+  background: #2ea043;
+}
+#lookup-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Status region */
+#status-region {
+  min-height: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+#status-region.status-loading { color: #8b949e; }
+#status-region.status-info { color: #8b949e; }
+#status-region.status-error {
+  color: #f85149;
+  background: rgba(248, 81, 73, 0.08);
+  border: 1px solid rgba(248, 81, 73, 0.4);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+#status-region.status-success { color: #56d364; }
+
+/* Card */
+.profile-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 1.25rem;
+}
+.card-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #30363d;
+}
+.card-avatar-wrap {
+  flex: 0 0 auto;
+}
+.card-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 1px solid #30363d;
+  display: block;
+  background: #0d1117;
+}
+.card-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.card-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f0f6fc;
+  line-height: 1.2;
+}
+.card-handle {
+  font-size: 1rem;
+  color: #8b949e;
+  margin-bottom: 0.5rem;
+}
+.card-bio {
+  color: #c9d1d9;
+  margin-bottom: 0.5rem;
+}
+.card-counts {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: #8b949e;
+  font-size: 0.85rem;
+}
+.card-count {
+  display: inline-block;
+}
+
+/* Stats row */
+.stats-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.stat-block {
+  flex: 1 1 200px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  min-width: 0;
+}
+.stat-label {
+  font-size: 0.8rem;
+  color: #8b949e;
+  margin-bottom: 0.25rem;
+}
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #f0f6fc;
+}
+
+/* Pinned section */
+.section-label {
+  font-size: 0.95rem;
+  color: #c9d1d9;
+  margin: 0 0 0.5rem;
+  text-transform: none;
+  font-weight: 600;
+}
+.pinned-section {
+  margin-bottom: 1rem;
+}
+.pinned-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.pinned-card {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.pinned-name-row .pinned-name {
+  font-weight: 600;
+  color: #58a6ff;
+}
+.pinned-desc {
+  color: #8b949e;
+  font-size: 0.9rem;
+}
+.pinned-footer {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #8b949e;
+  margin-top: auto;
+}
+.lang-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.lang-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+.empty-state {
+  color: #8b949e;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+/* Heatmap */
+.heatmap-section {
+  margin-bottom: 0;
+}
+.heatmap-caption {
+  font-size: 0.85rem;
+  color: #8b949e;
+  margin-bottom: 0.4rem;
+}
+.heatmap {
+  display: block;
+}

@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "from_section": "api-client",
+  "to_section": "data-derivers",
+  "interface_kind": "es_module_named_exports",
+  "module_path": "js/api-client.js",
+  "exports": [
+    {
+      "name": "fetchProfilePayload",
+      "kind": "async_function",
+      "signature": "fetchProfilePayload(username: string, pat: string|null) => Promise<ProfilePayload>",
+      "throws": [
+        {"error_type": "UserNotFoundError", "when": "REST /users/{login} returns 404"},
+        {"error_type": "AuthError", "when": "GraphQL response status is 401, or REST returns 401"},
+        {"error_type": "RateLimitError", "when": "REST returns 403 with X-RateLimit-Remaining: 0, or GraphQL returns secondary-rate-limit error"},
+        {"error_type": "NetworkError", "when": "fetch rejects (offline, DNS, CORS)"},
+        {"error_type": "MissingTokenError", "when": "pat is null/empty and the call would require GraphQL"}
+      ]
+    }
+  ],
+  "type_definitions": {
+    "ProfilePayload": {
+      "shape": "object",
+      "fields": {
+        "user": {
+          "shape": "object",
+          "fields": {
+            "login": "string",
+            "name": "string|null",
+            "avatar_url": "string (https URL)",
+            "html_url": "string (https URL)",
+            "bio": "string|null",
+            "public_repos": "number",
+            "followers": "number",
+            "following": "number"
+          }
+        },
+        "pinned_repos": {
+          "shape": "array",
+          "max_length": 6,
+          "item_shape": {
+            "name": "string",
+            "description": "string|null",
+            "primary_language_name": "string|null",
+            "primary_language_color": "string|null (hex like '#3572A5')",
+            "stargazer_count": "number",
+            "fork_count": "number",
+            "url": "string (https URL)"
+          }
+        },
+        "contribution_calendar_year": {
+          "shape": "object",
+          "fields": {
+            "total_contributions": "number",
+            "days": {
+              "shape": "array",
+              "item_shape": {
+                "date": "string (YYYY-MM-DD)",
+                "contribution_count": "number",
+                "weekday": "number (0-6, 0=Sunday)"
+              },
+              "ordering": "ascending by date, contiguous (no gaps), spans up to 366 days ending at lookup-date (UTC)"
+            }
+          }
+        },
+        "owned_non_fork_repos_with_languages": {
+          "shape": "array",
+          "item_shape": {
+            "name": "string",
+            "is_fork": "boolean (always false in this list)",
+            "languages_bytes": {
+              "shape": "object",
+              "key_type": "language name (string)",
+              "value_type": "number (bytes)",
+              "note": "from GET /repos/{owner}/{repo}/languages"
+            }
+          }
+        }
+      }
+    }
+  },
+  "invariants": [
+    "If pat is null and username is valid, fetchProfilePayload still returns user, public_repos count, and owned_non_fork_repos_with_languages (best-effort REST-only), and sets pinned_repos = [] and contribution_calendar_year.days = [] with total_contributions = 0. The caller may then render a degraded card with a clear 'PAT required for pinned repos and contribution data' indicator. (FC.6 alt-a behavior.)",
+    "Dates in contribution_calendar_year.days use UTC calendar days (matching GitHub's calendar timezone)",
+    "fetchProfilePayload never returns a partial payload silently — any missing field is either null per type def or explicitly empty array per invariant 1"
+  ],
+  "consumed_by": "data-derivers consumes ProfilePayload and computes derived metrics (streak, most-used language, 90-day slice)",
+  "rationale": "Single fan-in function lets ui-shell drive one network step and pass the same payload to both data-derivers and card-renderer. Keeps API surface tiny and makes the network boundary the only place that touches fetch."
+}

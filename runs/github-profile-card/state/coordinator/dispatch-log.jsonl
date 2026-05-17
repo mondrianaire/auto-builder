@@ -1,0 +1,18 @@
+{"ts":"2026-05-16T01:00:00Z","action":"dag_written","role":"coordinator","dispatch_mode":"inline","note":"initial DAG with 5 sections + integrator pseudo-node across 5 waves"}
+{"ts":"2026-05-16T01:00:30Z","action":"dispatch","role":"overseer","section_id":"api-client","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:00:31Z","action":"dispatch","role":"builder","section_id":"api-client","builder_id":"builder-api-client-b1","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:01:00Z","action":"dispatch","role":"overseer","section_id":"data-derivers","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:01:01Z","action":"dispatch","role":"builder","section_id":"data-derivers","builder_id":"builder-data-derivers-b1","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:02:00Z","action":"wave_complete","wave":1,"role":"coordinator","note":"api-client + data-derivers verified inline"}
+{"ts":"2026-05-16T01:02:30Z","action":"dispatch","role":"overseer","section_id":"card-renderer","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:02:31Z","action":"dispatch","role":"builder","section_id":"card-renderer","builder_id":"builder-card-renderer-b1","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:03:30Z","action":"wave_complete","wave":2,"role":"coordinator","note":"card-renderer verified inline"}
+{"ts":"2026-05-16T01:04:00Z","action":"dispatch","role":"overseer","section_id":"ui-shell","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:04:01Z","action":"dispatch","role":"builder","section_id":"ui-shell","builder_id":"builder-ui-shell-b1","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:05:00Z","action":"wave_complete","wave":3,"role":"coordinator","note":"ui-shell verified inline"}
+{"ts":"2026-05-16T01:05:30Z","action":"dispatch","role":"integrator","section_id":"integrator","dispatch_mode":"inline","note":"executed inline by Coordinator; pseudo-node merging all section outputs into output/integration/"}
+{"ts":"2026-05-16T01:06:00Z","action":"wave_complete","wave":4,"role":"coordinator","note":"integration complete"}
+{"ts":"2026-05-16T01:06:30Z","action":"dispatch","role":"overseer","section_id":"edge-case-testing","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:06:31Z","action":"dispatch","role":"builder","section_id":"edge-case-testing","builder_id":"builder-edge-b1","dispatch_mode":"inline","note":"executed inline by Coordinator"}
+{"ts":"2026-05-16T01:08:00Z","action":"wave_complete","wave":5,"role":"coordinator","note":"edge-case-testing exercised inline"}
+{"ts":"2026-05-16T01:08:30Z","action":"build_complete_signaled","role":"coordinator","note":"build-complete.json written"}

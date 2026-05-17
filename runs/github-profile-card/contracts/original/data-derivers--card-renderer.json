@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "from_section": "data-derivers",
+  "to_section": "card-renderer",
+  "interface_kind": "es_module_named_exports",
+  "module_path": "js/data-derivers.js",
+  "exports": [
+    {
+      "name": "computeCurrentStreak",
+      "kind": "pure_function",
+      "signature": "computeCurrentStreak(days: Array<{date: string, contribution_count: number}>) => {streak_days: number, anchor_date: string|null}",
+      "behavior": "Counts trailing consecutive days with contribution_count >= 1, starting from the most recent day in `days` and walking backward. If the most recent day has 0 contributions but the day before has >=1, the streak is counted ending at that prior day (per github-readme-streak-stats convention, today-with-zero does not break the streak yet). If `days` is empty or no day has any contributions, returns {streak_days: 0, anchor_date: null}.",
+      "purity": "pure (no I/O, no global state)"
+    },
+    {
+      "name": "computeMostUsedLanguage",
+      "kind": "pure_function",
+      "signature": "computeMostUsedLanguage(repos: Array<{is_fork: boolean, languages_bytes: Object}>) => {language: string|null, bytes: number, share_pct: number}",
+      "behavior": "Sums bytes per language across all repos with is_fork=false. Returns the language with the largest byte total, the byte count, and its share of total bytes as a percentage (0-100, rounded to 1 decimal). If no eligible repos or all language maps empty, returns {language: null, bytes: 0, share_pct: 0}.",
+      "purity": "pure"
+    },
+    {
+      "name": "sliceLast90Days",
+      "kind": "pure_function",
+      "signature": "sliceLast90Days(days: Array<{date: string, contribution_count: number, weekday: number}>, today_utc: string) => Array<{date: string, contribution_count: number, weekday: number}>",
+      "behavior": "Returns the trailing 90 calendar days ending at today_utc (inclusive). today_utc is a YYYY-MM-DD string in UTC. If `days` covers fewer than 90 days, pads the leading edge with zero-contribution entries so the result is always length 90. Ordering: ascending by date.",
+      "purity": "pure"
+    }
+  ],
+  "type_definitions": {
+    "StreakResult": {"streak_days": "number (>=0)", "anchor_date": "string YYYY-MM-DD or null"},
+    "LanguageResult": {"language": "string|null", "bytes": "number (>=0)", "share_pct": "number (0..100)"},
+    "Day": {"date": "string YYYY-MM-DD", "contribution_count": "number (>=0)", "weekday": "number 0..6"}
+  },
+  "invariants": [
+    "sliceLast90Days output is always exactly length 90 (padding with zero days at the leading edge if necessary).",
+    "computeCurrentStreak never throws — empty input → zero streak.",
+    "computeMostUsedLanguage excludes forks (per A7) and is deterministic for ties (alphabetical secondary sort)."
+  ],
+  "rationale": "Three derivation functions match the three derived metrics on the card. Each is pure to make edge-case testing trivial and deterministic."
+}

@@ -1,0 +1,9 @@
+{
+  "builder_id": "builder-edge-b1",
+  "section_id": "edge-case-testing",
+  "produced_at": "2026-05-16T01:07:30Z",
+  "dispatch_mode": "inline",
+  "output_files": ["static-checks.js", "derivers-tests.js", "test-report.json", "test-report.md"],
+  "test_strategy": "Two-script harness: (1) static-checks.js does source-grep and file-structure assertions against output/integration/ — covers all check_type ∈ {dom_selector_exists, dom_text_contains, source_grep, file_structure, dom_selector_count, css_inspection, network_request_body_inspection (by source-grep proxy), module_export_exists}; (2) derivers-tests.js dynamically imports js/data-derivers.js under Node and exercises the pure functions with concrete inputs and expected outputs.",
+  "production_fidelity_note": "Live api.github.com calls and browser-runtime DOM assertions (MCA.api-client.2/3/4, MCA.ui-shell.5, DCA.FC1/FC4/A2, PNV.1) are marked not_exercised_in_static_mode and deferred to CV Tier 2. Real browser execution against a real PAT is required to fulfill those, and Node cannot simulate it without a full browser stack."
+}

@@ -1,0 +1,21 @@
+{
+  "builder_id": "builder-data-derivers-b1",
+  "section_id": "data-derivers",
+  "produced_at": "2026-05-16T01:01:50Z",
+  "dispatch_mode": "inline",
+  "output_files": ["output.js"],
+  "contract_pointers": [
+    "contracts/original/data-derivers--card-renderer.json"
+  ],
+  "assertions_addressed": [
+    "MCA.data-derivers.1", "MCA.data-derivers.2", "MCA.data-derivers.3", "MCA.data-derivers.4", "MCA.data-derivers.5",
+    "DCA.A6", "DCA.A7", "DCA.A8", "DCA.IP2", "DCA.IP3", "DCA.IP4", "DCA.PN4", "DCA.PN5", "DCA.PN6"
+  ],
+  "implementation_notes": [
+    "Pure functions only — no fetch, no DOM, no timers.",
+    "computeCurrentStreak: 'today-with-zero does not break the streak' implemented by searching backward from end for the first day with contribution_count > 0, then counting consecutive positive days from there.",
+    "computeMostUsedLanguage: ties broken alphabetically (ascending).",
+    "sliceLast90Days: always returns exactly 90 entries; pads missing leading days with zero-contribution entries; computes weekday for padded entries via UTC."
+  ],
+  "test_strategy": "Direct invocation under Node by edge-case-testing derivers-tests.js."
+}

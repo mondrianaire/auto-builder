@@ -1,0 +1,11 @@
+{
+  "id": "dev-001",
+  "timestamp": "2026-05-16T01:01:25Z",
+  "role": "coordinator",
+  "section_id": "api-client",
+  "category": "implementation_path_chosen",
+  "summary": "Capped per-repo language fetches at 30 (MAX_LANGUAGE_FETCHES) in api-client.js fetchOwnedReposWithLanguages.",
+  "rationale": "GitHub PAT REST quota is 5000/hr. Some users own hundreds of repos; iterating /repos/{owner}/{name}/languages for every one would burn quota and time without measurably improving the 'most-used language' aggregation (the top language saturates within the most-recently-updated 30 repos for the overwhelming majority of accounts). The 30-repo cap keeps the lookup under ~5s wall-clock on a normal connection and within ~32 REST calls (1 user + 1 repo-list + 30 languages) per lookup, well under the per-hour budget for repeat usage.",
+  "charter_or_contract_gap": "Charter for api-client says 'per-repo /languages calls for each non-fork owned repo' without an explicit cap. Charter is silent on budget enforcement.",
+  "nested_equivalent": "Under nested dispatch, the api-client Overseer would have surfaced 'budget cap for /languages fan-out is unspecified; propose 30 or escalate to Coordinator'. Coordinator would have approved 30 inline. No back-and-forth round-trip in inline mode — the cap is recorded here as the equivalent inline deliberation."
+}

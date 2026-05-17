@@ -1,0 +1,20 @@
+{
+  "completed_at": "2026-05-16T01:05:55Z",
+  "entry_point": "index.html",
+  "files": [
+    {"path": "index.html", "role": "page shell", "imports": ["css/styles.css", "js/main.js"]},
+    {"path": "css/styles.css", "role": "stylesheet"},
+    {"path": "js/main.js", "role": "entry point + wiring", "imports": ["./api-client.js", "./data-derivers.js", "./card-renderer.js"]},
+    {"path": "js/api-client.js", "role": "GitHub API client"},
+    {"path": "js/data-derivers.js", "role": "metric derivation functions"},
+    {"path": "js/card-renderer.js", "role": "card DOM/SVG renderer"}
+  ],
+  "section_outputs_used": [
+    {"section": "api-client", "files": ["js/api-client.js"]},
+    {"section": "data-derivers", "files": ["js/data-derivers.js"]},
+    {"section": "card-renderer", "files": ["js/card-renderer.js"]},
+    {"section": "ui-shell", "files": ["index.html", "css/styles.css", "js/main.js"]}
+  ],
+  "glue_code_added": [],
+  "issues_resolved_during_integration": []
+}

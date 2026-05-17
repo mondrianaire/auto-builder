@@ -1,0 +1,31 @@
+{
+  "role": "Discovery",
+  "instance_id": "discovery-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "2026-05-16T00:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "What did you understand the user wants?",
+      "answer": "A small tool where you type a GitHub username and see a one-page profile card for that person — showing the repositories they've pinned, how many days in a row they've been contributing, what language they use most, and a small chart of their commit activity over the last 90 days. Since no platform was specified, I read it as a simple web page you open in your browser on your Windows machine.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What choices did you make on their behalf, and why?",
+      "answer": "- Made it a single web page (no server, no login, no database) because nothing in the request needed one.\n- The tool will ask you to paste a GitHub access token because GitHub blocks the pinned-repos and contribution-graph data without one.\n- 'Streak' = the current consecutive-days streak ending today (the meaning most people associate with the word).\n- 'Most-used language' = the same calculation GitHub itself shows on a profile page (bytes of code across your public repos, ignoring forks).\n- The 90-day chart will use GitHub's contribution-calendar data and be labeled 'contribution activity' so it's honest about what it's counting.\n- The chart will look like the familiar GitHub contribution heatmap so it's instantly recognizable.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What did you explicitly NOT do?",
+      "answer": "No accounts or login for the tool itself, no backend server, no saving past lookups, no comparing two users, no private-repo data for accounts other than the token owner, no editing on GitHub (read-only), no organization profiles, no GitHub Enterprise, no image export of the card, and no mobile-first responsive design.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "TechnicalDiscovery"
+}

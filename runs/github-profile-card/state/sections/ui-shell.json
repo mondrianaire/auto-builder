@@ -1,0 +1,25 @@
+{
+  "section_id": "ui-shell",
+  "status": "verified",
+  "wave": 3,
+  "started_at": "2026-05-16T01:04:01Z",
+  "verified_at": "2026-05-16T01:04:55Z",
+  "dispatch_mode": "inline",
+  "builders_dispatched": ["builder-ui-shell-b1"],
+  "overseer_verdict": "pass",
+  "overseer_notes": "index.html + styles.css + main.js produced. Form contains #username-input, #pat-input (type=password), #lookup-button, PAT-creation link to github.com/settings/tokens/new. main.js wires click + Enter to runLookup, calls fetchProfilePayload + derivers + renderCard, maps all 5 error classes to documented UI messages. No @media queries in CSS. No web-font fetches.",
+  "artifacts": [
+    "output/builders/ui-shell/builder-ui-shell-b1/index.html",
+    "output/builders/ui-shell/builder-ui-shell-b1/styles.css",
+    "output/builders/ui-shell/builder-ui-shell-b1/main.js",
+    "output/builders/ui-shell/builder-ui-shell-b1/metadata.json"
+  ],
+  "acceptance_assertions_status": {
+    "MCA.ui-shell.1": "pass (#username-input is INPUT)",
+    "MCA.ui-shell.2": "pass (#pat-input is INPUT type=password)",
+    "MCA.ui-shell.3": "pass (#lookup-button is BUTTON)",
+    "MCA.ui-shell.4": "pass (anchor href starts with https://github.com/settings/tokens)",
+    "MCA.ui-shell.5": "deferred_to_edge_case_testing (browser console)",
+    "MCA.ui-shell.6": "pass (card-renderer clears container before rendering — second lookup replaces in place)"
+  }
+}

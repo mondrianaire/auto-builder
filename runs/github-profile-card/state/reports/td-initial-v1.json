@@ -1,0 +1,37 @@
+{
+  "role": "TechnicalDiscovery",
+  "instance_id": "td-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "2026-05-16T00:45:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "How are you breaking this into pieces?",
+      "answer": "Five pieces. (1) API client: a single function that talks to GitHub and returns one bundle of data — handles the GraphQL call for pinned repos and contribution calendar plus the REST calls for basic profile info and per-repo languages, with clean named errors for the common failure modes. (2) Data derivers: three small pure functions that turn that bundle into the streak number, the most-used language, and a 90-day day-by-day slice. (3) UI shell: the page itself — the username box, the token box, the lookup button, a status line, and a place to drop the card. (4) Card renderer: takes the data bundle plus the derived numbers and paints the actual card with the avatar, pinned-repos grid, streak, language, and a small SVG heatmap of contributions. (5) Edge-case testing: opens the file in a real browser against the real GitHub API and walks every assertion to make sure each one passes for real, not in a fixture.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What tech choices did you make, and why?",
+      "answer": "Plain HTML + CSS + a few ES module .js files, no build step, no npm, no bundler. The page works as a folder you can double-click. The user pastes their own GitHub Personal Access Token in a field on the page — GitHub's GraphQL API and the pinned-repos / contribution-calendar features simply require auth, so there's no honest way around it; bundling a token would be a security leak. The heatmap is hand-drawn inline SVG (about 91 small rectangles) instead of pulling in a charting library. Fonts are system-ui (the OS's own font stack) so there's nothing to download. Streak = current consecutive-day streak ending at the most recent contribution. Most-used language = byte-weighted across the user's non-fork repos, which is how github.com itself computes its language bar. The 90-day chart is sourced from GitHub's GraphQL contribution calendar and labeled honestly as 'Contribution activity (last 90 days)' since that calendar counts all contributions, not strictly commits.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What handoffs exist between pieces?",
+      "answer": "Four handoffs. (1) API client to data derivers: the API client returns a plain data bundle with the user info, pinned repos, a year of contribution days, and per-repo language byte counts; the derivers take that and produce the streak, the most-used language, and the 90-day slice. (2) API client to card renderer: the same data bundle is also read directly by the renderer for avatar, name, and pinned-repo cards (no derivation needed there). (3) Data derivers to card renderer: the renderer takes the three derived results and draws them with their human-readable labels. (4) UI shell to API client: the shell collects the username and token from the form and hands them to the API client; on error it maps each typed error to a one-line human message. UI shell is the only place that touches the form; API client is the only place that touches fetch.",
+      "kind": "conditional",
+      "importance": "medium"
+    },
+    {
+      "question": "What did you defer or note as risky?",
+      "answer": "Two notes. (1) Production-fidelity testing must hit the real api.github.com with a real PAT — no mocks. The biggest realistic risk is browser file:// security blocking the fetch calls in some browsers (Chrome generally allows them for cross-origin, but if it doesn't, the workaround is opening the folder with any one-line static server like `python -m http.server`). (2) Rate limits: with a PAT the user gets 5000 REST requests / hour, which is plenty for a couple-dozen-repo user. For a user with hundreds of repos the per-repo /languages calls could approach the limit; we don't paginate beyond the first 100 repos in v1, which is documented as a deliberate scope limit.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "Editor"
+}

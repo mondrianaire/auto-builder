@@ -1,0 +1,22 @@
+{
+  "section_id": "data-derivers",
+  "status": "verified",
+  "wave": 1,
+  "started_at": "2026-05-16T01:01:01Z",
+  "verified_at": "2026-05-16T01:01:55Z",
+  "dispatch_mode": "inline",
+  "builders_dispatched": ["builder-data-derivers-b1"],
+  "overseer_verdict": "pass",
+  "overseer_notes": "Three pure functions exported (computeCurrentStreak, computeMostUsedLanguage, sliceLast90Days). No fetch/DOM/timer use. Tie-breaker alphabetical. 90-day output always length 90 with zero-padded leading edge. computeCurrentStreak respects today-with-zero rule.",
+  "artifacts": [
+    "output/builders/data-derivers/builder-data-derivers-b1/output.js",
+    "output/builders/data-derivers/builder-data-derivers-b1/metadata.json"
+  ],
+  "acceptance_assertions_status": {
+    "MCA.data-derivers.1": "pass (exercised by edge-case-testing derivers-tests.js)",
+    "MCA.data-derivers.2": "pass (exercised by edge-case-testing derivers-tests.js)",
+    "MCA.data-derivers.3": "pass (exercised by edge-case-testing derivers-tests.js)",
+    "MCA.data-derivers.4": "pass (exercised by edge-case-testing derivers-tests.js)",
+    "MCA.data-derivers.5": "pass (exercised by edge-case-testing derivers-tests.js)"
+  }
+}

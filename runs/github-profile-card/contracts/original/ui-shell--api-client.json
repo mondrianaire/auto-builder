@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "from_section": "ui-shell",
+  "to_section": "api-client",
+  "interface_kind": "dom_contract_plus_es_module_call",
+  "ui_shell_responsibilities": [
+    "Renders index.html with the static page chrome: header, username input (id='username-input'), PAT input (id='pat-input', type='password'), submit button (id='lookup-button'), card container (id='card-container'), status/error region (id='status-region').",
+    "Wires submit (click on #lookup-button OR Enter key in #username-input) to: (1) read username + pat values, (2) call fetchProfilePayload(username, pat || null), (3) on success delegate payload + derivations to card-renderer, (4) on each error_type from the api-client contract render the matching status message.",
+    "Provides a labeled link to GitHub's PAT creation page (https://github.com/settings/tokens/new?description=GitHub%20Profile%20Card&scopes=) next to the PAT field (FC.3)."
+  ],
+  "api_client_consumed_exports": [
+    "fetchProfilePayload(username, pat) — see api-client--data-derivers.json for full signature"
+  ],
+  "error_handling_mapping": [
+    {"error_type": "UserNotFoundError", "ui_message": "No GitHub user found with handle \"{username}\"."},
+    {"error_type": "AuthError", "ui_message": "The Personal Access Token was rejected. Check the token and try again."},
+    {"error_type": "RateLimitError", "ui_message": "GitHub rate limit hit. Try again in a few minutes, or supply a PAT for a much higher limit."},
+    {"error_type": "NetworkError", "ui_message": "Could not reach api.github.com. Check your network connection."},
+    {"error_type": "MissingTokenError", "ui_message": "A GitHub Personal Access Token is required to load pinned repos and contribution data. The token field is above."}
+  ],
+  "invariants": [
+    "ui-shell never touches fetch() directly — all network goes through api-client.",
+    "Submitting an empty username is treated as a no-op (does not call api-client).",
+    "After a successful lookup, the form remains enabled and a second lookup updates #card-container in place (FC.10)."
+  ],
+  "rationale": "Single direction of dependency keeps ui-shell purely presentational with respect to network; api-client owns all HTTP semantics including error taxonomy."
+}

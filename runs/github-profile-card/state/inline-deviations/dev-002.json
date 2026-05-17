@@ -1,0 +1,11 @@
+{
+  "id": "dev-002",
+  "timestamp": "2026-05-16T01:07:35Z",
+  "role": "coordinator",
+  "section_id": "edge-case-testing",
+  "category": "test_or_assertion_fix",
+  "summary": "Refined source-grep patterns in static-checks.js for DCA.A3, DCA.OOS.auth-flow, and DCA.OOS.mobile to reduce false positives.",
+  "rationale": "Initial pattern \\blogin\\b matched GitHub's API field name 'login' (which is GitHub vocabulary for username — appears as 'user(login: $login)' in GraphQL, 'data.login', 'repo.owner.login', and 'payload.user.login' throughout the legitimate code). The intent of DCA.A3/DCA.OOS.auth-flow is to assert no auth-FLOW code (sign-in forms, OAuth redirects), not to ban the word 'login' as a noun. Similarly @media matched a comment in styles.css that documents the absence of media queries — the intent is to assert no @media RULES, not no occurrences of the string. Fix: change DCA.A3 / OOS.auth-flow patterns to look for action-y auth keywords (oauth, signin, sign-in, signOut, accessToken-grant-flow patterns) excluding 'login' as a bare noun; change DCA.OOS.mobile to match @media followed by a media-query construct (parenthesis) rather than the bare string.",
+  "charter_or_contract_gap": "Charter (Discovery DCA.A3/OOS.auth-flow/OOS.mobile statements) specifies the spirit of the assertion (no auth flow, no mobile-specific layout) but not the regex. Inline test author has to translate intent → grep pattern.",
+  "nested_equivalent": "Under nested dispatch, the edge-case-testing Overseer would have surfaced 'three assertions failed with patterns that match legitimate code/comments; refining the patterns to match the assertion intent rather than substring presence'. Coordinator would have approved. Inline equivalent: refined here and reran."
+}

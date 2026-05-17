@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-05-17T03:28:48.210Z",
+  "test_environment": {
+    "node_version": "v22.22.0",
+    "platform": "linux",
+    "arch": "x64",
+    "derivers_module": "file:///sessions/jolly-ecstatic-rubin/mnt/github-profile-card/output/integration/js/data-derivers.js"
+  },
+  "results": [
+    {
+      "id": "MCA.data-derivers.1",
+      "result": "pass",
+      "detail": "computeCurrentStreak([]) -> {\"streak_days\":0,\"anchor_date\":null}"
+    },
+    {
+      "id": "MCA.data-derivers.2",
+      "result": "pass",
+      "detail": "5-positive-day series -> streak_days=5, anchor_date=2026-05-16"
+    },
+    {
+      "id": "MCA.data-derivers.3",
+      "result": "pass",
+      "detail": "mixed-with-fork -> language=JavaScript, bytes=1000, share_pct=66.7"
+    },
+    {
+      "id": "MCA.data-derivers.4",
+      "result": "pass",
+      "detail": "empty={\"language\":null,\"bytes\":0,\"share_pct\":0}, all-forks={\"language\":null,\"bytes\":0,\"share_pct\":0}, empty-langs={\"language\":null,\"bytes\":0,\"share_pct\":0}"
+    },
+    {
+      "id": "MCA.data-derivers.5",
+      "result": "pass",
+      "detail": "lengths: empty=90, single=90, year=90"
+    },
+    {
+      "id": "DCA.A6",
+      "result": "pass",
+      "detail": "today-is-zero, 5 positive prior -> {\"streak_days\":5,\"anchor_date\":\"2026-05-15\"}"
+    },
+    {
+      "id": "DCA.A7",
+      "result": "pass",
+      "detail": "bytes-weighted excluding fork -> {\"language\":\"TypeScript\",\"bytes\":2300,\"share_pct\":82.1}"
+    },
+    {
+      "id": "DCA.IP3",
+      "result": "pass",
+      "detail": "tie-break alphabetical -> {\"language\":\"Apple\",\"bytes\":1000,\"share_pct\":50}"
+    },
+    {
+      "id": "DCA.A8",
+      "result": "pass",
+      "detail": "1-day input padded to 90; last=2026-05-16/7, first=2026-02-16, leading-zeros=true"
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "pass": 9,
+    "fail": 0
+  }
+}

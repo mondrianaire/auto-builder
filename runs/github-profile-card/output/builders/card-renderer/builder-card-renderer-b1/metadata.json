@@ -1,0 +1,25 @@
+{
+  "builder_id": "builder-card-renderer-b1",
+  "section_id": "card-renderer",
+  "produced_at": "2026-05-16T01:03:20Z",
+  "dispatch_mode": "inline",
+  "output_files": ["output.js"],
+  "contract_pointers": [
+    "contracts/original/api-client--card-renderer.json",
+    "contracts/original/data-derivers--card-renderer.json"
+  ],
+  "assertions_addressed": [
+    "MCA.card-renderer.1", "MCA.card-renderer.2", "MCA.card-renderer.3", "MCA.card-renderer.4",
+    "MCA.card-renderer.5", "MCA.card-renderer.6", "MCA.card-renderer.7", "MCA.card-renderer.8",
+    "DCA.A5", "DCA.IP5", "DCA.IP6", "DCA.FC4", "DCA.FC8", "DCA.FC9"
+  ],
+  "implementation_notes": [
+    "Pure DOM construction via document.createElement / createElementNS — zero innerHTML assignment to user data.",
+    "Heatmap is exactly 13 weeks x 7 days = 91 <rect> cells; last day of the 90-day slice placed at rightmost column at the day's weekday; positions before the slice's first day are zero-filled.",
+    "5-level intensity palette using GitHub's documented green ladder (#161b22, #0e4429, #006d32, #26a641, #39d353).",
+    "URL validation: href/src only accepted if URL parses to http(s) protocol.",
+    "Hex-color validation for primary_language_color (defensive against malformed API data).",
+    "container is cleared via removeChild loop before rendering so repeat lookups replace prior content (MCA.ui-shell.6)."
+  ],
+  "test_strategy": "Static source-grep + dom_selector counts via jsdom or regex (run by edge-case-testing static-checks.js). Runtime DOM assertions deferred to first-contact CV in a real browser."
+}

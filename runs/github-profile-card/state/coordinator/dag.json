@@ -1,0 +1,24 @@
+{
+  "updated_at": "2026-05-16T01:00:00Z",
+  "version": 1,
+  "nodes": [
+    {"id": "api-client", "status": "pending", "wave": 1},
+    {"id": "data-derivers", "status": "pending", "wave": 1},
+    {"id": "card-renderer", "status": "pending", "wave": 2},
+    {"id": "ui-shell", "status": "pending", "wave": 3},
+    {"id": "integrator", "type": "pseudo-node", "status": "pending", "wave": 4, "is_pseudo": true},
+    {"id": "edge-case-testing", "status": "pending", "wave": 5, "blocked_on": ["integrator"]}
+  ],
+  "edges": [
+    {"from": "api-client", "to": "card-renderer"},
+    {"from": "data-derivers", "to": "card-renderer"},
+    {"from": "api-client", "to": "ui-shell"},
+    {"from": "card-renderer", "to": "ui-shell"},
+    {"from": "api-client", "to": "integrator"},
+    {"from": "data-derivers", "to": "integrator"},
+    {"from": "card-renderer", "to": "integrator"},
+    {"from": "ui-shell", "to": "integrator"},
+    {"from": "integrator", "to": "edge-case-testing"}
+  ],
+  "current_wave": 1
+}

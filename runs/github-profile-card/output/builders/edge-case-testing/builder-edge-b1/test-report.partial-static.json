@@ -1,0 +1,409 @@
+{
+  "generated_at": "2026-05-17T03:28:04.711Z",
+  "test_environment": {
+    "node_version": "v22.22.0",
+    "platform": "linux",
+    "arch": "x64",
+    "integration_root": "/sessions/jolly-ecstatic-rubin/mnt/github-profile-card/output/integration"
+  },
+  "github_endpoints_identified_from_source": [
+    "https://api.github.com/graphql",
+    "https://api.github.com/users/{login}",
+    "https://api.github.com/users/{login}/repos?per_page=100&type=owner&sort=updated",
+    "https://api.github.com/repos/{owner}/{repo}/languages"
+  ],
+  "live_network_test_note": "Live exercise against api.github.com is deferred to CV Tier 2 / user-side first-contact. Static mode in Node cannot stand in for the browser fetch context with CORS + Bearer PAT semantics.",
+  "results": [
+    {
+      "id": "FILE_STRUCTURE",
+      "result": "pass",
+      "detail": "required files present: 7/7"
+    },
+    {
+      "id": "MCA.api-client.1",
+      "result": "pass",
+      "detail": "async function fetchProfilePayload exported"
+    },
+    {
+      "id": "MCA.api-client.2",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Live GitHub API call — deferred to CV Tier 2 (real browser execution)."
+    },
+    {
+      "id": "MCA.api-client.3",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Live GitHub API call — deferred to CV Tier 2 (real browser execution)."
+    },
+    {
+      "id": "MCA.api-client.4",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Live GitHub API call — deferred to CV Tier 2 (real browser execution)."
+    },
+    {
+      "id": "MCA.api-client.5",
+      "result": "pass",
+      "detail": "pat=null branch returns empty pinned + empty contribution calendar; user object still populated via REST"
+    },
+    {
+      "id": "MCA.api-client.6",
+      "result": "pass",
+      "detail": "GraphQL query string includes both pinnedItems(first: 6, types: [REPOSITORY]) and contributionsCollection(from:, to:) selections"
+    },
+    {
+      "id": "MCA.api-client.7",
+      "result": "pass",
+      "detail": "Authorization header value is `Bearer ${pat}`"
+    },
+    {
+      "id": "MCA.data-derivers.1",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js (separate Node script)."
+    },
+    {
+      "id": "MCA.data-derivers.2",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js."
+    },
+    {
+      "id": "MCA.data-derivers.3",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js."
+    },
+    {
+      "id": "MCA.data-derivers.4",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js."
+    },
+    {
+      "id": "MCA.data-derivers.5",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js."
+    },
+    {
+      "id": "MCA.ui-shell.1",
+      "result": "pass",
+      "detail": "<input id=\"username-input\"> present"
+    },
+    {
+      "id": "MCA.ui-shell.2",
+      "result": "pass",
+      "detail": "<input id=\"pat-input\" type=\"password\"> present — tag: <input id=\"pat-input\" type=\"password\" autocomplete=\"off\" spellcheck=\"false\" placeholder=\"GitHub PAT (paste your token)\">"
+    },
+    {
+      "id": "MCA.ui-shell.3",
+      "result": "pass",
+      "detail": "<button id=\"lookup-button\"> present"
+    },
+    {
+      "id": "MCA.ui-shell.4",
+      "result": "pass",
+      "detail": "anchor href starts with https://github.com/settings/tokens"
+    },
+    {
+      "id": "MCA.ui-shell.5",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Browser console — deferred to CV Tier 2 (real browser execution)."
+    },
+    {
+      "id": "MCA.ui-shell.6",
+      "result": "pass",
+      "detail": "card-renderer clears container before re-rendering (in-place update)"
+    },
+    {
+      "id": "MCA.card-renderer.1",
+      "result": "pass",
+      "detail": "img.setAttribute(\"src\", payload.user.avatar_url)"
+    },
+    {
+      "id": "MCA.card-renderer.2",
+      "result": "pass",
+      "detail": "Pinned-section label + empty-state both present in source"
+    },
+    {
+      "id": "MCA.card-renderer.3",
+      "result": "pass",
+      "detail": "literal 'Current streak' string present"
+    },
+    {
+      "id": "MCA.card-renderer.4",
+      "result": "pass",
+      "detail": "literal 'Most-used language' string present"
+    },
+    {
+      "id": "MCA.card-renderer.5",
+      "result": "pass",
+      "detail": "literal 'Contribution activity (last 90 days)' string present"
+    },
+    {
+      "id": "MCA.card-renderer.6",
+      "result": "pass",
+      "detail": "Heatmap loop is 13×7 = 91 cells (WEEKS=13:true, DAYS=7:true, nested loop:true)"
+    },
+    {
+      "id": "MCA.card-renderer.7",
+      "result": "pass",
+      "detail": "No innerHTML assignment of non-literal value to any element in card-renderer"
+    },
+    {
+      "id": "MCA.card-renderer.8",
+      "result": "pass",
+      "detail": "INTENSITY_COLORS array has 5 entries"
+    },
+    {
+      "id": "MCA.edge-case-testing.1",
+      "result": "pass",
+      "detail": "All MCA + DCA ids enumerated in test-report.json"
+    },
+    {
+      "id": "MCA.edge-case-testing.2",
+      "result": "pass",
+      "detail": "Test env named (node + OS); real api.github.com URLs identified by source inspection: https://api.github.com/graphql, https://api.github.com/users/{login}, https://api.github.com/users/{login}/repos, https://api.github.com/repos/{owner}/{repo}/languages. Live network exercise deferred to CV Tier 2 because static-mode runs under Node without a browser fetch context capable of CORS-bearing requests against real PATs."
+    },
+    {
+      "id": "DCA.telos",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Scenario walk — deferred to CV Tier 2 (real browser)."
+    },
+    {
+      "id": "DCA.restatement",
+      "result": "pass",
+      "detail": "Folder contains only index.html + css + js + manifest + README-RUN. No server code, no DB, no Dockerfile."
+    },
+    {
+      "id": "DCA.A1",
+      "result": "pass",
+      "detail": "No build step required to open index.html."
+    },
+    {
+      "id": "DCA.A2",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Live interaction — deferred to CV."
+    },
+    {
+      "id": "DCA.A3",
+      "result": "fail",
+      "detail": "auth keyword found in js"
+    },
+    {
+      "id": "DCA.A4",
+      "result": "pass",
+      "detail": "card-renderer creates a single <article class=\"profile-card\"> per render"
+    },
+    {
+      "id": "DCA.A5",
+      "result": "pass",
+      "detail": "GraphQL query uses pinnedItems(first: 6, types: [REPOSITORY])"
+    },
+    {
+      "id": "DCA.A6",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js."
+    },
+    {
+      "id": "DCA.A7",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js."
+    },
+    {
+      "id": "DCA.A8",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Exercised by derivers-tests.js."
+    },
+    {
+      "id": "DCA.A9",
+      "result": "pass",
+      "detail": "All API URLs target api.github.com (other origins: 0)"
+    },
+    {
+      "id": "DCA.A10",
+      "result": "pass",
+      "detail": "no localStorage/sessionStorage/IndexedDB/cookie usage"
+    },
+    {
+      "id": "DCA.A11",
+      "result": "pass",
+      "detail": "404 mapped to UserNotFoundError; UI message mapping in main.js"
+    },
+    {
+      "id": "DCA.IP1",
+      "result": "pass",
+      "detail": "#pat-input + PAT-creation link both present"
+    },
+    {
+      "id": "DCA.IP2",
+      "result": "pass",
+      "detail": "label 'Current streak' present"
+    },
+    {
+      "id": "DCA.IP3",
+      "result": "pass",
+      "detail": "computeMostUsedLanguage excludes is_fork===true; reads languages_bytes"
+    },
+    {
+      "id": "DCA.IP4",
+      "result": "pass",
+      "detail": "caption literal present"
+    },
+    {
+      "id": "DCA.IP5",
+      "result": "pass",
+      "detail": "heatmap is 13 weeks × 7 days"
+    },
+    {
+      "id": "DCA.IP6",
+      "result": "pass",
+      "detail": "GitHub-dark bg #0d1117 + system-ui font in CSS"
+    },
+    {
+      "id": "DCA.PN1",
+      "result": "pass",
+      "detail": "All API hosts == api.github.com"
+    },
+    {
+      "id": "DCA.PN2",
+      "result": "pass",
+      "detail": "username goes to /users/{login} REST and $login GraphQL variable"
+    },
+    {
+      "id": "DCA.PN3",
+      "result": "pass",
+      "detail": "pinnedItems selection in GraphQL query"
+    },
+    {
+      "id": "DCA.PN4",
+      "result": "pass",
+      "detail": "computeCurrentStreak signature consumes day array"
+    },
+    {
+      "id": "DCA.PN5",
+      "result": "pass",
+      "detail": "per-repo /repos/{owner}/{repo}/languages REST call present"
+    },
+    {
+      "id": "DCA.PN6",
+      "result": "pass",
+      "detail": "13×7 = 91 cells covers 90-day window"
+    },
+    {
+      "id": "DCA.FC1",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Browser console — deferred to CV."
+    },
+    {
+      "id": "DCA.FC2",
+      "result": "pass",
+      "detail": "#username-input + #lookup-button present"
+    },
+    {
+      "id": "DCA.FC3",
+      "result": "pass",
+      "detail": "#pat-input + explanatory text + creation link"
+    },
+    {
+      "id": "DCA.FC4",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Live scenario walk — deferred to CV."
+    },
+    {
+      "id": "DCA.FC5",
+      "result": "pass",
+      "detail": "UserNotFoundError mapped to \"No GitHub user found …\" UI message"
+    },
+    {
+      "id": "DCA.FC6",
+      "result": "pass",
+      "detail": "main.js handles missing PAT — degraded card + info message"
+    },
+    {
+      "id": "DCA.FC7",
+      "result": "pass",
+      "detail": "AuthError mapped to actionable UI message"
+    },
+    {
+      "id": "DCA.FC8",
+      "result": "pass",
+      "detail": "\"No pinned repositories\" empty state present"
+    },
+    {
+      "id": "DCA.FC9",
+      "result": "pass",
+      "detail": "All three metric labels present"
+    },
+    {
+      "id": "DCA.FC10",
+      "result": "pass",
+      "detail": "container cleared via removeChild before re-render"
+    },
+    {
+      "id": "DCA.OOS.auth-flow",
+      "result": "fail",
+      "detail": "no oauth/login/signin code"
+    },
+    {
+      "id": "DCA.OOS.server",
+      "result": "pass",
+      "detail": "no server files"
+    },
+    {
+      "id": "DCA.OOS.database",
+      "result": "pass",
+      "detail": "no persistence API usage"
+    },
+    {
+      "id": "DCA.OOS.compare",
+      "result": "pass",
+      "detail": "no compare UI in index.html"
+    },
+    {
+      "id": "DCA.OOS.private-data",
+      "result": "pass",
+      "detail": "no private-true rendering branch"
+    },
+    {
+      "id": "DCA.OOS.writes",
+      "result": "pass",
+      "detail": "POSTs=1 (GraphQL only), PUT/PATCH/DELETE=0"
+    },
+    {
+      "id": "DCA.OOS.orgs",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Live behavior against an org handle — deferred to CV."
+    },
+    {
+      "id": "DCA.OOS.enterprise",
+      "result": "pass",
+      "detail": "no GitHub Enterprise endpoint references"
+    },
+    {
+      "id": "DCA.OOS.mobile",
+      "result": "fail",
+      "detail": "no @media queries in css"
+    },
+    {
+      "id": "DCA.OOS.export",
+      "result": "pass",
+      "detail": "no share/export/download/embed buttons in index.html"
+    },
+    {
+      "id": "DCA.OOS.background-poll",
+      "result": "pass",
+      "detail": "no setInterval / Notification API usage"
+    },
+    {
+      "id": "DCA.OOS.i18n",
+      "result": "pass",
+      "detail": "no i18n keywords"
+    },
+    {
+      "id": "PNV.1",
+      "result": "not_exercised_in_static_mode",
+      "detail": "Prompt-named-verb 'shows' — full browser scenario; deferred to CV Tier 2."
+    }
+  ],
+  "summary": {
+    "total": 77,
+    "pass": 56,
+    "fail": 3,
+    "not_exercised_in_static_mode": 18
+  }
+}

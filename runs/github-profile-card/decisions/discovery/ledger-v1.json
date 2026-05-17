@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "created_at": "2026-05-16T00:00:00Z",
+  "project_name": "github-profile-card",
+  "telos": "Given a GitHub username, show a single developer profile card summarizing that account's pinned repos, contribution streak, most-used language, and a 90-day commit-activity visualization.",
+  "restatement": "The user wants a small, self-contained tool where they type or paste a GitHub username and see a one-screen 'profile card' for that account. The card has four named elements: (1) the user's pinned repositories, (2) a contribution streak figure, (3) their most-used programming language, and (4) a compact visualization of commit activity over the last 90 days. The prompt is silent on platform; on a Windows host with no server/auth/persistence requirements stated, the simplest-within-reason interpretation is a static web page (HTML/CSS/JS) the user opens locally in a browser. The tool queries github.com's public APIs at lookup time; there is no database, no login, and no stored user state beyond what the page holds in memory.",
+  "execution_context_observed": {
+    "platform_hints": ["windows"],
+    "path_evidence": ["C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\github-profile-card\\"]
+  },
+  "proper_nouns": [
+    {
+      "id": "PN.1",
+      "surface": "GitHub",
+      "lexical_context": "'takes a GitHub username' and 'a GitHub username' — defines the data source and identity space the tool operates against",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    },
+    {
+      "id": "PN.2",
+      "surface": "GitHub username",
+      "lexical_context": "'takes a GitHub username' — the primary input. A GitHub username is the @handle that uniquely identifies an account on github.com (the 'login' field in API responses).",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    },
+    {
+      "id": "PN.3",
+      "surface": "pinned repos",
+      "lexical_context": "'their pinned repos' — a specific GitHub profile feature where a user pins up to six repositories to the top of their profile page. Exposed via GitHub's GraphQL API as user.pinnedItems (the REST API does not expose pinned items directly).",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    },
+    {
+      "id": "PN.4",
+      "surface": "contribution streak",
+      "lexical_context": "'their contribution streak' — derived from GitHub's contribution graph. 'Streak' is not an official GitHub field; it is a derived metric (consecutive days with at least one contribution). Common third-party convention: current streak = consecutive trailing days with >=1 contribution ending today (or the most recent contribution day).",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    },
+    {
+      "id": "PN.5",
+      "surface": "most-used language",
+      "lexical_context": "'their most-used language' — refers to GitHub's per-repo language detection (Linguist). Aggregation method across the user's repos is not specified by the prompt.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    },
+    {
+      "id": "PN.6",
+      "surface": "commit activity for the last 90 days",
+      "lexical_context": "'a small visualization of their commit activity for the last 90 days' — refers to commit counts per day over a 90-day trailing window. GitHub's contribution graph (and the GraphQL contributionsCollection.contributionCalendar) exposes daily contribution counts that include commits.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending"
+    }
+  ],
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The tool is a static web page (HTML/CSS/JS, no build step required) the user opens locally in a browser (file:// or a trivial static-server scenario).",
+      "confidence": "high",
+      "rationale": "Prompt is silent on platform; user is on Windows; 'a tool' with no server, account, or persistence requirements points to the simplest deliverable: a single-page web app. Browsers are universally available and can call GitHub's public APIs via fetch.",
+      "what_breaks_if_wrong": "If the user actually wanted a CLI, a native desktop app, or a hosted web service, the delivered artifact would still 'work' but would not match form expectations. Mitigation: restatement makes the form explicit so user can flag mismatch on first contact."
+    },
+    {
+      "id": "A2",
+      "assumption": "The user-supplied input is a GitHub login handle (e.g., 'torvalds'), not a numeric user ID, profile URL, or email.",
+      "confidence": "high",
+      "rationale": "Prompt says 'GitHub username' verbatim. Username = login in GitHub vocabulary.",
+      "what_breaks_if_wrong": "Minor — accepting a pasted profile URL is a small convenience extension and can be added by stripping a 'github.com/' prefix in input handling. Not blocking."
+    },
+    {
+      "id": "A3",
+      "assumption": "Only public data is shown. No GitHub authentication is required for the basic flow.",
+      "confidence": "high",
+      "rationale": "Prompt does not mention auth, OAuth, login, private repos, or 'my' profile. A profile card for an arbitrary username is a public-data use case.",
+      "what_breaks_if_wrong": "Private repos and private contributions would not appear. This is the correct default for a public-profile viewer."
+    },
+    {
+      "id": "A4",
+      "assumption": "The card is rendered for one username at a time (single-target view, not a comparison or list).",
+      "confidence": "high",
+      "rationale": "Prompt: 'takes a GitHub username' (singular) and 'shows me a developer profile card for them' (singular subject).",
+      "what_breaks_if_wrong": "User wanting multi-user comparison would see the tool as functional but limited. Easy follow-on."
+    },
+    {
+      "id": "A5",
+      "assumption": "Pinned repos are shown as the repositories the user has explicitly pinned on their profile (GitHub's 'pinned' feature), up to six.",
+      "confidence": "high",
+      "rationale": "Direct lexical match: 'pinned repos' is a named GitHub feature with a specific data source (GraphQL user.pinnedItems, type REPOSITORY).",
+      "what_breaks_if_wrong": "If the user has not pinned anything, the section will be empty — surface a graceful empty state."
+    },
+    {
+      "id": "A6",
+      "assumption": "Contribution streak is the current consecutive-day streak: the number of trailing consecutive days (ending today, in the user's contribution-calendar time zone — GitHub uses UTC by default) with at least one contribution.",
+      "confidence": "medium",
+      "rationale": "'Streak' is an interpretation. Current-streak is the most common UX convention in third-party GitHub profile widgets (e.g., the popular 'github-readme-streak-stats' project). Longest-streak is a plausible alternative. See IP2.",
+      "what_breaks_if_wrong": "Number shown would not match user's mental model. Mitigation: label the figure explicitly ('Current streak: N days') so the metric is unambiguous on first contact."
+    },
+    {
+      "id": "A7",
+      "assumption": "Most-used language is computed from the user's owned public repositories, weighted by total bytes of code per language summed across those repos (the Linguist byte-count method used by GitHub's own profile language bar).",
+      "confidence": "medium",
+      "rationale": "This is the method GitHub itself uses on the profile page sidebar. Alternatives (count of repos with that primary language, or commit-weighted) are defensible. See IP3.",
+      "what_breaks_if_wrong": "Reported language could differ from what the user expects. Mitigation: label clearly ('Most-used language across public repos') and surface the assumption in the visible card."
+    },
+    {
+      "id": "A8",
+      "assumption": "The 90-day commit-activity visualization shows daily commit/contribution counts for the trailing 90 days ending on the day of the lookup, rendered as a compact chart (bar chart or heatmap strip).",
+      "confidence": "medium",
+      "rationale": "Prompt specifies 'commit activity for the last 90 days' and 'small visualization.' GitHub's GraphQL contributionsCollection.contributionCalendar provides daily contribution counts; a 90-day slice from today backward is the literal reading. The exact data source (commits-only via REST events vs. all-contributions via GraphQL calendar) is an inflection — see IP4.",
+      "what_breaks_if_wrong": "If 'commits' is read strictly (excluding PRs, issues, reviews), counts will be lower than the all-contributions calendar. Label clearly."
+    },
+    {
+      "id": "A9",
+      "assumption": "Network calls go directly from the user's browser to api.github.com (no proxy server).",
+      "confidence": "high",
+      "rationale": "Static-page deliverable + GitHub API supports CORS for browser-origin requests on the public endpoints used.",
+      "what_breaks_if_wrong": "If GitHub disables CORS for an endpoint we need, fallback would require a tiny static-served wrapper. Currently CORS is enabled for both REST (api.github.com) and GraphQL endpoints."
+    },
+    {
+      "id": "A10",
+      "assumption": "There is no persistence: no localStorage history of looked-up users, no favorites, no caching beyond the in-memory page session.",
+      "confidence": "medium",
+      "rationale": "Prompt does not request persistence. Adding history would be gold-plating. Adding a PAT field that persists locally is the one borderline case — see IP1.",
+      "what_breaks_if_wrong": "User would re-type usernames. Acceptable for v1."
+    },
+    {
+      "id": "A11",
+      "assumption": "The card is shown for a username that exists; if the username is not found, the tool shows a clear 'user not found' message.",
+      "confidence": "high",
+      "rationale": "Basic error handling is implicit in any user-facing lookup tool.",
+      "what_breaks_if_wrong": "Silent failure would be a defect on first contact."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "API authentication / rate limiting",
+      "choices": [
+        "Unauthenticated only: simplest deliverable, but GitHub limits unauthenticated requests to 60/hour per IP for REST and effectively disallows the GraphQL endpoint (GraphQL requires a token). This breaks the pinned-repos and contribution-calendar requirements outright.",
+        "Optional user-supplied Personal Access Token (PAT): the page has an optional input field where the user pastes their own PAT. With a token, all required GitHub data sources become reachable; without one, the tool degrades gracefully or refuses with a clear message.",
+        "Bundled token: ship a token inside the static page. Rejected on security grounds (token would be public)."
+      ],
+      "default_branch": "Optional user-supplied PAT, with the token field prominent in the UI and a one-line explanation of why it's needed. PAT is held in memory for the session (and optionally in localStorage if the user opts in, but default off). The tool may also attempt unauthenticated REST calls for the parts that work that way (basic user info, public repo list), and fall back to a clear 'token required for pinned repos and contribution graph' message if no PAT is provided.",
+      "importance": "high",
+      "importance_action": "evidence_backed",
+      "importance_action_evidence": "GitHub GraphQL API authentication is documented as required for all queries (docs.github.com/en/graphql/guides/forming-calls-with-graphql, 'You must use a personal access token, OAuth token, GitHub App installation access token, or GitHub Actions token to authenticate'). pinnedItems and contributionsCollection are only available via GraphQL. REST API rate limit of 60/hr unauthenticated vs 5000/hr authenticated is documented at docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api. Therefore: a useful build of this tool requires authentication for at least the pinned-repos and contribution-streak/calendar features. Bundling a token in a static page would expose it publicly — rejected. Asking the user to supply their own PAT is the standard pattern for client-side GitHub tools (used by github-readme-stats and similar).",
+      "why_inflection": "This decision determines whether the tool can fulfill its stated requirements at all. Without a PAT path, pinned repos and contribution streak cannot be retrieved. With a PAT path, the UX gains one field but everything works."
+    },
+    {
+      "id": "IP2",
+      "topic": "Definition of 'contribution streak'",
+      "choices": [
+        "Current streak: consecutive days ending today (or most recent contribution day) with >=1 contribution.",
+        "Longest streak: longest consecutive-day run anywhere in the user's contribution history.",
+        "Both: show current and longest side by side."
+      ],
+      "default_branch": "Current streak, labeled explicitly as 'Current streak: N days' so the metric is unambiguous.",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Third-party GitHub streak widgets (e.g., the widely-used github-readme-streak-stats project) display current streak as the primary headline number, often with longest streak as a secondary figure. Current-streak matches the live, motivational connotation of the word 'streak' in everyday use ('don't break your streak'). Label-on-the-card mitigates any mismatch with user expectation on first contact.",
+      "why_inflection": "Different defensible reads of one word. Picking and labeling resolves it cheaply."
+    },
+    {
+      "id": "IP3",
+      "topic": "Aggregation method for 'most-used language'",
+      "choices": [
+        "Bytes-weighted across user's public repos (sum bytes per language across all owned public repos; pick max). Matches GitHub's own profile sidebar method.",
+        "Repo-count: count how many public repos have each language as primary; pick max.",
+        "Commit-weighted: weight by commit counts. Most expensive; requires per-repo commit walks."
+      ],
+      "default_branch": "Bytes-weighted across owned public repos (GitHub Linguist method), excluding forks. Label as 'Most-used language' with a small explanatory tooltip if hover is feasible.",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "GitHub's own profile page uses bytes-weighted Linguist aggregation for the language bar. Matching this method makes the tool's answer match what the user sees on github.com, which is the most defensible reference point. Excluding forks is the standard convention because forks would heavily skew the count toward whichever languages the user happened to fork.",
+      "why_inflection": "Different methods give materially different answers for some users. Matching the canonical GitHub method is the lowest-surprise choice."
+    },
+    {
+      "id": "IP4",
+      "topic": "Data source for the 90-day commit-activity visualization",
+      "choices": [
+        "GraphQL contributionsCollection.contributionCalendar, sliced to last 90 days. Counts all contributions (commits, PRs, issues, reviews) per day. Single query, complete coverage.",
+        "REST events API: pull /users/{login}/events (up to 300 most recent events) and filter to PushEvent commits. Strictly 'commits' but capped at 300 events / 90 days and excludes private-contribution counts.",
+        "Per-repo commits API: walk every owned repo and count commits authored by the user per day in window. Most accurate for 'commits' definition but very expensive (N repos x rate-limited calls)."
+      ],
+      "default_branch": "GraphQL contributionsCollection.contributionCalendar, last 90 days, labeled in the UI as 'Contribution activity (last 90 days)' to be honest about what the bars represent. The contribution calendar's daily counts are the same data underpinning GitHub's profile contribution graph and are dominated by commits for most active users.",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "GraphQL contributionCalendar returns daily totalContributions for up to one year per query, well-suited to a 90-day slice. It is documented at docs.github.com/en/graphql/reference/objects#contributioncalendar. The PushEvent path is bounded by the 300-event cap on /users/{login}/events and would silently undercount any user with high activity. Per-repo walking is rate-prohibitive for users with many repos. Labeling the chart as 'contribution activity' (not strictly 'commits') keeps the visualization honest under the chosen data source.",
+      "why_inflection": "The chosen data source affects both the numbers shown and the strict accuracy of the 'commits' label. The default favors completeness + the cheaper API path + a clarifying label over strict-commits-only at the cost of coverage."
+    },
+    {
+      "id": "IP5",
+      "topic": "Visualization form for the 90-day chart",
+      "choices": [
+        "Bar chart: 90 vertical bars, one per day.",
+        "Heatmap strip: 90 cells colored by intensity (mini contribution-graph style, ~13 weeks).",
+        "Sparkline: continuous line of daily counts."
+      ],
+      "default_branch": "Heatmap strip (~13 weeks x 7 days grid), echoing GitHub's own contribution-graph visual idiom so users instantly recognize what they're looking at.",
+      "importance": "low",
+      "importance_action": "n/a",
+      "importance_action_evidence": "n/a",
+      "why_inflection": "Visual form preference. Heatmap matches the existing GitHub mental model; bars are also fine. TD/Frontend may revisit."
+    },
+    {
+      "id": "IP6",
+      "topic": "Card visual style and layout",
+      "choices": [
+        "GitHub-native dark theme styling (gh-dark-mode colors, system-ui font).",
+        "GitHub-native light theme styling.",
+        "Neutral generic card.",
+        "Theme toggle."
+      ],
+      "default_branch": "GitHub-native dark theme (most common developer default), with a single light/dark toggle if cheap to add. Card uses GitHub's color palette and Inter / system-ui typography to feel like a natural extension of github.com.",
+      "importance": "low",
+      "importance_action": "n/a",
+      "importance_action_evidence": "n/a",
+      "why_inflection": "Aesthetic preference. Defaulting to dark matches both developer-tool norms and GitHub's own dominant theme."
+    }
+  ],
+  "first_contact_requirements": [
+    {
+      "id": "FC.1",
+      "description": "Opening the delivered file in a modern desktop browser on Windows (double-click index.html, or via a trivially-launched local static server if needed for CORS/module reasons) renders the tool's UI without console errors.",
+      "artifact_type_basis": "Static web page deliverable on a Windows host."
+    },
+    {
+      "id": "FC.2",
+      "description": "The page presents an obvious input for a GitHub username and a way to submit it (button or Enter key).",
+      "artifact_type_basis": "Lookup tool — the primary input must be unmissable."
+    },
+    {
+      "id": "FC.3",
+      "description": "The page presents an obvious, labeled field for an optional GitHub Personal Access Token with a one-line explanation of why it is needed and a link to GitHub's PAT creation page.",
+      "artifact_type_basis": "GraphQL features (pinned repos, contribution calendar) require authentication; user must be able to provide a token without leaving the page."
+    },
+    {
+      "id": "FC.4",
+      "description": "Submitting a valid, existing GitHub username (e.g., 'torvalds', 'gaearon', 'octocat') with a valid PAT renders a card showing: (a) the user's avatar, name, and handle, (b) pinned repositories (up to six, with repo name, description, language, stars), (c) a current contribution streak in days, (d) a most-used language label, (e) a 90-day contribution-activity visualization.",
+      "artifact_type_basis": "Direct enumeration of the four named card elements in the prompt."
+    },
+    {
+      "id": "FC.5",
+      "description": "Submitting a username that does not exist on GitHub shows a clear, non-cryptic 'user not found' message.",
+      "artifact_type_basis": "Lookup tool must handle the not-found case gracefully."
+    },
+    {
+      "id": "FC.6",
+      "description": "Submitting a request without a PAT either (a) gracefully shows the parts that work unauthenticated and a clear message that pinned-repos / contribution data needs a token, or (b) shows a clear up-front message that a PAT is required, depending on TD/Frontend's chosen design. Either way, the user is never left with an unexplained blank card.",
+      "artifact_type_basis": "GitHub API auth requirements are a known constraint; the failure mode must be informative."
+    },
+    {
+      "id": "FC.7",
+      "description": "Hitting GitHub's rate limit (or providing an invalid PAT) produces a clear, actionable error message rather than a silent blank state.",
+      "artifact_type_basis": "Public-API tool — rate-limit and auth-failure are the two most likely error modes."
+    },
+    {
+      "id": "FC.8",
+      "description": "A user with no pinned repositories renders a clear empty-state for the pinned section (e.g., 'No pinned repositories') rather than a missing/broken section.",
+      "artifact_type_basis": "Pinned repos are optional on GitHub; the empty case is expected."
+    },
+    {
+      "id": "FC.9",
+      "description": "The card labels each metric clearly enough that the user can tell, on sight, what 'streak', 'most-used language', and the 90-day chart actually count (e.g., 'Current streak', 'Most-used language across public repos', 'Contribution activity (last 90 days)').",
+      "artifact_type_basis": "Derived metrics with multiple defensible interpretations must self-disclose their definitions for first-contact comprehension."
+    },
+    {
+      "id": "FC.10",
+      "description": "Looking up a different username after a first lookup works without a page reload (the form remains usable; the card updates).",
+      "artifact_type_basis": "A lookup tool that only works once would be a defect on the second interaction."
+    }
+  ],
+  "out_of_scope": [
+    "User authentication / login flow for the tool itself (no accounts).",
+    "Server-side component, hosted backend, or proxy server.",
+    "Database or persistent storage of looked-up users.",
+    "Comparing multiple GitHub users side by side.",
+    "Showing private repositories or private-contribution data of accounts other than the PAT owner.",
+    "Editing or writing to GitHub (no follows, no stars, no issue creation — read-only).",
+    "Organization profiles (the prompt says 'username'; org-handle support is not specified).",
+    "GitHub Enterprise Server endpoints (only github.com).",
+    "Mobile-first responsive design beyond what falls out for free; desktop browser is the primary target.",
+    "Export / share / embed of the card as an image or shareable link.",
+    "Notifications, scheduled refresh, or background polling.",
+    "Internationalization / multi-language UI."
+  ]
+}

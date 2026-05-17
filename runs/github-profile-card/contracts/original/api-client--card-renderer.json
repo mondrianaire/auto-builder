@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "from_section": "api-client",
+  "to_section": "card-renderer",
+  "interface_kind": "es_module_named_exports",
+  "module_path": "js/api-client.js",
+  "exports": [
+    {
+      "name": "fetchProfilePayload",
+      "kind": "async_function",
+      "note": "Same export as the api-client--data-derivers contract; card-renderer reads ProfilePayload.user and ProfilePayload.pinned_repos directly without further derivation."
+    }
+  ],
+  "shape_fields_consumed_by_card_renderer": [
+    "user.login",
+    "user.name",
+    "user.avatar_url",
+    "user.html_url",
+    "user.bio",
+    "user.public_repos",
+    "user.followers",
+    "user.following",
+    "pinned_repos[].name",
+    "pinned_repos[].description",
+    "pinned_repos[].primary_language_name",
+    "pinned_repos[].primary_language_color",
+    "pinned_repos[].stargazer_count",
+    "pinned_repos[].fork_count",
+    "pinned_repos[].url"
+  ],
+  "invariants": [
+    "Strings consumed directly into the DOM are passed through textContent (not innerHTML) by card-renderer — api-client does not need to escape, but does not pre-render any HTML either.",
+    "pinned_repos may be an empty array (graceful empty state — FC.8); card-renderer renders 'No pinned repositories' in that case."
+  ],
+  "rationale": "Pinned repos and basic user info are display-ready straight from the api-client shape; routing them through data-derivers would add a pass-through layer with no value."
+}

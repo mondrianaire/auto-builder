@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "created_at": "2026-05-16T01:00:00Z",
+  "based_on": {
+    "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections": "decisions/technical-discovery/sections-v1.json"
+  },
+  "verdict": "pass_with_recommendations",
+  "findings": [
+    {
+      "id": "F.1",
+      "check_id": "proper_noun_citation",
+      "severity": "low",
+      "description": "All six proper nouns (PN.1 GitHub, PN.2 GitHub username, PN.3 pinned repos, PN.4 contribution streak, PN.5 most-used language, PN.6 commit activity for the last 90 days) are recorded in the ledger with verification_status: pending. TD did not dispatch Researcher explicitly, but Discovery already gathered the necessary evidence in IP1 (importance_action: evidence_backed) and TD locked each PN with assertions whose source: canonical_evidence and citations_pointer references probe-quick-github-api/findings.json. The findings file is present and every cited C.1–C.7 entry exists with non-empty claim text. Per Editor charter reconsider clause, this is the 'verified by alternate route' case. The only structural artifact missing is a Discovery-side update of verification_status from 'pending' to 'verified' (or equivalent annotation) for the six PNs so downstream roles see the lock unambiguously.",
+      "evidence": "decisions/discovery/ledger-v1.json#proper_nouns (all six show verification_status: pending) cross-referenced with decisions/technical-discovery/sections-v1.json#machine_checkable_assertions (MCA.api-client.6 source: canonical_evidence, citations_pointer references C.2,C.3; DCA.PN1..PN6 reference C.5, C.3, C.2, C.6, C.2 respectively) and research/probes/probe-quick-github-api/findings.json (all citations C.1–C.7 present with claim text)",
+      "recommended_route": "discovery_amendment",
+      "recommended_action": "Optionally annotate ledger PN.1–PN.6 with verification_status: verified_by_alternate_route (or equivalent) and a pointer to research/probes/probe-quick-github-api/findings.json so the alternate-route lock is visible without cross-walking. This is a documentation hygiene item; the substantive coverage is in place."
+    },
+    {
+      "id": "F.2",
+      "check_id": "td_ip_source",
+      "severity": "low",
+      "description": "DCA.PN2 (GitHub username treatment) carries source: td_plan but the underlying behavior — that 'username' substitutes into /users/{login} and user(login: ...) — is partially an external-system property (GitHub API URL shape). The citation for that URL shape lives in findings.json C.5 and C.3. Not a Principle H violation in the strict sense because the assertion target is TD's own code substituting the value rather than GitHub's URL shape itself, but a citations_pointer to C.5/C.3 would make the source attribution airtight.",
+      "evidence": "decisions/technical-discovery/sections-v1.json#discovery_coverage_assertions[id=DCA.PN2] (source: td_plan, no citations_pointer)",
+      "recommended_route": "td_impact_analysis",
+      "recommended_action": "Optionally upgrade DCA.PN2 source to canonical_evidence with citations_pointer to C.5 and C.3, or leave as-is — the assertion check is structural (source-grep for URL template) and the GitHub URL shape is canonical-evidenced elsewhere (DCA.PN1, DCA.PN3). Low priority."
+    }
+  ],
+  "routed_to": [],
+  "recommendations": [
+    "Annotate ledger proper_nouns[].verification_status to reflect that PN.1–PN.6 are locked via Discovery-gathered canonical evidence (probe-quick-github-api/findings.json) rather than direct Researcher dispatch. Current 'pending' state understates the actual lock.",
+    "Consider upgrading DCA.PN2 to source: canonical_evidence with citations_pointer to C.5 + C.3 for tidiness; not blocking."
+  ],
+  "checks_performed": {
+    "proper_noun_citation": {
+      "result": "pass_via_alternate_route",
+      "detail": "All 6 PNs target_defining + pending in ledger, but each has a corresponding MCA/DCA with source: canonical_evidence + citations_pointer to a real findings.json entry. Per Editor charter reconsider clause, treat as verified-by-alternate-route. Flagged as low-severity hygiene only."
+    },
+    "discovery_high_importance_action": {
+      "result": "pass",
+      "detail": "Only IP1 is high-importance; it has importance_action: evidence_backed with non-empty importance_action_evidence citing GitHub's documented auth requirement and rate-limit ceilings. IP2–IP6 are medium/low — not gated by this check."
+    },
+    "td_ip_source": {
+      "result": "pass",
+      "detail": "Every assertion in machine_checkable_assertions[] and discovery_coverage_assertions[] has a source field. td_plan-sourced assertions target TD's own code/DOM/function behavior, not external system properties. External-system claims (GraphQL bodies, REST URLs, language byte-counts, calendar shape, CORS) are sourced canonical_evidence with citations_pointers. One minor edge case noted in F.2."
+    },
+    "first_contact_coverage": {
+      "result": "pass",
+      "detail": "All 10 FCs in ledger.first_contact_requirements[] have at least one DCA.FC* + MCA pair covering them: FC.1→DCA.FC1+MCA.ui-shell.5; FC.2→DCA.FC2+MCA.ui-shell.1+MCA.ui-shell.3; FC.3→DCA.FC3+MCA.ui-shell.2+MCA.ui-shell.4; FC.4→DCA.FC4+MCA.api-client.2+MCA.card-renderer.1+PNV.1; FC.5→DCA.FC5+MCA.api-client.3; FC.6→DCA.FC6+MCA.api-client.5; FC.7→DCA.FC7+MCA.api-client.4; FC.8→DCA.FC8+MCA.card-renderer.2; FC.9→DCA.FC9+MCA.card-renderer.3+MCA.card-renderer.4+MCA.card-renderer.5; FC.10→DCA.FC10+MCA.ui-shell.6."
+    },
+    "telos_coherence": {
+      "result": "pass",
+      "detail": "Telos requires a single profile card with four named elements (pinned repos, contribution streak, most-used language, 90-day commit-activity viz) for a given GitHub username. PNV.1 + DCA.telos + DCA.FC4 jointly exercise all four. card-renderer's charter and acceptance enumerate all four elements; ui-shell's charter wires input → fetch → render. If all assertions pass, the artifact satisfies the telos."
+    }
+  }
+}

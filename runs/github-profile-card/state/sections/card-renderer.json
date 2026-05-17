@@ -1,0 +1,25 @@
+{
+  "section_id": "card-renderer",
+  "status": "verified",
+  "wave": 2,
+  "started_at": "2026-05-16T01:02:31Z",
+  "verified_at": "2026-05-16T01:03:25Z",
+  "dispatch_mode": "inline",
+  "builders_dispatched": ["builder-card-renderer-b1"],
+  "overseer_verdict": "pass",
+  "overseer_notes": "renderCard(container, payload, derived) implemented. Header + pinned + stats + 13x7 heatmap SVG. All user strings via textContent / setAttribute with URL validation for href/src. Heatmap has exactly 91 rect cells. Required label strings present: 'Current streak', 'Most-used language', 'Contribution activity (last 90 days)', 'Pinned repositories', 'No pinned repositories'.",
+  "artifacts": [
+    "output/builders/card-renderer/builder-card-renderer-b1/output.js",
+    "output/builders/card-renderer/builder-card-renderer-b1/metadata.json"
+  ],
+  "acceptance_assertions_status": {
+    "MCA.card-renderer.1": "pass (avatar img written via setAttribute('src', payload.user.avatar_url))",
+    "MCA.card-renderer.2": "pass (pinned section + empty-state branch)",
+    "MCA.card-renderer.3": "pass (literal 'Current streak' string)",
+    "MCA.card-renderer.4": "pass (literal 'Most-used language' string)",
+    "MCA.card-renderer.5": "pass (literal 'Contribution activity (last 90 days)' string)",
+    "MCA.card-renderer.6": "pass (91 rects)",
+    "MCA.card-renderer.7": "pass (no innerHTML = userString patterns; static markup only)",
+    "MCA.card-renderer.8": "pass (5-level GitHub-style intensity palette)"
+  }
+}

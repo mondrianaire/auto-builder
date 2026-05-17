@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "created_at": "2026-05-16T00:10:00Z",
+  "probe_id": "probe-quick-github-api",
+  "origin": "td-initial inline probe (Discovery already gathered evidence in ledger IP1; this artifact makes the citations addressable for assertion citations_pointer fields)",
+  "topic": "GitHub API authentication, rate limits, and the specific objects required for pinned repos and contribution calendar",
+  "citations": [
+    {
+      "id": "C.1",
+      "url": "https://docs.github.com/en/graphql/guides/forming-calls-with-graphql",
+      "claim": "All GraphQL API requests must be authenticated. 'You must use a personal access token, OAuth token, GitHub App installation access token, or GitHub Actions token to authenticate.' Authorization header form: 'Authorization: bearer YOUR-TOKEN'.",
+      "applies_to": ["pinned-repos retrieval (GraphQL pinnedItems)", "contribution-calendar retrieval (GraphQL contributionsCollection)"]
+    },
+    {
+      "id": "C.2",
+      "url": "https://docs.github.com/en/graphql/reference/objects#contributioncalendar",
+      "claim": "ContributionCalendar exposes weeks[].contributionDays[].{date, contributionCount, color, weekday} and totalContributions for a contributionsCollection. A contributionsCollection accepts from/to ISO-8601 datetime arguments to scope the window (max 1 year per query).",
+      "applies_to": ["90-day contribution-activity visualization", "current-streak derivation from per-day contributionCount series"]
+    },
+    {
+      "id": "C.3",
+      "url": "https://docs.github.com/en/graphql/reference/objects#user (pinnedItems field)",
+      "claim": "User.pinnedItems(first: N, types: [REPOSITORY]) returns up to 6 pinned items. Each Repository node exposes name, description, primaryLanguage{name,color}, stargazerCount, forkCount, url, isFork, isPrivate.",
+      "applies_to": ["pinned-repos section of the card"]
+    },
+    {
+      "id": "C.4",
+      "url": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+      "claim": "Unauthenticated REST requests are limited to 60 per hour per IP. Authenticated requests (PAT) are limited to 5,000 per hour. GraphQL rate limit is point-based (5,000 points/hour authenticated, no unauth quota).",
+      "applies_to": ["IP1 default branch — PAT path is required for any practical use"]
+    },
+    {
+      "id": "C.5",
+      "url": "https://docs.github.com/en/rest/users/users#get-a-user",
+      "claim": "GET https://api.github.com/users/{username} returns 200 with the public user object (login, name, avatar_url, bio, html_url, public_repos, followers, following) or 404 if the username does not exist. CORS is enabled for browser origins.",
+      "applies_to": ["FC.2/FC.4 avatar + handle + name display", "FC.5 user-not-found 404 handling"]
+    },
+    {
+      "id": "C.6",
+      "url": "https://docs.github.com/en/rest/repos/repos#list-repositories-for-a-user",
+      "claim": "GET https://api.github.com/users/{username}/repos?per_page=100&type=owner returns the user's owned public repositories. Each repo exposes a 'language' (primary language string) and 'languages_url'. The full per-language byte breakdown requires GET /repos/{owner}/{repo}/languages per repo.",
+      "applies_to": ["A7 most-used-language aggregation (bytes-weighted, owned, non-fork)"]
+    },
+    {
+      "id": "C.7",
+      "url": "https://docs.github.com/en/rest/overview/resources-in-the-rest-api#cross-origin-resource-sharing",
+      "claim": "The REST API supports CORS for AJAX requests from any origin (Access-Control-Allow-Origin: *). The GraphQL endpoint at https://api.github.com/graphql also returns permissive CORS headers for browser-origin POST requests with Authorization header.",
+      "applies_to": ["A9 — direct browser-to-api.github.com calls with no proxy"]
+    }
+  ],
+  "decisions_supported": [
+    {
+      "decision": "Use GraphQL for pinnedItems + contributionsCollection in a single query (one network round-trip for the two PAT-requiring data sources).",
+      "evidence": ["C.1", "C.2", "C.3"]
+    },
+    {
+      "decision": "Use REST /users/{login} for basic user info (works unauthenticated within 60/hr limit and via the same PAT for higher limit).",
+      "evidence": ["C.5"]
+    },
+    {
+      "decision": "Compute most-used language from REST /users/{login}/repos (page 1, per_page=100, type=owner, excluding forks) + per-repo /languages call for each non-fork owned repo. Bounded by 5000/hr PAT quota.",
+      "evidence": ["C.4", "C.6"]
+    },
+    {
+      "decision": "Issue the contributionsCollection query with from = (today - 89 days at 00:00 UTC), to = (today at 23:59 UTC) to get a 90-day window with full daily resolution.",
+      "evidence": ["C.2"]
+    },
+    {
+      "decision": "Derive 'current streak' client-side from contributionCalendar.weeks[].contributionDays[] across a 1-year window (one extra query) to capture streaks longer than 90 days.",
+      "evidence": ["C.2"]
+    }
+  ]
+}
