@@ -683,18 +683,41 @@
     {
       "id": "rev-0",
       "kind": "primary_run",
-      "ref": null,
-      "ts": "2026-05-16",
-      "summary": "Initial Auto Builder run",
+      "ref": "867971bca327b2610a9d24d62eab9468dde418ce",
+      "ts": "2026-05-17T02:33:23-04:00",
+      "summary": "Primary delivery: github-profile-card",
       "verdict": "pass_with_concerns",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
       "triggered_by_outcome": null,
       "sources": [
-        "synthesized"
+        "synthesized",
+        "git"
       ],
-      "first_delivery_outcome": "succeeded_with_concerns"
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "contributing_commits": [
+        {
+          "sha": "be1d3ea46f60e81fe19b3859516e0eec6b0d7a31",
+          "ts": "2026-05-17T02:33:23-04:00",
+          "subject": "[run:github-profile-card] delivery: final artifact written"
+        },
+        {
+          "sha": "5467bb0803ca0ecd4ecb0cedc1f0c5e035bb4553",
+          "ts": "2026-05-17T00:40:47-04:00",
+          "subject": "[codex-snapshot] post-delivery runs/github-profile-card/ — final artifact + reports"
+        },
+        {
+          "sha": "cb99c8abfb9806ac975a07c1aedae2dfcecf8a11",
+          "ts": "2026-05-17T00:32:22-04:00",
+          "subject": "[scripts] repo-root tooling update"
+        },
+        {
+          "sha": "5df3c5f200e46cbeeb50cbeb74004af619019064",
+          "ts": "2026-05-16T23:29:15-04:00",
+          "subject": "[codex-snapshot] in-flight runs/github-profile-card/ for dashboard visibility"
+        }
+      ]
     }
   ],
   "file_tree": null,
