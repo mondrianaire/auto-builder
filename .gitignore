@@ -118,3 +118,13 @@ scratch/
 
 # v0.16 one-time verification tools — local only
 /verify-v016.bat
+
+# wake-up + sync recovery tools (local only)
+/wake-sync.bat
+/finish-sync.bat
+/pop-stash.bat
+/snapshot-build.bat
+/check-bundle.bat
+/sync-origin.bat
+/wake-deploy.bat
+/.commit-msg-snapshot.txt
