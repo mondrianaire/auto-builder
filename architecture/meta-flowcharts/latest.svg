@@ -1,0 +1,687 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2600 4890" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow-spine" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#000"/>
+    </marker>
+    <marker id="arrow-esc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c43c3c"/>
+    </marker>
+    <marker id="arrow-obs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+    <marker id="arrow-mode" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a1a1a"/>
+    </marker>
+    <marker id="arrow-audit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a4a1a"/>
+    </marker>
+    <marker id="arrow-reaudit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a5a5a"/>
+    </marker>
+  </defs>
+  <text x="1300" y="50" text-anchor="middle" font-size="28" font-weight="bold">AutoBuilder Architecture v1.11 — Role Topology</text>
+  <text x="1300" y="78" text-anchor="middle" font-size="13" fill="#666" font-style="italic">Build-agnostic model of every role, its atomic steps, and the connections between them.</text>
+  <rect x="140" y="110" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="140" y="110" width="360" height="5" fill="#3a6abf"/>
+  <text x="320" y="185" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">18</text>
+  <text x="320" y="213" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">ROLES</text>
+  <rect x="530" y="110" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="530" y="110" width="360" height="5" fill="#8a3aaf"/>
+  <text x="710" y="185" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">28</text>
+  <text x="710" y="213" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">CONNECTIONS</text>
+  <rect x="920" y="110" width="360" height="115" fill="#fff" stroke="#dcdcdc" stroke-width="1.5"/>
+  <rect x="920" y="110" width="360" height="5" fill="#c43c3c"/>
+  <text x="1100" y="185" text-anchor="middle" font-size="58" font-weight="bold" fill="#1a1a1a">9</text>
+  <text x="1100" y="213" text-anchor="middle" font-size="13" font-weight="bold" fill="#666" letter-spacing="2.5">ESCALATION PATHS</text>
+  <text x="60" y="303" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 0 — KICKOFF</text>
+  <line x1="60" y1="311" x2="2540" y2="311" stroke="#ddd"/>
+  <text x="60" y="761" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 1 — DISCOVERY</text>
+  <line x1="60" y1="769" x2="2540" y2="769" stroke="#ddd"/>
+  <text x="60" y="1324" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 2 — TECHNICAL DISCOVERY</text>
+  <line x1="60" y1="1332" x2="2540" y2="1332" stroke="#ddd"/>
+  <text x="60" y="1868" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 3 — EDITOR REVIEW</text>
+  <line x1="60" y1="1876" x2="2540" y2="1876" stroke="#ddd"/>
+  <text x="60" y="2280" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 4 — BUILD DISPATCH</text>
+  <line x1="60" y1="2288" x2="2540" y2="2288" stroke="#ddd"/>
+  <text x="60" y="2707" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 5 — BUILD EXECUTION (per section)</text>
+  <line x1="60" y1="2715" x2="2540" y2="2715" stroke="#ddd"/>
+  <text x="60" y="3117" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 6 — INTEGRATION</text>
+  <line x1="60" y1="3125" x2="2540" y2="3125" stroke="#ddd"/>
+  <text x="60" y="3501" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 7 — FINAL AUDIT</text>
+  <line x1="60" y1="3509" x2="2540" y2="3509" stroke="#ddd"/>
+  <text x="60" y="3925" font-size="14" font-weight="bold" fill="#888" letter-spacing="0.5">PHASE 8 — VERIFICATION</text>
+  <line x1="60" y1="3933" x2="2540" y2="3933" stroke="#ddd"/>
+  <!-- multi-mode wrapper: DISCOVERY · 3 MODES -->
+  <rect x="930" y="771" width="740" height="495" fill="none" stroke="#0a3a6a" stroke-width="2" rx="2"/>
+  <rect x="932" y="773" width="240" height="20" fill="#0a3a6a"/>
+  <text x="942" y="787" font-size="11" font-weight="bold" fill="#fff">DISCOVERY · 3 MODES</text>
+  <!-- multi-mode wrapper: TECHNICAL DISCOVERY · 2 MODES -->
+  <rect x="930" y="1334" width="740" height="476" fill="none" stroke="#0a3a6a" stroke-width="2" rx="2"/>
+  <rect x="932" y="1336" width="240" height="20" fill="#0a3a6a"/>
+  <text x="942" y="1350" font-size="11" font-weight="bold" fill="#fff">TECHNICAL DISCOVERY · 2 MODES</text>
+  <!-- multi-mode wrapper: RESEARCHER · 2 MODES -->
+  <rect x="2040" y="2644" width="480" height="746" fill="none" stroke="#0a3a6a" stroke-width="2" rx="2"/>
+  <rect x="2042" y="2646" width="240" height="20" fill="#0a3a6a"/>
+  <text x="2052" y="2660" font-size="11" font-weight="bold" fill="#fff">RESEARCHER · 2 MODES</text>
+  <!-- role: Orchestrator -->
+  <rect x="930" y="313" width="740" height="390" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="930" y="313" width="740" height="36" fill="#3a5a8c"/>
+  <text x="1300" y="336" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Orchestrator</text>
+  <text x="946" y="371" font-size="11" fill="#444" font-style="italic">The only role with direct user contact. Kickoff, escalation handling at the highest tier, final</text>
+  <text x="946" y="386" font-size="11" fill="#444" font-style="italic">delivery.</text>
+  <text x="946" y="407" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="946" y="423" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="968" y="423" font-size="11" fill="#222">Receive user prompt; create the run substrate at runs/{slug}/.</text>
+  <text x="946" y="439" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="968" y="439" font-size="11" fill="#222">Dispatch Discovery (Initial Mode) with the prompt.</text>
+  <text x="946" y="455" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="968" y="455" font-size="11" fill="#222">On Discovery returning a ledger: dispatch TD (Initial Mode).</text>
+  <text x="946" y="471" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="968" y="471" font-size="11" fill="#222">On TD returning sections + contracts: dispatch Editor.</text>
+  <text x="946" y="487" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="968" y="487" font-size="11" fill="#222">On Editor pass: dispatch Coordinator with the dispatch plan.</text>
+  <text x="946" y="503" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="968" y="503" font-size="11" fill="#222">Monitor for escalations; route Sev-4 to Demotion Mode, never to user.</text>
+  <text x="946" y="519" font-size="11" font-weight="bold" fill="#0a3a6a">7.</text>
+  <text x="968" y="519" font-size="11" fill="#222">On Coordinator build-complete: dispatch Integrator, then Critic final sweep, then CV.</text>
+  <text x="946" y="535" font-size="11" font-weight="bold" fill="#0a3a6a">8.</text>
+  <text x="968" y="535" font-size="11" fill="#222">On CV verdict: write run-report.md, finalize delivery, mark phase tasks complete.</text>
+  <text x="946" y="555" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="946" y="571" font-size="11" fill="#5a1a1a">• Only role allowed to surface to the user (at delivery, not mid-build).</text>
+  <text x="946" y="585" font-size="11" fill="#5a1a1a">• Does not make content decisions — delegates to Discovery / TD / etc.</text>
+  <!-- role: Discovery (initial) -->
+  <rect x="940" y="799" width="232" height="455" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="940" y="799" width="232" height="36" fill="#1e3a5f"/>
+  <text x="1056" y="822" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Discovery (initial)</text>
+  <text x="956" y="857" font-size="11" fill="#444" font-style="italic">Translates the user's</text>
+  <text x="956" y="872" font-size="11" fill="#444" font-style="italic">one-line prompt into a</text>
+  <text x="956" y="887" font-size="11" fill="#444" font-style="italic">structured assumption</text>
+  <text x="956" y="902" font-size="11" fill="#444" font-style="italic">ledger. Keeper of the user's</text>
+  <text x="956" y="917" font-size="11" fill="#444" font-style="italic">atomic intent for the entire</text>
+  <text x="956" y="932" font-size="11" fill="#444" font-style="italic">build.</text>
+  <text x="956" y="953" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="956" y="969" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="978" y="969" font-size="11" fill="#222">Read the prompt.</text>
+  <text x="978" y="983" font-size="11" fill="#222">Identify what's</text>
+  <text x="978" y="997" font-size="11" fill="#222">explicit vs. silent.</text>
+  <text x="956" y="1013" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="978" y="1013" font-size="11" fill="#222">Enumerate proper</text>
+  <text x="978" y="1027" font-size="11" fill="#222">nouns; flag each as</text>
+  <text x="978" y="1041" font-size="11" fill="#222">target-defining or</text>
+  <text x="978" y="1055" font-size="11" fill="#222">supportive (Principle</text>
+  <text x="978" y="1069" font-size="11" fill="#222">E).</text>
+  <text x="956" y="1085" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="978" y="1085" font-size="11" fill="#222">Use execution-context</text>
+  <text x="978" y="1099" font-size="11" fill="#222">evidence (path</text>
+  <text x="978" y="1113" font-size="11" fill="#222">separators, platform</text>
+  <text x="978" y="1127" font-size="11" fill="#222">hints) to resolve</text>
+  <text x="978" y="1141" font-size="11" fill="#222">environment IPs.</text>
+  <text x="956" y="1157" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="978" y="1157" font-size="11" fill="#222">Capture explicit</text>
+  <text x="978" y="1171" font-size="11" fill="#222">assumptions at high</text>
+  <text x="978" y="1185" font-size="11" fill="#222">confidence.</text>
+  <text x="956" y="1201" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="978" y="1201" font-size="11" fill="#222">Apply</text>
+  <text x="978" y="1215" font-size="11" fill="#222">simplest-within-reason</text>
+  <text x="978" y="1229" font-size="11" fill="#222">to silent items.</text>
+  <text x="956" y="1245" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="978" y="1245" font-size="11" fill="#222">Author the explicit</text>
+  <text x="978" y="1259" font-size="11" fill="#222">telos — single</text>
+  <text x="978" y="1273" font-size="11" fill="#222">canonical user-want</text>
+  <text x="978" y="1287" font-size="11" fill="#222">sentence (Principle</text>
+  <text x="978" y="1301" font-size="11" fill="#222">G).</text>
+  <text x="956" y="1317" font-size="11" font-weight="bold" fill="#0a3a6a">7.</text>
+  <text x="978" y="1317" font-size="11" fill="#222">Log inflection points</text>
+  <text x="978" y="1331" font-size="11" fill="#222">where multiple simple</text>
+  <text x="978" y="1345" font-size="11" fill="#222">interpretations fork</text>
+  <text x="978" y="1359" font-size="11" fill="#222">the build; pick a</text>
+  <text x="978" y="1373" font-size="11" fill="#222">default per IP.</text>
+  <text x="956" y="1389" font-size="11" font-weight="bold" fill="#0a3a6a">8.</text>
+  <text x="978" y="1389" font-size="11" fill="#222">Enumerate</text>
+  <text x="978" y="1403" font-size="11" fill="#222">first-contact</text>
+  <text x="978" y="1417" font-size="11" fill="#222">requirements for the</text>
+  <text x="978" y="1431" font-size="11" fill="#222">artifact type</text>
+  <text x="978" y="1445" font-size="11" fill="#222">(Principle G Tier 2).</text>
+  <text x="956" y="1461" font-size="11" font-weight="bold" fill="#0a3a6a">9.</text>
+  <text x="978" y="1461" font-size="11" fill="#222">List explicit</text>
+  <text x="978" y="1475" font-size="11" fill="#222">out-of-scope items.</text>
+  <text x="956" y="1491" font-size="11" font-weight="bold" fill="#0a3a6a">10.</text>
+  <text x="978" y="1491" font-size="11" fill="#222">Write the ledger to</text>
+  <text x="978" y="1505" font-size="11" fill="#222">decisions/discovery/ledger-v1.json.</text>
+  <text x="956" y="1525" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="956" y="1541" font-size="11" fill="#5a1a1a">• Never asks the user</text>
+  <text x="956" y="1555" font-size="11" fill="#5a1a1a">  questions mid-build</text>
+  <text x="956" y="1569" font-size="11" fill="#5a1a1a">  (Sev 4 routes</text>
+  <text x="956" y="1583" font-size="11" fill="#5a1a1a">  internally per</text>
+  <text x="956" y="1597" font-size="11" fill="#5a1a1a">  v1.10.1).</text>
+  <text x="956" y="1611" font-size="11" fill="#5a1a1a">• Does not propose</text>
+  <text x="956" y="1625" font-size="11" fill="#5a1a1a">  technical sections —</text>
+  <text x="956" y="1639" font-size="11" fill="#5a1a1a">  that is TD.</text>
+  <!-- role: Discovery (amendment) -->
+  <rect x="1184" y="799" width="232" height="455" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="1184" y="799" width="232" height="36" fill="#1e3a5f"/>
+  <text x="1300" y="822" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Discovery (amendment)</text>
+  <text x="1200" y="857" font-size="11" fill="#444" font-style="italic">Re-engaged when new evidence</text>
+  <text x="1200" y="872" font-size="11" fill="#444" font-style="italic">may invalidate prior</text>
+  <text x="1200" y="887" font-size="11" fill="#444" font-style="italic">assumptions. Produces a diff</text>
+  <text x="1200" y="902" font-size="11" fill="#444" font-style="italic">against the existing ledger</text>
+  <text x="1200" y="917" font-size="11" fill="#444" font-style="italic">— does not re-derive.</text>
+  <text x="1200" y="938" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="1200" y="954" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="1222" y="954" font-size="11" fill="#222">Read the new evidence</text>
+  <text x="1222" y="968" font-size="11" fill="#222">+ the existing ledger.</text>
+  <text x="1200" y="984" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="1222" y="984" font-size="11" fill="#222">Run the four-question</text>
+  <text x="1222" y="998" font-size="11" fill="#222">meta-check: does this</text>
+  <text x="1222" y="1012" font-size="11" fill="#222">invalidate, refine,</text>
+  <text x="1222" y="1026" font-size="11" fill="#222">add, or contradict</text>
+  <text x="1222" y="1040" font-size="11" fill="#222">prior assumptions?</text>
+  <text x="1200" y="1056" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="1222" y="1056" font-size="11" fill="#222">Author the diff — keep</text>
+  <text x="1222" y="1070" font-size="11" fill="#222">ledger-v1 untouched,</text>
+  <text x="1222" y="1084" font-size="11" fill="#222">write a</text>
+  <text x="1222" y="1098" font-size="11" fill="#222">ledger-diff-v{N}.json.</text>
+  <text x="1200" y="1114" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="1222" y="1114" font-size="11" fill="#222">Hand the diff back to</text>
+  <text x="1222" y="1128" font-size="11" fill="#222">the dispatcher</text>
+  <text x="1222" y="1142" font-size="11" fill="#222">(Orchestrator, TD</text>
+  <text x="1222" y="1156" font-size="11" fill="#222">impact, or</text>
+  <text x="1222" y="1170" font-size="11" fill="#222">Coordinator).</text>
+  <!-- role: Discovery (demotion) -->
+  <rect x="1428" y="799" width="232" height="455" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="1428" y="799" width="232" height="36" fill="#1e3a5f"/>
+  <text x="1544" y="822" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Discovery (demotion)</text>
+  <text x="1444" y="857" font-size="11" fill="#444" font-style="italic">Invoked when a proper noun</text>
+  <text x="1444" y="872" font-size="11" fill="#444" font-style="italic">whose canonical source was</text>
+  <text x="1444" y="887" font-size="11" fill="#444" font-style="italic">required cannot be verified.</text>
+  <text x="1444" y="902" font-size="11" fill="#444" font-style="italic">Authoritative ruling on</text>
+  <text x="1444" y="917" font-size="11" fill="#444" font-style="italic">whether the build can</text>
+  <text x="1444" y="932" font-size="11" fill="#444" font-style="italic">proceed.</text>
+  <text x="1444" y="953" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="1444" y="969" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="1466" y="969" font-size="11" fill="#222">Read the unreachable</text>
+  <text x="1466" y="983" font-size="11" fill="#222">proper noun + the</text>
+  <text x="1466" y="997" font-size="11" fill="#222">canonical evidence</text>
+  <text x="1466" y="1011" font-size="11" fill="#222">trail showing it could</text>
+  <text x="1466" y="1025" font-size="11" fill="#222">not be verified.</text>
+  <text x="1444" y="1041" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="1466" y="1041" font-size="11" fill="#222">Determine the noun</text>
+  <text x="1466" y="1055" font-size="11" fill="#222">role (target_defining</text>
+  <text x="1466" y="1069" font-size="11" fill="#222">or supportive) and the</text>
+  <text x="1466" y="1083" font-size="11" fill="#222">four-guardrail hold</text>
+  <text x="1466" y="1097" font-size="11" fill="#222">(no atomicity loss,</text>
+  <text x="1466" y="1111" font-size="11" fill="#222">telos preserved,</text>
+  <text x="1466" y="1125" font-size="11" fill="#222">alternatives</text>
+  <text x="1466" y="1139" font-size="11" fill="#222">exhausted,</text>
+  <text x="1466" y="1153" font-size="11" fill="#222">audit-evident).</text>
+  <text x="1444" y="1169" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="1466" y="1169" font-size="11" fill="#222">Issue verdict: demote</text>
+  <text x="1466" y="1183" font-size="11" fill="#222">(with substitute),</text>
+  <text x="1466" y="1197" font-size="11" fill="#222">best_effort_target_commitment</text>
+  <text x="1466" y="1211" font-size="11" fill="#222">(no substitute, build</text>
+  <text x="1466" y="1225" font-size="11" fill="#222">best-effort), or hold</text>
+  <text x="1466" y="1239" font-size="11" fill="#222">(escalate higher).</text>
+  <text x="1444" y="1255" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="1466" y="1255" font-size="11" fill="#222">Write the demotion</text>
+  <text x="1466" y="1269" font-size="11" fill="#222">record to</text>
+  <text x="1466" y="1283" font-size="11" fill="#222">decisions/discovery/demotion-v{N}.json</text>
+  <text x="1466" y="1297" font-size="11" fill="#222">— never modify</text>
+  <text x="1466" y="1311" font-size="11" fill="#222">ledger-v1.json.</text>
+  <text x="1444" y="1331" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="1444" y="1347" font-size="11" fill="#5a1a1a">• Only role with</text>
+  <text x="1444" y="1361" font-size="11" fill="#5a1a1a">  authority to rule on</text>
+  <text x="1444" y="1375" font-size="11" fill="#5a1a1a">  user-named referent</text>
+  <text x="1444" y="1389" font-size="11" fill="#5a1a1a">  substitution.</text>
+  <text x="1444" y="1403" font-size="11" fill="#5a1a1a">• Cannot modify</text>
+  <text x="1444" y="1417" font-size="11" fill="#5a1a1a">  ledger-v1 directly;</text>
+  <text x="1444" y="1431" font-size="11" fill="#5a1a1a">  writes a separate</text>
+  <text x="1444" y="1445" font-size="11" fill="#5a1a1a">  demotion record.</text>
+  <!-- role: Technical Discovery (initial) -->
+  <rect x="940" y="1362" width="354" height="436" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="940" y="1362" width="354" height="36" fill="#1e3a5f"/>
+  <text x="1117" y="1385" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Technical Discovery (initial)</text>
+  <text x="956" y="1420" font-size="11" fill="#444" font-style="italic">Translates Discovery's product spec into</text>
+  <text x="956" y="1435" font-size="11" fill="#444" font-style="italic">sections + interface contracts + technical</text>
+  <text x="956" y="1450" font-size="11" fill="#444" font-style="italic">decisions.</text>
+  <text x="956" y="1471" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="956" y="1487" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="978" y="1487" font-size="11" fill="#222">Read Discovery's ledger; select the</text>
+  <text x="978" y="1501" font-size="11" fill="#222">prompt-named verb that anchors the</text>
+  <text x="978" y="1515" font-size="11" fill="#222">artifact.</text>
+  <text x="956" y="1531" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="978" y="1531" font-size="11" fill="#222">Ratify Discovery's IPs via quick</text>
+  <text x="978" y="1545" font-size="11" fill="#222">reasoning OR dispatch Researcher</text>
+  <text x="978" y="1559" font-size="11" fill="#222">(Planning Mode) for any that require</text>
+  <text x="978" y="1573" font-size="11" fill="#222">canonical evidence.</text>
+  <text x="956" y="1589" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="978" y="1589" font-size="11" fill="#222">Introduce TD-level IPs (library, data</text>
+  <text x="978" y="1603" font-size="11" fill="#222">source, encoding choices); resolve each.</text>
+  <text x="956" y="1619" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="978" y="1619" font-size="11" fill="#222">Decompose into sections with explicit</text>
+  <text x="978" y="1633" font-size="11" fill="#222">purposes and depends_on graph.</text>
+  <text x="956" y="1649" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="978" y="1649" font-size="11" fill="#222">Author interface contracts between</text>
+  <text x="978" y="1663" font-size="11" fill="#222">sections; pass data not logic.</text>
+  <text x="956" y="1679" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="978" y="1679" font-size="11" fill="#222">Author the coverage-assertion catalogue</text>
+  <text x="978" y="1693" font-size="11" fill="#222">(every prose claim → at least one</text>
+  <text x="978" y="1707" font-size="11" fill="#222">assertion).</text>
+  <text x="956" y="1723" font-size="11" font-weight="bold" fill="#0a3a6a">7.</text>
+  <text x="978" y="1723" font-size="11" fill="#222">Acknowledge production-fidelity caveats</text>
+  <text x="978" y="1737" font-size="11" fill="#222">explicitly.</text>
+  <text x="956" y="1753" font-size="11" font-weight="bold" fill="#0a3a6a">8.</text>
+  <text x="978" y="1753" font-size="11" fill="#222">Write sections-v1.json +</text>
+  <text x="978" y="1767" font-size="11" fill="#222">contracts/original/* to disk.</text>
+  <text x="956" y="1787" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="956" y="1803" font-size="11" fill="#5a1a1a">• Does not amend Discovery's ledger.</text>
+  <text x="956" y="1817" font-size="11" fill="#5a1a1a">• Does not pre-decide implementation</text>
+  <text x="956" y="1831" font-size="11" fill="#5a1a1a">  patterns within a section — that is</text>
+  <text x="956" y="1845" font-size="11" fill="#5a1a1a">  Overseer.</text>
+  <!-- role: Technical Discovery (impact) -->
+  <rect x="1306" y="1362" width="354" height="436" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="1306" y="1362" width="354" height="36" fill="#1e3a5f"/>
+  <text x="1483" y="1385" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Technical Discovery (impact)</text>
+  <text x="1322" y="1420" font-size="11" fill="#444" font-style="italic">Re-engaged on escalation. Produces a delta</text>
+  <text x="1322" y="1435" font-size="11" fill="#444" font-style="italic">plan amending the build without forcing a full</text>
+  <text x="1322" y="1450" font-size="11" fill="#444" font-style="italic">rebuild.</text>
+  <text x="1322" y="1471" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="1322" y="1487" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="1344" y="1487" font-size="11" fill="#222">Read the escalation packet and</text>
+  <text x="1344" y="1501" font-size="11" fill="#222">Discovery's amendment (if any).</text>
+  <text x="1322" y="1517" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="1344" y="1517" font-size="11" fill="#222">For each existing section: classify</text>
+  <text x="1344" y="1531" font-size="11" fill="#222">delta — unaffected, salvageable,</text>
+  <text x="1344" y="1545" font-size="11" fill="#222">stop_and_scrap, or new.</text>
+  <text x="1322" y="1561" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="1344" y="1561" font-size="11" fill="#222">List required contract amendments.</text>
+  <text x="1322" y="1577" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="1344" y="1577" font-size="11" fill="#222">Author 38+ coverage assertions if</text>
+  <text x="1344" y="1591" font-size="11" fill="#222">escalation triggered a structural</text>
+  <text x="1344" y="1605" font-size="11" fill="#222">amendment.</text>
+  <text x="1322" y="1621" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="1344" y="1621" font-size="11" fill="#222">Write sections-v{N}.json as the delta</text>
+  <text x="1344" y="1635" font-size="11" fill="#222">plan; hand to Coordinator (not to</text>
+  <text x="1344" y="1649" font-size="11" fill="#222">Critic).</text>
+  <text x="1322" y="1669" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="1322" y="1685" font-size="11" fill="#5a1a1a">• Does not enact the delta plan — that is</text>
+  <text x="1322" y="1699" font-size="11" fill="#5a1a1a">  Coordinator.</text>
+  <text x="1322" y="1713" font-size="11" fill="#5a1a1a">• Does not amend Discovery's ledger.</text>
+  <!-- role: Editor -->
+  <rect x="930" y="1878" width="740" height="344" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="930" y="1878" width="740" height="36" fill="#2a6e3a"/>
+  <text x="1300" y="1901" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Editor</text>
+  <text x="946" y="1936" font-size="11" fill="#444" font-style="italic">Audits TD's output against the user's literal prompt and Discovery's atomic intent. Structural, not</text>
+  <text x="946" y="1951" font-size="11" fill="#444" font-style="italic">substantive.</text>
+  <text x="946" y="1972" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="946" y="1988" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="968" y="1988" font-size="11" fill="#222">Read the user's literal prompt and Discovery's ledger.</text>
+  <text x="946" y="2004" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="968" y="2004" font-size="11" fill="#222">Read TD's section plan + contracts.</text>
+  <text x="946" y="2020" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="968" y="2020" font-size="11" fill="#222">Check: does the plan address every proper noun and every first-contact requirement?</text>
+  <text x="946" y="2036" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="968" y="2036" font-size="11" fill="#222">Check: does the plan honor the telos? Any inflection-point default that contradicts the telos?</text>
+  <text x="946" y="2052" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="968" y="2052" font-size="11" fill="#222">Check: are there structural gaps between Discovery and TD that would mean the build ships</text>
+  <text x="968" y="2066" font-size="11" fill="#222">against a different prompt?</text>
+  <text x="946" y="2082" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="968" y="2082" font-size="11" fill="#222">Return verdict: pass / pass_with_recommendations / fail — write</text>
+  <text x="968" y="2096" font-size="11" fill="#222">decisions/editor/review-v1.json.</text>
+  <text x="946" y="2116" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="946" y="2132" font-size="11" fill="#5a1a1a">• Structural check, not substantive — does not propose new IPs or assumptions.</text>
+  <text x="946" y="2146" font-size="11" fill="#5a1a1a">• Returns verdict only; Orchestrator interprets.</text>
+  <!-- role: Coordinator -->
+  <rect x="930" y="2290" width="740" height="359" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="930" y="2290" width="740" height="36" fill="#1e3a5f"/>
+  <text x="1300" y="2313" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Coordinator</text>
+  <text x="946" y="2348" font-size="11" fill="#444" font-style="italic">Flow control. Builds the dependency DAG, dispatches sections in waves, monitors progress, enacts</text>
+  <text x="946" y="2363" font-size="11" fill="#444" font-style="italic">delta plans on re-evaluation. Makes no architectural or product decisions.</text>
+  <text x="946" y="2384" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="946" y="2400" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="968" y="2400" font-size="11" fill="#222">Read TD sections + contracts.</text>
+  <text x="946" y="2416" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="968" y="2416" font-size="11" fill="#222">Build the dependency DAG.</text>
+  <text x="946" y="2432" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="968" y="2432" font-size="11" fill="#222">Pick dispatch_mode (inline / nested / sub-agent) per ≤8 / &gt;8 / explicit threshold.</text>
+  <text x="946" y="2448" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="968" y="2448" font-size="11" fill="#222">Dispatch Wave 1; verify each section against contract before next wave.</text>
+  <text x="946" y="2464" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="968" y="2464" font-size="11" fill="#222">On TD impact delta plan: enact (no-op for unaffected / re-dispatch for salvageable / new</text>
+  <text x="968" y="2478" font-size="11" fill="#222">Overseer for new sections / amend contracts).</text>
+  <text x="946" y="2494" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="968" y="2494" font-size="11" fill="#222">On all sections verified + Integrator complete: write state/coordinator/build-complete.json.</text>
+  <text x="946" y="2514" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="946" y="2530" font-size="11" fill="#5a1a1a">• Makes no architectural or product decisions.</text>
+  <text x="946" y="2544" font-size="11" fill="#5a1a1a">• Cannot amend ledger / sections / contracts substantively.</text>
+  <!-- role: Overseer -->
+  <rect x="930" y="2717" width="364" height="342" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="930" y="2717" width="364" height="36" fill="#2a7a3a"/>
+  <text x="1112" y="2740" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Overseer</text>
+  <text x="946" y="2775" font-size="11" fill="#444" font-style="italic">Per-section. Decomposes into builder tasks,</text>
+  <text x="946" y="2790" font-size="11" fill="#444" font-style="italic">dispatches Builders, verifies output, updates</text>
+  <text x="946" y="2805" font-size="11" fill="#444" font-style="italic">section state.</text>
+  <text x="946" y="2826" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="946" y="2842" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="968" y="2842" font-size="11" fill="#222">Read your section's charter from</text>
+  <text x="968" y="2856" font-size="11" fill="#222">sections-v{N}.json.</text>
+  <text x="946" y="2872" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="968" y="2872" font-size="11" fill="#222">Decompose into 1-N Builder tasks per the</text>
+  <text x="968" y="2886" font-size="11" fill="#222">charter.</text>
+  <text x="946" y="2902" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="968" y="2902" font-size="11" fill="#222">Dispatch Builders sequentially (inline</text>
+  <text x="968" y="2916" font-size="11" fill="#222">mode) or as sub-agents (nested mode).</text>
+  <text x="946" y="2932" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="968" y="2932" font-size="11" fill="#222">Verify each Builder output against the</text>
+  <text x="968" y="2946" font-size="11" fill="#222">section contract before proceeding.</text>
+  <text x="946" y="2962" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="968" y="2962" font-size="11" fill="#222">On all builders complete: mark section</text>
+  <text x="968" y="2976" font-size="11" fill="#222">verified in state/sections/{name}.json.</text>
+  <text x="946" y="2992" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="968" y="2992" font-size="11" fill="#222">On any block: write escalation packet to</text>
+  <text x="968" y="3006" font-size="11" fill="#222">state/escalations/queue/; Arbiter routes.</text>
+  <text x="946" y="3026" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="946" y="3042" font-size="11" fill="#5a1a1a">• Does not amend Discovery's ledger or TD's</text>
+  <text x="946" y="3056" font-size="11" fill="#5a1a1a">  plan.</text>
+  <text x="946" y="3070" font-size="11" fill="#5a1a1a">• Cannot decide content — flags and</text>
+  <text x="946" y="3084" font-size="11" fill="#5a1a1a">  escalates.</text>
+  <!-- role: Builder -->
+  <rect x="1306" y="2717" width="364" height="342" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="1306" y="2717" width="364" height="36" fill="#c46a1a"/>
+  <text x="1488" y="2740" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Builder</text>
+  <text x="1322" y="2775" font-size="11" fill="#444" font-style="italic">Narrow scope, one output file (or small</text>
+  <text x="1322" y="2790" font-size="11" fill="#444" font-style="italic">handful) per dispatch. Completes one specific</text>
+  <text x="1322" y="2805" font-size="11" fill="#444" font-style="italic">task.</text>
+  <text x="1322" y="2826" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="1322" y="2842" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="1344" y="2842" font-size="11" fill="#222">Read your task briefing + your section</text>
+  <text x="1344" y="2856" font-size="11" fill="#222">contract + relevant ledger entries.</text>
+  <text x="1322" y="2872" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="1344" y="2872" font-size="11" fill="#222">Implement exactly the scope in the</text>
+  <text x="1344" y="2886" font-size="11" fill="#222">briefing; do not expand to adjacent</text>
+  <text x="1344" y="2900" font-size="11" fill="#222">improvements.</text>
+  <text x="1322" y="2916" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="1344" y="2916" font-size="11" fill="#222">Write output to</text>
+  <text x="1344" y="2930" font-size="11" fill="#222">output/builders/{section}/{builder}/output.{ext}.</text>
+  <text x="1322" y="2946" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="1344" y="2946" font-size="11" fill="#222">Write metadata.json describing what you</text>
+  <text x="1344" y="2960" font-size="11" fill="#222">produced + any acceptance-criteria</text>
+  <text x="1344" y="2974" font-size="11" fill="#222">self-checks.</text>
+  <text x="1322" y="2990" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="1344" y="2990" font-size="11" fill="#222">On block: write metadata.json with</text>
+  <text x="1344" y="3004" font-size="11" fill="#222">status: blocked + clear</text>
+  <text x="1344" y="3018" font-size="11" fill="#222">blocker_description.</text>
+  <text x="1322" y="3038" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="1322" y="3054" font-size="11" fill="#5a1a1a">• Narrow scope. Adjacent improvements</text>
+  <text x="1322" y="3068" font-size="11" fill="#5a1a1a">  ignored — out-of-scope is the most common</text>
+  <text x="1322" y="3082" font-size="11" fill="#5a1a1a">  Builder failure mode.</text>
+  <text x="1322" y="3096" font-size="11" fill="#5a1a1a">• Cannot modify state, contract, or</text>
+  <text x="1322" y="3110" font-size="11" fill="#5a1a1a">  decision files.</text>
+  <!-- role: Integrator -->
+  <rect x="930" y="3127" width="740" height="316" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="930" y="3127" width="740" height="36" fill="#3a6abf"/>
+  <text x="1300" y="3150" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Integrator</text>
+  <text x="946" y="3185" font-size="11" fill="#444" font-style="italic">Assembles section outputs into a single artifact. Single-pass, no agent collaboration.</text>
+  <text x="946" y="3206" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="946" y="3222" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="968" y="3222" font-size="11" fill="#222">Read every section output from output/builders/* and every contract from contracts/*.</text>
+  <text x="946" y="3238" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="968" y="3238" font-size="11" fill="#222">Resolve import paths and inter-file references.</text>
+  <text x="946" y="3254" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="968" y="3254" font-size="11" fill="#222">Assemble the final artifact at output/integration/.</text>
+  <text x="946" y="3270" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="968" y="3270" font-size="11" fill="#222">Apply Sev-0 fixes inline (whitespace, trivial naming) without escalating.</text>
+  <text x="946" y="3286" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="968" y="3286" font-size="11" fill="#222">Write output/integration/manifest.json describing the assembled file tree.</text>
+  <text x="946" y="3302" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="968" y="3302" font-size="11" fill="#222">On unresolvable issue: write escalation packet.</text>
+  <text x="946" y="3322" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="946" y="3338" font-size="11" fill="#5a1a1a">• Single pass. No agent collaboration.</text>
+  <text x="946" y="3352" font-size="11" fill="#5a1a1a">• Sev-0 fixes only inline; anything substantive escalates.</text>
+  <!-- role: Critic -->
+  <rect x="80" y="2262" width="480" height="356" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="80" y="2262" width="480" height="36" fill="#8a4a1a"/>
+  <text x="320" y="2285" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Critic</text>
+  <text x="96" y="2320" font-size="11" fill="#444" font-style="italic">Detects drift and inconsistency. Scheduled audits during build +</text>
+  <text x="96" y="2335" font-size="11" fill="#444" font-style="italic">final sweep before CV.</text>
+  <text x="96" y="2356" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="96" y="2372" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="118" y="2372" font-size="11" fill="#222">Scheduled mode: audit state/sections/* + audit/* +</text>
+  <text x="118" y="2386" font-size="11" fill="#222">state/escalations/* on each cycle.</text>
+  <text x="96" y="2402" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="118" y="2402" font-size="11" fill="#222">Detect drift between charter, ledger, sections plan,</text>
+  <text x="118" y="2416" font-size="11" fill="#222">contracts, and live state.</text>
+  <text x="96" y="2432" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="118" y="2432" font-size="11" fill="#222">Severity-classify each finding (Sev 0-3 in scheduled, Sev</text>
+  <text x="118" y="2446" font-size="11" fill="#222">0-4 in final sweep).</text>
+  <text x="96" y="2462" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="118" y="2462" font-size="11" fill="#222">Final-sweep mode: 9 structural checks before CV — coverage</text>
+  <text x="118" y="2476" font-size="11" fill="#222">holds, no unannotated contract drift, no inline-deviation</text>
+  <text x="118" y="2490" font-size="11" fill="#222">overflow.</text>
+  <text x="96" y="2506" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="118" y="2506" font-size="11" fill="#222">For Sev ≥ medium: write audit/flags.jsonl + emit</text>
+  <text x="118" y="2520" font-size="11" fill="#222">escalation packet.</text>
+  <text x="96" y="2540" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="96" y="2556" font-size="11" fill="#5a1a1a">• Detects drift; does not decide what is correct. Routes via</text>
+  <text x="96" y="2570" font-size="11" fill="#5a1a1a">  Arbiter.</text>
+  <text x="96" y="2584" font-size="11" fill="#5a1a1a">• Cannot rewrite plans or specs.</text>
+  <!-- role: Convergence Verifier -->
+  <rect x="930" y="3935" width="740" height="403" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="930" y="3935" width="740" height="36" fill="#1e3a5f"/>
+  <text x="1300" y="3958" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Convergence Verifier</text>
+  <text x="946" y="3993" font-size="11" fill="#444" font-style="italic">Exercises the artifact under production fidelity. Multi-tier verification: first-contact,</text>
+  <text x="946" y="4008" font-size="11" fill="#444" font-style="italic">prompt-named-verb, then assumptions and edge cases.</text>
+  <text x="946" y="4029" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="946" y="4045" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="968" y="4045" font-size="11" fill="#222">Read ledger + sections plan + contracts + Integrator's manifest.</text>
+  <text x="946" y="4061" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="968" y="4061" font-size="11" fill="#222">Configure production-fidelity environment (real components for everything the artifact loads at</text>
+  <text x="968" y="4075" font-size="11" fill="#222">runtime).</text>
+  <text x="946" y="4091" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="968" y="4091" font-size="11" fill="#222">Run Tier 2 first-contact verifications (artifact loads, primary surface visible).</text>
+  <text x="946" y="4107" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="968" y="4107" font-size="11" fill="#222">On Tier 2 pass: verify the prompt-named verb against canonical evidence.</text>
+  <text x="946" y="4123" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="968" y="4123" font-size="11" fill="#222">Run assumption checks and out-of-scope checks.</text>
+  <text x="946" y="4139" font-size="11" font-weight="bold" fill="#0a3a6a">6.</text>
+  <text x="968" y="4139" font-size="11" fill="#222">Run edge-case-testing artifact-exercise simulations.</text>
+  <text x="946" y="4155" font-size="11" font-weight="bold" fill="#0a3a6a">7.</text>
+  <text x="968" y="4155" font-size="11" fill="#222">Write output/verification/report.json with verdict + per-check evidence.</text>
+  <text x="946" y="4175" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="946" y="4191" font-size="11" fill="#5a1a1a">• Production fidelity is mandatory; modeled components require external source citations.</text>
+  <text x="946" y="4205" font-size="11" fill="#5a1a1a">• Verifies; does not redesign. Wrong assertions escalate, not silently amend.</text>
+  <!-- role: Arbiter -->
+  <rect x="2040" y="2262" width="480" height="342" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="2040" y="2262" width="480" height="36" fill="#5a1a1a"/>
+  <text x="2280" y="2285" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Arbiter</text>
+  <text x="2056" y="2320" font-size="11" fill="#444" font-style="italic">Event-driven. Classifies escalations and routes. Makes no</text>
+  <text x="2056" y="2335" font-size="11" fill="#444" font-style="italic">content decisions.</text>
+  <text x="2056" y="2356" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="2056" y="2372" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="2078" y="2372" font-size="11" fill="#222">Wake on new files in state/escalations/queue/ OR Critic</text>
+  <text x="2078" y="2386" font-size="11" fill="#222">high-severity flags OR 30s heartbeat.</text>
+  <text x="2056" y="2402" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="2078" y="2402" font-size="11" fill="#222">Classify the escalation: structural / decision / runtime /</text>
+  <text x="2078" y="2416" font-size="11" fill="#222">informational.</text>
+  <text x="2056" y="2432" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="2078" y="2432" font-size="11" fill="#222">Determine severity (Sev 0-4) and target role for</text>
+  <text x="2078" y="2446" font-size="11" fill="#222">resolution.</text>
+  <text x="2056" y="2462" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="2078" y="2462" font-size="11" fill="#222">Route: TD (impact) for structural, Discovery</text>
+  <text x="2078" y="2476" font-size="11" fill="#222">(amendment/demotion) for intent issues, Coordinator</text>
+  <text x="2078" y="2490" font-size="11" fill="#222">(re-engaged) for dispatch issues, Researcher (escalation)</text>
+  <text x="2078" y="2504" font-size="11" fill="#222">for missing canonical evidence.</text>
+  <text x="2056" y="2520" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="2078" y="2520" font-size="11" fill="#222">Write state/escalations/routed/esc-{nnn}-routing.json.</text>
+  <text x="2078" y="2534" font-size="11" fill="#222">Never write content decisions.</text>
+  <text x="2056" y="2554" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="2056" y="2570" font-size="11" fill="#5a1a1a">• Makes no content decisions; classification + routing only.</text>
+  <text x="2056" y="2584" font-size="11" fill="#5a1a1a">• Cannot modify ledger / sections / contracts.</text>
+  <!-- role: Researcher (planning) -->
+  <rect x="2050" y="2672" width="460" height="347" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="2050" y="2672" width="460" height="36" fill="#5a3a8a"/>
+  <text x="2280" y="2695" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Researcher (planning)</text>
+  <text x="2066" y="2730" font-size="11" fill="#444" font-style="italic">Dispatched by TD to investigate inflection points. Returns</text>
+  <text x="2066" y="2745" font-size="11" fill="#444" font-style="italic">canonical evidence.</text>
+  <text x="2066" y="2766" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="2066" y="2782" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="2088" y="2782" font-size="11" fill="#222">Read TD's probe briefing.</text>
+  <text x="2066" y="2798" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="2088" y="2798" font-size="11" fill="#222">Identify canonical sources (official docs, project</text>
+  <text x="2088" y="2812" font-size="11" fill="#222">README, primary spec).</text>
+  <text x="2066" y="2828" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="2088" y="2828" font-size="11" fill="#222">Investigate the IP candidates against canonical</text>
+  <text x="2088" y="2842" font-size="11" fill="#222">evidence.</text>
+  <text x="2066" y="2858" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="2088" y="2858" font-size="11" fill="#222">Compare pros and cons; recommend one with rationale.</text>
+  <text x="2066" y="2874" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="2088" y="2874" font-size="11" fill="#222">Write research/probes/{id}/findings.json with</text>
+  <text x="2088" y="2888" font-size="11" fill="#222">citations.</text>
+  <text x="2066" y="2908" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="2066" y="2924" font-size="11" fill="#5a1a1a">• Researches but does not decide — recommends with</text>
+  <text x="2066" y="2938" font-size="11" fill="#5a1a1a">  rationale.</text>
+  <text x="2066" y="2952" font-size="11" fill="#5a1a1a">• Cannot modify state files outside research/probes/.</text>
+  <!-- role: Researcher (escalation) -->
+  <rect x="2050" y="3031" width="460" height="347" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="2050" y="3031" width="460" height="36" fill="#5a3a8a"/>
+  <text x="2280" y="3054" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Researcher (escalation)</text>
+  <text x="2066" y="3089" font-size="11" fill="#444" font-style="italic">Dispatched by Arbiter to investigate problems that escaped a</text>
+  <text x="2066" y="3104" font-size="11" fill="#444" font-style="italic">section's Overseer. Optimization criterion: blast-radius</text>
+  <text x="2066" y="3119" font-size="11" fill="#444" font-style="italic">minimization.</text>
+  <text x="2066" y="3140" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="2066" y="3156" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="2088" y="3156" font-size="11" fill="#222">Read Arbiter's escalation packet and the blast-radius</text>
+  <text x="2088" y="3170" font-size="11" fill="#222">context.</text>
+  <text x="2066" y="3186" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="2088" y="3186" font-size="11" fill="#222">Optimize for blast-radius minimization: prefer surgical</text>
+  <text x="2088" y="3200" font-size="11" fill="#222">fixes preserving in-flight work over wholesale</text>
+  <text x="2088" y="3214" font-size="11" fill="#222">rewrites.</text>
+  <text x="2066" y="3230" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="2088" y="3230" font-size="11" fill="#222">Investigate canonical alternatives; favor adapter</text>
+  <text x="2088" y="3244" font-size="11" fill="#222">layers when applicable.</text>
+  <text x="2066" y="3260" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="2088" y="3260" font-size="11" fill="#222">Recommend resolution with explicit blast-radius</text>
+  <text x="2088" y="3274" font-size="11" fill="#222">estimate.</text>
+  <text x="2066" y="3290" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="2088" y="3290" font-size="11" fill="#222">Write findings; Arbiter routes from there.</text>
+  <text x="2066" y="3310" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="2066" y="3326" font-size="11" fill="#5a1a1a">• Optimization: blast-radius minimization.</text>
+  <text x="2066" y="3340" font-size="11" fill="#5a1a1a">• Cannot enact the fix — that is Coordinator (after</text>
+  <text x="2066" y="3354" font-size="11" fill="#5a1a1a">  Arbiter routes).</text>
+  <!-- role: Historian -->
+  <rect x="80" y="4408" width="480" height="237" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="80" y="4408" width="480" height="36" fill="#5a5a5a"/>
+  <text x="320" y="4431" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Historian</text>
+  <text x="96" y="4466" font-size="11" fill="#444" font-style="italic">Background role. Maintains history/log.jsonl as canonical causal</text>
+  <text x="96" y="4481" font-size="11" fill="#444" font-style="italic">record with rationale captured. Excluded from Completion</text>
+  <text x="96" y="4496" font-size="11" fill="#444" font-style="italic">Reports.</text>
+  <text x="96" y="4517" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="96" y="4533" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="118" y="4533" font-size="11" fill="#222">Subscribe to every state-changing file event across the</text>
+  <text x="118" y="4547" font-size="11" fill="#222">run.</text>
+  <text x="96" y="4563" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="118" y="4563" font-size="11" fill="#222">For each event: capture the actor, target file, summary,</text>
+  <text x="118" y="4577" font-size="11" fill="#222">and rationale.</text>
+  <text x="96" y="4593" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="118" y="4593" font-size="11" fill="#222">Append to history/log.jsonl as a single JSON line.</text>
+  <text x="96" y="4609" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="118" y="4609" font-size="11" fill="#222">Maintain history/decision-index.json by mapping decision</text>
+  <text x="118" y="4623" font-size="11" fill="#222">IDs to their authoritative source files.</text>
+  <!-- role: Re-Verification -->
+  <rect x="2040" y="4408" width="480" height="342" fill="#fff" stroke="#333" stroke-width="1" rx="2"/>
+  <rect x="2040" y="4408" width="480" height="36" fill="#3a3a3a"/>
+  <text x="2280" y="4431" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">Re-Verification</text>
+  <text x="2056" y="4466" font-size="11" fill="#444" font-style="italic">Audits a prior run under a newer architecture version.</text>
+  <text x="2056" y="4481" font-size="11" fill="#444" font-style="italic">Recommends recovery action; does not enact.</text>
+  <text x="2056" y="4502" font-size="11" font-weight="bold" fill="#0a3a6a" letter-spacing="0.8">ATOMIC STEPS</text>
+  <text x="2056" y="4518" font-size="11" font-weight="bold" fill="#0a3a6a">1.</text>
+  <text x="2078" y="4518" font-size="11" fill="#222">Read the target run + the architecture version to audit</text>
+  <text x="2078" y="4532" font-size="11" fill="#222">under.</text>
+  <text x="2056" y="4548" font-size="11" font-weight="bold" fill="#0a3a6a">2.</text>
+  <text x="2078" y="4548" font-size="11" fill="#222">For each principle and structural rule that differs from</text>
+  <text x="2078" y="4562" font-size="11" fill="#222">when the run was built: check conformance.</text>
+  <text x="2056" y="4578" font-size="11" font-weight="bold" fill="#0a3a6a">3.</text>
+  <text x="2078" y="4578" font-size="11" fill="#222">For non-conformances: classify as patchable, salvageable,</text>
+  <text x="2078" y="4592" font-size="11" fill="#222">or rebuild-required.</text>
+  <text x="2056" y="4608" font-size="11" font-weight="bold" fill="#0a3a6a">4.</text>
+  <text x="2078" y="4608" font-size="11" fill="#222">Recommend recovery: do_nothing / patch_artifact /</text>
+  <text x="2078" y="4622" font-size="11" fill="#222">rebuild_under_v{N}.</text>
+  <text x="2056" y="4638" font-size="11" font-weight="bold" fill="#0a3a6a">5.</text>
+  <text x="2078" y="4638" font-size="11" fill="#222">Write runs/{slug}/v{N}-reaudit.json with the</text>
+  <text x="2078" y="4652" font-size="11" fill="#222">recommendation and rationale.</text>
+  <text x="2056" y="4672" font-size="11" font-weight="bold" fill="#5a1a1a" letter-spacing="0.8">BOUNDARIES</text>
+  <text x="2056" y="4688" font-size="11" fill="#5a1a1a">• Recommends only. Orchestrator decides whether to enact</text>
+  <text x="2056" y="4702" font-size="11" fill="#5a1a1a">  patch or rebuild.</text>
+  <text x="2056" y="4716" font-size="11" fill="#5a1a1a">• One reaudit file per architecture version.</text>
+  <path d="M 1300 703 L 1300 751 L 1056 751 L 1056 799" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1056" y="775" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">dispatch w/ prompt</text>
+  <path d="M 1056 1254 L 1056 1308 L 1117 1308 L 1117 1362" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1117" y="1335" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">ledger + telos</text>
+  <path d="M 1117 1798 L 1117 1838 L 1300 1838 L 1300 1878" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1300" y="1858" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">sections + contracts</text>
+  <path d="M 1300 2222 L 1300 2290" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1300" y="2256" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">pass verdict</text>
+  <path d="M 1300 2649 L 1300 2683 L 1112 2683 L 1112 2717" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1112" y="2700" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">wave dispatch (per section)</text>
+  <path d="M 1294 2888 L 1306 2888" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1300" y="2888" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">task dispatch (per builder)</text>
+  <path d="M 1306 2888 L 1294 2888" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1300" y="2888" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">output for verification</text>
+  <path d="M 1112 3059 L 1112 3093 L 1300 3093 L 1300 3127" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1300" y="3110" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">verified sections (all done)</text>
+  <path d="M 1300 3127 L 1300 3087 L 320 3087 L 320 2618" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="320" y="2852.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">integrated artifact + manifest</text>
+  <path d="M 320 2618 L 320 3276.5 L 1300 3276.5 L 1300 3935" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1300" y="3605.75" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">pass final sweep</text>
+  <path d="M 1300 3935 L 1300 703" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="1300" y="2319" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">verdict report</text>
+  <path d="M 1172 1026.5 L 1184 1026.5" fill="none" stroke="#5a1a1a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-mode)"/>
+  <text x="1178" y="1026.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a1a1a">amendment triggered</text>
+  <path d="M 1172 1026.5 L 1428 1026.5" fill="none" stroke="#5a1a1a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-mode)"/>
+  <text x="1300" y="1026.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a1a1a">demotion required</text>
+  <path d="M 1294 1580 L 1306 1580" fill="none" stroke="#5a1a1a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-mode)"/>
+  <text x="1300" y="1580" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a1a1a">impact analysis</text>
+  <path d="M 1112 2717 L 1112 2677 L 2280 2677 L 2280 2604" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="2280" y="2640.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">block / Sev-2+</text>
+  <path d="M 560 2440 L 2040 2433" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="1300" y="2436.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">high-severity flag</text>
+  <path d="M 1300 3127 L 1300 3087 L 2280 3087 L 2280 2604" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="2280" y="2845.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">unresolvable issue</text>
+  <path d="M 1300 3935 L 1300 3895 L 2280 3895 L 2280 2604" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="2280" y="3249.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">fail verdict</text>
+  <path d="M 2280 2262 L 2280 2222 L 1483 2222 L 1483 1798" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="1483" y="2010" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">structural → TD impact</text>
+  <path d="M 2280 2262 L 2280 2222 L 1300 2222 L 1300 1254" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="1300" y="1738" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">intent gap → Discovery amend</text>
+  <path d="M 2280 2262 L 2280 2222 L 1544 2222 L 1544 1254" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="1544" y="1738" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">unverifiable noun → Discovery demote</text>
+  <path d="M 2280 2262 L 2280 2222 L 1300 2222 L 1300 2649" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="1300" y="2435.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">re-engage Coordinator with delta</text>
+  <path d="M 2280 2604 L 2280 3031" fill="none" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrow-esc)"/>
+  <text x="2280" y="2817.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#c43c3c">missing canonical evidence</text>
+  <path d="M 1117 1798 L 1117 2235 L 2280 2235 L 2280 2672" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow-spine)"/>
+  <text x="2280" y="2453.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#000">IP probe</text>
+  <path d="M 560 2440 L 930 2469.5" fill="none" stroke="#8a4a1a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-audit)"/>
+  <text x="745" y="2454.75" text-anchor="middle" font-size="11" font-weight="bold" fill="#8a4a1a">scheduled audit cycle</text>
+  <path d="M 1300 703 L 1300 2555.5 L 320 2555.5 L 320 4408" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,3" marker-end="url(#arrow-obs)"/>
+  <text x="320" y="3481.75" text-anchor="middle" font-size="11" font-weight="bold" fill="#888">state events from all roles (representative)</text>
+  <path d="M 1300 703 L 1300 2555.5 L 2280 2555.5 L 2280 4408" fill="none" stroke="#5a5a5a" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow-reaudit)"/>
+  <text x="2280" y="3481.75" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a5a5a">post-build re-audit under v{N}</text>
+  <path d="M 2280 4408 L 2280 4368 L 1300 4368 L 1300 703" fill="none" stroke="#5a5a5a" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow-reaudit)"/>
+  <text x="1300" y="2535.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a5a5a">patch / rebuild recommendation</text>
+  <!-- legend -->
+  <rect x="2260" y="4684" width="320" height="152" fill="#fff" stroke="#dcdcdc" stroke-width="1"/>
+  <text x="2272" y="4700" font-size="11" font-weight="bold" fill="#666" letter-spacing="0.8">LEGEND</text>
+  <line x1="2274" y1="4722" x2="2320" y2="4722" stroke="#000" stroke-width="2"/>
+  <text x="2330" y="4726" font-size="11" fill="#444">Dispatch (linear path)</text>
+  <line x1="2274" y1="4744" x2="2320" y2="4744" stroke="#5a1a1a" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="2330" y="4748" font-size="11" fill="#444">Mode transition (same role, different mode)</text>
+  <line x1="2274" y1="4766" x2="2320" y2="4766" stroke="#c43c3c" stroke-width="3" stroke-dasharray="6,4"/>
+  <text x="2330" y="4770" font-size="11" fill="#444">Escalation (Sev-2+ routed via Arbiter)</text>
+  <line x1="2274" y1="4788" x2="2320" y2="4788" stroke="#8a4a1a" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="2330" y="4792" font-size="11" fill="#444">Audit (Critic scheduled cycle)</text>
+  <line x1="2274" y1="4810" x2="2320" y2="4810" stroke="#888" stroke-width="1" stroke-dasharray="2,3"/>
+  <text x="2330" y="4814" font-size="11" fill="#444">Observation (Historian captures all state events)</text>
+  <line x1="2274" y1="4832" x2="2320" y2="4832" stroke="#5a5a5a" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <text x="2330" y="4836" font-size="11" fill="#444">Re-audit (post-build, on architecture amendment)</text>
+  <text x="1300" y="4865" text-anchor="middle" font-size="11" fill="#999">Auto-generated by architecture/scripts/meta-flowchart.mjs · architecture v1.11</text>
+</svg>
