@@ -336,3 +336,111 @@ export function renderLegend({ x, y, entries }) {
   }
   return svg;
 }
+
+// ---- HTML viewer wrapper ----
+//
+// Wraps a generated SVG in a self-contained HTML page with a toolbar
+// (Reset / + / − / zoom-percentage indicator) and click-drag pan + scroll-
+// wheel zoom. No external dependencies — vanilla JS manipulating the SVG's
+// viewBox attribute.
+//
+// Use case: SVGs opened in image viewers can't zoom/pan; the .html wrapper
+// gives the same SVG a usable viewer for inspection at any size.
+//
+// Shared between meta-flowchart, decision-flowchart, and any future
+// flowchart generator that needs interactive viewing.
+// ============================================================================
+
+export function renderHtmlViewerWrapper({ title, subtitle, svgMarkup }) {
+  const safeTitle = esc(title);
+  const safeSubtitle = subtitle ? esc(subtitle) : '';
+  // Note: backslash-doubled \\s inside the template-literal source so the
+  // emitted JS string sees \s (the actual regex metachar) at runtime.
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>${safeTitle}</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #fafafa; font-family: Arial, Helvetica, sans-serif; overflow: hidden; }
+  #toolbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 44px;
+    background: #fff; border-bottom: 1px solid #ddd;
+    display: flex; align-items: center; padding: 0 14px; gap: 14px; z-index: 10;
+    font-size: 13px; color: #444;
+  }
+  #toolbar strong { font-weight: 600; }
+  #toolbar .subtitle { color: #888; font-weight: 400; }
+  #toolbar button { border: 1px solid #bbb; background: #fff; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  #toolbar button:hover { background: #f0f0f0; }
+  #toolbar .hint { color: #888; }
+  #stage { position: absolute; top: 44px; left: 0; right: 0; bottom: 0; overflow: hidden; }
+  #stage svg { display: block; width: 100%; height: 100%; user-select: none; }
+  #stage.panning { cursor: grabbing; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <strong>${safeTitle}</strong>
+  ${safeSubtitle ? `<span class="subtitle">· ${safeSubtitle}</span>` : ''}
+  <span class="hint">scroll to zoom · click-drag to pan</span>
+  <button id="reset">Reset</button>
+  <button id="zoomin">+</button>
+  <button id="zoomout">−</button>
+  <span id="zoominfo" style="margin-left:auto; color:#888;"></span>
+</div>
+<div id="stage">
+${svgMarkup}
+</div>
+<script>
+(function() {
+  const stage = document.getElementById('stage');
+  const svg = stage.querySelector('svg');
+  const zoomInfo = document.getElementById('zoominfo');
+  const vbAttr = svg.getAttribute('viewBox').split(/\\s+/).map(Number);
+  const initialVB = { x: vbAttr[0], y: vbAttr[1], w: vbAttr[2], h: vbAttr[3] };
+  let vb = { ...initialVB };
+  function applyVB() {
+    svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+    const z = (initialVB.w / vb.w * 100).toFixed(0);
+    zoomInfo.textContent = z + '%';
+  }
+  applyVB();
+  stage.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width;
+    const my = (e.clientY - rect.top) / rect.height;
+    const factor = e.deltaY > 0 ? 1.1 : 0.9;
+    const newW = vb.w * factor;
+    const newH = vb.h * factor;
+    vb.x += (vb.w - newW) * mx;
+    vb.y += (vb.h - newH) * my;
+    vb.w = newW;
+    vb.h = newH;
+    applyVB();
+  }, { passive: false });
+  let panning = false; let startX, startY, startVB;
+  stage.addEventListener('mousedown', function(e) {
+    panning = true; stage.classList.add('panning');
+    startX = e.clientX; startY = e.clientY; startVB = { ...vb };
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!panning) return;
+    const rect = stage.getBoundingClientRect();
+    const dx = (e.clientX - startX) / rect.width * startVB.w;
+    const dy = (e.clientY - startY) / rect.height * startVB.h;
+    vb.x = startVB.x - dx;
+    vb.y = startVB.y - dy;
+    applyVB();
+  });
+  window.addEventListener('mouseup', function() { panning = false; stage.classList.remove('panning'); });
+  document.getElementById('reset').addEventListener('click', function() { vb = { ...initialVB }; applyVB(); });
+  document.getElementById('zoomin').addEventListener('click', function() { vb.w *= 0.8; vb.h *= 0.8; applyVB(); });
+  document.getElementById('zoomout').addEventListener('click', function() { vb.w *= 1.25; vb.h *= 1.25; applyVB(); });
+})();
+</script>
+</body>
+</html>
+`;
+}

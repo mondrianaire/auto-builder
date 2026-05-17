@@ -27,6 +27,7 @@
 import { extract } from './meta-flowchart-extract.mjs';
 import { layout } from './meta-flowchart-layout.mjs';
 import { render } from './meta-flowchart-render.mjs';
+import { renderHtmlViewerWrapper } from './flowchart-primitives.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { mkdirSync, writeFileSync, copyFileSync } from 'node:fs';
@@ -73,8 +74,24 @@ function main() {
   writeFileSync(versionedPath, svg, 'utf-8');
   copyFileSync(versionedPath, latestPath);
 
-  console.log(`[meta-flowchart] Wrote ${versionedPath} (${svg.length} bytes).`);
+  // Also emit the HTML viewer wrapper. The .svg is the raw asset; the .html
+  // is the same SVG embedded in a vanilla-JS toolbar with scroll-zoom + drag-
+  // pan. Default OS SVG viewers usually can't zoom; the .html is the path
+  // users actually open for inspection.
+  const html = renderHtmlViewerWrapper({
+    title: `AutoBuilder Architecture v${args.archVersion}`,
+    subtitle: 'Role Topology',
+    svgMarkup: svg
+  });
+  const htmlVersionedPath = resolve(OUT_DIR, `v${args.archVersion}.html`);
+  const htmlLatestPath = resolve(OUT_DIR, 'latest.html');
+  writeFileSync(htmlVersionedPath, html, 'utf-8');
+  copyFileSync(htmlVersionedPath, htmlLatestPath);
+
+  console.log(`[meta-flowchart] Wrote ${versionedPath} (${svg.length} bytes SVG).`);
   console.log(`[meta-flowchart] Wrote ${latestPath} (copy of versioned for stable embed reference).`);
+  console.log(`[meta-flowchart] Wrote ${htmlVersionedPath} (${html.length} bytes HTML w/ zoom+pan).`);
+  console.log(`[meta-flowchart] Wrote ${htmlLatestPath} (stable HTML pointer).`);
 }
 
 main();
