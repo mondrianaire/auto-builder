@@ -1,8 +1,65 @@
 # Decision-Flowchart "Detail Full" Bridge Plan
 
 **Filed:** 2026-05-16 by Maintenance after user surfaced three reference flowcharts at `example flowcharts/`.
-**Status:** PLAN — phased roadmap to bring the generator from v0.1 (low-detail) to the "Detail Full" target.
-**Scope:** post-completion rendering only. Live rendering is a separate workstream owned by Codex v0.16 (live narrative renderer) against the v1.11 substrate.
+**Amended 2026-05-16 (same session):** scope expanded from "Detail Full SVG parity" to **exhaustive verbatim enumeration**, per user direction. See § "Exhaustive enumeration amendment" below.
+**Status:** PLAN — phased roadmap to bring the generator from v0.1 (low-detail) to the exhaustive post-build target.
+**Scope:** post-completion rendering only. Live rendering is a separate workstream owned by Codex v0.16 (live narrative renderer) against the v1.11 substrate. The Meta-architecture flowchart (build-agnostic, explanatory) is a third artifact — see `architecture/meta-architecture-flowchart-spec.md`.
+
+## The three-flowchart family
+
+This bridge plan covers the **second** of three flowchart artifacts:
+
+| Artifact | Audience | Mode | Spec doc |
+|---|---|---|---|
+| **Live build-view** | The user who wrote the prompt; high-level goal-oriented progress | Live — updates as roles complete | Codex's `live-build-visualization-proposal.md` (v0.16) |
+| **Post-build detail flowchart** *(this plan)* | The user reviewing a finished build; corpus researchers | Static — emitted at wrap-up | this doc |
+| **Meta-architecture flowchart** | Outsiders learning AutoBuilder; internal docs anchor | Static — versioned with architecture | `meta-architecture-flowchart-spec.md` |
+
+The Live view summarizes; the Post-build view enumerates exhaustively; the Meta view models the system. Different audiences, different purposes, different content density.
+
+## Exhaustive enumeration amendment (2026-05-16)
+
+User direction: *"the final post-build flow chart should be as detailed as the final-flowchart example provided. Instead of logged 20 assumptions, list them. Instead of marking 14 items out of scope, list them. Instead of simply indicating the number of overseer-sections, create containers for every role involved in the section and provide their purposes…"*
+
+This pushes the target past the Detail Full SVG reference. Detail Full still summarizes some content as counts ("Logged 12 assumptions (A1–A12)" without listing the assumptions; "Raised 22 flags (1 medium/high)" without listing the flags). The amended target is **verbatim enumeration** wherever the underlying substrate provides per-item content.
+
+Specific changes to the post-build flowchart's content rules:
+
+- **Assumptions.** List every A1…AN entry with its one-line plain-language content. Earthquake-map's 12 assumptions become 12 blurb lines under D-DSC-2, not a count summary.
+- **Out-of-scope items.** List every OOS entry verbatim with one-line plain-language framing under D-DSC-3 or its rendered equivalent.
+- **Inflection points.** List every IP1…IPN with default branch + reason (already partly in Detail Full; make it exhaustive).
+- **Proper nouns / demotions.** List every proper noun checked, its `verification_status`, and the demotion outcome if any.
+- **Per-section role instances.** For each section, render a sub-container with *every dispatched role instance* (Overseer + every Builder + every Vendor-builder + Researcher if dispatched). Each role instance gets its own labeled badge AND a one-line description of what it did. Detail Full does this partially (3 sections rendered with badges); the amended target does it for every section, including S4 (edge-case testing) and any escalation-spawned sections.
+- **Per-section purposes.** Every role instance per section explains its purpose (build-step-specific, drawn from its `state/reports/...json` blurb where available, or from `dispatch-log.jsonl` + section context where not). Not just "Builder-2a" — but "Builder-2a: wrote map.js (mount, markers, magnitude encoding)."
+- **Critic flags.** List every flag with severity + plain-language summary. 22 flags → 22 blurb lines under D-CRT-N (or wrapped to multiple D-CRT-1 through D-CRT-N entries).
+- **CV first-contact + assumption-check results.** List every first-contact requirement (FC.1…FC.N) and every assumption check (A1…AN re-verified) with pass/fail + brief evidence note.
+- **Run-report architecture findings.** Every finding listed (A1…AN) as an italic gray annotation in the relevant role's box, with brief plain-language framing.
+
+The implication for layout: rows grow vertically as more content lands. The post-build canvas is allowed to grow tall — corpus researchers and the build's user are reading at their own pace, scrolling is fine. The Live view stays summary-level; the Post-build stretches.
+
+### Performance implication
+
+A build with 12 assumptions, 14 OOS items, 6 IPs, 22 Critic flags, 8 first-contact requirements, 12 assumption-checks, and 4 sections with ~10 role-instances total produces roughly 88 decision blurbs. At ~30 words average per blurb body that's ~2640 words of plain-language content per flowchart. SVG file size lands roughly 200-300KB per build (vs. Detail Full's 54KB which summarizes). Acceptable for static rendering; the file size is one-time at wrap-up and never re-rendered.
+
+### Source-precedence rules under exhaustive enumeration
+
+- **v1.11 Completion Reports** (Path A) give plain-language blurbs natively for the role-level decisions. They do NOT enumerate every assumption inside Discovery's single "what choices did you make" blurb — that blurb summarizes. So for post-build enumeration, the extractor reads BOTH the report (for the natural-language framing) AND the underlying Cat-2 source (for the verbatim assumption list).
+- **Cat-2 substrate** (Path B) provides the verbatim enumeration: `ledger-v1.json:assumption_ledger[]`, `ledger-v1.json:out_of_scope[]`, `ledger-v1.json:proper_nouns[]`, `dispatch-log.jsonl` for role-instance enumeration, `audit/flags.jsonl` for Critic flags, `verification/report.json:first_contact_results[]` etc.
+- The extractor's job is to **join** these two sources: the report's blurb becomes the section header / parent decision label; the Cat-2 verbatim list becomes the sub-bullets enumerated underneath. Example for D-DSC-2:
+
+  ```
+  D-DSC-2: What choices did you make on their behalf?
+  [report blurb verbatim — "Three things you didn't specify, with my defaults: …"]
+
+  Full assumption list:
+   A1  Visualization is the primary interaction (not a report).
+   A2  Map as primary surface (not a table).
+   A3  Magnitude is the primary encoding axis.
+   …
+   A12 General-user audience (not a researcher specialist).
+  ```
+
+This means the extractor does both — natural-language framing AND verbatim enumeration, joined in a single decision entry with hierarchical rendering.
 
 ## Where we are vs. where we want to be
 
@@ -53,31 +110,72 @@ The generator should support both paths. Default precedence: prefer `state/repor
 
 Each phase is shippable on its own. Earlier phases unlock visual richness; later phases polish.
 
-### Phase 1 — Per-decision body extraction (foundational)
+### Phase 1 — Per-decision body extraction + verbatim enumeration (foundational)
 
-**Goal:** every `decision` object emitted by the extractor carries a `body` field with plain-language text, not just a label.
+**Goal:** every `decision` object emitted by the extractor carries a `body` field with plain-language text AND, where applicable, an `enumeration` field listing every individual item the decision references (assumptions, OOS items, IPs, proper nouns, flags, etc.).
 
 **Changes:**
 
-- `architecture/scripts/decision-flowchart-extract.mjs`: each extractor function (`extractDiscoveryDecisions`, `extractTDDecisions`, etc.) gains a `loadReports()` step that checks `runs/{slug}/state/reports/` for matching role reports. If found, the extractor maps blurb questions → D-XXX-N entries per the table above and uses `answer` text as the `body`. If absent, falls back to a per-role `synthesize{Role}Body()` function that produces a passable body from the existing Cat-2 sources.
+- `architecture/scripts/decision-flowchart-extract.mjs`: each extractor function (`extractDiscoveryDecisions`, `extractTDDecisions`, etc.) gains:
+  1. **A `loadReports()` step** that checks `runs/{slug}/state/reports/` for matching role reports. If found, maps blurb questions → D-XXX-N entries per the table above and uses `answer` text as the `body`. If absent, falls back to a per-role `synthesize{Role}Body()` function that produces a passable body from Cat-2 sources.
+  2. **An `enumerate{Decision}()` step** that pulls verbatim sub-items from the appropriate Cat-2 source and attaches them as an `enumeration` array on the decision. The enumeration is the verbatim list the user wants surfaced.
 
-- New shape for each decision: `{ id, label, body, role, importance, sources: ['reports/discovery-initial-v1.json'] | ['ledger-v1.json', 'sections-v1.json'] }`. The `sources` field documents provenance for audit and lets the renderer cite the underlying file in a tooltip.
+- New shape for each decision:
+  ```js
+  {
+    id: "D-DSC-2",
+    label: "What choices did you make on their behalf?",
+    body: "Three things you didn't specify, with my defaults: ...",  // from blurb or synthesis
+    enumeration: [
+      { id: "A1", text: "Visualization is the primary interaction (not a report)." },
+      { id: "A2", text: "Map as primary surface (not a table)." },
+      // ...
+    ],
+    role: "discovery-initial",
+    importance: "high",
+    sources: ["state/reports/discovery-initial-v1.json", "decisions/discovery/ledger-v1.json"]
+  }
+  ```
 
-- Synthesis templates per role (Path B fallback). Examples:
-  - D-DSC-1: "Reframed prompt as ‹first sentence of `ledger-v1.restatement`›."
-  - D-DSC-2: "Recorded N assumptions covering ‹first 3 assumption topics summarized›: A1 ‹topic›, A2 ‹topic›, etc."
-  - D-CRD-1: "Set dispatch_mode: ‹value› for this N-section build."
-  - D-CRT-1: "Raised N flags (M medium/high)."
+- **Enumeration sources** per decision type:
+  - D-DSC-2 (assumptions) — `ledger-v1.assumption_ledger[]`. Each entry's `text` field is its plain-language statement; pre-v1.11 ledgers may have just an abbreviated form (TD's coverage assertions reference each).
+  - D-DSC-3 (out-of-scope) — `ledger-v1.out_of_scope[]`. Verbatim.
+  - D-DSC-IP (inflection points) — `ledger-v1.inflection_points[]`. Each entry: `{ id, label, default_branch, reason }`.
+  - D-DSC-PN (proper nouns) — `ledger-v1.proper_nouns[]`. Each entry: `{ id, surface, role, verification_status }`.
+  - D-TD-SEC (sections) — `sections-v1.json:sections[]`. Each: `{ id, name, charter_summary, depends_on[] }`.
+  - D-TD-CON (contracts) — `contracts/original/*` filenames + each contract's `interface` summary.
+  - D-CRD-WAVE (waves) — derived from `dag.json` topological levels + `dispatch-log.jsonl` event grouping.
+  - D-SEC-{section}-AGENTS — `dispatch-log.jsonl` filtered by section; each entry: `{ agent_id, role, dispatched_at, completed_at, brief_purpose }`. The `brief_purpose` comes from the agent's Completion Report (Path A) or a synthesis from the dispatch briefing (Path B).
+  - D-CRT-FLAGS — `audit/flags.jsonl`. Each entry: `{ severity, check_name, summary }`. Summary translated to plain language.
+  - D-CV-FC (first-contact) — `output/verification/report.json:first_contact_results[]`. Each: `{ requirement_id, description, result, details }`.
+  - D-CV-AC (assumption checks) — `verification/report.json:assumption_checks[]`. Each: `{ id, verified, evidence }`.
+  - D-CV-PNV (prompt-named verb) — `verification/report.json:prompt_named_verb_result`. Single entry but explicitly enumerated.
+  - D-RUN-FINDINGS (run-report architecture findings) — parsed from `run-report.md` Architecture-findings section. Each: `{ id, title, body }`.
 
-- New unit test target: validate every extracted decision has both `label` and `body` populated; bodies pass a minimal style-contract check (no banned vocabulary list applied yet — that lands in Phase 8).
+- Synthesis templates per role (Path B fallback) for the `body` field. Examples:
+  - D-DSC-1 body: "Reframed prompt as ‹first sentence of `ledger-v1.restatement`›."
+  - D-DSC-2 body: "Recorded N assumptions about how this should work. Defaulting to the simplest reasonable interpretation where you didn't specify."
+  - D-CRD-1 body: "Decided to run this build in ‹value› mode for the N pieces."
+  - D-CRT-1 body: "Did N audit checks; found M concerns worth flagging (severity ‹highest seen›)."
 
-**Done when:** running `decision-flowchart.mjs` on earthquake-map produces an extracted graph where every decision has a non-empty `body` field. SVG output still uses the old renderer for now (labels only); only the data layer is enriched.
+- **Style contract** (anticipates Phase 8): bodies should already be styled toward user-facing language during synthesis. Banned vocabulary (IP, dispatch, section in structural sense, verdict, Sev N, Principle X) screened in Phase 8.
 
-**LoC estimate:** ~250-300 added to extract.mjs.
+- New unit test target: validate every extracted decision has both `label` and `body` populated; decisions of types that should enumerate have non-empty `enumeration[]`.
 
-### Phase 2 — Preamble + role subtitle + per-decision body rendering
+**Done when:** running the extractor on earthquake-map produces an extracted graph where:
+- Every decision has a non-empty `body`.
+- D-DSC-2 has 12 enumeration entries (all 12 assumptions).
+- D-DSC-3 has the full OOS list.
+- D-CRT-1 has 22 enumeration entries (all 22 Critic flags).
+- D-SEC-{S1, S2, S3, S4} each list every dispatched agent with brief purpose.
 
-**Goal:** Detail-Full-style preamble and per-role italic descriptions; decisions render with their body text below the label.
+SVG output still uses the old renderer for now (labels only); only the data layer is enriched.
+
+**LoC estimate:** ~400-500 added to extract.mjs (revised up from 250-300 to account for enumeration extractors).
+
+### Phase 2 — Preamble + role subtitle + per-decision body + enumeration rendering
+
+**Goal:** Detail-Full-style preamble and per-role italic descriptions; decisions render with body text AND verbatim enumeration as nested bullets below the label.
 
 **Changes:**
 
@@ -94,11 +192,31 @@ Each phase is shippable on its own. Earlier phases unlock visual richness; later
   - CV: "Exercises the artifact under production fidelity"
   - Etc.
 
-- Each decision renders as: bold label line (e.g., `D-DSC-1: Restatement.`) + body text wrapped at the agent box width. Body uses 12px regular weight; label uses 13px bold + role-tinted color.
+- Each decision renders hierarchically:
+  - Bold label line (e.g., `D-DSC-2: What choices did you make on their behalf?`)
+  - Body text wrapped at the agent box width (12px regular, role-tinted color on label).
+  - **If `enumeration[]` is non-empty:** indented bulleted list below the body. Each enumeration entry: `[A1]` ID prefix in monospace + plain-language text. Indent ~18px, smaller font (11px) than body. Long lists may wrap; box height grows.
 
-**Done when:** SVG output for earthquake-map matches Detail Full's visual style for the Discovery + TD initial sections. Subsequent phases are not yet at parity but the visual register is correct.
+  Example rendered for D-DSC-2:
 
-**LoC estimate:** ~200-250 added to render.mjs.
+  ```
+  D-DSC-2: What choices did you make on their behalf?
+  Three things you didn't specify, with my defaults: (1) snapshot, not live updates;
+  (2) past 24 hours; (3) no filters.
+
+    A1   Visualization is the primary interaction (not a report).
+    A2   Map as primary surface (not a table).
+    A3   Magnitude is the primary encoding axis.
+    A4   Single-user, no auth required.
+    ...
+    A12  General-user audience (not a researcher specialist).
+  ```
+
+- **Box height now auto-grows** based on body + enumeration line count. Layout engine computes height-per-decision = body-wrap-height + enumeration-line-count × 13px. Agent boxes sum these and add padding.
+
+**Done when:** SVG output for earthquake-map renders the Discovery section with D-DSC-1 (prompt body), D-DSC-2 (12 assumptions enumerated), D-DSC-3 (OOS enumerated), D-DSC-IP (every IP enumerated with default + reason). Visual register matches Detail Full but content is denser. Canvas height grows accordingly.
+
+**LoC estimate:** ~300-350 added to render.mjs (revised up from 200-250 to account for hierarchical decision rendering with auto-grow).
 
 ### Phase 3 — Multi-mode agent wrapper boxes
 
@@ -118,26 +236,56 @@ Each phase is shippable on its own. Earlier phases unlock visual richness; later
 
 **LoC estimate:** ~150 added to layout.mjs, ~80 added to render.mjs.
 
-### Phase 4 — Expanded section sub-boxes with agent badges
+### Phase 4 — Expanded section sub-boxes with per-role-instance containers
 
-**Goal:** sections render as individual sub-boxes (not a single Sections row), each with title + description + agent badges + bullet list. Color-coded agent badges (Overseer green, Builder orange, optionally Researcher purple, Vendor-builder olive).
+**Goal:** every section renders as a container; **every role instance inside that section gets its own sub-container** with title + purpose + atomic-step-evidence (what it actually did during this section). Detail Full shows badges; the amended target shows per-role-instance containers, mirroring the user direction *"create containers for every role involved in the section and provide their purposes."*
 
 **Changes:**
 
-- `extract.mjs`: per-section enrichment — for each section, pull `description` from `sections-v1.json`, agent IDs from `dispatch-log.jsonl`, and 2-3 bullet items from per-section `state/sections/{name}.json` or from Builder Completion Reports.
+- `extract.mjs`: per-section enrichment now produces nested structures:
+  ```js
+  {
+    section_id: "section-1",
+    name: "Data Fetcher",
+    description: "isolates HTTP/GeoJSON parsing",
+    role_instances: [
+      {
+        role: "Overseer",
+        instance_id: "overseer-section-1",
+        purpose: "Decomposed Data Fetcher into 1 builder task, dispatched, verified output against contract",
+        outcome: "verified",  // from Overseer outcome blurb
+        evidence_bullets: ["dispatched Builder-1a", "verified output matches contract", "marked section complete"]
+      },
+      {
+        role: "Builder",
+        instance_id: "builder-1a",
+        purpose: "Wrote the part that fetches earthquake data from USGS and parses it into events",
+        evidence_bullets: ["fetch(USGS all_day.geojson)", "parse FeatureCollection → events[]", "exposes loadEvents() promise"],
+        sources: ["state/reports/builder-section-1-builder-1a-v1.json", "output/builders/section-1/builder-1a/metadata.json"]
+      },
+      // ... every role instance, including any Researcher dispatched mid-section
+    ]
+  }
+  ```
 
-- `layout.mjs`: section-box grid layout. N sections in a row when N ≤ 4; wrap to multiple rows when N > 4. Per-box width adapts to section count.
+  Pull `purpose` from Builder Completion Reports (Path A) or from `dispatch-log.jsonl` briefings + Builder `metadata.json` (Path B). Pull `evidence_bullets` from contract assertions + post-build verification of what the file actually exposes.
 
-- `render.mjs`: each section box renders:
-  - Title (e.g., "S1 · Data Fetcher") + italic subtitle (e.g., "isolates HTTP/GeoJSON parsing")
-  - "AGENTS DISPATCHED HERE" header
-  - Color-coded badge row (Overseer green / Builder orange / etc.)
-  - Bullet list of what the section did
-  - "→ Overseer verified..." footer in green italic (sourced from Overseer outcome blurb)
+- `layout.mjs`: section container is now a multi-row grid: header row (title + description) + N rows for role-instance sub-containers. Section container height grows with role-instance count. When a section has 3+ role instances (e.g., S2 = Overseer + Builder-2a + Builder-2-vendor), container stays vertical-stacked; layout engine widens horizontally to allow side-by-side instances if canvas budget allows.
 
-**Done when:** earthquake-map's S1/S2/S3 each render as their own sub-box with agent badges. S4 (edge-case testing) is its own row below the main sections wave per its `depends_on: integrator` relationship.
+- `render.mjs`: each section container renders:
+  - Section header: bold title + italic subtitle
+  - For each role instance, a sub-container with:
+    - Color-coded role badge (Overseer green / Builder orange / Researcher purple / Vendor-builder olive / Critic-scheduled red) — same color palette across the whole flowchart
+    - Instance ID (e.g., "Builder-1a") in bold next to badge
+    - Purpose line (1-2 sentences plain language)
+    - Evidence bullets (2-4 items)
+  - Section footer: "→ Verified by Overseer-N; passed contract checks before next wave" (italic green) sourced from Overseer outcome blurb.
 
-**LoC estimate:** ~200 across all three modules.
+- **Edge case — escalation-spawned section role instances.** If a Researcher was dispatched mid-section to investigate an issue, that Researcher instance gets its own sub-container in the section, with the escalation context as part of its purpose ("Investigated whether USGS endpoint shape matches Discovery's assumption; returned canonical evidence confirming GeoJSON FeatureCollection schema").
+
+**Done when:** earthquake-map's flowchart renders all 4 sections with full per-role-instance breakdown. S1 shows Overseer-1 + Builder-1a. S2 shows Overseer-2 + Builder-2a + Builder-2-vendor as three distinct containers. S3 shows Overseer-3 + Builder-3a. S4 (edge-case testing) shows Overseer-4 + Builder-4a, distinct from main sections row.
+
+**LoC estimate:** ~350 across all three modules (revised up from 200 to account for nested role-instance containers).
 
 ### Phase 5 — Integration, ECT, and Verification phase expansion
 
@@ -203,18 +351,18 @@ Each phase is shippable on its own. Earlier phases unlock visual richness; later
 
 **LoC estimate:** ~150.
 
-## Cumulative scope
+## Cumulative scope (revised after exhaustive-enumeration amendment)
 
-- Phase 1: ~250-300 LoC (extract.mjs)
-- Phase 2: ~200-250 LoC (render.mjs)
+- Phase 1: ~400-500 LoC (extract.mjs + enumeration extractors)
+- Phase 2: ~300-350 LoC (render.mjs + hierarchical decision rendering)
 - Phase 3: ~230 LoC (layout + render)
-- Phase 4: ~200 LoC (all 3 modules)
+- Phase 4: ~350 LoC (per-role-instance containers across all 3 modules)
 - Phase 5: ~150 LoC
 - Phase 6: ~120 LoC
 - Phase 7: ~100 LoC
 - Phase 8: ~150 LoC
 
-**Total: ~1400-1500 LoC** added to the generator suite (currently ~1156 LoC). Final size ~2600 LoC across 4-5 modules.
+**Total: ~1800-1950 LoC** added to the generator suite (currently ~1156 LoC). Final size ~3000-3100 LoC across 4-5 modules.
 
 Validation target after each phase: regenerate earthquake-map's flowchart and visually compare against Detail Full at increasing fidelity. The 7 ratified pre-v1.11 corpus entries become the test set for Path-B synthesis quality.
 
@@ -243,6 +391,8 @@ None blocking. Implementation can proceed when you greenlight a starting phase.
 
 Two soft questions worth surfacing before Phase 1 lands:
 
-- **Body length budget.** Detail Full's per-decision bodies run 2-3 lines (~30-60 words). Should the generator enforce a hard cap (truncate longer blurbs with "…" + tooltip-equivalent) or wrap longer bodies and let the box grow? Recommend the latter for fidelity; the former for canvas budget. Default to "wrap and grow box height" unless the height delta becomes painful.
+- **Body length budget.** Detail Full's per-decision bodies run 2-3 lines (~30-60 words). Under exhaustive enumeration, bodies + enumerations push the per-decision content to 10+ lines. Recommend "wrap and grow box height" without a cap — the post-build view is for considered reading, not glanceability. The Live build-view (Codex v0.16) is where length budgets matter.
 
-- **Multiple Builders per section.** Some sections have 2-3 Builders (e.g., earthquake-map S2 has builder-2a + builder-2-vendor). Should each Builder get its own badge or should they collapse into one badge per section with a "(2)" count? Detail Full shows individual badges — recommend matching that.
+- **Multiple Builders per section.** Resolved by Phase 4 amendment: every role instance gets its own sub-container, not a count-collapsed badge. earthquake-map S2 renders three containers (Overseer-2, Builder-2a, Builder-2-vendor) with individual purposes and evidence bullets.
+
+- **Footprint expectation.** With exhaustive enumeration a typical 4-section build will produce a flowchart on the order of 200-300KB SVG, roughly 6000x8000 canvas. Acceptable for static rendering; the file is produced once at wrap-up and read at the user's pace. The Codex dashboard embed (separate proposal) should put this inside a scrollable container, not a fixed-viewport iframe.
