@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-17T06:40:13.145Z",
+    "generated_at": "2026-05-17T07:21:41.806Z",
     "codex_version": "0.16",
     "architecture_versions_seen": [
       "v1.3",
@@ -75,10 +75,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-17T07:21:32.315Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -91,7 +91,7 @@ window.CODEX_BUNDLE = {
           "final_dir": "runs/github-profile-card/output/final/",
           "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
         },
-        "decision_flowchart_path": null
+        "decision_flowchart_path": "runs/github-profile-card/decision-flowchart-auto.html"
       },
       {
         "slug": "gto-poker-async-duel",
@@ -1767,10 +1767,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-17T07:21:32.315Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -1783,7 +1783,7 @@ window.CODEX_BUNDLE = {
           "final_dir": "runs/github-profile-card/output/final/",
           "audit_flags": "runs/github-profile-card/audit/flags.jsonl"
         },
-        "decision_flowchart_path": null
+        "decision_flowchart_path": "runs/github-profile-card/decision-flowchart-auto.html"
       },
       "ledger": {
         "restatement": "The user wants a small, self-contained tool where they type or paste a GitHub username and see a one-screen 'profile card' for that account. The card has four named elements: (1) the user's pinned repositories, (2) a contribution streak figure, (3) their most-used programming language, and (4) a compact visualization of commit activity over the last 90 days. The prompt is silent on platform; on a Windows host with no server/auth/persistence requirements stated, the simplest-within-reason interpretation is a static web page (HTML/CSS/JS) the user opens locally in a browser. The tool queries gi…",
@@ -2112,8 +2112,8 @@ window.CODEX_BUNDLE = {
         "cv_tier1_pnv": "verified",
         "cv_tier2_first_contact": "not_run",
         "cv_tier3_subgoal": "verified",
-        "lifecycle_phase": "ready_to_ratify",
-        "ratified": false,
+        "lifecycle_phase": "ratified_awaiting_fork",
+        "ratified": true,
         "promoted": false,
         "promoted_to": null,
         "totals": {
@@ -2130,8 +2130,8 @@ window.CODEX_BUNDLE = {
           "build": "done",
           "verification": "done",
           "delivery": "done",
-          "ratification": "active",
-          "promoted": "pending"
+          "ratification": "done",
+          "promoted": "active"
         }
       },
       "live_narrative": {
