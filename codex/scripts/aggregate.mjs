@@ -116,6 +116,41 @@ async function listDir(p) {
   }
 }
 
+// v0.16: Live narrative substrate per v1.11 amendment.
+// Reads state/reports/*.json (role completion reports) and
+// state/live/current-step.json (active-roles pointer). Returns null when
+// neither exists so the dashboard can fall back cleanly to the v0.15
+// topology skeleton for legacy builds. The reports[] array is sorted by
+// completed_at so the renderer can walk them in build-time order without
+// re-sorting client-side.
+async function readLiveNarrative(runRoot) {
+  const reportsDir = path.join(runRoot, 'state', 'reports');
+  const liveDir = path.join(runRoot, 'state', 'live');
+  const reports = [];
+  if (await exists(reportsDir)) {
+    const entries = await listDir(reportsDir);
+    for (const e of entries) {
+      if (!e.isFile() || !e.name.endsWith('.json')) continue;
+      const r = await readJson(path.join(reportsDir, e.name));
+      if (r) {
+        r._filename = e.name;
+        reports.push(r);
+      }
+    }
+    reports.sort((a, b) => {
+      const ta = a.completed_at || '';
+      const tb = b.completed_at || '';
+      if (ta && tb) return ta.localeCompare(tb);
+      if (ta) return -1;
+      if (tb) return 1;
+      return (a._filename || '').localeCompare(b._filename || '');
+    });
+  }
+  const currentStep = await readJson(path.join(liveDir, 'current-step.json'));
+  if (reports.length === 0 && !currentStep) return null;
+  return { reports, current_step: currentStep || null };
+}
+
 function truncate(s, n) {
   if (!s) return s;
   return s.length <= n ? s : s.slice(0, n - 1) + '…';
@@ -698,6 +733,10 @@ async function aggregateRun(slug) {
     rating
   });
 
+  // v0.16: live narrative substrate per v1.11 amendment.
+  // null when no reports + no current-step exist (legacy builds, pre-v1.11).
+  const liveNarrative = await readLiveNarrative(runRoot);
+
   const detail = {
     schema_version: SCHEMA_VERSION,
     slug,
@@ -708,6 +747,7 @@ async function aggregateRun(slug) {
     verification,
     critic,
     build_shape: buildShape,
+    live_narrative: liveNarrative,
     history: historySummary,
     run_report_excerpts: report ? {
       what_worked: report.what_worked,
@@ -1066,7 +1106,7 @@ async function main() {
   const index = {
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    codex_version: '0.16a',
+    codex_version: '0.16',
     architecture_versions_seen: [...archVersionsSeen].sort(),
     run_count: summaries.length,
     runs: summaries,

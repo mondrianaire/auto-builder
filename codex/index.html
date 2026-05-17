@@ -640,6 +640,116 @@
   .ab-link-strip a:hover { text-decoration: none; border-bottom-style: solid; }
   .ab-link-strip .ab-link-trigger { display: block; margin-top: 4px; color: var(--text-faint); font-style: italic; }
 
+  /* Live narrative renderer (v0.16 — per v1.11 role-completion-reports amendment).
+     Renders state/reports/*.json as a vertical timeline of role cards with
+     plain-language blurbs. Surfaces state/live/current-step.json as an
+     "active now" banner above the timeline. Falls back to nothing (v0.15
+     topology stays visible) when neither file exists in the run. */
+  .lnv-wrap { padding: 16px 20px 4px 20px; }
+  .lnv-wrap h3 { margin: 0 0 10px 0; font-size: 13px; color: var(--text); letter-spacing: 0.3px; }
+
+  .lnv-active {
+    margin: 0 0 14px 0; padding: 10px 12px;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: var(--accent-soft);
+    font-size: 12px;
+  }
+  .lnv-active .lnv-active-phase {
+    font-weight: 700; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 0.6px; font-size: 11px;
+  }
+  .lnv-active .lnv-active-roles { margin-top: 6px; color: var(--text); }
+  .lnv-active .lnv-active-role {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-right: 12px;
+  }
+  .lnv-pulse {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent);
+    animation: lnv-pulse 1.6s infinite;
+  }
+  @keyframes lnv-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(110,168,254,0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(110,168,254,0); }
+    100% { box-shadow: 0 0 0 0 rgba(110,168,254,0); }
+  }
+
+  .lnv-timeline {
+    display: flex; flex-direction: column; gap: 8px;
+    position: relative;
+    padding-left: 18px;
+  }
+  .lnv-timeline::before {
+    content: ''; position: absolute;
+    left: 5px; top: 6px; bottom: 6px;
+    width: 2px; background: var(--border-soft);
+  }
+  .lnv-card {
+    position: relative;
+    border: 1px solid var(--border-soft);
+    border-radius: 4px;
+    background: var(--bg-elev);
+    padding: 10px 12px;
+  }
+  .lnv-card::before {
+    content: ''; position: absolute;
+    left: -16px; top: 14px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    border: 2px solid var(--bg);
+  }
+  .lnv-card.active::before { background: var(--accent); }
+  .lnv-card.escalated { border-left: 3px solid var(--warn); }
+  .lnv-card .lnv-card-head {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 8px; margin-bottom: 6px;
+  }
+  .lnv-card .lnv-role {
+    font-weight: 700; color: var(--text); font-size: 13px;
+  }
+  .lnv-card .lnv-instance {
+    color: var(--text-dim); font-size: 11px; font-family: var(--mono);
+  }
+  .lnv-card .lnv-when {
+    margin-left: auto; color: var(--text-faint); font-size: 11px;
+  }
+  .lnv-card .lnv-tag {
+    display: inline-flex; align-items: center;
+    padding: 1px 6px; border-radius: 3px;
+    font-size: 9.5px; font-weight: 700;
+    background: var(--bg-elev-2); color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .lnv-card .lnv-tag.mode-amendment { background: rgba(212,163,90,0.18); color: var(--warn); }
+  .lnv-card .lnv-tag.mode-impact    { background: rgba(212,163,90,0.18); color: var(--warn); }
+  .lnv-card .lnv-tag.mode-escalation{ background: rgba(220,90,90,0.18); color: var(--bad); }
+  .lnv-card .lnv-tag.esc            { background: rgba(220,90,90,0.18); color: var(--bad); }
+  .lnv-card .lnv-tag.section        { background: rgba(110,168,254,0.18); color: var(--info); }
+  .lnv-blurb {
+    margin-top: 8px; padding-left: 8px;
+    border-left: 2px solid var(--border-soft);
+  }
+  .lnv-blurb.imp-high   { border-left-color: var(--accent); }
+  .lnv-blurb.imp-medium { border-left-color: var(--text-dim); }
+  .lnv-blurb.imp-low    { border-left-color: var(--border-soft); }
+  .lnv-blurb .lnv-q {
+    font-size: 11.5px; color: var(--text-dim); font-style: italic;
+    margin-bottom: 2px;
+  }
+  .lnv-blurb .lnv-a {
+    font-size: 13px; color: var(--text); line-height: 1.45;
+    white-space: pre-wrap;
+  }
+  .lnv-blurb.imp-low .lnv-a { font-size: 12px; color: var(--text-dim); }
+  .lnv-empty {
+    padding: 12px 14px; border: 1px dashed var(--border-soft);
+    border-radius: 4px; color: var(--text-faint); font-size: 12px;
+    font-style: italic;
+  }
+
   td.view a {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 2px 8px; border-radius: 3px;
@@ -1210,6 +1320,108 @@
     return wrap;
   }
 
+  // ---- v0.16: live narrative renderer (per v1.11 role-completion-reports amendment)
+  // Reads detail.live_narrative.reports[] (sorted by completed_at) and
+  // detail.live_narrative.current_step. Returns null when no substrate
+  // exists so the caller can fall back cleanly (v0.15 topology stays
+  // visible for legacy builds).
+  function renderLiveNarrative(detail) {
+    const ln = detail && detail.live_narrative;
+    if (!ln) return null;
+    const reports = Array.isArray(ln.reports) ? ln.reports : [];
+    const cs = ln.current_step || null;
+    if (reports.length === 0 && !cs) return null;
+
+    const wrap = el('div', { class: 'lnv-wrap' });
+    wrap.appendChild(el('h3', { text: 'Live build narrative' }));
+
+    // Active-now banner (rendered when current_step has active_roles
+    // AND build isn't complete). Pulsing dot per active role-instance.
+    if (cs && !cs.build_complete && Array.isArray(cs.active_roles) && cs.active_roles.length) {
+      const banner = el('div', { class: 'lnv-active' });
+      banner.appendChild(el('div', { class: 'lnv-active-phase',
+        text: 'Active phase · ' + (cs.current_phase || '?') }));
+      const rolesLine = el('div', { class: 'lnv-active-roles' });
+      cs.active_roles.forEach(ar => {
+        const span = el('span', { class: 'lnv-active-role' });
+        span.appendChild(el('span', { class: 'lnv-pulse' }));
+        const label = ar.role + (ar.section ? ' · ' + ar.section : '') +
+          (ar.escalation_id ? ' · ' + ar.escalation_id : '');
+        span.appendChild(document.createTextNode(label));
+        rolesLine.appendChild(span);
+      });
+      banner.appendChild(rolesLine);
+      if (Array.isArray(cs.open_escalations) && cs.open_escalations.length) {
+        banner.appendChild(el('div', {
+          style: 'margin-top:6px;font-size:11px;color:var(--text-dim);',
+          text: 'Open escalations: ' + cs.open_escalations.join(', ')
+        }));
+      }
+      wrap.appendChild(banner);
+    } else if (cs && cs.build_complete) {
+      wrap.appendChild(el('div', { class: 'lnv-active', style: 'border-color:var(--ok);background:rgba(110,201,122,0.10);' },
+        el('div', { class: 'lnv-active-phase', style: 'color:var(--ok)', text: 'Build complete · ' + (cs.updated_at || '') })
+      ));
+    }
+
+    // Reports timeline
+    if (reports.length === 0) {
+      wrap.appendChild(el('div', { class: 'lnv-empty',
+        text: 'No role completion reports yet — the build is just getting started.' }));
+      return wrap;
+    }
+
+    const timeline = el('div', { class: 'lnv-timeline' });
+    const activeInstanceIds = new Set(
+      (cs && Array.isArray(cs.active_roles)) ? cs.active_roles.map(r => r.instance_id) : []
+    );
+    reports.forEach(r => {
+      const isActive = r.instance_id && activeInstanceIds.has(r.instance_id);
+      let cardClass = 'lnv-card';
+      if (isActive) cardClass += ' active';
+      if (r.raised_escalation) cardClass += ' escalated';
+      const card = el('div', { class: cardClass });
+
+      const head = el('div', { class: 'lnv-card-head' });
+      head.appendChild(el('span', { class: 'lnv-role', text: r.role || '?' }));
+      if (r.instance_id) {
+        head.appendChild(el('span', { class: 'lnv-instance', text: r.instance_id + (r.iteration ? ' · iter ' + r.iteration : '') }));
+      }
+      if (r.mode) {
+        head.appendChild(el('span', { class: 'lnv-tag mode-' + r.mode, text: r.mode }));
+      }
+      if (r.section) {
+        head.appendChild(el('span', { class: 'lnv-tag section', text: r.section }));
+      }
+      if (r.escalation_id) {
+        head.appendChild(el('span', { class: 'lnv-tag esc', text: r.escalation_id }));
+      }
+      if (r.raised_escalation) {
+        head.appendChild(el('span', { class: 'lnv-tag esc', text: 'raised escalation' }));
+      }
+      if (r.completed_at) {
+        head.appendChild(el('span', { class: 'lnv-when', text: r.completed_at }));
+      }
+      card.appendChild(head);
+
+      const blurbs = Array.isArray(r.blurbs) ? r.blurbs : [];
+      blurbs.forEach(b => {
+        if (!b || !b.answer) return;  // skip conditional blurbs that didn't fire
+        const imp = b.importance || 'medium';
+        const blurb = el('div', { class: 'lnv-blurb imp-' + imp });
+        if (b.question) {
+          blurb.appendChild(el('div', { class: 'lnv-q', text: b.question }));
+        }
+        blurb.appendChild(el('div', { class: 'lnv-a', text: b.answer }));
+        card.appendChild(blurb);
+      });
+
+      timeline.appendChild(card);
+    });
+    wrap.appendChild(timeline);
+    return wrap;
+  }
+
   // ---- Promoted-row action buttons (per maintenance-initiated/promoted-row-action-buttons.md)
   function renderRowActions(sum) {
     const cell = el('td', { class: 'row-actions' });
@@ -1566,6 +1778,14 @@
 
     // ---- v0.13: ratification section (per ratification-ui-proposal)
     host.appendChild(renderRatificationSection(sum));
+
+    // ---- v0.16: live build narrative (per v1.11 role-completion-reports amendment)
+    // Renders state/reports/*.json blurbs as a vertical role-card timeline,
+    // with state/live/current-step.json driving an "active now" banner.
+    // Returns null when no substrate exists → v0.15 topology falls through
+    // as the visualization for legacy builds (pre-v1.11).
+    const lnv = renderLiveNarrative(detail);
+    if (lnv) host.appendChild(lnv);
 
     // ---- v0.15: per-build dynamic SVG topology (live-build-visualization-proposal)
     if (detail.build_shape && typeof renderBuildTopology === 'function') {
