@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OttoBLD — Brand Book</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+    color: #1a3a5e;
+    background-color: #f5efe2;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .055 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+      radial-gradient(ellipse at center, #f7f1e3 0%, #ece4cb 100%);
+    background-size: 240px 240px, 100% 100%;
+    padding: 0 0 64px;
+  }
+
+  /* shared atoms */
+  .stripe-band { height: 9px; display: flex; gap: 2px; }
+  .stripe-band div { flex: 1; }
+  .stripe-band div:nth-child(1) { background: #c83a3a; }
+  .stripe-band div:nth-child(2) { background: #d77a3e; }
+  .stripe-band div:nth-child(3) { background: #d4b04a; }
+  .stripe-band div:nth-child(4) { background: #4a6a8a; }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 32px; }
+
+  /* masthead */
+  .masthead { padding: 28px 32px 22px; border-bottom: 2px solid #1a3a5e; max-width: 980px; margin: 0 auto; }
+  .masthead .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .masthead h1 {
+    font: italic 700 38px/1 "Georgia", "Times New Roman", serif;
+    color: #1a3a5e; letter-spacing: -0.015em; margin: 0;
+  }
+  .masthead h1 .B { font-weight: 900; }
+  .masthead .doc {
+    font: 700 11px ui-monospace, monospace; color: #c83a3a;
+    letter-spacing: 0.28em; padding-left: 16px;
+    border-left: 1px solid #c8c0aa;
+  }
+  .masthead .meta {
+    font: 500 10px ui-monospace, monospace; color: #6a6258;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    text-align: right; line-height: 1.7;
+  }
+  .masthead .meta .rev { color: #c83a3a; font-weight: 700; }
+  .masthead .deck {
+    font: italic 16px/1.5 Georgia, serif; color: #2a2a2a;
+    margin-top: 14px; max-width: 720px;
+  }
+
+  /* sections */
+  section { padding: 36px 32px; max-width: 980px; margin: 0 auto; border-bottom: 1px solid #c8c0aa; }
+  section:last-of-type { border-bottom: none; }
+  section h2 {
+    font: italic 700 24px "Georgia", serif; color: #1a3a5e;
+    letter-spacing: -0.005em; margin: 0 0 18px;
+  }
+  section h2 .num { color: #c83a3a; font-style: italic; margin-right: 8px; }
+  section h3 {
+    font: italic 700 16px "Georgia", serif; color: #1a3a5e;
+    margin: 22px 0 10px;
+  }
+  section p { font: italic 13.5px/1.6 Georgia, serif; color: #2a2a2a; max-width: 720px; }
+  section .deck { font: italic 14px/1.55 Georgia, serif; color: #6a6258; margin: -8px 0 18px; max-width: 720px; }
+
+  /* palette block */
+  .palette-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    margin: 14px 0;
+  }
+  .swatch {
+    background: var(--c);
+    color: var(--fg, #fff);
+    padding: 14px 12px 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .swatch .name { font: 700 9px ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.9; }
+  .swatch .hex { font: 700 14px ui-monospace, monospace; margin-top: 18px; letter-spacing: 0.04em; }
+  .swatch .use { font: 500 9.5px ui-monospace, monospace; margin-top: 4px; opacity: 0.78; }
+
+  /* type specimens */
+  .type-row {
+    display: grid; grid-template-columns: 220px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px dashed #c8c0aa;
+    align-items: baseline;
+  }
+  .type-row .label {
+    font: 700 9px ui-monospace, monospace; color: #6a6258;
+    letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .type-row .label small { display: block; color: #8a8275; font-size: 9px; margin-top: 2px; letter-spacing: 0.1em; font-weight: 500; }
+  .type-row .specimen { color: #1a3a5e; }
+
+  /* component examples */
+  .component {
+    margin: 16px 0 24px;
+    background: #ede4ca;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .055 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    padding: 20px;
+    border: 1px solid #c8c0aa;
+  }
+  .component .ctitle { font: 700 9px ui-monospace, monospace; color: #c83a3a; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; }
+
+  /* stat tile cluster */
+  .tile-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .tile {
+    background: rgba(247,242,234,0.6);
+    border: 1px solid rgba(106,98,88,0.3);
+    border-left: 4px solid var(--c, #6a6258);
+    padding: 11px 13px;
+  }
+  .tile .l { font: 700 8.5px ui-monospace, monospace; color: #6a6258; letter-spacing: 0.18em; text-transform: uppercase; }
+  .tile .v { font: 800 28px "Helvetica Neue", sans-serif; color: #1a3a5e; line-height: 1; margin-top: 4px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+  /* boarding pass example */
+  .pass {
+    display: grid; grid-template-columns: 56px 1fr 240px 110px;
+    background: #f5efe2;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='9'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .045 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    border: 1px solid #c8c0aa;
+    border-left: 4px solid #c83a3a;
+    align-items: stretch;
+    position: relative;
+  }
+  .pass-num { padding: 14px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px dashed #c8c0aa; }
+  .pass-num .n { font: italic 900 22px Georgia, serif; color: #c83a3a; line-height: 1; letter-spacing: -0.02em; }
+  .pass-num .l { font: 700 7.5px ui-monospace, monospace; color: #6a6258; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 4px; }
+  .pass-main { padding: 12px 16px; }
+  .pass-main .slug { font: italic 700 14px Georgia, serif; color: #1a3a5e; letter-spacing: -0.005em; }
+  .pass-main .route { font: 500 9.5px ui-monospace, monospace; color: #6a6258; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .pass-main .route .arrow { color: #c83a3a; font-weight: 700; }
+  .pass-fields { padding: 12px 14px; border-left: 1px dashed #c8c0aa; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; position: relative; }
+  .pass-fields::before, .pass-fields::after { content: ''; position: absolute; left: -7px; width: 14px; height: 14px; background: #ede4ca; border-radius: 50%; }
+  .pass-fields::before { top: -7px; }
+  .pass-fields::after { bottom: -7px; }
+  .pass-fields .f .k { font: 700 7.5px ui-monospace, monospace; color: #6a6258; letter-spacing: 0.14em; text-transform: uppercase; border-bottom: 1px solid #c8c0aa; padding-bottom: 1px; }
+  .pass-fields .f .v { font: 700 11px ui-monospace, monospace; color: #1a3a5e; margin-top: 2px; }
+  .pass-stub {
+    background: #ede4ca;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .055 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    border-left: 1.5px dashed #6a6258;
+    padding: 10px 12px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    gap: 4px; position: relative;
+  }
+  .pass-stub::before, .pass-stub::after { content: ''; position: absolute; left: -7px; width: 14px; height: 14px; background: #ede4ca; border-radius: 50%; }
+  .pass-stub::before { top: -7px; }
+  .pass-stub::after { bottom: -7px; }
+  .pass-stub .verdict { font: 700 9px ui-monospace, monospace; padding: 3px 8px; border: 1.5px solid #d77a3e; color: #d77a3e; text-align: center; letter-spacing: 0.14em; text-transform: uppercase; background: rgba(245,239,226,0.55); }
+  .pass-stub .kind { font: 500 8px ui-monospace, monospace; color: #6a6258; letter-spacing: 0.14em; text-transform: uppercase; }
+
+  /* stamp gallery */
+  .stamp-gallery { display: flex; gap: 12px; flex-wrap: wrap; padding: 14px; align-items: center; }
+  .stamp { border: 1.5px solid; padding: 4px 10px; font: 700 9px ui-monospace, monospace; letter-spacing: 0.2em; text-transform: uppercase; background: rgba(245,239,226,0.5); display: inline-block; }
+  .stamp.r { border-color: #c83a3a; color: #c83a3a; transform: rotate(-3deg); }
+  .stamp.g { border-color: #3a7a5a; color: #3a7a5a; transform: rotate(2deg); }
+  .stamp.b { border-color: #4a6a8a; color: #4a6a8a; transform: rotate(-2deg); }
+  .stamp.o { border-color: #d77a3e; color: #d77a3e; transform: rotate(4deg); }
+  .stamp.circ { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 8px; line-height: 1.3; padding: 0 8px; transform: rotate(7deg); }
+
+  /* telex example */
+  .telex { padding: 16px 20px; background: #f5efe2; border: 1px solid #c8c0aa; font-family: ui-monospace, Consolas, monospace; }
+  .telex .head { border-top: 3px double #1a3a5e; border-bottom: 1px solid #1a3a5e; padding: 6px 0; display: flex; justify-content: space-between; font: 700 10px ui-monospace, monospace; color: #1a3a5e; letter-spacing: 0.18em; }
+  .telex .body { padding: 10px 0; font: 600 11px/1.7 ui-monospace, monospace; color: #1a3a5e; letter-spacing: 0.04em; border-bottom: 1px dashed #c8c0aa; }
+  .telex .stop { color: #c83a3a; }
+  .telex .end { text-align: center; margin-top: 10px; font: 700 10px ui-monospace, monospace; color: #c83a3a; letter-spacing: 0.3em; }
+
+  /* anti-pattern */
+  .anti { padding: 14px 16px; background: rgba(200,58,58,0.06); border: 1px solid #c83a3a; border-left: 4px solid #c83a3a; margin: 10px 0; }
+  .anti .x { color: #c83a3a; font-weight: 700; }
+
+  /* ornament */
+  .ornament { display: flex; align-items: center; gap: 6px; margin: 14px 0; }
+  .ornament .dot { width: 6px; height: 6px; border-radius: 50%; background: #c83a3a; }
+  .ornament .line { flex: 1; height: 1px; background: #6a6258; }
+
+  /* footer */
+  footer { padding: 20px 32px; background: #1a3a5e; color: #f5efe2; max-width: 980px; margin: 32px auto 0; display: flex; justify-content: space-between; }
+  footer .l { font: italic 700 13px Georgia, serif; }
+  footer .r { font: 500 10px ui-monospace, monospace; letter-spacing: 0.18em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="stripe-band"></div>
+
+<div class="masthead">
+  <div class="top">
+    <div style="display: flex; align-items: baseline; gap: 14px;">
+      <h1>Otto<span class="B">BLD</span></h1>
+      <span class="doc">BRAND BOOK · v0.1</span>
+    </div>
+    <div class="meta">
+      <div><span class="rev">REV 0.1</span> · 2026.05.17</div>
+      <div>NORTH STAR · CODEX REV 0010</div>
+    </div>
+  </div>
+  <div class="deck">A vintage aviation / mission-control documentation aesthetic. Warm cream paper, four-color faded rainbow stripe, italic Georgia serif headlines, monospace data, italic Georgia body. The discipline of a flight manifest, not the cheerfulness of a dashboard.</div>
+</div>
+
+<!-- ═══════════ 01 IDENTITY ═══════════ -->
+<section>
+  <h2><span class="num">01</span><em>Identity</em></h2>
+  <p>OttoBLD is the rebrand of AutoBuilder — a build-automation orchestration system. The "Codex" is its canonical registry of every build the system has produced. The wordmark is a single token, mixed case: <strong>OttoBLD</strong>.</p>
+  <div class="ornament"><span class="dot"></span><span class="line"></span><span class="dot"></span></div>
+  <p><em>What it is:</em> warm cream, vintage paper documentation, faded rainbow as identity mark, italic Georgia + monospace + system sans.<br/>
+  <em>What it is not:</em> industrial brutalism, cool grey tech, PlayStation primaries, flat SaaS dashboard, holographic, vaporwave.</p>
+</section>
+
+<!-- ═══════════ 02 PALETTE ═══════════ -->
+<section>
+  <h2><span class="num">02</span><em>Palette</em></h2>
+  <div class="deck">Paper backgrounds · faded rainbow accents · ink in navy, dim sage, and rule cream.</div>
+
+  <h3>Paper (background tones — never pure white)</h3>
+  <div class="palette-grid">
+    <div class="swatch" style="--c: #f5efe2; --fg: #1a3a5e"><div class="name">paper-light</div><div class="hex">#f5efe2</div><div class="use">primary surfaces</div></div>
+    <div class="swatch" style="--c: #ede4ca; --fg: #1a3a5e"><div class="name">paper-warm</div><div class="hex">#ede4ca</div><div class="use">elevated · manila tan</div></div>
+    <div class="swatch" style="--c: #f7f1e3; --fg: #1a3a5e"><div class="name">paper-cream</div><div class="hex">#f7f1e3</div><div class="use">radial gradient top</div></div>
+    <div class="swatch" style="--c: #ece4cb; --fg: #1a3a5e"><div class="name">paper-deep</div><div class="hex">#ece4cb</div><div class="use">radial gradient edge</div></div>
+  </div>
+
+  <h3>Faded rainbow (identity mark — always together as 4)</h3>
+  <div class="palette-grid">
+    <div class="swatch" style="--c: #c83a3a"><div class="name">accent-red</div><div class="hex">#c83a3a</div><div class="use">primary attention</div></div>
+    <div class="swatch" style="--c: #d77a3e"><div class="name">accent-orange</div><div class="hex">#d77a3e</div><div class="use">caution · warning</div></div>
+    <div class="swatch" style="--c: #d4b04a; --fg: #1a3a5e"><div class="name">accent-yellow</div><div class="hex">#d4b04a</div><div class="use">neutral data</div></div>
+    <div class="swatch" style="--c: #4a6a8a"><div class="name">accent-blue</div><div class="hex">#4a6a8a</div><div class="use">cool state · done</div></div>
+  </div>
+
+  <h3>Ink (text & structure)</h3>
+  <div class="palette-grid">
+    <div class="swatch" style="--c: #1a3a5e"><div class="name">ink-navy</div><div class="hex">#1a3a5e</div><div class="use">primary text · headlines</div></div>
+    <div class="swatch" style="--c: #2a2a2a"><div class="name">ink-body</div><div class="hex">#2a2a2a</div><div class="use">high-contrast body</div></div>
+    <div class="swatch" style="--c: #6a6258"><div class="name">ink-dim</div><div class="hex">#6a6258</div><div class="use">labels · meta</div></div>
+    <div class="swatch" style="--c: #c8c0aa; --fg: #1a3a5e"><div class="name">ink-rule</div><div class="hex">#c8c0aa</div><div class="use">dividers · dashed</div></div>
+  </div>
+
+  <h3>State (secondary)</h3>
+  <div class="palette-grid">
+    <div class="swatch" style="--c: #3a7a5a"><div class="name">state-pass</div><div class="hex">#3a7a5a</div><div class="use">success · ratified</div></div>
+    <div class="swatch" style="--c: #d77a3e"><div class="name">state-warn</div><div class="hex">#d77a3e</div><div class="use">caution</div></div>
+    <div class="swatch" style="--c: #c83a3a"><div class="name">state-fail</div><div class="hex">#c83a3a</div><div class="use">failure</div></div>
+    <div class="swatch" style="--c: #4a6a8a"><div class="name">state-info</div><div class="hex">#4a6a8a</div><div class="use">informational</div></div>
+  </div>
+</section>
+
+<!-- ═══════════ 03 TYPOGRAPHY ═══════════ -->
+<section>
+  <h2><span class="num">03</span><em>Typography</em></h2>
+  <div class="deck">Three voices, each with a specific role. Italic Georgia for display & editorial. Monospace for data & labels. System sans for UI & big stats.</div>
+
+  <div class="type-row">
+    <div class="label">Wordmark<small>Georgia · 36px · italic 700</small></div>
+    <div class="specimen" style="font: italic 700 36px Georgia, serif; letter-spacing: -0.01em;">Otto<span style="font-weight:900">BLD</span></div>
+  </div>
+  <div class="type-row">
+    <div class="label">Page title<small>Georgia · 26px · italic 700</small></div>
+    <div class="specimen" style="font: italic 700 26px Georgia, serif; letter-spacing: -0.01em;">Corpus overview</div>
+  </div>
+  <div class="type-row">
+    <div class="label">Section title<small>Georgia · 18px · italic 700 · sentence case</small></div>
+    <div class="specimen" style="font: italic 700 18px Georgia, serif;">Run roster · 1 ready to ratify</div>
+  </div>
+  <div class="type-row">
+    <div class="label">Body / editorial<small>Georgia · 13px · italic 400</small></div>
+    <div class="specimen" style="font: italic 13px/1.6 Georgia, serif;">Build complete — corpus entry sealed. Ratification IS the natural end state; nothing further is required.</div>
+  </div>
+  <div class="type-row">
+    <div class="label">Stat value<small>Helvetica · 36px · 200 thin</small></div>
+    <div class="specimen" style="font: 200 36px Helvetica, sans-serif; color: #1a3a5e; letter-spacing: -0.02em; line-height: 1;">042 <span style="font-weight:800; color: #c83a3a; font-size: 28px;">/ 048</span></div>
+  </div>
+  <div class="type-row">
+    <div class="label">Field value (data)<small>Monospace · 11px · 700 · mixed case</small></div>
+    <div class="specimen" style="font: 700 11px ui-monospace, monospace; color: #1a3a5e;">github-profile-card · 18 dispatches · pass w/ concerns</div>
+  </div>
+  <div class="type-row">
+    <div class="label">Field label<small>Monospace · 9px · 700 · ALL CAPS · 0.18em tracking</small></div>
+    <div class="specimen" style="font: 700 9px ui-monospace, monospace; color: #6a6258; letter-spacing: 0.18em; text-transform: uppercase;">DISPATCHES · PHASE · CRITIC · ACTION</div>
+  </div>
+  <div class="type-row">
+    <div class="label">Slug · identifier<small>Monospace · 12px · 500 · lowercase</small></div>
+    <div class="specimen" style="font: 500 12px ui-monospace, monospace; color: #1a3a5e;">gto-poker-async-duel</div>
+  </div>
+</section>
+
+<!-- ═══════════ 04 STRIPE BAND ═══════════ -->
+<section>
+  <h2><span class="num">04</span><em>Stripe band</em> · the identity mark</h2>
+  <div class="deck">The four-color faded rainbow strip appears at the top of every masthead, as accents on document edges, and as section dividers. Order is always: red → orange → yellow → blue.</div>
+
+  <div class="component">
+    <div class="ctitle">9PX TALL · masthead variant</div>
+    <div class="stripe-band"></div>
+  </div>
+
+  <div class="component">
+    <div class="ctitle">4PX TALL · accent variant</div>
+    <div class="stripe-band" style="height: 4px;"></div>
+  </div>
+</section>
+
+<!-- ═══════════ 05 STAT TILE CLUSTER ═══════════ -->
+<section>
+  <h2><span class="num">05</span><em>Stat tile</em> · instrument cluster</h2>
+  <div class="deck">Boxed stats with a 4px colored left border in one of the rainbow accents. Small ALL CAPS label above, large Helvetica numeric value below.</div>
+
+  <div class="component">
+    <div class="ctitle">CLUSTER · 4-up</div>
+    <div class="tile-grid">
+      <div class="tile" style="--c: #4a6a8a"><div class="l">RUNS</div><div class="v">11</div></div>
+      <div class="tile" style="--c: #3a7a5a"><div class="l">SHIPPED</div><div class="v">9</div></div>
+      <div class="tile" style="--c: #d77a3e"><div class="l">FAILED → REC</div><div class="v">2</div></div>
+      <div class="tile" style="--c: #c83a3a"><div class="l">DEMOTIONS</div><div class="v">0</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 06 BOARDING PASS ═══════════ -->
+<section>
+  <h2><span class="num">06</span><em>Boarding pass</em> · run roster row</h2>
+  <div class="deck">Horizontal grid <code>[serial · main · fields · stub]</code> with tear-off half-circle perforations between fields and stub. Colored left border indicates verdict family.</div>
+
+  <div class="component">
+    <div class="ctitle">PASS · standard</div>
+    <div class="pass">
+      <div class="pass-num"><div class="n">042</div><div class="l">BLD</div></div>
+      <div class="pass-main">
+        <div class="slug">github-profile-card</div>
+        <div class="route">Req <span class="arrow">→</span> Ratified · 2026.05.16 · WEB_APP</div>
+      </div>
+      <div class="pass-fields">
+        <div class="f"><div class="k">PHASE</div><div class="v">Ratified</div></div>
+        <div class="f"><div class="k">SECTIONS</div><div class="v">5 / 5</div></div>
+        <div class="f"><div class="k">DISPATCHES</div><div class="v">18</div></div>
+        <div class="f"><div class="k">CRITIC</div><div class="v">0 / 0 / 0</div></div>
+      </div>
+      <div class="pass-stub">
+        <div class="verdict">Pass w/ concerns</div>
+        <div class="kind">Seat · mainline</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 07 STAMPS ═══════════ -->
+<section>
+  <h2><span class="num">07</span><em>Stamps</em> · status overlays</h2>
+  <div class="deck">Outlined rectangular or circular stamps in the four accent colors. Rotated ±2-9°. Used to overlay status onto documents.</div>
+
+  <div class="component">
+    <div class="ctitle">STAMP GALLERY · 4 colors · 2 shapes</div>
+    <div class="stamp-gallery">
+      <span class="stamp r">In flight</span>
+      <span class="stamp g">Ratified</span>
+      <span class="stamp b">Promoted</span>
+      <span class="stamp o">Pass w/ concerns</span>
+      <span class="stamp r circ">VERIFIED<br/>OTTOBLD<br/>2026.05</span>
+      <span class="stamp b circ">CORPUS<br/>SEALED<br/>2026.05</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 08 TELEX ═══════════ -->
+<section>
+  <h2><span class="num">08</span><em>Telex</em> · live transmission</h2>
+  <div class="deck">Pure monospace block with double-rule top + single-rule bottom. ALL CAPS body with red STOP punctuation between sentences.</div>
+
+  <div class="component">
+    <div class="ctitle">TELEX · live event stream</div>
+    <div class="telex">
+      <div class="head"><span>OTTOBLD // TELEX</span><span>BUILD 042 · T+ 09:32</span></div>
+      <div class="body">
+        BUILD 042 PROCEEDING NOMINAL <span class="stop">STOP</span><br/>
+        WAVE 1 OF 2 DISPATCHED <span class="stop">STOP</span> THREE BUILDERS ACTIVE <span class="stop">STOP</span><br/>
+        ONE ESCALATION RESOLVED AT T+ 06:14 <span class="stop">STOP</span> NO OPEN FLAGS <span class="stop">STOP</span>
+      </div>
+      <div class="end">— end of transmission —</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 09 ANTI-PATTERNS ═══════════ -->
+<section>
+  <h2><span class="num">09</span><em>Anti-patterns</em> · explicitly avoid</h2>
+  <div class="deck">These were explored and rejected during the rebrand exploration. Do not return to them.</div>
+
+  <div class="anti"><span class="x">✕</span> Industrial brutalism (Otto thin + BLD heavy, slate-and-orange) — too cold for this brand.</div>
+  <div class="anti"><span class="x">✕</span> Cool grey base (#A6A6A6 or PS1 grey) — too tech, loses the document warmth.</div>
+  <div class="anti"><span class="x">✕</span> PlayStation-saturated primaries (#e60012 red, #ffce00 yellow, #006fcd blue) — too modern arcade.</div>
+  <div class="anti"><span class="x">✕</span> Pure black or pure white backgrounds — breaks the paper feel.</div>
+  <div class="anti"><span class="x">✕</span> Italic ALL CAPS headers mixed with lowercase mono slugs in the same row — case mismatch.</div>
+  <div class="anti"><span class="x">✕</span> Clinical SaaS dashboard layouts (rounded cards, drop shadows everywhere) — wrong vocabulary.</div>
+  <div class="anti"><span class="x">✕</span> Hot-pink / cyan vaporwave palette — wrong era.</div>
+  <div class="anti"><span class="x">✕</span> Holographic / glass / iridescent surfaces — wrong material.</div>
+</section>
+
+<footer>
+  <div class="l"><em>OttoBLD</em> · Brand Book · v0.1</div>
+  <div class="r">PAIR WITH brand-identity.md · NORTH STAR CODEX REV 0010</div>
+</footer>
+
+</body>
+</html>

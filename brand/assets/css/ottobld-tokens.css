@@ -1,0 +1,103 @@
+/*
+ * OttoBLD — Brand Tokens
+ * Drop-in CSS variables for the OttoBLD design system.
+ * Pair with ottobld.css for the full component library, or use standalone.
+ *
+ * Version: v0.1
+ * Reference: brand-identity.md, brand-book.html
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────
+   * COLOR
+   * Paper backgrounds, faded rainbow accents, ink scale.
+   * ───────────────────────────────────────────────── */
+
+  /* Paper (backgrounds — never pure white) */
+  --paper-light:  #f5efe2;
+  --paper-warm:   #ede4ca;
+  --paper-cream:  #f7f1e3;
+  --paper-deep:   #ece4cb;
+
+  /* Faded rainbow (identity mark — always together as 4, in order) */
+  --accent-red:    #c83a3a;
+  --accent-orange: #d77a3e;
+  --accent-yellow: #d4b04a;
+  --accent-blue:   #4a6a8a;
+
+  /* Ink (text & structure) */
+  --ink-navy:  #1a3a5e;
+  --ink-body:  #2a2a2a;
+  --ink-dim:   #6a6258;
+  --ink-rule:  #c8c0aa;
+
+  /* Carbon-copy paper variants */
+  --carbon-red:    #f0d8d2;
+  --carbon-yellow: #f4ecc8;
+  --carbon-white:  #f5efe2;
+
+  /* State (mostly aliases to accents) */
+  --state-pass: #3a7a5a;
+  --state-warn: #d77a3e;
+  --state-fail: #c83a3a;
+  --state-info: #4a6a8a;
+
+  /* ─────────────────────────────────────────────────
+   * TYPE
+   * Three voices: italic Georgia, monospace, system sans.
+   * ───────────────────────────────────────────────── */
+
+  --type-display: italic 700 1em/1.2 "Georgia", "Times New Roman", serif;
+  --type-display-stack: "Georgia", "Times New Roman", serif;
+  --type-data-stack: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  --type-ui-stack: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+
+  /* Tracking presets */
+  --track-label: 0.18em;     /* ALL CAPS field labels */
+  --track-stamp: 0.20em;     /* stamp interiors */
+  --track-meta:  0.14em;     /* small meta strips */
+  --track-tight: -0.02em;    /* large display numerals */
+
+  /* ─────────────────────────────────────────────────
+   * MOTION
+   * Easing curves and durations.
+   * ───────────────────────────────────────────────── */
+
+  --ease-stamp: cubic-bezier(0.2, 0.0, 0.0, 1.15);
+  --ease-tear:  cubic-bezier(0.55, 0.0, 0.7, 0.9);
+  --ease-telex: linear;
+  --ease-paper: cubic-bezier(0.3, 0.0, 0.2, 1.0);
+
+  --dur-quick: 160ms;
+  --dur-base:  280ms;
+  --dur-slow:  440ms;
+  --dur-page:  640ms;
+  --dur-hero:  1000ms;
+
+  /* ─────────────────────────────────────────────────
+   * LAYOUT
+   * Spacing, container widths, rhythm.
+   * ───────────────────────────────────────────────── */
+
+  --container-max:    1100px;
+  --container-narrow: 560px;
+  --pad-x: 32px;
+  --pad-y: 24px;
+  --gap:   12px;
+  --gap-lg: 24px;
+  --rhythm: 4px;            /* base vertical rhythm unit */
+
+  /* Border radii — almost always zero (paper-document brand) */
+  --radius: 0;
+  --radius-stamp: 0;        /* rectangular stamp */
+  --radius-circle: 50%;     /* circular stamp / monogram */
+
+  /* Borders */
+  --rule-thin:  1px solid var(--ink-rule);
+  --rule-heavy: 2px solid var(--ink-navy);
+  --rule-dash:  1px dashed var(--ink-rule);
+  --rule-stamp: 1.5px solid currentColor;
+
+  /* Shadow — only for elevated cards (rare) */
+  --shadow-card: 0 3px 14px rgba(0, 0, 0, 0.10);
+}
