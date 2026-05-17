@@ -119,6 +119,12 @@
     "verification_passed": true,
     "promoted_to": null,
     "promoted_at": null,
+    "ab_pair": {
+      "with": "streamdock-apple-music-touchbar",
+      "role": "v2",
+      "trigger": "AutoBuilder data-interpretation amendments after v1 missed the mark",
+      "note": "Re-run after user-enacted amendments. Pair measures delivery-quality delta."
+    },
     "links": {
       "run_report": "runs/streamdock-applemusic-touchbar/run-report.md",
       "verification": "runs/streamdock-applemusic-touchbar/output/verification/report.json",

@@ -124,6 +124,12 @@
     "verification_passed": true,
     "promoted_to": null,
     "promoted_at": null,
+    "ab_pair": {
+      "with": "streamdock-applemusic-touchbar",
+      "role": "v1",
+      "trigger": "AutoBuilder data-interp amendments",
+      "note": "Re-run as streamdock-applemusic-touchbar."
+    },
     "links": {
       "run_report": "runs/streamdock-apple-music-touchbar/run-report.md",
       "verification": "runs/streamdock-apple-music-touchbar/output/verification/report.json",

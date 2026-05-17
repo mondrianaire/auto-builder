@@ -586,6 +586,60 @@
   .kind-chip.data     { background: rgba(110,168,254,0.18); color: var(--info); }
   .kind-chip.other    { color: var(--text-faint); background: var(--bg-elev-2); }
 
+  /* A/B-pair badge (v0.16a — per maintenance-initiated/ab-pair-curation-field.md)
+     Inline chip in the slug cell. v1 + v2 use distinct colors so the eye can
+     scan paired rows quickly. The companion bracket treatment on .ab-paired
+     rows (below) visually connects the pair as a unit. */
+  .ab-badge {
+    display: inline-flex; align-items: center;
+    padding: 1px 6px; border-radius: 3px;
+    font-size: 9.5px; font-weight: 700;
+    margin-left: 6px; vertical-align: middle;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .ab-badge.v1 { background: rgba(212,163,90,0.18); color: var(--warn); }
+  .ab-badge.v2 { background: rgba(110,201,122,0.18); color: var(--ok); }
+
+  /* Left-side bracket on paired rows. Paired-first gets the top half,
+     paired-last gets the bottom half, so the visual connector spans
+     vertically across the pair. The slug cell carries the bracket via a
+     ::before pseudo-element since it's the leftmost text cell. */
+  table.runs tr.ab-paired td.slug { position: relative; padding-left: 14px; }
+  table.runs tr.ab-paired td.slug::before {
+    content: ''; position: absolute;
+    left: 4px; width: 3px;
+    background: var(--accent);
+    opacity: 0.65;
+  }
+  table.runs tr.ab-paired.ab-paired-first td.slug::before {
+    top: 50%; bottom: -1px;
+  }
+  table.runs tr.ab-paired.ab-paired-last td.slug::before {
+    top: -1px; bottom: 50%;
+  }
+  /* Middle members (3+ run pairs, future-proof) span full height. */
+  table.runs tr.ab-paired.ab-paired-mid td.slug::before {
+    top: -1px; bottom: -1px;
+  }
+
+  /* A/B-pair cross-link strip in detail panel */
+  .ab-link-strip {
+    margin: 8px 20px 0 20px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--accent);
+    background: var(--bg-elev);
+    border-radius: 0 4px 4px 0;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .ab-link-strip .ab-link-headline { color: var(--text); font-weight: 600; }
+  .ab-link-strip a {
+    color: var(--accent); font-weight: 600;
+    border-bottom: 1px dotted var(--accent);
+  }
+  .ab-link-strip a:hover { text-decoration: none; border-bottom-style: solid; }
+  .ab-link-strip .ab-link-trigger { display: block; margin-top: 4px; color: var(--text-faint); font-style: italic; }
+
   td.view a {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 2px 8px; border-radius: 3px;
@@ -1204,21 +1258,76 @@
     return cell;
   }
 
+  // v0.16a: A/B-pair grouping pass — force partner rows adjacent (v1 → v2)
+  // per maintenance-initiated/ab-pair-curation-field.md. Decides open
+  // question #1 in favor of "force adjacent" over "natural-order + spanning
+  // connector" — pair coherence beats per-column sort consistency for the
+  // two pair members, and a contiguous bracket visual reads more clearly
+  // than a connector that jumps over unrelated rows.
+  function groupAbPairs(rows) {
+    const seen = new Set();
+    const out = [];
+    const bySlug = new Map(rows.map(r => [r.slug, r]));
+    for (const r of rows) {
+      if (seen.has(r.slug)) continue;
+      const partnerSlug = r.ab_pair && r.ab_pair.with;
+      const partner = partnerSlug && bySlug.has(partnerSlug) ? bySlug.get(partnerSlug) : null;
+      // If this row is v2 and its v1 partner is later in the sort, swap so v1 leads.
+      if (partner && r.ab_pair.role === 'v2' && partner.ab_pair && partner.ab_pair.role === 'v1' && !seen.has(partner.slug)) {
+        out.push(partner); seen.add(partner.slug);
+        out.push(r);       seen.add(r.slug);
+        continue;
+      }
+      out.push(r); seen.add(r.slug);
+      if (partner && !seen.has(partner.slug)) {
+        out.push(partner); seen.add(partner.slug);
+      }
+    }
+    return out;
+  }
+
   function renderRoster() {
     const tbody = document.getElementById('runs-tbody');
     tbody.innerHTML = '';
     const activeFilter = getFilter();
     const sortState = getSort();
-    const rows = sortRuns(idx.runs, sortState);
-    for (const r of rows) {
-      // v0.9: skip runs that don't match the active first-delivery filter
-      if (activeFilter && r.first_delivery_outcome !== activeFilter) continue;
-      const tr = el('tr', { class: 'row', 'data-slug': r.slug });
+    const sorted = sortRuns(idx.runs, sortState);
+    // Apply first-delivery filter BEFORE grouping so the pair-bracket logic
+    // never points at a hidden partner.
+    const visible = activeFilter
+      ? sorted.filter(r => r.first_delivery_outcome === activeFilter)
+      : sorted;
+    const rows = groupAbPairs(visible);
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      // A/B-pair bracket class — only when this row's partner is the
+      // immediately-adjacent row, so the bracket pseudo-element spans the pair.
+      let abClass = '';
+      if (r.ab_pair && r.ab_pair.with) {
+        const prev = rows[i-1];
+        const next = rows[i+1];
+        const partnerPrev = prev && prev.slug === r.ab_pair.with;
+        const partnerNext = next && next.slug === r.ab_pair.with;
+        if (partnerNext && !partnerPrev)       abClass = ' ab-paired ab-paired-first';
+        else if (partnerPrev && !partnerNext)  abClass = ' ab-paired ab-paired-last';
+        else if (partnerPrev && partnerNext)   abClass = ' ab-paired ab-paired-mid';
+      }
+      const tr = el('tr', { class: 'row' + abClass, 'data-slug': r.slug });
       tr.addEventListener('click', () => selectRun(r.slug));
 
       // Promoted-row-action-buttons: three icon buttons (GH / Live / Launch) for promoted; empty placeholder otherwise (column alignment)
       tr.appendChild(renderRowActions(r));
-      tr.appendChild(el('td', { class: 'slug', title: r.prompt || '' }, r.slug));
+      // Slug cell with optional A/B-pair badge inline (v0.16a)
+      const slugCell = el('td', { class: 'slug', title: r.prompt || '' }, r.slug);
+      if (r.ab_pair && r.ab_pair.role) {
+        const badge = el('span', {
+          class: 'ab-badge ' + r.ab_pair.role,
+          text: r.ab_pair.role,
+          title: 'A/B pair with ' + r.ab_pair.with + (r.ab_pair.trigger ? ' — ' + r.ab_pair.trigger : '')
+        });
+        slugCell.appendChild(badge);
+      }
+      tr.appendChild(slugCell);
       // Phase chip hoisted to immediate right of slug for prominence (was at column 6 prior)
       tr.appendChild(el('td', null, phasePill(r)));
       tr.appendChild(el('td', { class: 'date' }, dash(r.date)));
@@ -1402,6 +1511,32 @@
       )
     );
     host.appendChild(head);
+
+    // ---- v0.16a: A/B-pair cross-link strip (per maintenance-initiated/ab-pair-curation-field.md)
+    if (sum.ab_pair && sum.ab_pair.with && runs[sum.ab_pair.with]) {
+      const ab = sum.ab_pair;
+      const partner = runs[ab.with].summary;
+      const partnerRole = partner.ab_pair && partner.ab_pair.role;
+      const strip = el('div', { class: 'ab-link-strip' });
+      const headline = el('span', { class: 'ab-link-headline' },
+        'A/B pair · this build is ',
+        el('strong', { text: ab.role || '?' }),
+        ' of the pair. '
+      );
+      strip.appendChild(headline);
+      const link = el('a', { href: 'javascript:void(0)' },
+        'Compare with ' + ab.with + (partnerRole ? ' (' + partnerRole + ')' : '') + ' →'
+      );
+      link.addEventListener('click', (e) => { e.preventDefault(); selectRun(ab.with); });
+      strip.appendChild(link);
+      if (ab.trigger) {
+        strip.appendChild(el('span', { class: 'ab-link-trigger', text: 'Amendment between runs: ' + ab.trigger }));
+      }
+      if (ab.note) {
+        strip.appendChild(el('span', { class: 'ab-link-trigger', text: ab.note }));
+      }
+      host.appendChild(strip);
+    }
 
     // ---- revision lineage strip (between head and body)
     if (detail.revisions && detail.revisions.length) {

@@ -69,6 +69,7 @@
     "verification_passed": true,
     "promoted_to": null,
     "promoted_at": null,
+    "ab_pair": null,
     "links": {
       "run_report": "runs/tic-tac-toe/run-report.md",
       "verification": "runs/tic-tac-toe/output/verification/report.json",

@@ -69,6 +69,12 @@
     "verification_passed": true,
     "promoted_to": null,
     "promoted_at": null,
+    "ab_pair": {
+      "with": "blackjack-trainer",
+      "role": "v1",
+      "trigger": "AutoBuilder data-interp amendments",
+      "note": "Re-run as blackjack-trainer."
+    },
     "links": {
       "run_report": "runs/blackjack/run-report.md",
       "verification": "runs/blackjack/output/verification/report.json",

@@ -82,6 +82,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
         "promoted_at": "2026-05-16T21:06:17.177Z",
+        "ab_pair": null,
         "links": {
           "run_report": "runs/gto-poker-async-duel/run-report.md",
           "verification": "runs/gto-poker-async-duel/output/verification/report.json",
@@ -215,6 +216,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "streamdock-applemusic-touchbar",
+          "role": "v1",
+          "trigger": "AutoBuilder data-interp amendments",
+          "note": "Re-run as streamdock-applemusic-touchbar."
+        },
         "links": {
           "run_report": "runs/streamdock-apple-music-touchbar/run-report.md",
           "verification": "runs/streamdock-apple-music-touchbar/output/verification/report.json",
@@ -293,6 +300,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/earthquake-map/run-report.md",
           "verification": "runs/earthquake-map/output/verification/report.json",
@@ -371,6 +379,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/kanban-board/run-report.md",
           "verification": "runs/kanban-board/output/verification/report.json",
@@ -449,6 +458,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": false,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/latex-equation-renderer/run-report.md",
           "verification": "runs/latex-equation-renderer/output/verification/report.json",
@@ -527,6 +537,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "blackjack-trainer",
+          "role": "v1",
+          "trigger": "AutoBuilder data-interp amendments",
+          "note": "Re-run as blackjack-trainer."
+        },
         "links": {
           "run_report": "runs/blackjack/run-report.md",
           "verification": "runs/blackjack/output/verification/report.json",
@@ -604,6 +620,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "blackjack",
+          "role": "v2",
+          "trigger": "AutoBuilder data-interpretation amendments after v1 (blackjack) missed the mark",
+          "note": "Re-run after user-enacted amendments. Pair measures delivery-quality delta."
+        },
         "links": {
           "run_report": "runs/blackjack-trainer/run-report.md",
           "verification": "runs/blackjack-trainer/output/verification/report.json",
@@ -682,6 +704,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/tic-tac-toe/run-report.md",
           "verification": "runs/tic-tac-toe/output/verification/report.json",
@@ -760,6 +783,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": "https://github.com/mondrianaire/gto-poker-trainer",
         "promoted_at": "2026-05-10T18:59:04Z",
+        "ab_pair": null,
         "links": {
           "run_report": "runs/gto-poker-trainer/run-report.md",
           "verification": "runs/gto-poker-trainer/output/verification/report.json",
@@ -888,6 +912,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "streamdock-apple-music-touchbar",
+          "role": "v2",
+          "trigger": "AutoBuilder data-interpretation amendments after v1 missed the mark",
+          "note": "Re-run after user-enacted amendments. Pair measures delivery-quality delta."
+        },
         "links": {
           "run_report": "runs/streamdock-applemusic-touchbar/run-report.md",
           "verification": "runs/streamdock-applemusic-touchbar/output/verification/report.json",
@@ -1593,6 +1623,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": "https://github.com/mondrianaire/gto-poker-async-duel-AB",
         "promoted_at": "2026-05-16T21:06:17.177Z",
+        "ab_pair": null,
         "links": {
           "run_report": "runs/gto-poker-async-duel/run-report.md",
           "verification": "runs/gto-poker-async-duel/output/verification/report.json",
@@ -2312,6 +2343,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "streamdock-applemusic-touchbar",
+          "role": "v1",
+          "trigger": "AutoBuilder data-interp amendments",
+          "note": "Re-run as streamdock-applemusic-touchbar."
+        },
         "links": {
           "run_report": "runs/streamdock-apple-music-touchbar/run-report.md",
           "verification": "runs/streamdock-apple-music-touchbar/output/verification/report.json",
@@ -2933,6 +2970,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/earthquake-map/run-report.md",
           "verification": "runs/earthquake-map/output/verification/report.json",
@@ -3301,6 +3339,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/kanban-board/run-report.md",
           "verification": "runs/kanban-board/output/verification/report.json",
@@ -4017,6 +4056,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": false,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/latex-equation-renderer/run-report.md",
           "verification": "runs/latex-equation-renderer/output/verification/report.json",
@@ -4760,6 +4800,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "blackjack-trainer",
+          "role": "v1",
+          "trigger": "AutoBuilder data-interp amendments",
+          "note": "Re-run as blackjack-trainer."
+        },
         "links": {
           "run_report": "runs/blackjack/run-report.md",
           "verification": "runs/blackjack/output/verification/report.json",
@@ -5447,6 +5493,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "blackjack",
+          "role": "v2",
+          "trigger": "AutoBuilder data-interpretation amendments after v1 (blackjack) missed the mark",
+          "note": "Re-run after user-enacted amendments. Pair measures delivery-quality delta."
+        },
         "links": {
           "run_report": "runs/blackjack-trainer/run-report.md",
           "verification": "runs/blackjack-trainer/output/verification/report.json",
@@ -6316,6 +6368,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": null,
         "links": {
           "run_report": "runs/tic-tac-toe/run-report.md",
           "verification": "runs/tic-tac-toe/output/verification/report.json",
@@ -7057,6 +7110,7 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": "https://github.com/mondrianaire/gto-poker-trainer",
         "promoted_at": "2026-05-10T18:59:04Z",
+        "ab_pair": null,
         "links": {
           "run_report": "runs/gto-poker-trainer/run-report.md",
           "verification": "runs/gto-poker-trainer/output/verification/report.json",
@@ -7676,6 +7730,12 @@ window.CODEX_BUNDLE = {
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
+        "ab_pair": {
+          "with": "streamdock-apple-music-touchbar",
+          "role": "v2",
+          "trigger": "AutoBuilder data-interpretation amendments after v1 missed the mark",
+          "note": "Re-run after user-enacted amendments. Pair measures delivery-quality delta."
+        },
         "links": {
           "run_report": "runs/streamdock-applemusic-touchbar/run-report.md",
           "verification": "runs/streamdock-applemusic-touchbar/output/verification/report.json",

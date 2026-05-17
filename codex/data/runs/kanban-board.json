@@ -69,6 +69,7 @@
     "verification_passed": true,
     "promoted_to": null,
     "promoted_at": null,
+    "ab_pair": null,
     "links": {
       "run_report": "runs/kanban-board/run-report.md",
       "verification": "runs/kanban-board/output/verification/report.json",

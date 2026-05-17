@@ -654,6 +654,11 @@ async function aggregateRun(slug) {
     // when it fires). Pass through if the curation overlay has it.
     promoted_to: (curation && curation.promoted_to) || null,
     promoted_at: (curation && curation.promoted_at) || null,
+    // v0.16a: A/B pair link from curation overlay
+    // (per maintenance-initiated/ab-pair-curation-field.md). Symmetric — each
+    // member's curation overlay points at the other. Dashboard uses this to
+    // (1) force adjacent row rendering and (2) render a cross-link in detail.
+    ab_pair: (curation && curation.ab_pair) || null,
     links
   };
 
@@ -1061,7 +1066,7 @@ async function main() {
   const index = {
     schema_version: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    codex_version: '0.15',
+    codex_version: '0.16a',
     architecture_versions_seen: [...archVersionsSeen].sort(),
     run_count: summaries.length,
     runs: summaries,

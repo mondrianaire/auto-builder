@@ -69,6 +69,7 @@
     "verification_passed": false,
     "promoted_to": null,
     "promoted_at": null,
+    "ab_pair": null,
     "links": {
       "run_report": "runs/latex-equation-renderer/run-report.md",
       "verification": "runs/latex-equation-renderer/output/verification/report.json",

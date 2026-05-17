@@ -69,6 +69,7 @@
     "verification_passed": true,
     "promoted_to": "https://github.com/mondrianaire/gto-poker-trainer",
     "promoted_at": "2026-05-10T18:59:04Z",
+    "ab_pair": null,
     "links": {
       "run_report": "runs/gto-poker-trainer/run-report.md",
       "verification": "runs/gto-poker-trainer/output/verification/report.json",
