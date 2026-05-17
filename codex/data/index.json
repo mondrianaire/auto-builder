@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-17T02:09:09.863Z",
-  "codex_version": "0.15",
+  "generated_at": "2026-05-17T02:22:24.328Z",
+  "codex_version": "0.16a",
   "architecture_versions_seen": [
     "v1.3",
     "v1.4 (initial run); v1.5 (recovery)",
