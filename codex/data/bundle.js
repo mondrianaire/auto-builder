@@ -1266,22 +1266,42 @@ window.CODEX_BUNDLE = {
         "last_touched": "2026-05-16",
         "overall_state": "captured",
         "items_total": 5,
-        "items_done": 1,
+        "items_done": 2,
         "items_in_progress": 0,
         "items_blocked": 0,
         "pending_ack": true,
         "maintenance_notes_count": 5,
-        "codex_acks_count": 18,
+        "codex_acks_count": 28,
         "maintenance_notes_latest": {
           "date": null,
           "excerpt": "This is stronger than just adding a static \"you are inside AutoBuilder\" preamble to charters. It's a **discoverable registry of pre-configured resources** — services, libraries, credentials, hosting — that any new build can evaluate and bind to. Concrete: another build needing a…"
         },
         "codex_acks_latest": {
           "date": null,
-          "excerpt": "Land v1.12-minimal as proposal recommended — single `architecture/available-build-resources.md` file with 3 entries (Pages, FORK_PAT, Firebase-from-gto-poker-async-duel — with the latter's `scope` flipped to `all-builds-with-compatible-auth-model` if user confirms), Discovery + …"
+          "excerpt": "v0.18 task open on Codex side for the analytics implementation (~half-day; lands after v0.17 dashboard re-skin so the new Connectors panel can slot into the OttoBLD-styled dashboard)."
         },
         "parse_warnings": [
           "unrecognized overall_state value: captured"
+        ]
+      },
+      {
+        "slug": "connector-usage-analytics-proposal",
+        "title": "Connector usage analytics — Codex-side proposal",
+        "origin": "codex-initiated",
+        "source_file": "codex/docs/connector-usage-analytics-proposal.md",
+        "last_touched": "2026-05-17",
+        "overall_state": "proposal",
+        "items_total": 5,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 0,
+        "codex_acks_count": 0,
+        "maintenance_notes_latest": null,
+        "codex_acks_latest": null,
+        "parse_warnings": [
+          "unrecognized overall_state value: proposal"
         ]
       },
       {

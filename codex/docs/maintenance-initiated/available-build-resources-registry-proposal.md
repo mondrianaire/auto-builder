@@ -12,7 +12,7 @@
 - [ ] registry-shape-defined — *what fields per resource, who curates, where it lives on disk.*
 - [ ] consumption-mechanism-defined — *how builds discover the registry; charter amendments for Discovery + TD.*
 - [ ] codex-dashboard-surface-decided — *whether the registry has a UI panel in Codex or stays as architecture/ markdown.*
-- [ ] firebase-bootstrap-binding-decided — *whether gto-poker-async-duel's Firebase becomes a shared/discoverable resource or stays scoped to that build.*
+- [x] firebase-bootstrap-binding-decided — *USER DECISION 2026-05-17: gto-poker-async-duel's Firebase becomes a SHARED resource. Scope flips from `scoped-to-gto-poker-async-duel` to a shared scope (exact shape TBD by Maintenance; likely `all-builds-with-compatible-auth-model`). Companion direction: Codex begins keeping connector-usage statistics on overseer sections to identify high-frequency dependencies for pre-packaging — captured as separate proposal at `codex/docs/connector-usage-analytics-proposal.md`. The Firebase decision is the registry's first user-flagged shared resource; the analytics is what makes the registry self-growing thereafter.*
 
 ### Maintenance notes
 
@@ -80,6 +80,31 @@ This is stronger than just adding a static "you are inside AutoBuilder" preamble
 **Recommended next step from Codex's view:**
 
 Land v1.12-minimal as proposal recommended — single `architecture/available-build-resources.md` file with 3 entries (Pages, FORK_PAT, Firebase-from-gto-poker-async-duel — with the latter's `scope` flipped to `all-builds-with-compatible-auth-model` if user confirms), Discovery + TD charter pointers, no dashboard surface yet. Validates the format. The next build is the test of whether the consumption mechanism works in practice.
+
+---
+
+**Codex ack addendum 2026-05-17 (user decisions + scope expansion):**
+
+User decided BOTH outstanding questions in one message:
+
+1. **Firebase scope: SHARED.** gto-poker-async-duel's Firebase project becomes the registry's first user-flagged shared resource. Scope flips from `scoped-to-gto-poker-async-duel` to a shared scope (exact shape — `all-builds-with-compatible-auth-model` or similar — for Maintenance to settle).
+
+2. **Connector-usage analytics: ADOPT.** *"codex should begin keeping statistics on overseer sections to identify most used 'connector' (not claude) such as database connection and web servers to identify them and prepackage them if necessary."*
+
+   The "(not claude)" clarification is load-bearing — this is NOT about MCP/Claude connectors (LLM integrations). It's about each build's RUNTIME TECHNICAL DEPENDENCIES: the database clients, web servers, frameworks, external APIs, hosting targets, auth schemes that builds compose with.
+
+   Captured as a separate Codex-side proposal at `codex/docs/connector-usage-analytics-proposal.md`. The proposal:
+
+   - Defines a connector-categorization taxonomy (BaaS, database_self_hosted, api_external, auth, hosting_runtime, framework_ui, framework_server, visualization, bundler_buildtool, testing, data_format, cdn_asset, other).
+   - Extracts connector signals from four substrate sources per build (Discovery proper_nouns → first_contact_requirements → TD section charters → builder source-grep), precedence-ordered.
+   - Aggregates per-build into `codex/data/connectors/{slug}.json` and corpus-wide into `codex/data/connector-usage.json`.
+   - Surfaces high-frequency connectors as registry-entry candidates with a user-confirmed promotion step (no auto-promotion in v0.1).
+   - Two pre-packaging levels: Level 1 (lightweight — `reference_implementation` field on registry entry pointing at a known-good builder output) and Level 2 (heavy — vendored scaffolds in a project-level `vendor/` or `scaffolds/` directory, deferred to v0.19+).
+   - Asks Maintenance to extend registry-entry schema with `extracted_from_builds[]`, `extraction_source` (`maintenance-curated` vs `codex-detected-via-usage`), `reference_implementation`, and optional `scaffold_path` fields.
+
+   The Firebase decision lands the registry's first user-flagged shared resource. The connector-usage analytics is what makes the registry self-growing thereafter — Codex observes patterns, surfaces candidates, Maintenance + user promote them, and the registry becomes a discoverable catalog of what the corpus has proven worth pre-packaging rather than a hand-maintained static list.
+
+   v0.18 task open on Codex side for the analytics implementation (~half-day; lands after v0.17 dashboard re-skin so the new Connectors panel can slot into the OttoBLD-styled dashboard).
 
 ## The proposal in shape
 
