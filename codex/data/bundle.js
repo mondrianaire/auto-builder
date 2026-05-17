@@ -1271,7 +1271,7 @@ window.CODEX_BUNDLE = {
         "items_blocked": 0,
         "pending_ack": true,
         "maintenance_notes_count": 5,
-        "codex_acks_count": 17,
+        "codex_acks_count": 18,
         "maintenance_notes_latest": {
           "date": null,
           "excerpt": "This is stronger than just adding a static \"you are inside AutoBuilder\" preamble to charters. It's a **discoverable registry of pre-configured resources** — services, libraries, credentials, hosting — that any new build can evaluate and bind to. Concrete: another build needing a…"
@@ -1282,6 +1282,26 @@ window.CODEX_BUNDLE = {
         },
         "parse_warnings": [
           "unrecognized overall_state value: captured"
+        ]
+      },
+      {
+        "slug": "blurb-audience-layering-amendment",
+        "title": "Blurb audience-layering — v1.12 amendment candidate",
+        "origin": "codex-initiated",
+        "source_file": "codex/docs/blurb-audience-layering-amendment.md",
+        "last_touched": "2026-05-16",
+        "overall_state": "proposal",
+        "items_total": 4,
+        "items_done": 0,
+        "items_in_progress": 0,
+        "items_blocked": 0,
+        "pending_ack": false,
+        "maintenance_notes_count": 0,
+        "codex_acks_count": 0,
+        "maintenance_notes_latest": null,
+        "codex_acks_latest": null,
+        "parse_warnings": [
+          "unrecognized overall_state value: proposal"
         ]
       },
       {

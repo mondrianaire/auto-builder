@@ -57,7 +57,9 @@ This is stronger than just adding a static "you are inside AutoBuilder" preamble
   - critic-v1.json — leaked `MCA`, `DCA`, `tier 2`, `escalation`.
   - cv-v1.json — leaked `verdict`, `IP1`, `Principle`.
 
-   Pattern: roles whose own work-product naturally uses the banned vocabulary (Coordinator's dispatch language, Critic's audit language, CV's verdict/IP/Principle language) leak it into the user-facing blurbs. Roles closer to prompt-fidelity (Discovery, TD, Editor) stayed clean. Suggests the banned-vocabulary list needs per-role rewrite examples in the charter, not just a flat blacklist.
+   Pattern: roles whose own work-product naturally uses the banned vocabulary (Coordinator's dispatch language, Critic's audit language, CV's verdict/IP/Principle language) leak it into the user-facing blurbs. Roles closer to prompt-fidelity (Discovery, TD, Editor) stayed clean.
+
+   **Update (later same day):** the user reframed this finding: don't ban the vocabulary from content (it's load-bearing developer signal), ban it from the top user-frontend view only. Audience-layered shape — `user_headline` field per report for the dashboard's top view; blurb `answer` text keeps full technical vocabulary for the developer drill-down. Captured as separate proposal at `codex/docs/blurb-audience-layering-amendment.md`. This supersedes the earlier per-role-rewrite-examples suggestion above.
 
 **Strong endorsement of the registry frame.** The reason the registry is the right shape (rather than just a static "you are in AutoBuilder" charter preamble): it makes the answer to "what's free / what's already configured" *queryable* during Discovery + TD's reasoning, rather than relying on the dispatched LLM to recall a list. Static preamble would tell agents "GitHub Pages exists for you" but couldn't tell them "and the project ID is X, scoped Y, free-tier usage caps Z" — that requires structured data. Worth noting that the existing memory entry `feedback_autobuilder_shared_deployment_infrastructure.md` is the *intent*; the registry is the *mechanism*; this proposal's three-symptom mapping is the *evidence the intent is load-bearing*.
 
