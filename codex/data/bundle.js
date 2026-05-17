@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-17T04:40:49.288Z",
+    "generated_at": "2026-05-17T04:41:04.062Z",
     "codex_version": "0.16",
     "architecture_versions_seen": [
       "v1.3",
@@ -16,7 +16,7 @@ window.CODEX_BUNDLE = {
     "runs": [
       {
         "slug": "github-profile-card",
-        "prompt": null,
+        "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
         "date": "2026-05-16",
         "architecture_version": null,
         "dispatch_mode": null,
@@ -1114,49 +1114,49 @@ window.CODEX_BUNDLE = {
       {
         "id": "A",
         "name": "Verification Fidelity",
-        "summary": "",
+        "summary": "> **The verification environment reproduces the user's actual environment. Any departure from it is an explicit, justified exception.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "B",
         "name": "Audit Completeness",
-        "summary": "",
+        "summary": "> **Every decision and state transition has both a producer and a record. Absence of a record is a defect, not a normal mode.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "C",
         "name": "Spec-to-Test Coverage",
-        "summary": "",
+        "summary": "> **Every textual claim in any spec artifact derives at least one structured assertion with an assigned verifier. No prose ships unverified.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "D",
         "name": "Path Coverage",
-        "summary": "",
+        "summary": "> **Every architectural path is exercised before its outputs are trusted in production scenarios. An untested path is treated as suspect by default.**",
         "introduced_in": "v1.7"
       },
       {
         "id": "E",
         "name": "Atomic Lexical Anchors",
-        "summary": "",
+        "summary": "> **Proper nouns in the prompt are atomic identifiers, not descriptive vocabulary. They name specific external systems whose properties exist independent of the architecture's assumptions.**",
         "introduced_in": "v1.9"
       },
       {
         "id": "F",
         "name": "External Authority Discipline",
-        "summary": "",
+        "summary": "> **Every load-bearing inference about an external system carries a citation traceable to canonical evidence. Training-data familiarity is not a citation.**",
         "introduced_in": "v1.9"
       },
       {
         "id": "G",
         "name": "Deliverability Tier Discipline",
-        "summary": "",
+        "summary": "> **Every claim about the deliverable's success requires verification at the tier it operates in. Telos-level claims verify at telos; sub-goal claims verify at sub-goal; first-contact claims verify at first-contact. Verification at the wrong tier is no verification.**",
         "introduced_in": "v1.9"
       },
       {
         "id": "H",
         "name": "Verification Independence",
-        "summary": "",
+        "summary": "> **The verifier and the verified must not share their source of truth. Verification criteria derive from a source independent of the artifact's construction. Self-referential verification is structurally insufficient.**",
         "introduced_in": "v1.9"
       }
     ],
@@ -1502,7 +1502,7 @@ window.CODEX_BUNDLE = {
         },
         "codex_acks_latest": {
           "date": null,
-          "excerpt": "Three implementation notes worth surfacing:\r\n1. The Launch button copies a `cmd /c \"cd /d \\\"...\\\" && call launch-promoted-product.bat {slug}\"` chain, not a bare bat invocation. This survives the user pasting into PowerShell, cmd, or Windows Terminal without quoting drift.\r\n2. Th…"
+          "excerpt": "Three implementation notes worth surfacing:\n1. The Launch button copies a `cmd /c \"cd /d \\\"...\\\" && call launch-promoted-product.bat {slug}\"` chain, not a bare bat invocation. This survives the user pasting into PowerShell, cmd, or Windows Terminal without quoting drift.\n2. The …"
         },
         "parse_warnings": []
       },
@@ -1688,7 +1688,7 @@ window.CODEX_BUNDLE = {
       "slug": "github-profile-card",
       "summary": {
         "slug": "github-profile-card",
-        "prompt": null,
+        "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
         "date": "2026-05-16",
         "architecture_version": null,
         "dispatch_mode": null,
