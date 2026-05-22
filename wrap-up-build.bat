@@ -9,6 +9,10 @@ REM What it does:
 REM   Runs architecture/scripts/wrap-up-build.mjs against the given slug.
 REM   That script reads the build's corpus + index data and writes:
 REM     - runs/{slug}/PROJECT-OVERVIEW.md      (Cat 1 wrap-up doc)
+REM     - runs/{slug}/wrap-up-interactive.md   (the interactive-wrap-up
+REM                                              question card — the wrap-up
+REM                                              routine asks the user the
+REM                                              question it contains)
 REM     - runs/{slug}/wrap-up-complete.json    (sentinel — required by
 REM                                              promote-build.bat AND
 REM                                              workflow #2 before promotion
@@ -65,10 +69,10 @@ REM was manually uploaded before AutoBuilder's git infrastructure existed)
 REM also gets shipped together in one [run:{slug}] commit. If
 REM completion-ratified.json is already on origin, `git add` is a no-op
 REM and the staged-changes check below handles it gracefully.
-git add "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart-auto.html" "runs/%SLUG%/decision-flowchart-auto.svg"
+git add "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-interactive.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart-auto.html" "runs/%SLUG%/decision-flowchart-auto.svg"
 if errorlevel 1 goto :err_git
 
-git diff --cached --quiet -- "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart-auto.html" "runs/%SLUG%/decision-flowchart-auto.svg"
+git diff --cached --quiet -- "runs/%SLUG%/completion-ratified.json" "runs/%SLUG%/PROJECT-OVERVIEW.md" "runs/%SLUG%/wrap-up-interactive.md" "runs/%SLUG%/wrap-up-complete.json" "runs/%SLUG%/decision-flowchart-auto.html" "runs/%SLUG%/decision-flowchart-auto.svg"
 if errorlevel 1 (
     echo === Committing [run:%SLUG%] back-fill ===
     git commit -m "[run:%SLUG%] wrap-up back-fill: PROJECT-OVERVIEW.md + sentinel (+ completion-ratified.json if retroactive)" -m "Wrap-up routine run via wrap-up-build.bat (standalone back-fill of a build ratified before the wrap-up gate existed). Required by promote-build.bat + workflow #2 four-gate promotion model. See architecture/build-lifecycle.md § Promotion gates."
@@ -84,8 +88,14 @@ if errorlevel 1 (
 )
 
 echo.
-echo === Wrap-up complete for %SLUG% ===
+echo === Wrap-up routine complete for %SLUG% ===
 echo Build is now promotion-eligible. Run promote-build.bat %SLUG% when ready.
+echo.
+echo *** INTERACTIVE STEP NOT YET DONE ***
+echo The wrap-up is not finished until the interactive question is asked.
+echo Open runs\%SLUG%\wrap-up-interactive.md, ask the user the question it
+echo contains, follow the lane it routes to, and write wrap-up-diagnosis.json.
+echo See architecture\interactive-wrapup-spec.md.
 echo.
 exit /b 0
 

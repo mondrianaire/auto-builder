@@ -257,11 +257,11 @@ Run on the real build 2026-05-22 — the first dogfood of this spec.
 
 <!-- Edit checkboxes when actioned. -->
 
-- [ ] spec reviewed
-- [ ] v1 implementation
-- [ ] v1.1 wired into the wrap-up routine
-- [ ] v1.2 `what_breaks_if_wrong` plumbed into the walkthrough
-- [ ] v2 diagnosis overlay scoped
+- [x] spec reviewed
+- [x] v1 implementation — the conversational procedure, dogfooded on closest-liquor-store 2026-05-22 (§10)
+- [x] v1.1 wired into the wrap-up routine — `wrap-up-build.mjs` v0.2 emits `wrap-up-interactive.md` (the §2 question card, with the verdict-specific cross-check) on every wrap-up; `wrap-up-build.bat` ships it and reminds the operator the interactive step is still owed
+- [x] v1.2 `what_breaks_if_wrong` plumbed into the walkthrough — deriver carries `breaks_if_wrong`, walkthrough renders the `⚠ IF WRONG` line on assumption tiles
+- [x] v2 diagnosis overlay — `walkthrough-flowchart.mjs` v2.24: `⚠ Diagnosis` button reveals the walkthrough, highlights the culprit cell, and shows the called-shot banner
 
 Drafted 2026-05-22. Companion memory: the project memory note on the interactive wrap-up
 direction. Related: `build-lifecycle.md` (Phase-1 vs Phase-2 boundary, the cardinal rule),
