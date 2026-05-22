@@ -13,6 +13,24 @@ cd /d "%~dp0"
 set "SLUG=%~1"
 if "%SLUG%"=="" set "SLUG=earthquake-map"
 
+REM Precondition — the walkthrough visualizes a build that has produced
+REM substrate. If Discovery has not written its decision ledger yet there is
+REM nothing to render; say so plainly instead of crashing on a missing file.
+if not exist "runs\%SLUG%\decisions\discovery\ledger-v1.json" (
+  echo.
+  echo === Nothing to show yet for "%SLUG%" ===
+  echo.
+  echo No substrate found at runs\%SLUG%\decisions\discovery\ledger-v1.json
+  echo Discovery has not run, so there is no build to walk through.
+  echo.
+  echo This tool VISUALIZES a build that is running or finished -- it does not
+  echo start one. Run the build first; once Discovery has written its ledger,
+  echo re-run this and the walkthrough will render whatever exists so far.
+  echo.
+  pause
+  exit /b 0
+)
+
 echo === Generating walkthrough-flowchart for %SLUG% ===
 echo.
 
