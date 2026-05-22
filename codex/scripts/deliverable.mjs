@@ -24,7 +24,7 @@ import path from 'node:path';
 const PLUGIN_MANIFEST_HINT_KEYS = ['Actions', 'Controllers', 'Type', 'SDKVersion', 'TargetDevice'];
 
 export async function detectDeliverableKind(ctx) {
-  const { finalDir, ledger, curation } = ctx;
+  const { finalDir, integrationDir, ledger, curation } = ctx;
 
   // Curation overlay short-circuits.
   if (curation && curation.deliverable_kind) {
@@ -32,17 +32,43 @@ export async function detectDeliverableKind(ctx) {
       kind: curation.deliverable_kind,
       can_run_in_browser: !!curation.deliverable_can_run_in_browser,
       deliverable_index: curation.deliverable_index || null,
+      output_subdir: curation.output_subdir || 'final',
       manifest: null
     };
   }
 
-  let entries = [];
+  // output/final/ is the delivered artifact and is authoritative whenever it
+  // exists. If it does not — the build is still in progress and has not run
+  // its final assembly yet — fall back to output/integration/, so an in-build
+  // web app is still recognised and can be given a (provisional) live link.
+  // The fallback fires ONLY when output/final/ is absent, so finished builds
+  // are unaffected.
+  let entries = null;
+  let outputSubdir = 'final';
+  let usedDir = finalDir;
   try {
     entries = await fs.readdir(finalDir, { withFileTypes: true });
   } catch {
-    return { kind: 'other', can_run_in_browser: false, deliverable_index: null, manifest: null };
+    if (integrationDir) {
+      try {
+        entries = await fs.readdir(integrationDir, { withFileTypes: true });
+        outputSubdir = 'integration';
+        usedDir = integrationDir;
+      } catch { entries = null; }
+    }
+  }
+  if (!entries) {
+    return { kind: 'other', can_run_in_browser: false, deliverable_index: null, output_subdir: 'final', manifest: null };
   }
 
+  const detected = await classifyEntries(entries, usedDir);
+  return { ...detected, output_subdir: outputSubdir };
+}
+
+// classifyEntries — given a build output directory's listing, return
+// { kind, can_run_in_browser, deliverable_index, manifest }. Shared by the
+// output/final/ path and the in-build output/integration/ fallback above.
+async function classifyEntries(entries, dir) {
   const fileNames = entries.filter(e => e.isFile()).map(e => e.name);
   const dirNames  = entries.filter(e => e.isDirectory()).map(e => e.name);
 
@@ -50,7 +76,7 @@ export async function detectDeliverableKind(ctx) {
   //     whose contents look like a plugin manifest.
   const pluginDir = dirNames.find(d => /\.sdPlugin$/.test(d));
   if (pluginDir) {
-    const manifestPath = path.join(finalDir, pluginDir, 'manifest.json');
+    const manifestPath = path.join(dir, pluginDir, 'manifest.json');
     const manifest = await safeReadJson(manifestPath);
     return {
       kind: 'plugin',
@@ -60,7 +86,7 @@ export async function detectDeliverableKind(ctx) {
     };
   }
   if (fileNames.includes('manifest.json')) {
-    const manifestPath = path.join(finalDir, 'manifest.json');
+    const manifestPath = path.join(dir, 'manifest.json');
     const manifest = await safeReadJson(manifestPath);
     if (manifest && PLUGIN_MANIFEST_HINT_KEYS.some(k => k in manifest)) {
       return { kind: 'plugin', can_run_in_browser: false, deliverable_index: '.', manifest };
@@ -87,7 +113,7 @@ export async function detectDeliverableKind(ctx) {
     return { kind: 'cli', can_run_in_browser: false, deliverable_index: nativeExe, manifest: null };
   }
   if (fileNames.includes('package.json')) {
-    const pkg = await safeReadJson(path.join(finalDir, 'package.json'));
+    const pkg = await safeReadJson(path.join(dir, 'package.json'));
     if (pkg && pkg.bin) {
       return { kind: 'cli', can_run_in_browser: false, deliverable_index: 'package.json', manifest: pkg };
     }
@@ -105,7 +131,7 @@ export async function detectDeliverableKind(ctx) {
   // (5) Document signal: .pdf / .docx / .md as the load-bearing artifact
   const docFile = fileNames.find(f => /\.(pdf|docx|md)$/i.test(f));
   if (docFile && fileNames.length <= 3) {
-    return { kind: 'document', can_run_in_browser: f => /\.pdf$/i.test(f), deliverable_index: docFile, manifest: null };
+    return { kind: 'document', can_run_in_browser: /\.pdf$/i.test(docFile), deliverable_index: docFile, manifest: null };
   }
 
   // (6) Data signal: csv / jsonl / parquet / sql
@@ -146,8 +172,11 @@ export function composeLiveUrl(ctx) {
   const base = pages.replace(/\/+$/, '');
 
   if (deliverable.kind === 'web_app' && deliverable.can_run_in_browser) {
+    // output/final/ for a finished build; output/integration/ for an in-build
+    // web app whose final assembly has not run yet (see detectDeliverableKind).
+    const subdir = deliverable.output_subdir || 'final';
     return {
-      live_url: `${base}/runs/${slug}/output/final/${deliverable.deliverable_index || 'index.html'}`,
+      live_url: `${base}/runs/${slug}/output/${subdir}/${deliverable.deliverable_index || 'index.html'}`,
       live_url_kind: 'artifact'
     };
   }

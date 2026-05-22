@@ -611,8 +611,10 @@ async function aggregateRun(slug) {
   // index level once codex config is loaded; per-run we just classify and
   // record the deliverable index path.
   const finalDir = path.join(runRoot, 'output', 'final');
+  const integrationDir = path.join(runRoot, 'output', 'integration');
   const deliverable = await detectDeliverableKind({
     finalDir,
+    integrationDir,
     ledger,
     curation
   });
@@ -661,6 +663,7 @@ async function aggregateRun(slug) {
     deliverable_kind: deliverable.kind,
     deliverable_can_run_in_browser: !!deliverable.can_run_in_browser,
     deliverable_index: deliverable.deliverable_index,
+    deliverable_output_subdir: deliverable.output_subdir || 'final',
     deliverable_manifest: deliverable.manifest,
     showcase_assets: (curation && curation.showcase_assets) || null,
     live_url: null,                    // populated in main() after config load
@@ -1044,7 +1047,8 @@ async function main() {
       deliverable: {
         kind: sum.deliverable_kind,
         can_run_in_browser: sum.deliverable_can_run_in_browser,
-        deliverable_index: sum.deliverable_index
+        deliverable_index: sum.deliverable_index,
+        output_subdir: sum.deliverable_output_subdir
       },
       config: codexConfig,
       curation
