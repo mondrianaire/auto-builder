@@ -31,13 +31,21 @@ When you `start_process` with `shell: powershell.exe` and then call `cmd.exe /c 
 
 **Symptom:** `git: command not found` (or any other bare tool name) from cmd-via-PowerShell, despite the binary being on PATH.
 
-**Fix:** prepend any cmd block with
+**Fix — the canonical two-line snippet** (verified by test 2026-05-15, applies to every .bat invoked through DC):
 
 ```cmd
 set "PATHEXT=.COM;.EXE;.BAT;.CMD"
+set "PATH=C:\Program Files\Git\cmd;C:\Program Files\nodejs;%PATH%"
 ```
 
-This makes bare-name resolution work for `git`, `node`, `where`, and any `.bat` lifecycle script. Required for `Node execSync('git ...')` calls inside Codex aggregator scripts when launched via DC start_process.
+- Line 1 fixes bare-name resolution for `.exe` / `.bat` / `.cmd` files.
+- Line 2 is belt-and-suspenders: explicitly puts canonical git + node install dirs at the front of PATH. The user PATH usually has them, but a fresh DC shell occasionally doesn't, and this costs nothing.
+
+Crucially, **Node child processes inherit this corrected environment** — so any `child_process.execSync('git ...')` from inside an .mjs invoked by the .bat works. This is what unblocked Codex's aggregator from getting real git tags instead of falling back to synthesized `rev-0`.
+
+Confirmed install locations on this machine:
+- `C:\Program Files\Git\cmd\git.exe` (Git 2.53.0.windows.2)
+- `C:\Program Files\nodejs\node.exe` (Node 24.15.0)
 
 ---
 
