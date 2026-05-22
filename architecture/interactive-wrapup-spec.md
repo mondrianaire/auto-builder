@@ -1,16 +1,15 @@
 # Interactive Wrap-Up — Specification
 
-**Status:** proposal / spec. Drafted 2026-05-22; revised same day to route on a single
-differentiating question.
+**Status:** proposal / spec. Drafted 2026-05-22; revised same day — routes on a single
+differentiating question, and (after dogfooding the Lane B walk on closest-liquor-store)
+gained the animated-walkthrough diagnosis overlay and open-ended walk questions.
 **Origin:** Jett's direction — "the post build wrap up can start to become interactive ...
 interactive questions can identify exactly what assumptions were made incorrectly or
-identify the exact task in the role that created the issue." Refined in discussion to a
-one-question entry that routes to the right diagnostic lane.
+identify the exact task in the role that created the issue."
 **Scope:** a wrap-up-phase interactive mode. One plain-language question sorts a build's
 outcome into three lanes — *satisfied* / *works-but-misaligned* / *broken* — and routes
 each to the right next step: straight to ratification, a misalignment diagnosis, or a
-failure diagnosis. The user never sees the lane machinery; they answer one question about
-their own experience of the result.
+failure diagnosis. The diagnosis then connects back to the animated walkthrough (§8).
 
 ---
 
@@ -106,17 +105,23 @@ prose from raw substrate.
    for B, especially with each assumption's `what_breaks_if_wrong`. Produces an ordered
    shortlist.
 3. **Walk the trail in dependency order.** Discovery assumptions → Discovery inflection
-   points → TD resolutions → role tasks. For each suspect, ask one targeted ratify/deny
-   question, phrased from the Completion Report blurb where one exists: *"Discovery assumed:
-   'earthquake data comes from a public feed.' Does that match what you meant?"* A guided
-   narrowing — typically 3–6 questions, scaling with how cleanly the shortlist separates.
+   points → TD resolutions → role tasks. For each suspect, ask one targeted question,
+   phrased from the Completion Report blurb where one exists: *"Discovery assumed:
+   'earthquake data comes from a public feed.' Does that match what you meant?"*
+   **The questions are open-ended, not a fixed multiple-choice.** Any options offered are a
+   starting point; the user may reframe — and a reframe is signal, not noise. When the user
+   reframes, the walk follows *their* framing rather than forcing the option list. (Dogfood
+   evidence: on closest-liquor-store the question "what did you mean by 'liquor store'?" was
+   answered "it depends on local alcohol law" — a reframe sharper than any pre-written
+   option, and it *was* the diagnosis.)
 4. **Stop at the first denial, then drill one level.** Distinguish which layer owns it:
    the **decision itself** was wrong (Discovery logged the wrong default; TD resolved an IP
    against intent), versus a downstream **role-task implemented a sound decision wrongly**.
    One or two follow-ups resolve this.
 5. **Name the culprit.** Output the exact decision: `id`, owning role and task, the decision
-   text, and the user's correction (B) or the precise failure (C). Lane B lands on an
-   assumption; Lane C lands on a failing task — same machinery, different terminus.
+   text, the walkthrough **cell id**, and the user's correction (B) or the precise failure
+   (C). Lane B lands on an assumption; Lane C lands on a failing task — same machinery,
+   different terminus.
 
 ## 6. Interaction model
 
@@ -129,12 +134,14 @@ from the corpus, is a v2 consideration.
 ## 7. What it produces
 
 - **`runs/{slug}/wrap-up-diagnosis.json`** — the outcome lane, the verdict cross-check
-  result, and for B/C the culprit decision (`id`, `role`, `task`, decision text, layer) +
-  the user's correction or the failure detail.
+  result, and for B/C the culprit decision (`id`, `role`, `task`, **`cell_id`**, decision
+  text, layer) + the user's correction or the failure detail. The `cell_id` lets the §8
+  diagnosis overlay locate the culprit on the walkthrough.
 - **Lane B** — an **amendment candidate**: what the architecture should learn, in
-  failure-catalog form. E.g. *"When a prompt names a specific retail or product category,
-  Discovery must surface category granularity as an inflection point and ground it in
-  evidence, rather than silently mapping the term to the broadest available data tag."*
+  failure-catalog form. E.g. *"When a prompt uses a term whose meaning is set by local law
+  or jurisdiction, Discovery must not log a single universal high-confidence assumption for
+  it — it must surface the jurisdiction-dependence as an inflection point grounded in the
+  user's locale."*
 - **Lane C** — a **Phase 2 rectification brief**: the exact failing task, handed to
   `commit-step.bat`-scoped rectification.
 - **Lane A + recorded fail** — a **re-audit evidence record** for `re_audit_reclassified_verdict`.
@@ -142,7 +149,54 @@ from the corpus, is a v2 consideration.
   architectural evidence; the correction can seed a verbatim re-run after the amendment
   lands, or a confirmatory run with the corrected assumption pinned.
 
-## 8. What it deliberately does NOT do
+## 8. Surfacing faults in the animated walkthrough
+
+The walkthrough flowchart (`architecture/scripts/walkthrough-flowchart.mjs`) replays a
+build's decision trail as an animation. The diagnosis connects back to it on two layers —
+the build's *organic* issue-identification, and the *diagnosed* culprit.
+
+### 8.1 Organic issue-identification — the build's own fault-sensing
+The architecture flags its own risks as it runs, in three places. The animated view should
+make all three legible:
+
+- **D-DSC-3 — "Where could this go wrong?"** This cell *is* the organic issue-identification
+  routine — Discovery surfacing inflection points. The walkthrough already animates it.
+- **`what_breaks_if_wrong`, per assumption.** Every D-DSC-2 assumption carries a self-logged
+  risk. The walkthrough renders the assumption tiles but currently **drops this field**.
+  Surfacing it as a small `⚠ if wrong: …` line on each tile makes the build's per-decision
+  risk-sensing visible.
+- **Critic flags, escalations, deviations.** Issue-identification *during* the build — mark
+  the cells that drew one.
+
+### 8.2 The diagnosis overlay
+After the interactive wrap-up names a culprit, `wrap-up-diagnosis.json` carries its
+`cell_id` and the fault chain. The walkthrough reads it and renders a **diagnosis
+overlay** — a toggleable layer on the replay (`show diagnosis`):
+
+- highlight the culprit cell in the **failure register** — ash-grey + terminal mark, the
+  somber "bad ending" styling, deliberately distinct from escalation red;
+- trace the fault chain — culprit → downstream resolution → delivered outcome — using the
+  envelope / transit path grammar already in the file;
+- a chapter-feed caption naming the culprit and the corrected intent.
+
+### 8.3 The synthesis — the "called shot"
+When the diagnosed culprit is a decision whose `what_breaks_if_wrong` *predicted* the fault,
+the organic-risk marker (§8.1) and the fault marker (§8.2) are the **same node**. The
+overlay shows it as one: the architecture flagged the risk, nothing acted on it, it became
+the divergence. For closest-liquor-store this is literal — A4's `⚠ if wrong: "maps to a
+different store type → unexpected results"` is exactly the wine-shop fault. This frame —
+not "here's where it broke" but "here's where it *told you* it might break" — is the most
+instructive output of the whole feature.
+
+### 8.4 Data-plumbing prerequisite
+None of §8.1's per-assumption risk rendering works until `what_breaks_if_wrong` is carried
+end to end. It exists in `ledger-v1.json`, but `walkthrough-labels-derive.mjs` discards it
+and the `walkthrough-labels.json` schema has no field for it. Required: add a
+`breaks_if_wrong` field to each assumption in the walkthrough-labels assumptions schema,
+have the deriver copy it from the ledger, and have `renderAssumptionsCell` render it. Small,
+isolated change — and a prerequisite for both §8.1 and the §8.3 synthesis.
+
+## 9. What it deliberately does NOT do
 
 - **Does not trigger Phase 2 for Lane B.** Discovery misalignment is a Phase-1 documented
   gap by definition. The walk records; it does not rectify.
@@ -154,28 +208,30 @@ from the corpus, is a v2 consideration.
   *wrong verdict*; it never waves a broken build through.
 - **Does not change `first_delivery_outcome`.** The cardinal rule holds across all lanes.
 - **Does not interrogate.** Lane A is one question. B and C are short guided narrowings,
-  not exhaustive questionnaires.
+  not exhaustive questionnaires — and the questions are open, so the user is never boxed
+  into a wrong frame.
 
-## 9. Worked example — closest-liquor-store (Lane B)
+## 10. Worked example — closest-liquor-store (Lane B)
 
-1. §2 question → user picks **B** ("works, but not what I asked for"). Recorded verdict is
-   orthogonal — a passing build can still miss intent.
+Run on the real build 2026-05-22 — the first dogfood of this spec.
+
+1. §2 question → Lane **B** ("works, but not what I asked for"). Verdict orthogonal.
 2. User detail: "it shows a wine shop; I wanted a liquor store."
-3. Ranking surfaces the data-source TD-IP ("query OSM `shop=alcohol`") and any Discovery
-   assumption about what "liquor store" denotes — both high-overlap with the description.
-4. Walk: *"Discovery understood the goal as 'find the nearest store selling liquor.' TD
-   then chose to look up stores via OpenStreetMap's `shop=alcohol` category — which covers
-   any shop selling alcohol, including wine shops. Is that the behavior you wanted?"* →
-   **no.**
-5. Drill: *"Should 'liquor store' mean specifically a spirits store — or should the data
-   source distinguish store types it currently lumps together?"* → isolates assumption
-   layer vs implementation layer.
-6. Culprit named: the TD data-source resolution operationalized "liquor store" as
-   `shop=alcohol` with no granularity check; the upstream gap is that Discovery never
-   surfaced "what counts as a liquor store" as an inflection point.
-7. Output: diagnosis JSON + amendment candidate (§7) + an optional A/B re-run input.
+3. Ranking surfaced assumption **A4** ("'liquor store' means a retail business that sells
+   packaged alcoholic beverages") and IP1's TD resolution (OSM `shop=alcohol`).
+4. Walk asked what "liquor store" meant; the user reframed — **"local alcohol laws."**
+   "Liquor store" is not a universal category; what legally counts as one, and what it may
+   sell, is set by jurisdiction.
+5. Culprit named: **A4** — logged at *high* confidence, it flattened a jurisdiction-defined
+   legal category into one universal definition. Layer: assumption / Discovery. TD
+   faithfully implemented A4 (IP1 → `shop=alcohol` is exactly A4's definition), so the
+   implementation is not the bug. Compounding factor: `shop=alcohol` is jurisdiction-
+   agnostic and cannot represent local store categories even if A4 were corrected.
+6. The called shot (§8.3): A4's `what_breaks_if_wrong` already said *"maps to a different
+   store type → unexpected results"* — the architecture predicted this exact fault.
+7. Output: the amendment candidate in §7 (Lane B).
 
-## 10. Open questions
+## 11. Open questions
 
 1. **Ranking without an LLM pass.** Step 2's scoring — pure keyword/concept overlap, or a
    model-judged match against `what_breaks_if_wrong`? v1 can be keyword overlap surfaced to
@@ -187,16 +243,15 @@ from the corpus, is a v2 consideration.
    deliberate step.
 4. **Cold corpus review.** Builds reviewed months later have no live chat — is
    conversational-only v1 acceptable, HTML walk deferred to v2? Recommend yes.
-5. **Flowchart integration.** The wrap-up already emits `decision-flowchart-auto.{html,svg}`.
-   Highlight the culprit cell on it? Strong v2 candidate; out of v1 scope.
 
-## 11. Staged implementation path
+## 12. Staged implementation path
 
 | Stage | Scope |
 |---|---|
-| v1 | The §2 differentiating question + Lanes A/B/C conducted conversationally in the wrap-up chat. Reads ledger + IP resolutions + Completion Reports; runs the §5 walk for B/C; writes `wrap-up-diagnosis.json`. |
+| v1 | The §2 differentiating question + Lanes A/B/C conducted conversationally in the wrap-up chat. Reads ledger + IP resolutions + Completion Reports; runs the §5 walk for B/C; writes `wrap-up-diagnosis.json` (with `cell_id`). |
 | v1.1 | Wire the §2 question into `wrap-up-build.mjs` / the wrap-up routine so every build is asked it. |
-| v2 | Culprit highlighting on `decision-flowchart-auto.{html,svg}`; the standalone interactive-HTML walk for cold corpus review; A/B re-run input handed straight to a fresh build. |
+| v1.2 | The §8.4 data-plumbing — carry `what_breaks_if_wrong` from the ledger through the deriver into `walkthrough-labels.json`; render it as the `⚠ if wrong` line on assumption tiles (§8.1). Stands alone — makes organic risk-sensing visible even before the overlay. |
+| v2 | The §8.2 diagnosis overlay on the walkthrough + the §8.3 called-shot synthesis; the standalone interactive-HTML walk for cold corpus review; A/B re-run input handed straight to a fresh build. |
 
 ## Maintenance Status
 
@@ -205,9 +260,11 @@ from the corpus, is a v2 consideration.
 - [ ] spec reviewed
 - [ ] v1 implementation
 - [ ] v1.1 wired into the wrap-up routine
-- [ ] v2 scoped
+- [ ] v1.2 `what_breaks_if_wrong` plumbed into the walkthrough
+- [ ] v2 diagnosis overlay scoped
 
 Drafted 2026-05-22. Companion memory: the project memory note on the interactive wrap-up
 direction. Related: `build-lifecycle.md` (Phase-1 vs Phase-2 boundary, the cardinal rule),
 `failure-catalog-streamdock.md` (amendment-candidate format), the A/B testing strategy
-(builds as measurements, not deliverables to patch).
+(builds as measurements, not deliverables to patch), `walkthrough-flowchart.mjs` (the
+animated view the §8 overlay extends).
