@@ -1,0 +1,19 @@
+{
+  "role": "Coordinator",
+  "instance_id": "coordinator",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-22T00:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "How are you sequencing the work?",
+      "answer": "The four parts of the app build on each other, so I did them one after another in order. First the part that figures out where the user is. Then, using that location, the part that looks up nearby liquor stores. Then the part that takes those stores, picks the closest one, and shows it on screen. Then the app shell that wraps all three together into the page the user actually opens. Once those four were done and checked, I joined them into a single file. Last, I ran the app through a round of stress tests — denying location access, simulating no internet, slow and failed lookups, and areas with no stores — to make sure it never crashes or shows a blank screen and always gives the user a clear message.",
+      "kind": "always",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "Critic"
+}

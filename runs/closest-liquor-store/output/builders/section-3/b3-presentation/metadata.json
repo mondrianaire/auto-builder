@@ -1,0 +1,9 @@
+{
+  "builder_id": "b3-presentation",
+  "task_id": "t3-closest-selection-presentation",
+  "section_id": "section-3",
+  "status": "completed",
+  "output_files": ["presentation.js"],
+  "exposes": ["renderClosestStore({userLocation,lookupResult,container})", "haversineMeters(lat1,lon1,lat2,lon2)", "selectClosest(userLocation,stores)", "formatDistance(meters)"],
+  "notes": "Closest-store selection and presentation module. haversineMeters computes great-circle distance (DCA.3). selectClosest scans all stores and returns the one with the minimum distance (S3.A1/IP3.A1). renderClosestStore renders a result card with name, address, and distance shown in miles and km (S3.A2/IP3.A2), plus two external directions hand-off links prefilled with the chosen store coordinates — OpenStreetMap directions and Google Maps (S3.A3/IP4.A1). No in-app routing engine — links only (S3.A5/IP4.A2). On lookupResult.status 'error' or 'empty'/no stores it renders a clear human-readable message state, never a blank screen (S3.A4). No data fetching, no location acquisition — per section out_of_scope."
+}

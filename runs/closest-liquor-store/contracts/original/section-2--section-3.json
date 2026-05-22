@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-3",
+  "interface": {
+    "findNearbyLiquorStores(lat, lon, radiusMeters)": {
+      "params": {
+        "lat": "number — user latitude in decimal degrees",
+        "lon": "number — user longitude in decimal degrees",
+        "radiusMeters": "number — search radius for the Overpass around filter"
+      },
+      "returns": {
+        "type": "object",
+        "shape": {
+          "status": "string — one of 'ok' | 'empty' | 'error'",
+          "stores": "array of store records (empty when status is 'empty' or 'error'); each record: { name: string, address: string, lat: number, lon: number }",
+          "message": "string — human-readable detail, populated when status is 'empty' or 'error' (e.g. network failure, timeout, no stores in radius)"
+        }
+      }
+    }
+  },
+  "notes": "section-2 (data lookup) returns normalized store records; it does NOT compute distances, rank, or select a closest store — that is section-3's job. Each store record always carries a name, an address string, and numeric coordinates; if OSM data lacks a name or address, section-2 substitutes a clear placeholder string ('Unnamed liquor store' / 'Address not listed') rather than omitting the field, so section-3 can render without null checks. status communicates network/empty conditions so section-3 can render the correct empty/error state. This contract passes data, not logic."
+}

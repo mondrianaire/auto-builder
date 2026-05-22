@@ -1,0 +1,38 @@
+<!-- ============================================================
+     section-4 — App shell HTML skeleton
+     builder: b4-shell
+
+     The shell skeleton. Owns: header, location-module mount point
+     (#cls-location), status banner (#cls-status), loading indicator
+     (#cls-loading), and result region (#cls-result). The integrator
+     inlines shell.css and the section 1-4 JS into the final
+     single-file index.html.
+     ============================================================ -->
+<div class="cls-app">
+  <header class="cls-header">
+    <h1 class="cls-title">Closest Liquor Store</h1>
+    <p class="cls-subtitle">Finds the nearest store selling liquor, wherever you are.</p>
+  </header>
+
+  <section class="cls-panel" aria-label="Your location">
+    <!-- section-1 (Location acquisition) renders its UI in here. -->
+    <div id="cls-location"></div>
+  </section>
+
+  <!-- shell status banner -->
+  <div id="cls-status" class="cls-status" role="status" aria-live="polite" style="display:none;"></div>
+
+  <!-- loading indicator -->
+  <div id="cls-loading" class="cls-loading" aria-live="polite">
+    <div class="cls-spinner" aria-hidden="true"></div>
+    <div class="cls-loading-text">Working...</div>
+  </div>
+
+  <!-- section-3 (Closest-store presentation) renders the result card
+       or the empty/error state in here. -->
+  <div id="cls-result" class="cls-result"></div>
+
+  <footer class="cls-footer">
+    Store data from OpenStreetMap (Overpass API). Location lookup via OSM Nominatim.
+  </footer>
+</div>

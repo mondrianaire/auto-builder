@@ -1,0 +1,91 @@
+{
+  "probe_id": "IP1",
+  "completed_at": "2026-05-22T00:00:00Z",
+  "citations": [
+    {
+      "id": "C1",
+      "url_or_path": "https://wiki.openstreetmap.org/wiki/Overpass_API",
+      "fetched_at": "2026-05-22T10:25:00Z",
+      "verbatim_excerpt": "Open https://overpass-api.de/api/interpreter in a new tab ... Paste the code snippet below ... var result = await fetch( \"https://overpass-api.de/api/interpreter\", { method: \"POST\",",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C2",
+      "url_or_path": "https://wiki.openstreetmap.org/wiki/Overpass_API",
+      "fetched_at": "2026-05-22T10:25:00Z",
+      "verbatim_excerpt": "To support small and well scaling OSM main services, Overpass API is run as a third party service. You can use the public visible instances:",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C3",
+      "url_or_path": "https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL#Relative_to_other_elements_(around)",
+      "fetched_at": "2026-05-22T10:27:00Z",
+      "verbatim_excerpt": "The around filter selects all elements within a certain radius in metres around the elements in the input set. If you provide coordinates, then these coordinates are used instead of the input set. ... (around:radius,latitude,longitude)",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C4",
+      "url_or_path": "https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL",
+      "fetched_at": "2026-05-22T10:27:00Z",
+      "verbatim_excerpt": "::lat Latitude (available for nodes, or in out center mode) | ::lon Longitude (available for nodes, or in out center mode)",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C5",
+      "url_or_path": "https://wiki.openstreetmap.org/wiki/Tag:shop=alcohol",
+      "fetched_at": "2026-05-22T10:30:00Z",
+      "verbatim_excerpt": "The shop=alcohol tag is for a liquor store, a shop selling alcoholic drinks to takeaway. ... USA: Liquor Store, State Liquor Store, Package Store; UK: Off-Licence.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    },
+    {
+      "id": "C6",
+      "url_or_path": "https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL",
+      "fetched_at": "2026-05-22T10:27:00Z",
+      "verbatim_excerpt": "nwr (shorthand for \"nodes, ways or relations\") followed by one or more filters. The result set is the set of all elements that match the conditions of all the filters.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false
+    }
+  ],
+  "options": [
+    {
+      "id": "O1",
+      "summary": "Live query to the public OpenStreetMap Overpass API (https://overpass-api.de/api/interpreter) directly from browser JavaScript, filtering for shop=alcohol (plus shop=wine, shop=beverages) within a radius around the user's coordinates.",
+      "pros": [
+        "Global coverage — works wherever the user actually is, satisfying the telos for any location.",
+        "No API key, no registration, no payment — a public, read-only OSM service usable directly.",
+        "Callable directly from browser fetch() with no user-operated backend, satisfying assumption A6. Widely used by pure client-side OSM apps (Leaflet overlays, etc.).",
+        "Returns name, address tags (addr:* keys), and coordinates; 'out center' mode yields a lat/lon even for way/relation features, enabling distance computation.",
+        "shop=alcohol is the canonical OSM tag specifically for liquor/package stores."
+      ],
+      "cons": [
+        "Requires network access at use time — this is genuine online behavior, not bundled. Must be captured explicitly so verification expects (and the app degrades gracefully on) network conditions.",
+        "Public instance is rate-limited / best-effort; the app must handle slow responses and timeouts.",
+        "OSM data completeness varies by region; sparse-data areas may return few or no results, requiring a graceful empty-result message and/or a widening search radius."
+      ],
+      "confidence": "high",
+      "supporting_citations": ["C1", "C2", "C3", "C4", "C5", "C6"]
+    },
+    {
+      "id": "O2",
+      "summary": "Bundle a static dataset of liquor-store locations into the app.",
+      "pros": [
+        "Fully offline; no network dependency at use time.",
+        "Deterministic, fast."
+      ],
+      "cons": [
+        "Only covers whatever fixed region was bundled — silently fails (returns wrong or empty results) for any user outside that region. Directly contradicts 'closest to wherever the user actually is'.",
+        "Goes stale; stores open and close.",
+        "No authoritative, freely-redistributable global liquor-store dataset exists to bundle."
+      ],
+      "confidence": "high",
+      "supporting_citations": []
+    }
+  ],
+  "recommended": "O1",
+  "rationale": "The telos requires a real, current answer for wherever the user is. A bundled dataset (O2) only works for a pre-chosen region and silently fails elsewhere, which is the failure mode IP1's importance_action_evidence explicitly warns against. The OpenStreetMap Overpass public API (O1) provides global liquor-store coverage via the canonical shop=alcohol tag, requires no API key and no user-operated backend, and is callable directly from browser JavaScript. It does require network access at use time — this is honest, required online behavior and is captured explicitly in section-2's charter and acceptance so verification treats network calls as in-scope rather than a defect. The app must degrade gracefully: on timeout/offline/empty results it shows a clear message and offers the manual-location path and radius widening. This is the production-fidelity-friendly path."
+}

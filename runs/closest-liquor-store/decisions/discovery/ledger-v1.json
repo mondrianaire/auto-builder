@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "created_at": "2026-05-22T00:00:00Z",
+  "project_name": "closest-liquor-store",
+  "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
+  "restatement": "The user wants a small application that, given their current location, identifies and directs them to the closest liquor store.",
+  "execution_context_observed": {
+    "platform_hints": ["windows"],
+    "path_evidence": ["C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder"]
+  },
+  "proper_nouns": [],
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The artifact is a single-user app with no accounts, login, or persistence across sessions.",
+      "confidence": "high",
+      "rationale": "Prompt says 'points me' — singular, personal, one-shot. No mention of saving history, profiles, or sharing.",
+      "what_breaks_if_wrong": "If the user expected saved favorites or trip history, the app would feel incomplete, but the core ask still functions."
+    },
+    {
+      "id": "A2",
+      "assumption": "'Closest' means closest by geographic proximity to the user's current position, not closest by drive time, price, or rating.",
+      "confidence": "high",
+      "rationale": "Plain reading of 'closest' is spatial nearness. No other ranking criterion is named.",
+      "what_breaks_if_wrong": "If the user wanted shortest drive time, a straight-line-nearest result could be misleading in dense road networks."
+    },
+    {
+      "id": "A3",
+      "assumption": "The app must determine the user's current location at use time, rather than asking them to type an address.",
+      "confidence": "medium",
+      "rationale": "'Closest to me' implies the app knows where 'me' is. Auto-detecting location is the simplest experience that satisfies 'points me'.",
+      "what_breaks_if_wrong": "If location detection is unavailable or denied, the app cannot answer at all unless a manual-location fallback exists."
+    },
+    {
+      "id": "A4",
+      "assumption": "'Liquor store' means a retail business that sells packaged alcoholic beverages (a category, not a specific named chain).",
+      "confidence": "high",
+      "rationale": "Generic noun phrase with no brand named. The target is a store category.",
+      "what_breaks_if_wrong": "Edge regions where 'liquor store' maps to a different store type (e.g., grocery with alcohol) could surface unexpected results."
+    },
+    {
+      "id": "A5",
+      "assumption": "'Points me to' means the app shows the user where the store is and how to get there (direction/address/map), not that it provides turn-by-turn navigation itself.",
+      "confidence": "medium",
+      "rationale": "'Points to' is a lighter ask than 'navigates' — the simplest defensible reading is identify-and-show, with directions left to existing tools.",
+      "what_breaks_if_wrong": "If the user expected live navigation, they would need to hand off to a separate maps app."
+    },
+    {
+      "id": "A6",
+      "assumption": "The app runs on the user's machine/browser as a standalone tool with no backend server the user must operate.",
+      "confidence": "medium",
+      "rationale": "No mention of deployment, multi-user, or infrastructure. Smallest version that works is a self-contained client app.",
+      "what_breaks_if_wrong": "If a backend is needed to broker data access, a pure client app may hit access or key-exposure constraints."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Where the liquor-store location data comes from",
+      "choices": [
+        "Use a live external source of real store locations so results reflect actual nearby businesses",
+        "Use a bundled/static dataset of stores so the app works without external dependencies"
+      ],
+      "default_branch": "Use a live external source of real store locations so results reflect actual nearby businesses",
+      "importance": "high",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "The user's intent ('points me to the closest liquor store') is only satisfied if results are real and current for wherever the user actually is. A static dataset would only work for a fixed region and would silently fail elsewhere. The honest default is real data; the realism of this depends on data availability and is for downstream roles to resolve technically. If real-data access proves unreachable, a clearly-scoped fallback (e.g., user-supplied area) is the salvage path.",
+      "why_inflection": "The prompt is silent on data provenance, but the two branches fork the build fundamentally: one depends on an external data capability, the other is self-contained but geographically limited. This determines whether the app genuinely answers the question or only appears to."
+    },
+    {
+      "id": "IP2",
+      "topic": "How the user's current location is established",
+      "choices": [
+        "Automatically detect the device's current location",
+        "Have the user enter or pick their location manually"
+      ],
+      "default_branch": "Automatically detect the device's current location, with manual entry as a fallback when detection is unavailable",
+      "importance": "high",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "'Closest to me' presumes the app knows 'me' — automatic detection is the experience that matches the wording. But detection can be denied or unavailable, and an app that then has no answer fails the telos entirely. Therefore the default is auto-detect plus a manual-location fallback so the app can always produce a result. Technical feasibility of detection is for downstream roles.",
+      "why_inflection": "The prompt assumes location is known but does not say how. The choice affects whether the app works in one tap or requires user input, and whether it can degrade gracefully when location access fails."
+    },
+    {
+      "id": "IP3",
+      "topic": "How the result is presented to the user",
+      "choices": [
+        "Show the single closest store with its name, address, and distance",
+        "Show a short ranked list of nearby stores with the closest highlighted"
+      ],
+      "default_branch": "Show the single closest store with its name, address, and distance",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "The prompt asks for 'the closest' — singular. The simplest reading delivers exactly that one result. A ranked list is a reasonable enhancement but is not what was asked, so it stays out of the default scope.",
+      "why_inflection": "Singular 'closest' versus a useful nearby list is a real fork in scope, but a small one — both honor the telos and the smaller wins by default."
+    }
+  ],
+  "first_contact_requirements": [
+    {
+      "id": "FC.1",
+      "description": "The app opens and runs without an error screen on the user's Windows machine/browser.",
+      "artifact_type_basis": "Any app: a user first checks that it launches at all."
+    },
+    {
+      "id": "FC.2",
+      "description": "The app establishes the user's current location (either automatically or via a visible manual-entry option) without the user being stuck.",
+      "artifact_type_basis": "Location-aware app: the user expects it to know or ask where they are."
+    },
+    {
+      "id": "FC.3",
+      "description": "The app names a specific closest liquor store and shows its address and distance, so the result is concrete and actionable.",
+      "artifact_type_basis": "'Find the nearest X' app: the user expects a real, named place as the answer, not a placeholder."
+    },
+    {
+      "id": "FC.4",
+      "description": "The app gives the user a way to act on the result — directions, a map view, or an address they can use to get there.",
+      "artifact_type_basis": "'Points me to' app: the user expects to be able to actually go to the place."
+    }
+  ],
+  "out_of_scope": [
+    "User accounts, login, or saved profiles",
+    "Trip history, favorites, or saved past searches",
+    "Live turn-by-turn navigation built into the app (directions hand-off is acceptable)",
+    "Filtering or ranking by price, product selection, ratings, or store hours",
+    "In-app purchasing, ordering, or delivery",
+    "Multi-user or social/sharing features",
+    "Native mobile app packaging (the artifact is the app itself, not a store-distributed mobile build)"
+  ]
+}

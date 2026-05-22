@@ -1,0 +1,1 @@
+{"ts":"2026-05-22T00:00:00Z","cycle":"final_sweep","flagged":0,"checks_passed":["writer_permission_compliance","out_of_scope_presence","schema_conformance","section_coverage","charter_implementation_conformance","sev0_audit","acceptance_assertion_coverage","prose_coverage","inline_deviation_audit"],"flags":[]}

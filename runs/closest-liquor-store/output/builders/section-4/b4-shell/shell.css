@@ -1,0 +1,200 @@
+/* ============================================================
+ * section-4 — App shell styling
+ * builder: b4-shell
+ * Vendored locally — no CDN dependency (S4.A4).
+ * ============================================================ */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f4ede1;
+  color: #2b2620;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.cls-app {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+}
+
+.cls-header { text-align: center; margin-bottom: 24px; }
+
+.cls-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+.cls-subtitle {
+  font-size: 14px;
+  color: #6b6155;
+  margin: 0;
+}
+
+.cls-panel {
+  background: #fffaf2;
+  border: 1px solid #e4d8c4;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(43, 38, 32, 0.06);
+}
+
+/* ---- location module surface (section-1 renders into this) ---- */
+.cls-loc-row { display: flex; gap: 8px; }
+
+.cls-loc-input {
+  flex: 1;
+  padding: 11px 13px;
+  font-size: 15px;
+  border: 1px solid #d8cbb5;
+  border-radius: 9px;
+  background: #fff;
+  color: #2b2620;
+  min-width: 0;
+}
+.cls-loc-input:focus {
+  outline: none;
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.15);
+}
+
+.cls-loc-btn {
+  padding: 11px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #c0392b;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cls-loc-btn:hover { background: #a93226; }
+.cls-loc-btn:disabled { opacity: 0.55; cursor: default; }
+
+.cls-loc-status {
+  margin-top: 9px;
+  font-size: 13px;
+  color: #6b6155;
+  min-height: 18px;
+}
+
+/* ---- shell status banner ---- */
+.cls-status {
+  margin: 16px 0 0;
+  padding: 10px 13px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  background: #efe6d6;
+  color: #4a4338;
+}
+.cls-status-ok    { background: #e3efe1; color: #2f5a2c; }
+.cls-status-warn  { background: #f6ecd2; color: #7a5d1e; }
+.cls-status-error { background: #f6dcd8; color: #8c2c20; }
+
+/* ---- loading indicator ---- */
+.cls-loading {
+  display: none;
+  align-items: center;
+  gap: 11px;
+  margin-top: 18px;
+  padding: 14px;
+  font-size: 14px;
+  color: #6b6155;
+  background: #fffaf2;
+  border: 1px solid #e4d8c4;
+  border-radius: 12px;
+}
+.cls-spinner {
+  width: 20px; height: 20px;
+  border: 3px solid #e4d8c4;
+  border-top-color: #c0392b;
+  border-radius: 50%;
+  animation: cls-spin 0.8s linear infinite;
+  flex: none;
+}
+@keyframes cls-spin { to { transform: rotate(360deg); } }
+
+/* ---- result region ---- */
+.cls-result { margin-top: 18px; }
+
+.cls-card {
+  background: #fffaf2;
+  border: 1px solid #e4d8c4;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 2px 8px rgba(43, 38, 32, 0.08);
+}
+.cls-card-eyebrow {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c0392b;
+  margin-bottom: 6px;
+}
+.cls-card-name {
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.cls-card-address {
+  font-size: 14.5px;
+  color: #5a5246;
+  margin-bottom: 12px;
+}
+.cls-card-distance { margin-bottom: 16px; }
+.cls-card-distance-num {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2b2620;
+}
+.cls-card-distance-label {
+  font-size: 13.5px;
+  color: #6b6155;
+}
+
+.cls-card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.cls-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 9px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.cls-btn-primary { background: #c0392b; color: #fff; }
+.cls-btn-primary:hover { background: #a93226; }
+.cls-btn-secondary {
+  background: #efe6d6;
+  color: #4a4338;
+  border: 1px solid #d8cbb5;
+}
+.cls-btn-secondary:hover { background: #e6dac4; }
+
+/* ---- empty / error message states ---- */
+.cls-msg {
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e4d8c4;
+  background: #fffaf2;
+}
+.cls-msg-headline { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+.cls-msg-detail { font-size: 14px; color: #5a5246; }
+.cls-msg-error { background: #f6dcd8; border-color: #e6b8b0; }
+.cls-msg-error .cls-msg-headline { color: #8c2c20; }
+.cls-msg-empty { background: #f6ecd2; border-color: #e6d6a8; }
+.cls-msg-empty .cls-msg-headline { color: #7a5d1e; }
+
+.cls-footer {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 11.5px;
+  color: #9a8f7e;
+}

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-4",
+  "interface": {
+    "findNearbyLiquorStores(lat, lon, radiusMeters)": {
+      "params": {
+        "lat": "number — user latitude in decimal degrees",
+        "lon": "number — user longitude in decimal degrees",
+        "radiusMeters": "number — search radius for the Overpass around filter"
+      },
+      "returns": {
+        "type": "promise",
+        "resolvesTo": {
+          "status": "string — 'ok' | 'empty' | 'error'",
+          "stores": "array of { name: string, address: string, lat: number, lon: number }",
+          "message": "string — human-readable detail for 'empty' or 'error'"
+        }
+      }
+    }
+  },
+  "notes": "section-4 (app shell) calls findNearbyLiquorStores after location is resolved, awaits the promise, and routes the result: status 'ok' -> hand stores to section-3 for selection/presentation; status 'empty' -> shell may retry with a larger radiusMeters before showing the empty state; status 'error' -> shell shows the error state using message. The lookup never throws — failures are reported via status. The shell decides retry/radius-widening policy; section-2 only executes a single query per call."
+}

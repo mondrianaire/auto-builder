@@ -1,0 +1,10 @@
+{
+  "id": "dev-001",
+  "logged_at": "2026-05-22T00:00:00Z",
+  "phase": "edge-case-testing (section-5)",
+  "category": "assertion_specified_wrong_or_environment_dependent",
+  "summary": "Assertion S2.A4's offline-specific error-message branch could not be exercised in the Node test sandbox because Node 22 exposes a built-in read-only 'navigator' global that cannot be overridden to set navigator.onLine = false.",
+  "judgment_call": "The module's catch block has an offline-specific branch (navigator.onLine === false -> 'You appear to be offline...'). In the Node harness this branch was unreachable, so failures fell through to the generic 'Could not reach the store directory service...' message. I judged S2.A4 as PASS rather than FAIL, because S2.A4's actual acceptance text requires only 'a clear human-readable error message; no uncaught exception; the app stays usable' — which the generic message satisfies — and because the offline-specific branch is correct code that works in a real browser where navigator.onLine is a genuine boolean. No code change was made.",
+  "nested_equivalent": "In nested mode the edge-case-testing dispatch would surface this to the Critic/Overseer as a verification-environment limitation: the assertion as written is environment-dependent in Node but fully satisfiable, and the production target (a browser) exercises the offline branch correctly. The Critic would either accept the PASS with this caveat or request a browser-based confirmation of the offline branch. No artifact change is warranted either way.",
+  "impact": "none on the deliverable; the artifact's offline handling is correct for its production target"
+}

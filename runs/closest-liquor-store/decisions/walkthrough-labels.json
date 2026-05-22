@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "slug": "closest-liquor-store",
+  "generator": "walkthrough-labels-derive/v1",
+  "generated_at": "2026-05-22T10:25:51.022Z",
+  "note": "Mechanically derived from raw build substrate by walkthrough-labels-derive.mjs. This is a fallback for hand-authored labels; blurbs are clipped from full-sentence substrate and are necessarily crude. Superseded once roles emit their own Completion Reports (the v1.11/v1.12 substrate amendment).",
+  "prompt": "Build me an app that points me to the closest liquor store",
+  "phases": {
+    "phase_1": {
+      "label": "Phase 1",
+      "subtitle": "Discovery"
+    }
+  },
+  "discovery": {
+    "telos": "Reads the prompt and writes down what the build needs to assume.",
+    "decisions": [
+      {
+        "id": "D-DSC-1",
+        "question": "What does the user want?",
+        "short_description": "Restatement of the user prompt",
+        "answer_lines": [
+          "The user wants a small application that, given their",
+          "current location, identifies and directs them to the",
+          "closest liquor store."
+        ],
+        "answer_source": "FROM ledger-v1.json · restatement"
+      },
+      {
+        "id": "D-DSC-2",
+        "question": "What does the build need to assume?",
+        "short_description": "Logged 6 assumptions · rated by confidence",
+        "assumptions": [
+          {
+            "id": "A1",
+            "label": "The artifact is a single-user app with no accounts",
+            "prompt_impact": "high",
+            "tech_impact": "high"
+          },
+          {
+            "id": "A2",
+            "label": "'Closest' means closest by geographic proximity to…",
+            "prompt_impact": "high",
+            "tech_impact": "high"
+          },
+          {
+            "id": "A3",
+            "label": "The app must determine the user's current location at…",
+            "prompt_impact": "med",
+            "tech_impact": "med"
+          },
+          {
+            "id": "A4",
+            "label": "'Liquor store' means a retail business that sells…",
+            "prompt_impact": "high",
+            "tech_impact": "high"
+          },
+          {
+            "id": "A5",
+            "label": "'Points me to' means the app shows the user where the…",
+            "prompt_impact": "med",
+            "tech_impact": "med"
+          },
+          {
+            "id": "A6",
+            "label": "The app runs on the user's machine/browser as a…",
+            "prompt_impact": "med",
+            "tech_impact": "med"
+          }
+        ],
+        "answer_source": "6 assumptions · derived from ledger-v1.json"
+      },
+      {
+        "id": "D-DSC-3",
+        "question": "Where could this go wrong?",
+        "short_description": "Surfaced 3 inflection points · open questions for TD",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "question": "Where the liquor-store location data comes from",
+            "default": "Use a live external source of…",
+            "alt": "Use a bundled/static…",
+            "importance": "high"
+          },
+          {
+            "id": "IP2",
+            "question": "How the user's current location is established",
+            "default": "Automatically detect the…",
+            "alt": "Have the user enter or pick…",
+            "importance": "high"
+          },
+          {
+            "id": "IP3",
+            "question": "How the result is presented to the user",
+            "default": "Show the single closest store…",
+            "alt": "Show a short ranked list of…",
+            "importance": "medium"
+          }
+        ],
+        "dispatched_to": "D-TD-2",
+        "answer_source": "3 forks · each resolved at D-TD-2"
+      },
+      {
+        "id": "D-DSC-4",
+        "question": "What is explicitly out of scope?",
+        "short_description": "Marked 7 items not in this build",
+        "out_of_scope": [
+          "User accounts",
+          "Trip history",
+          "Live turn-by-turn navigation…",
+          "Filtering or ranking by price",
+          "In-app purchasing",
+          "Multi-user or social/sharing…",
+          "Native mobile app packaging"
+        ],
+        "answer_source": "Discovery complete · handoff to Technical Discovery"
+      }
+    ]
+  }
+}

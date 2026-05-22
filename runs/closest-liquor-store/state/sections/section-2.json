@@ -1,0 +1,26 @@
+{
+  "section_id": "section-2",
+  "section_name": "Liquor-store data lookup",
+  "status": "verified",
+  "owner": "coordinator (inline: Overseer + Builder)",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections/1",
+  "sub_goals": [
+    {
+      "sub_goal": "Build the store data lookup module: query OSM Overpass API for shop=alcohol/wine/beverages within an around-radius, normalize records, handle failure/timeout/empty gracefully.",
+      "builder_id": "b2-storelookup",
+      "status": "completed"
+    }
+  ],
+  "acceptance_verification": [
+    { "assertion": "S2.A1", "result": "pass", "evidence": "findNearbyLiquorStores POSTs to OVERPASS_ENDPOINT and returns normalized real store records on status 'ok'." },
+    { "assertion": "S2.A2", "result": "pass", "evidence": "normalizeElement always emits {name,address,lat,lon}; placeholders 'Unnamed liquor store' / 'Address not listed' substituted, never omitted." },
+    { "assertion": "S2.A3", "result": "pass", "evidence": "buildOverpassQuery emits node/way/relation[\"shop\"=\"alcohol\"](around:<radius>,<lat>,<lon>) — shop=alcohol tag plus around filter bound to the coordinate." },
+    { "assertion": "S2.A4", "result": "pass", "evidence": "fetchWithTimeout + .catch returns status:'error' with a human-readable message for offline/timeout/HTTP error; HTTP non-2xx throws into the same catch; promise never rejects." },
+    { "assertion": "S2.A5", "result": "pass", "evidence": "Zero normalized stores returns status:'empty'; radiusMeters is a parameter so the caller can re-call with a larger radius." }
+  ],
+  "contract_verification": [
+    { "contract": "contracts/original/section-2--section-3.json", "result": "pass", "evidence": "Returns {status,stores,message}; each store {name,address,lat,lon}; no distance/ranking logic." },
+    { "contract": "contracts/original/section-2--section-4.json", "result": "pass", "evidence": "findNearbyLiquorStores returns a Promise resolving to {status,stores,message}; never throws; one query per call; shell owns retry policy." },
+    { "contract": "contracts/original/section-1--section-2.json", "result": "pass", "evidence": "Consumes only lat/lon; performs no geolocation or geocoding." }
+  ]
+}

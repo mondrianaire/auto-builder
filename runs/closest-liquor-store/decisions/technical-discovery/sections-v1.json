@@ -1,0 +1,575 @@
+{
+  "version": 1,
+  "created_at": "2026-05-22T00:00:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "source": "discovery",
+      "resolved_via": "research",
+      "chosen_branch": "Use a live external source of real store locations: the public OpenStreetMap Overpass API queried directly from browser JavaScript for shop=alcohol features near the user.",
+      "rationale": "Researcher probe IP1 found that the public OpenStreetMap Overpass API (https://overpass-api.de/api/interpreter) gives global liquor-store coverage via the canonical shop=alcohol tag, needs no API key and no user-operated backend, and is callable directly from browser fetch(). A bundled static dataset would only cover a fixed region and silently fail elsewhere, defeating the telos. Live data does require network access at use time; that online behavior is honest and required, captured explicitly in section-2 so verification expects network calls rather than punishing them.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "The store-data lookup module issues a request to the OpenStreetMap Overpass public API interpreter endpoint.",
+          "check_type": "constant_value",
+          "target_module": "store data lookup module (section-2)",
+          "target_symbol": "Overpass endpoint URL constant",
+          "expected_value": "https://overpass-api.de/api/interpreter",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/0/topic",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-IP1/findings.json#citations/0"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "The Overpass query filters for liquor stores using the canonical OSM shop=alcohol tag (and may also include shop=wine / shop=beverages).",
+          "check_type": "structural",
+          "target_module": "store data lookup module (section-2)",
+          "target_symbol": "Overpass QL query string",
+          "expected_value": "Query string contains the substring shop and the value alcohol",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/3/assumption",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-IP1/findings.json#citations/4"
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "The Overpass query constrains results to a radius around the user's coordinates using the around filter.",
+          "check_type": "structural",
+          "target_module": "store data lookup module (section-2)",
+          "target_symbol": "Overpass QL query string",
+          "expected_value": "Query string contains the around filter with a radius and the user latitude/longitude",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/1/assumption",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-IP1/findings.json#citations/2"
+        },
+        {
+          "id": "IP1.A4",
+          "statement": "When the Overpass call fails (offline, timeout, or HTTP error) the app shows a clear human-readable message instead of crashing or showing a blank result.",
+          "check_type": "behavior",
+          "target_module": "store data lookup module (section-2)",
+          "target_symbol": "fetch error handler",
+          "expected_value": "A visible error/empty-state message is rendered; no uncaught exception",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/0/importance_action_evidence",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Automatically detect the device's current location via the browser Geolocation API, with a visible manual location-entry fallback when detection is unavailable, denied, or fails.",
+      "rationale": "Quick-reasoning rubric satisfied: the browser Geolocation API (navigator.geolocation.getCurrentPosition) is the canonical well-known way to get a device's location with no external dependency or key; a manual address/coordinate entry fallback is equally canonical; both branches are similar complexity; the choice introduces no new external dependency beyond the geocoding needed to turn a typed address into coordinates (handled in-scope by the same OSM ecosystem via Nominatim); and the design is reversible. The ledger default is auto-detect plus manual fallback, which this adopts.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "The location module calls the browser Geolocation API to attempt automatic location detection.",
+          "check_type": "presence",
+          "target_module": "location module (section-1)",
+          "target_symbol": "navigator.geolocation.getCurrentPosition usage",
+          "expected_value": "A call to navigator.geolocation.getCurrentPosition is present in the location module",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/1/topic",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "A manual location-entry control is present in the UI and reachable by the user.",
+          "check_type": "presence",
+          "target_module": "location module (section-1)",
+          "target_symbol": "manual location input element",
+          "expected_value": "A visible text input (or equivalent) for entering a location exists in the rendered UI",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/2/what_breaks_if_wrong",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP2.A3",
+          "statement": "When automatic geolocation is denied or fails, the manual location-entry path becomes available so the user is never stuck without a way to provide a location.",
+          "check_type": "behavior",
+          "target_module": "location module (section-1)",
+          "target_symbol": "geolocation error callback",
+          "expected_value": "On geolocation error the manual entry control is shown/enabled and the app remains usable",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/1/description",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Show the single closest store with its name, address, and distance.",
+      "rationale": "Quick-reasoning rubric satisfied: 'the closest' is singular in the prompt and the canonical reading is one result; both branches are similar complexity; no new external dependency either way; and switching to a ranked list later is trivially reversible (same data, different render). The ledger default is the single closest store; this adopts it. A short ranked list stays out of scope.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "The result presentation shows exactly one store as the primary answer — the one with the smallest computed distance.",
+          "check_type": "behavior",
+          "target_module": "result presentation module (section-3)",
+          "target_symbol": "closest-store selection",
+          "expected_value": "The store rendered as the answer is the candidate with the minimum distance value",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/2/topic",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "The displayed result includes the store's name, address, and distance from the user.",
+          "check_type": "structural",
+          "target_module": "result presentation module (section-3)",
+          "target_symbol": "result card markup",
+          "expected_value": "Rendered result contains a name, an address, and a distance value",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/2/description",
+          "source": "prompt"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP4",
+      "source": "td",
+      "resolved_via": "quick_reasoning",
+      "topic": "How the user acts on the result (the directions / map hand-off mechanism for FC.4)",
+      "td_introduction_rationale": "FC.4 requires the app give the user a way to act on the result, and assumption A5 explicitly excludes built-in turn-by-turn. Discovery named the requirement but not the mechanism, and there is a real technical fork: (a) hand off to an existing maps service via an external directions/map link, or (b) embed a live interactive map inside the app. This is a TD-level technical decision that affects section structure, so it is surfaced as an inflection point.",
+      "chosen_branch": "Provide a directions hand-off: a clickable link/button that opens the store in an external maps service (OpenStreetMap directions and/or a generic geo: or maps URL) prefilled with the store's coordinates, plus the plain-text address shown for copy/use. No embedded slippy map is required for the default.",
+      "rationale": "Quick-reasoning rubric satisfied: external map/directions URLs are canonical and well-known; both branches are similar complexity for a link-out vs a static embed; the link-out introduces no new runtime dependency (it is just a hyperlink, honoring production fidelity since the app itself needs nothing extra to render); and the choice is reversible. A directions hand-off exactly matches A5 ('points me to' = identify-and-show, directions left to existing tools) and FC.4 ('directions, a map view, or an address'). An embedded interactive map would pull in a mapping library/tiles and is heavier than the ask; it stays out of scope.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.A1",
+          "statement": "The result presentation includes a directions/map link or button targeting the closest store's coordinates.",
+          "check_type": "presence",
+          "target_module": "result presentation module (section-3)",
+          "target_symbol": "directions link element",
+          "expected_value": "A clickable element with an href pointing to an external maps service URL containing the store coordinates is present",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/3/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP4.A2",
+          "statement": "The app does not embed or implement built-in turn-by-turn navigation.",
+          "check_type": "absence",
+          "target_module": "result presentation module (section-3)",
+          "target_symbol": "in-app navigation logic",
+          "expected_value": "No in-app routing/turn-by-turn engine is present; only an external hand-off",
+          "covers": "decisions/discovery/ledger-v1.json#out_of_scope/2",
+          "source": "prompt"
+        }
+      ]
+    }
+  ],
+  "prompt_verb_analysis": {
+    "candidate_verbs": ["points (me to)", "build (an app)", "find/identify (the closest store)"],
+    "chosen_verb": "points me to the closest liquor store",
+    "rationale": "'Build an app' is the meta-instruction to AutoBuilder, not the artifact's behavior. The load-bearing verb describing what the finished artifact must do for the user is 'points me to' — given the user's location it must identify the single closest liquor store and direct the user to it (name, address, distance, and an actionable way to get there). 'Find' is implied within 'points to' but 'points to' is stronger because it also covers the act-on-it requirement (FC.4)."
+  },
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.1",
+      "covers": "decisions/discovery/ledger-v1.json#restatement",
+      "statement": "Given the user's current location, the integrated app identifies and directs the user to the closest liquor store.",
+      "check_type": "user_flow",
+      "scenario": "Open the app on Windows in a browser; allow or enter a location; observe that the app produces a named closest liquor store and a way to reach it.",
+      "expected_result": "The app completes the identify-and-direct flow end to end without the user being stuck.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.2",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/0/assumption",
+      "statement": "The app is single-user with no accounts, login, or cross-session persistence.",
+      "check_type": "absence",
+      "scenario": "Inspect the integrated artifact for any login screen, account creation, or persisted user data.",
+      "expected_result": "No accounts, login, or persistence mechanism is present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.3",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/1/assumption",
+      "statement": "'Closest' is computed as geographic (straight-line) proximity to the user's position.",
+      "check_type": "behavior",
+      "scenario": "Provide a fixed location with multiple known nearby stores; verify the store selected as closest has the smallest great-circle distance.",
+      "expected_result": "The store with the minimum geographic distance is chosen as the closest.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.4",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/2/assumption",
+      "statement": "The app determines the user's current location at use time rather than only accepting a typed address.",
+      "check_type": "presence",
+      "scenario": "Open the app and observe it attempts automatic location detection on use.",
+      "expected_result": "Automatic location detection is attempted; manual entry is a fallback, not the only path.",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.5",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/3/assumption",
+      "statement": "'Liquor store' is treated as a retail category (stores selling packaged alcohol), not a specific named chain.",
+      "check_type": "structural",
+      "scenario": "Inspect the store query: it filters by the OSM shop=alcohol category tag, not by a brand name.",
+      "expected_result": "Results are matched by store category, not a hardcoded brand.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-IP1/findings.json#citations/4"
+    },
+    {
+      "id": "DCA.6",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/4/assumption",
+      "statement": "'Points me to' is satisfied by identify-and-show (address, distance, and a directions/map hand-off), not built-in turn-by-turn.",
+      "check_type": "behavior",
+      "scenario": "Exercise the result and confirm the user is given an address and a directions/map hand-off but not in-app turn-by-turn.",
+      "expected_result": "Identify-and-show plus hand-off is present; no in-app navigation engine.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.7",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/5/assumption",
+      "statement": "The app runs as a standalone client app on the user's machine/browser with no user-operated backend server.",
+      "check_type": "absence",
+      "scenario": "Inspect the artifact: it is opened directly as a client app and requires the user to run no server process.",
+      "expected_result": "No user-operated backend; the only network calls are to public third-party APIs.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.8",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope/3",
+      "statement": "The app does not filter or rank by price, product selection, ratings, or store hours.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI and logic for any price/selection/rating/hours filtering controls.",
+      "expected_result": "No such filtering or ranking is present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.9",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope/4",
+      "statement": "The app does not offer in-app purchasing, ordering, or delivery.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI for any buy/order/delivery affordance.",
+      "expected_result": "No purchasing, ordering, or delivery features are present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.10",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope/5",
+      "statement": "The app has no multi-user or social/sharing features.",
+      "check_type": "absence",
+      "scenario": "Inspect the UI for any sharing, social, or multi-user affordance.",
+      "expected_result": "No multi-user or social features are present.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.11",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope/1",
+      "statement": "The app keeps no trip history, favorites, or saved past searches.",
+      "check_type": "absence",
+      "scenario": "Run two searches and inspect for any retained history or favorites.",
+      "expected_result": "No history or favorites are stored or shown.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.12",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope/6",
+      "statement": "The artifact is the app itself (a browser-openable client app), not a store-distributed native mobile build.",
+      "check_type": "structural",
+      "scenario": "Inspect the deliverable: it is opened directly in a browser on Windows, with no native mobile packaging.",
+      "expected_result": "The artifact is a plain client app, no native mobile packaging.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    }
+  ],
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "points me to the closest liquor store",
+    "scenario": "A real user opens the integrated artifact the normal way — double-clicking the app's entry HTML file (or opening its URL) in a browser on a Windows machine. The user allows location access (or, if prompted to, types a real location into the visible manual-entry field). The user takes no other special action.",
+    "expected_result": "The app, running under production fidelity with its real network calls to the public OpenStreetMap APIs, names one specific closest liquor store with its address and the distance from the user's location, and presents a working directions/map link that opens that store in an external maps service. The user is genuinely pointed to the closest liquor store.",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "covers": "runs/closest-liquor-store/prompt.txt",
+    "source": "prompt"
+  },
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "Location acquisition",
+      "charter": "Own everything to do with establishing where the user is. On app use, attempt automatic detection via the browser Geolocation API. If detection is unavailable, denied, slow, or errors, expose a visible manual location-entry control and turn the typed location into coordinates (via an OSM geocoding lookup). Surface clear status to the user at each stage so they are never left stuck with no path forward. Produce a single resolved location (latitude/longitude, plus a human-readable label) and hand it onward.",
+      "acceptance": "On use the app attempts automatic location detection; a manual location-entry field is visible and usable; when automatic detection is denied or fails the user can still supply a location manually and proceed; the module yields a resolved latitude/longitude and a human-readable label; the user is never stuck without a way to give the app a location.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "On use the app attempts automatic location detection",
+          "check_type": "presence",
+          "scenario": "Open the app and observe it invokes the browser Geolocation API to request the device location.",
+          "expected_result": "navigator.geolocation.getCurrentPosition is called on app use.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/1/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "a manual location-entry field is visible and usable",
+          "check_type": "presence",
+          "scenario": "Inspect the rendered UI for a visible, enabled text input where a location can be typed.",
+          "expected_result": "A usable manual location-entry control is present in the UI.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/1/default_branch",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "when automatic detection is denied or fails the user can still supply a location manually and proceed",
+          "check_type": "user_flow",
+          "scenario": "Step 1: open the app in a browser with geolocation denied. Step 2: observe the app does not hang. Step 3: type a real location (e.g. a city or address) into the manual-entry field. Step 4: submit it.",
+          "expected_result": "The app accepts the manual location, resolves it to coordinates, and continues to a store result without the user being stuck.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/1/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "the module yields a resolved latitude/longitude and a human-readable label",
+          "check_type": "behavior",
+          "scenario": "After location is established by either path, inspect the value passed onward.",
+          "expected_result": "A numeric latitude/longitude pair and a human-readable location label are produced.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/2/assumption",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "the user is never stuck without a way to give the app a location",
+          "check_type": "user_flow",
+          "scenario": "Step 1: open the app and dismiss/deny the geolocation prompt. Step 2: confirm a manual path is immediately offered. Step 3: also confirm that with geolocation allowed the manual field is still reachable.",
+          "expected_result": "In every location-acquisition state there is a visible, working way for the user to provide a location.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/1/description",
+          "source": "prompt"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": ["Storing or remembering past locations", "Map rendering", "Querying for stores"]
+    },
+    {
+      "id": "section-2",
+      "name": "Liquor-store data lookup",
+      "charter": "Own retrieval of real liquor-store locations near a given coordinate. Given a latitude/longitude, query the public OpenStreetMap Overpass API (https://overpass-api.de/api/interpreter) directly from the browser for shop=alcohol features (and reasonably shop=wine / shop=beverages) within a search radius, requesting JSON with coordinates and address tags. This is required, honest online behavior: the app must reach the network at use time. Normalize each result to a store record (name, address, latitude, longitude). Handle slow responses, timeouts, HTTP errors, offline state, and empty results gracefully — never crash — and support widening the radius when nothing is found nearby.",
+      "acceptance": "Given a coordinate, the module returns real liquor-store records from the OpenStreetMap Overpass API; each record carries a name, an address, and a latitude/longitude; the Overpass query filters by the shop=alcohol category within a radius around the given coordinate; on network failure, timeout, or HTTP error the module reports a clear error rather than crashing; on an empty nearby result the module reports an empty state and can widen the search radius.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "the module returns real liquor-store records from the OpenStreetMap Overpass API",
+          "check_type": "behavior",
+          "scenario": "Call the lookup with a coordinate in an area known to have liquor stores in OSM and inspect the returned records.",
+          "expected_result": "One or more real store records sourced from the Overpass API are returned.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/0/default_branch",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-IP1/findings.json#citations/0"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "each record carries a name, an address, and a latitude/longitude",
+          "check_type": "structural",
+          "scenario": "Inspect the normalized store records emitted by the module.",
+          "expected_result": "Each record has a name field, an address field, and numeric latitude/longitude.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/2/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "the Overpass query filters by the shop=alcohol category within a radius around the given coordinate",
+          "check_type": "structural",
+          "scenario": "Inspect the Overpass QL query string the module sends.",
+          "expected_result": "The query contains the shop / alcohol tag filter and an around-radius filter bound to the given coordinate.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/3/assumption",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-IP1/findings.json#citations/4"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "on network failure, timeout, or HTTP error the module reports a clear error rather than crashing",
+          "check_type": "user_flow",
+          "scenario": "Step 1: simulate the Overpass call failing (offline or timeout). Step 2: observe the app's behavior.",
+          "expected_result": "A clear human-readable error message is shown; no uncaught exception; the app stays usable.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/0/importance_action_evidence",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A5",
+          "from_acceptance_phrase": "on an empty nearby result the module reports an empty state and can widen the search radius",
+          "check_type": "behavior",
+          "scenario": "Call the lookup with a coordinate where no stores exist within the initial radius.",
+          "expected_result": "An empty state is reported and the module supports retrying with a larger radius.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/3/what_breaks_if_wrong",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["section-1"],
+      "estimated_builders": 1,
+      "out_of_scope": ["Distance computation and ranking", "Location acquisition", "Rendering results"]
+    },
+    {
+      "id": "section-3",
+      "name": "Closest-store selection and presentation",
+      "charter": "Own picking the single closest store and showing it. Given the user's coordinate and the list of store records, compute each store's straight-line (great-circle) distance from the user, select the one with the smallest distance, and render it as a clear result card showing name, address, and distance. Provide an actionable directions/map hand-off: a link/button that opens the chosen store in an external maps service prefilled with its coordinates. Render clear empty and error states for when no store is available. Do not implement in-app turn-by-turn navigation.",
+      "acceptance": "Given a user coordinate and store records, the module computes each store's geographic distance and selects the single closest; the result is shown as a card with the store's name, address, and distance; an actionable directions/map link to the chosen store's coordinates is present and opens an external maps service; when no store is available a clear empty/error state is shown instead of a blank screen; no in-app turn-by-turn navigation is implemented.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "the module computes each store's geographic distance and selects the single closest",
+          "check_type": "behavior",
+          "scenario": "Provide a known user coordinate and several store records at known distances; inspect which store is selected.",
+          "expected_result": "The store with the minimum great-circle distance is selected as the single result.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points/2/default_branch",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "the result is shown as a card with the store's name, address, and distance",
+          "check_type": "structural",
+          "scenario": "Inspect the rendered result card after a successful lookup.",
+          "expected_result": "The card displays the store name, its address, and a distance value.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/2/description",
+          "source": "prompt"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "an actionable directions/map link to the chosen store's coordinates is present and opens an external maps service",
+          "check_type": "user_flow",
+          "scenario": "Step 1: get a result. Step 2: locate the directions/map link. Step 3: confirm its href targets an external maps service with the store's coordinates.",
+          "expected_result": "A working directions/map link prefilled with the chosen store's coordinates is present.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/3/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "when no store is available a clear empty/error state is shown instead of a blank screen",
+          "check_type": "behavior",
+          "scenario": "Drive the module with an empty store list and with an upstream error.",
+          "expected_result": "A clear, human-readable empty/error state is rendered; never a blank screen.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/0/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "no in-app turn-by-turn navigation is implemented",
+          "check_type": "absence",
+          "scenario": "Inspect the module for any built-in routing or turn-by-turn navigation logic.",
+          "expected_result": "No in-app navigation engine exists; only an external hand-off link.",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/discovery/ledger-v1.json#out_of_scope/2",
+          "source": "prompt"
+        }
+      ],
+      "depends_on": ["section-1", "section-2"],
+      "estimated_builders": 1,
+      "out_of_scope": ["Fetching store data", "Location acquisition", "Ranked list of multiple stores", "Built-in turn-by-turn navigation"]
+    },
+    {
+      "id": "section-4",
+      "name": "App shell, flow, and launch",
+      "charter": "Own the self-contained app shell that ties the other pieces together and is what the user actually opens. Provide a single browser-openable entry point (HTML plus its assets) that runs on Windows with no server the user must operate and no build step. Orchestrate the flow: acquire location, look up stores, select and present the closest, surface status/loading/error states throughout. Vendor all app code and styling locally (no CDN dependency for the app's own assets) so the app loads under production fidelity; the only network calls are the required public OSM API queries. Ensure the app opens without an error screen.",
+      "acceptance": "The app is a single browser-openable artifact that launches on Windows without an error screen and with no server the user must run; it orchestrates the full flow from location acquisition through store lookup to presenting the closest store; loading and error states are visible during the flow; the app's own code and styling are vendored locally with no CDN dependency, and the only network calls are to the public OSM APIs.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "The app is a single browser-openable artifact that launches on Windows without an error screen and with no server the user must run",
+          "check_type": "behavior",
+          "scenario": "Open the app's entry HTML directly in a browser on Windows the way an ordinary user would.",
+          "expected_result": "The app loads and renders its initial UI with no error screen and no server process required.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/0/description",
+          "source": "prompt"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "it orchestrates the full flow from location acquisition through store lookup to presenting the closest store",
+          "check_type": "user_flow",
+          "scenario": "Step 1: open the app. Step 2: provide a location (auto or manual). Step 3: wait for the lookup. Step 4: observe the closest-store result.",
+          "expected_result": "The app carries the user from location to a presented closest-store result without manual wiring between steps.",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/discovery/ledger-v1.json#restatement",
+          "source": "prompt"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "loading and error states are visible during the flow",
+          "check_type": "presence",
+          "scenario": "Trigger a lookup and observe the UI during the wait and on an induced error.",
+          "expected_result": "A loading indicator is shown during async work and error states are visibly surfaced.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/0/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "the app's own code and styling are vendored locally with no CDN dependency, and the only network calls are to the public OSM APIs",
+          "check_type": "absence",
+          "scenario": "Inspect the artifact's asset references and the network calls it makes under production fidelity.",
+          "expected_result": "No CDN reference for the app's own code/styling; the only outbound calls are to the public OSM APIs the build requires.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/5/assumption",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["section-1", "section-2", "section-3"],
+      "estimated_builders": 1,
+      "out_of_scope": ["The internals of location acquisition, data lookup, and presentation (owned by sections 1-3)", "Native mobile packaging"]
+    },
+    {
+      "id": "section-5",
+      "name": "Edge-case testing",
+      "charter": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment — no substitution of runtime dependencies the artifact loads in production. Verify the integrated app against location-permission-denied, slow/timed-out and failed Overpass calls, offline state, empty nearby results with radius widening, the closest-store distance computation against known coordinates, visibility of loading/error states, and the no-CDN / OSM-APIs-only network profile. Confirm the app never crashes or shows a blank screen in any of these states.",
+      "acceptance": "Every acceptance assertion marked verifier: edge_case_testing across the section list is exercised against the integrated artifact under production fidelity and passes; permission-denied, network-failure, timeout, offline, and empty-result paths all degrade gracefully with no crash and no blank screen; the closest-store selection is verified correct against known coordinates.",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "Every acceptance assertion marked verifier: edge_case_testing across the section list is exercised against the integrated artifact under production fidelity and passes",
+          "check_type": "behavior",
+          "scenario": "Enumerate all edge_case_testing assertions from sections 1-4 and run each against the integrated artifact with its real runtime dependencies.",
+          "expected_result": "Every such assertion is exercised under production fidelity and passes.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements/0/description",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "permission-denied, network-failure, timeout, offline, and empty-result paths all degrade gracefully with no crash and no blank screen",
+          "check_type": "behavior",
+          "scenario": "Drive the integrated app through geolocation-denied, Overpass-failure, Overpass-timeout, offline, and empty-result conditions.",
+          "expected_result": "Each condition produces a clear message; no crash and no blank screen in any case.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/2/what_breaks_if_wrong",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "the closest-store selection is verified correct against known coordinates",
+          "check_type": "behavior",
+          "scenario": "Feed the integrated app a user coordinate and a controlled set of stores at known distances and check the chosen store.",
+          "expected_result": "The store with the minimum geographic distance is selected.",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger/1/assumption",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": ["Implementing or modifying feature code", "Adding new features"]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "builder_id": "b1-location",
+  "task_id": "t1-location-acquisition",
+  "section_id": "section-1",
+  "status": "completed",
+  "output_files": ["location.js"],
+  "exposes": ["acquireLocation(callbacks)", "getResolvedLocation()"],
+  "notes": "Location acquisition module. acquireLocation() attempts navigator.geolocation.getCurrentPosition on use (S1.A1/DCA.4/IP2.A1) and always renders a visible, enabled manual text input (S1.A2/IP2.A2). On geolocation denial/unavailable/timeout the manual path stays usable and is focused (S1.A3/S1.A5/IP2.A3). Typed locations resolve to coordinates via OSM Nominatim geocoding. Yields a resolved {lat,lon,label,source} object (S1.A4) via the onResolved callback. fetchWithTimeout gives every network call a hard timeout so the app never hangs. No persistence, no map rendering, no store queries — all per section out_of_scope."
+}

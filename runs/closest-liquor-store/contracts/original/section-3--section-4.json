@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "from_section": "section-3",
+  "to_section": "section-4",
+  "interface": {
+    "renderClosestStore(params)": {
+      "params": {
+        "params": {
+          "type": "object",
+          "shape": {
+            "userLocation": "object { lat, lon, label } — the resolved user location",
+            "lookupResult": "object { status, stores, message } — the value section-4 received from section-2's findNearbyLiquorStores",
+            "container": "DOM element — where section-3 mounts the result UI"
+          }
+        }
+      },
+      "returns": {
+        "type": "object",
+        "shape": {
+          "rendered": "string — one of 'result' | 'empty' | 'error', indicating which state was rendered"
+        }
+      }
+    }
+  },
+  "notes": "section-4 (app shell) passes the user location, the raw lookup result, and a container to section-3. section-3 owns: computing each store's great-circle distance from userLocation, selecting the single closest, and rendering the result card (name, address, distance, directions/map link) OR the empty/error state when lookupResult.status is not 'ok' or stores is empty. The shell does not compute distances or pick the closest store — it only supplies inputs and a mount point. This contract passes data, not logic."
+}

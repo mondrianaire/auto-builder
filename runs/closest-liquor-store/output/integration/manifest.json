@@ -1,0 +1,45 @@
+{
+  "completed_at": "2026-05-22T00:00:00Z",
+  "entry_point": "output/integration/index.html",
+  "files": ["index.html"],
+  "section_outputs_used": [
+    "output/builders/section-1/b1-location/location.js",
+    "output/builders/section-2/b2-storelookup/storelookup.js",
+    "output/builders/section-3/b3-presentation/presentation.js",
+    "output/builders/section-4/b4-shell/shell.html",
+    "output/builders/section-4/b4-shell/shell.css",
+    "output/builders/section-4/b4-shell/shell.js"
+  ],
+  "glue_code_added": [
+    "Inlined shell.css verbatim into a single <style> block in <head>.",
+    "Inlined shell.html skeleton verbatim into <body> ahead of all <script> blocks so the DOM (#cls-location, #cls-status, #cls-loading, #cls-result) is fully parsed before any script executes.",
+    "Inlined location.js, storelookup.js, presentation.js, shell.js verbatim, each in its own <script> block, in strict dependency order (section-1 -> section-2 -> section-3 -> section-4). No code was modified during inlining — only concatenated.",
+    "Added a single-file artifact header comment documenting the assembly and the no-CDN / OSM-APIs-only network profile."
+  ],
+  "issues_resolved_during_integration": [
+    {
+      "issue": "Init-order seam: shell.js calls start() either on DOMContentLoaded or immediately if document.readyState is not 'loading'. start() needs both the DOM skeleton and the CLS_Location/CLS_StoreLookup/CLS_Presentation globals.",
+      "resolution": "Placed the shell HTML skeleton before all <script> blocks and ordered the four module scripts location -> storelookup -> presentation -> shell. By the time shell.js runs, parsing has reached it (so the skeleton above exists) and the three module IIFEs have already published their globals. shell.js also carries a defensive module-presence guard (S4.A1) that renders an honest error rather than a blank screen if a global is missing."
+    },
+    {
+      "issue": "Naming seam: all four modules use the CLS_ global prefix and the cls- CSS class prefix.",
+      "resolution": "No collision — each module publishes exactly one distinct global (CLS_Location, CLS_StoreLookup, CLS_Presentation, CLS_Shell) and CSS classes are uniformly cls-* with no overlap. No renaming needed."
+    },
+    {
+      "issue": "Asset seam: sections were authored as separate .js/.css/.html files.",
+      "resolution": "All vendored inline into the single index.html — zero sibling asset files, zero CDN references. The only network calls the assembled artifact makes are to the public OSM Overpass and Nominatim APIs the build requires (S4.A4)."
+    }
+  ],
+  "verification": {
+    "all_inline_scripts_parse": true,
+    "no_cdn_app_asset_reference": true,
+    "overpass_endpoint_present": true,
+    "nominatim_endpoint_present": true,
+    "geolocation_api_present": true,
+    "core_logic_tests": "13/13 pass",
+    "pipeline_edge_tests": "7/7 pass",
+    "error_empty_edge_tests": "5/6 pass (1 harness artifact — see edge-case report ECT-S2.A4-offline)",
+    "presentation_render_tests": "10/10 pass",
+    "location_module_tests": "6/6 pass"
+  }
+}

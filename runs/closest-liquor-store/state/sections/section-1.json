@@ -1,0 +1,26 @@
+{
+  "section_id": "section-1",
+  "section_name": "Location acquisition",
+  "status": "verified",
+  "owner": "coordinator (inline: Overseer + Builder)",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections/0",
+  "sub_goals": [
+    {
+      "sub_goal": "Build the location acquisition module: auto-detect via Geolocation API, visible manual-entry fallback, Nominatim geocoding, yields {lat,lon,label,source}.",
+      "builder_id": "b1-location",
+      "status": "completed"
+    }
+  ],
+  "acceptance_verification": [
+    { "assertion": "S1.A1", "result": "pass", "evidence": "location.js detectGeolocation() calls navigator.geolocation.getCurrentPosition; invoked unconditionally inside renderInto." },
+    { "assertion": "S1.A2", "result": "pass", "evidence": "renderInto always builds and appends a visible, enabled cls-loc-input text input — never hidden." },
+    { "assertion": "S1.A3", "result": "pass", "evidence": "detectGeolocation rejection path leaves the manual input rendered, sets status, and focuses the input; handleManualSubmit resolves a typed location via geocode()." },
+    { "assertion": "S1.A4", "result": "pass", "evidence": "Both detect and geocode paths produce {lat:number,lon:number,label:string,source:'auto'|'manual'} delivered via onResolved." },
+    { "assertion": "S1.A5", "result": "pass", "evidence": "Manual input is rendered before async detection starts and is never removed, so a working location path exists in every state." }
+  ],
+  "contract_verification": [
+    { "contract": "contracts/original/section-1--section-4.json", "result": "pass", "evidence": "acquireLocation(callbacks) returns {renderInto(container)}; callbacks.onResolved/onStatus honored; location object shape matches." },
+    { "contract": "contracts/original/section-1--section-2.json", "result": "pass", "evidence": "getResolvedLocation() returns the {lat,lon,label,source} object; no store-query logic in this module." },
+    { "contract": "contracts/original/section-1--section-3.json", "result": "pass", "evidence": "Same resolved-location object shape; consumable as the distance reference point." }
+  ]
+}

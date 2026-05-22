@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-3",
+  "interface": {
+    "getResolvedLocation()": {
+      "params": {},
+      "returns": {
+        "type": "object",
+        "shape": {
+          "lat": "number — user latitude in decimal degrees",
+          "lon": "number — user longitude in decimal degrees",
+          "label": "string — human-readable location label",
+          "source": "string — 'auto' | 'manual'"
+        }
+      }
+    }
+  },
+  "notes": "section-3 (closest-store selection and presentation) consumes the user's lat/lon as the reference point for computing each store's straight-line distance, and may display label as the 'your location' context in the result UI. Same resolved-location object as the section-1--section-2 contract; no separate format."
+}

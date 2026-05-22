@@ -1,0 +1,25 @@
+{
+  "section_id": "section-4",
+  "section_name": "App shell, flow, and launch",
+  "status": "verified",
+  "owner": "coordinator (inline: Overseer + Builder)",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections/3",
+  "sub_goals": [
+    {
+      "sub_goal": "Build the self-contained app shell: page skeleton, locally-vendored CSS, flow orchestration (location -> lookup -> present), loading/status/error states, radius widening, startup guard.",
+      "builder_id": "b4-shell",
+      "status": "completed"
+    }
+  ],
+  "acceptance_verification": [
+    { "assertion": "S4.A1", "result": "pass", "evidence": "Single browser-openable artifact; shell.js start() has a module-presence guard that renders an honest message instead of a blank/broken screen; no server required." },
+    { "assertion": "S4.A2", "result": "pass", "evidence": "start() wires acquireLocation -> onResolved -> runLookup -> findNearbyLiquorStores -> renderClosestStore with no manual user wiring between steps." },
+    { "assertion": "S4.A3", "result": "pass", "evidence": "showLoading/hideLoading drive #cls-loading during async work; setStatus surfaces ok/warn/error tones in #cls-status." },
+    { "assertion": "S4.A4", "result": "pass", "evidence": "shell.css is fully self-contained (no CDN, no web fonts); integrated index.html inlines all CSS/JS; only outbound calls are Overpass + Nominatim." }
+  ],
+  "contract_verification": [
+    { "contract": "contracts/original/section-1--section-4.json", "result": "pass", "evidence": "Shell supplies #cls-location container and onResolved/onStatus callbacks; treats location as async." },
+    { "contract": "contracts/original/section-2--section-4.json", "result": "pass", "evidence": "Shell awaits findNearbyLiquorStores, routes ok/empty/error, owns the radius-widening retry schedule." },
+    { "contract": "contracts/original/section-3--section-4.json", "result": "pass", "evidence": "Shell passes userLocation, raw lookupResult, and #cls-result container to renderClosestStore; computes no distances itself." }
+  ]
+}

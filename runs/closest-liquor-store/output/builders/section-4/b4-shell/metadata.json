@@ -1,0 +1,9 @@
+{
+  "builder_id": "b4-shell",
+  "task_id": "t4-app-shell-flow-launch",
+  "section_id": "section-4",
+  "status": "completed",
+  "output_files": ["shell.html", "shell.css", "shell.js"],
+  "exposes": ["CLS_Shell.start()", "DOM mount points: #cls-location, #cls-status, #cls-loading, #cls-result"],
+  "notes": "App shell. shell.html is the page skeleton with mount points for the location module (#cls-location) and the result region (#cls-result), plus a status banner and loading indicator. shell.css is fully self-contained styling — no CDN, no web fonts, no external assets (S4.A4). shell.js orchestrates the flow: on DOMContentLoaded it calls CLS_Location.acquireLocation; on onResolved it calls CLS_StoreLookup.findNearbyLiquorStores, widening the radius through 4/12/30/80 km on 'empty' results, then hands the result to CLS_Presentation.renderClosestStore (S4.A2). Loading indicator shown during async work, status banner shows ok/warn/error tones (S4.A3). A startup guard renders an honest message if a feature module failed to load so the app never shows a blank/broken screen (S4.A1). Shell implements none of the feature internals — per section out_of_scope."
+}

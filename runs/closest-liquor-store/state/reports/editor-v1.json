@@ -1,0 +1,19 @@
+{
+  "role": "Editor",
+  "instance_id": "editor",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-22T00:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "Did the build stay true to what was asked?",
+      "answer": "Yes. The plan matches the original request to point you to the closest liquor store: it acquires your location, looks up real nearby liquor stores, picks the single closest one, and shows its name, address, distance, and a directions link. Every part of what a first-time user would expect is covered, and the two big judgement calls (using live real-world store data and auto-detecting your location with a manual fallback) are backed by real evidence rather than guesses.",
+      "kind": "always",
+      "importance": "high"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "Coordinator"
+}

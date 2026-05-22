@@ -1,0 +1,9 @@
+{
+  "builder_id": "b2-storelookup",
+  "task_id": "t2-store-data-lookup",
+  "section_id": "section-2",
+  "status": "completed",
+  "output_files": ["storelookup.js"],
+  "exposes": ["findNearbyLiquorStores(lat, lon, radiusMeters)", "buildOverpassQuery(lat, lon, radiusMeters)", "OVERPASS_ENDPOINT"],
+  "notes": "Store data lookup module. OVERPASS_ENDPOINT is the canonical constant https://overpass-api.de/api/interpreter (IP1.A1). buildOverpassQuery emits Overpass QL filtering shop=alcohol/wine/beverages (IP1.A2) within an around:<radius>,<lat>,<lon> filter (IP1.A3/S2.A3), using 'out center tags;' so ways/relations carry coordinates. findNearbyLiquorStores POSTs the query, normalizes each element to {name,address,lat,lon} with placeholder substitution never omission (S2.A2), de-dupes by coordinate, and returns {status,stores,message}. status 'ok' on results, 'empty' on no nearby results (S2.A5 — caller widens radius), 'error' on offline/timeout/HTTP error with a human-readable message (S2.A4/IP1.A4). The promise never rejects. No distance computation, no location acquisition, no rendering — per section out_of_scope."
+}

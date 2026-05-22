@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-2",
+  "interface": {
+    "getResolvedLocation()": {
+      "params": {},
+      "returns": {
+        "type": "object",
+        "shape": {
+          "lat": "number — user latitude in decimal degrees",
+          "lon": "number — user longitude in decimal degrees",
+          "label": "string — human-readable location label (e.g. detected address or the text the user typed)",
+          "source": "string — one of 'auto' | 'manual', how the location was obtained"
+        }
+      }
+    }
+  },
+  "notes": "section-1 (Location acquisition) produces exactly one resolved location object once location is established by either the automatic Geolocation path or the manual-entry path. section-2 (store lookup) consumes only lat and lon to build the Overpass around-filter query; label and source are passed through for display by downstream sections. section-2 must not call any geolocation or geocoding logic itself."
+}

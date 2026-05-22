@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-05-22T00:00:00Z",
+  "dispatch_mode": "inline",
+  "based_on": "decisions/technical-discovery/sections-v1.json",
+  "nodes": [
+    { "id": "section-1", "name": "Location acquisition", "type": "feature", "depends_on": [], "wave": 1, "status": "verified" },
+    { "id": "section-2", "name": "Liquor-store data lookup", "type": "feature", "depends_on": ["section-1"], "wave": 2, "status": "verified" },
+    { "id": "section-3", "name": "Closest-store selection and presentation", "type": "feature", "depends_on": ["section-1", "section-2"], "wave": 3, "status": "verified" },
+    { "id": "section-4", "name": "App shell, flow, and launch", "type": "feature", "depends_on": ["section-1", "section-2", "section-3"], "wave": 4, "status": "verified" },
+    { "id": "integrator", "name": "Integration pseudo-node", "type": "pseudo", "depends_on": ["section-1", "section-2", "section-3", "section-4"], "wave": 5, "status": "verified" },
+    { "id": "section-5", "name": "Edge-case testing", "type": "verification", "depends_on": ["integrator"], "wave": 6, "status": "verified" }
+  ],
+  "execution_order": ["section-1", "section-2", "section-3", "section-4", "integrator", "section-5"],
+  "waves": [
+    { "wave": 1, "nodes": ["section-1"] },
+    { "wave": 2, "nodes": ["section-2"] },
+    { "wave": 3, "nodes": ["section-3"] },
+    { "wave": 4, "nodes": ["section-4"] },
+    { "wave": 5, "nodes": ["integrator"] },
+    { "wave": 6, "nodes": ["section-5"] }
+  ],
+  "notes": "Linear dependency chain — each feature section depends on all prior ones, so every wave is a single node. integrator pseudo-node depends_on all feature sections; section-5 depends_on integrator."
+}

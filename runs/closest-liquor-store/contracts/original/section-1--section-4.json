@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-4",
+  "interface": {
+    "acquireLocation(callbacks)": {
+      "params": {
+        "callbacks": {
+          "type": "object",
+          "shape": {
+            "onResolved": "function(location) — invoked with the resolved-location object { lat, lon, label, source } once a location is established",
+            "onStatus": "function(statusString) — invoked with progress/status text the shell can display (e.g. 'Detecting your location...', 'Location access denied — enter a location below')"
+          }
+        }
+      },
+      "returns": {
+        "type": "object",
+        "shape": {
+          "renderInto": "function(containerElement) — section-1 mounts its location UI (manual-entry control and status) into the supplied container"
+        }
+      }
+    }
+  },
+  "notes": "section-4 (app shell) owns the page and the overall flow. It gives section-1 a container to render its location UI into and receives the resolved location via the onResolved callback, then drives section-2. section-1 owns all geolocation/geocoding logic and its own UI; the shell only orchestrates. The shell must not assume location is resolved synchronously — it is delivered via callback."
+}

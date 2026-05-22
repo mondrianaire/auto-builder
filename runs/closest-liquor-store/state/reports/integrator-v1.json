@@ -1,0 +1,19 @@
+{
+  "role": "Integrator",
+  "instance_id": "integrator",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-22T00:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "What did you produce?",
+      "answer": "A single web app in one file — output/integration/index.html. To use it, the person just double-clicks that file and it opens in their browser; there is no server to start and nothing to install. When it opens, the app asks the browser for the user's location (and if that's denied or unavailable, there's a text box right there to type a city or address instead). It then looks up real liquor stores nearby from OpenStreetMap, works out which one is closest in a straight line, and shows a card with that store's name, address, and how far away it is, plus buttons that open directions to it in OpenStreetMap or Google Maps. All the app's own code and styling are baked into that one file, so the only thing it needs the internet for is the OpenStreetMap lookups themselves. If anything goes wrong — no internet, the lookup is slow, or there are no stores nearby — it shows a clear plain-English message instead of breaking or going blank.",
+      "kind": "always",
+      "importance": "high"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "ConvergenceVerifier"
+}

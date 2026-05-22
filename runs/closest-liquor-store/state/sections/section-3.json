@@ -1,0 +1,26 @@
+{
+  "section_id": "section-3",
+  "section_name": "Closest-store selection and presentation",
+  "status": "verified",
+  "owner": "coordinator (inline: Overseer + Builder)",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections/2",
+  "sub_goals": [
+    {
+      "sub_goal": "Build the selection + presentation module: haversine distance, pick the single closest store, render result card with name/address/distance and an external directions hand-off link; render empty/error states.",
+      "builder_id": "b3-presentation",
+      "status": "completed"
+    }
+  ],
+  "acceptance_verification": [
+    { "assertion": "S3.A1", "result": "pass", "evidence": "selectClosest computes haversineMeters for every store and keeps the minimum-distance record." },
+    { "assertion": "S3.A2", "result": "pass", "evidence": "renderResultCard appends cls-card-name, cls-card-address, and cls-card-distance (miles + km)." },
+    { "assertion": "S3.A3", "result": "pass", "evidence": "Two anchor elements with href to openstreetmap.org/directions and google.com/maps/dir prefilled with the store's lat,lon; target=_blank." },
+    { "assertion": "S3.A4", "result": "pass", "evidence": "renderMessageState renders a human-readable headline+detail box for status 'error' and for 'empty'/no-stores; container never left blank." },
+    { "assertion": "S3.A5", "result": "pass", "evidence": "Module contains only haversine maths and link generation — no routing/turn-by-turn engine." }
+  ],
+  "contract_verification": [
+    { "contract": "contracts/original/section-3--section-4.json", "result": "pass", "evidence": "renderClosestStore({userLocation,lookupResult,container}) returns {rendered:'result'|'empty'|'error'}; shell supplies inputs only." },
+    { "contract": "contracts/original/section-2--section-3.json", "result": "pass", "evidence": "Consumes the {status,stores,message} lookup result; renders empty/error when status!=ok or stores empty." },
+    { "contract": "contracts/original/section-1--section-3.json", "result": "pass", "evidence": "Uses userLocation.lat/lon as the distance reference and userLocation.label as display context." }
+  ]
+}

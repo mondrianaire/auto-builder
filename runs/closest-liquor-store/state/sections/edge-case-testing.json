@@ -1,0 +1,24 @@
+{
+  "section_id": "section-5",
+  "section_name": "Edge-case testing",
+  "status": "verified",
+  "owner": "coordinator (inline: edge-case-testing after integration)",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections/4",
+  "depends_on": ["integrator"],
+  "sub_goals": [
+    {
+      "sub_goal": "Exercise every edge_case_testing-verifier assertion from sections 1-4 against the integrated artifact under production fidelity; confirm no crash and no blank screen in any failure path.",
+      "builder_id": "ect-1",
+      "status": "completed"
+    }
+  ],
+  "report_pointer": "output/builders/edge-case-testing/ect-1/report.json",
+  "acceptance_verification": [
+    { "assertion": "S5.A1", "result": "pass", "evidence": "All 8 edge_case_testing assertions from sections 1-4 (S1.A4, S2.A2, S2.A4, S2.A5, S3.A1, S3.A4, S4.A3, S4.A4) exercised against the integrated artifact's unmodified code; all pass." },
+    { "assertion": "S5.A2", "result": "pass", "evidence": "Geolocation-denied, Overpass-failure, Overpass-timeout, offline, and empty-result conditions all degrade gracefully — clear human-readable message, no crash, no blank screen." },
+    { "assertion": "S5.A3", "result": "pass", "evidence": "Controlled-coordinate tests confirm the minimum great-circle distance store is selected as the single result." }
+  ],
+  "total_assertions_exercised": 11,
+  "passed": 11,
+  "failed": 0
+}

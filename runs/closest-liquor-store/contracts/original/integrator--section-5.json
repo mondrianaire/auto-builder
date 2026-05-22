@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "from_section": "integrator",
+  "to_section": "section-5",
+  "interface": {
+    "integratedArtifact()": {
+      "params": {},
+      "returns": {
+        "type": "object",
+        "shape": {
+          "entryPoint": "string — filesystem path to the single browser-openable entry HTML of the assembled app",
+          "runtimeDependencies": "array of strings — the external runtime dependencies the artifact loads in production (here: the public OpenStreetMap Overpass API endpoint and the OSM geocoding endpoint), which section-5 must NOT substitute, mock away, or stub when exercising edge cases"
+        }
+      }
+    }
+  },
+  "notes": "section-5 (edge-case testing) depends on the pseudo-node 'integrator' — it runs only after the integrator has assembled sections 1-4 into one artifact. section-5 opens entryPoint the way a real user does and exercises every edge_case_testing-verifier assertion under production fidelity: it may simulate environmental conditions (deny geolocation, force offline, induce timeouts, supply controlled coordinates) but must NOT replace the runtimeDependencies the artifact genuinely loads in production. section-5 reports pass/fail; it does not modify feature code."
+}

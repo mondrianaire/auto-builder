@@ -1,0 +1,31 @@
+{
+  "role": "Discovery",
+  "instance_id": "discovery-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "2026-05-22T00:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "What did you understand the user wants?",
+      "answer": "You want a simple app that figures out where you are and tells you which liquor store is closest to you. It should name a real store, show its address and how far away it is, and give you a way to get there.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What choices did you make on their behalf, and why?",
+      "answer": "For the store information, I assumed the app should use real, up-to-date store locations so the answer is genuinely correct wherever you are, rather than a fixed built-in list that would only work in one area. For finding where you are, I assumed the app should detect your location automatically, with a manual option to type it in if detection is blocked, so you always get an answer. For the result, I assumed showing the single closest store is enough, since you asked for 'the closest' rather than a list of options.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What did you explicitly NOT do?",
+      "answer": "I did not include accounts or logins, saved favorites or search history, built-in turn-by-turn navigation, filtering by price or ratings or store hours, or any ordering and delivery features. The app focuses on one job: pointing you to the nearest liquor store.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "TechnicalDiscovery"
+}

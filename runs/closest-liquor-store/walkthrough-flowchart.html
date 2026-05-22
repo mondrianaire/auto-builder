@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>closest-liquor-store · Walkthrough · v2.22</title>
+<style>
+:root {
+  --paper-light:#f5efe2; --paper-warm:#ede4ca; --paper-cream:#f7f1e3; --paper-deep:#ece4cb;
+  --accent-red:#c83a3a; --accent-orange:#d77a3e; --accent-yellow:#d4b04a; --accent-blue:#4a6a8a;
+  --ink-navy:#1a3a5e; --ink-body:#2a2a2a; --ink-dim:#6a6258; --ink-rule:#c8c0aa;
+  --type-display:"Georgia","Times New Roman",serif;
+  --type-data:ui-monospace,"Cascadia Mono","Consolas",monospace;
+  --type-ui:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",sans-serif;
+}
+html,body{margin:0;padding:0;height:100%;color:var(--ink-body);font-family:var(--type-ui);
+  background-color:var(--paper-light);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),radial-gradient(ellipse at center,var(--paper-cream) 0%,var(--paper-deep) 100%);
+  background-size:240px 240px,100% 100%;background-attachment:fixed,fixed;}
+body{display:flex;flex-direction:column;}
+.stripe-band{height:6px;display:flex;flex-shrink:0;}
+.stripe-band>span{flex:1;}
+.s-r{background:var(--accent-red);}.s-o{background:var(--accent-orange);}
+.s-y{background:var(--accent-yellow);}.s-b{background:var(--accent-blue);}
+#toolbar{height:56px;background:var(--paper-warm);border-bottom:1px solid var(--ink-rule);
+  display:flex;align-items:center;padding:0 20px;gap:16px;font-family:var(--type-data);
+  font-size:11px;color:var(--ink-dim);flex-shrink:0;text-transform:uppercase;letter-spacing:0.14em;}
+#toolbar .wordmark{font:italic 700 22px/1 var(--type-display);color:var(--ink-navy);text-transform:none;}
+#toolbar .doc-class{font-size:9px;font-weight:700;color:var(--ink-dim);letter-spacing:0.20em;
+  border:1px solid var(--ink-dim);padding:3px 8px;background:rgba(245,239,226,0.4);}
+#toolbar .meta-strip{display:flex;gap:14px;align-items:center;font-size:9px;}
+#toolbar .meta-strip .key{opacity:0.6;}
+#toolbar .meta-strip .val{color:var(--ink-navy);font-weight:700;}
+/* fixed-width so the decision label cycling doesn't reflow the toolbar buttons */
+#cur-decision{display:inline-block;min-width:172px;text-align:left;}
+#toolbar button{background:var(--paper-cream);border:1px solid var(--ink-navy);color:var(--ink-navy);
+  padding:6px 14px;font-size:10px;font-weight:700;font-family:var(--type-data);letter-spacing:0.20em;
+  text-transform:uppercase;cursor:pointer;border-radius:0;}
+#toolbar button:hover{background:var(--paper-light);}
+#toolbar button:disabled{opacity:0.35;cursor:not-allowed;}
+#toolbar .focus-toggle{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:0.18em;}
+#toolbar .focus-toggle input{accent-color:var(--accent-blue);margin:0;}
+#toolbar .speed{display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:0.18em;}
+#toolbar .speed input[type=range]{width:90px;height:12px;cursor:pointer;accent-color:var(--accent-blue);margin:0;}
+#toolbar .speed-readout{width:40px;text-align:right;color:var(--ink-navy);font-size:10px;letter-spacing:0;}
+#toolbar .progress{margin-left:auto;font-size:9px;letter-spacing:0.18em;min-width:110px;text-align:right;}
+#stage{flex:1;overflow:hidden;display:flex;}
+#canvas-wrap{width:100%;display:flex;align-items:stretch;}
+svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
+
+/* blocks + cells */
+.block{} /* positioned by JS transform */
+/* a cell's TITLE shows when the container activates (table-of-contents skeleton) */
+.cell{opacity:0;transition:opacity 600ms ease-out;}
+.cell.in{opacity:1;}
+/* a cell's BODY fills in when that specific decision is populated */
+.cell-body{opacity:0;transition:opacity 700ms ease-out;}
+.cell-body.in{opacity:1;}
+.cell-title{transition:opacity 400ms ease-out;}
+/* SELECTION — when a section is the active focus, a highlighter band sweeps
+   in behind its title (left-to-right) and a red accent bar marks the edge. */
+.title-hl{
+  fill:var(--accent-yellow);fill-opacity:0.22;
+  opacity:0;transform:scaleX(0.03);
+  transform-box:fill-box;transform-origin:left center;
+  transition:opacity 200ms ease-out, transform 480ms cubic-bezier(0.3,0,0.2,1);
+}
+.title-accent{
+  fill:var(--accent-red);
+  opacity:0;transform:scaleY(0.2);
+  transform-box:fill-box;transform-origin:center;
+  transition:opacity 260ms ease-out, transform 360ms cubic-bezier(0.2,0,0,1.15);
+}
+.cell.active .title-hl{opacity:1;transform:scaleX(1);}
+.cell.active .title-accent{opacity:1;transform:scaleY(1);}
+.cell.active .dsc-question{fill:var(--ink-navy);}
+.role-container .waiting-block{opacity:1;transition:opacity 500ms ease-out;}
+.role-container .waiting-block.gone{opacity:0;}
+
+/* container frame */
+.container-bg{fill:var(--paper-warm);}
+.container-border{fill:none;stroke:var(--ink-navy);stroke-width:1;}
+.cstripe-r{fill:var(--accent-red);}.cstripe-o{fill:var(--accent-orange);}
+.cstripe-y{fill:var(--accent-yellow);}.cstripe-b{fill:var(--accent-blue);}
+
+/* masthead */
+.masthead-kicker{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--accent-red);
+  letter-spacing:0.20em;text-transform:uppercase;}
+.masthead-title{font-family:var(--type-display);font-style:italic;font-weight:700;fill:var(--ink-navy);}
+.masthead-telos{font-family:var(--type-display);font-style:italic;font-size:15px;fill:var(--ink-body);}
+.masthead-rule{stroke:var(--ink-navy);stroke-width:1.5;}
+
+/* phase band */
+.phase-band-meta{font-family:var(--type-data);font-size:9px;fill:var(--ink-dim);letter-spacing:0.18em;text-transform:uppercase;}
+.phase-band-text{font-family:var(--type-display);font-size:16px;font-style:italic;font-weight:700;fill:var(--ink-navy);}
+.phase-band-line{stroke:var(--ink-rule);stroke-width:1;stroke-dasharray:3,3;}
+
+/* role await */
+.role-await{font-family:var(--type-data);font-size:10px;fill:var(--ink-dim);letter-spacing:0.06em;}
+.role-await-hint{font-family:var(--type-display);font-style:italic;font-size:11px;fill:var(--ink-dim);}
+
+/* D-UP-1 */
+.up-tag{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--accent-red);letter-spacing:0.20em;}
+.up-label{font-family:var(--type-display);font-style:italic;font-weight:700;font-size:34px;fill:var(--ink-navy);}
+.up-stripe-r{fill:var(--accent-red);}.up-stripe-o{fill:var(--accent-orange);}
+.up-stripe-y{fill:var(--accent-yellow);}.up-stripe-b{fill:var(--accent-blue);}
+.up-card{fill:var(--paper-warm);stroke:var(--ink-rule);stroke-width:1;}
+.up-prompt-text,.up-prompt-full{font-family:var(--type-display);font-style:italic;font-size:20px;fill:var(--ink-body);}
+
+/* D-ORC-1 */
+.orc-stamp-box{fill:rgba(245,239,226,0.5);stroke:var(--accent-blue);stroke-width:2;}
+.orc-stamp-id{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--accent-red);letter-spacing:0.16em;}
+.orc-stamp-role{font-family:var(--type-data);font-size:12px;font-weight:700;fill:var(--accent-blue);letter-spacing:0.20em;}
+.orc-desc{font-family:var(--type-display);font-style:italic;font-size:14px;fill:var(--ink-navy);}
+.orc-caption{font-family:var(--type-display);font-style:italic;font-size:13px;fill:var(--ink-dim);}
+
+/* decision cells */
+.dsc-stamp{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--accent-red);letter-spacing:0.20em;text-transform:uppercase;}
+.dsc-question{font-family:var(--type-display);font-size:24px;font-style:italic;font-weight:700;fill:var(--ink-navy);}
+.dsc-shortdesc{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
+/* subsection CONTENT uses the system-sans voice — distinct from the meta
+   areas (italic Georgia questions + monospace labels). Three voices, no overlap. */
+.dsc-answer{font-family:var(--type-ui);font-size:15px;fill:var(--ink-body);}
+.dsc-answer-big{font-family:var(--type-ui);font-size:30px;font-weight:800;fill:var(--ink-navy);letter-spacing:-0.01em;}
+.dsc-srcnote{font-family:var(--type-data);font-size:9px;font-weight:700;fill:#999;letter-spacing:0.16em;text-transform:uppercase;}
+.dsc2-key-label{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--accent-red);letter-spacing:0.18em;text-transform:uppercase;}
+.dsc2-bg-label{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.18em;text-transform:uppercase;}
+.tile-bg{fill:var(--paper-light);}
+.tile-border{fill:none;stroke:var(--ink-rule);stroke-width:1;}
+.tile-accent-red{fill:var(--accent-red);}.tile-accent-orange{fill:var(--accent-orange);}
+.tile-accent-yellow{fill:var(--accent-yellow);}.tile-accent-blue{fill:var(--accent-blue);}
+.tile-id{font-family:var(--type-data);font-size:11px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.14em;}
+.tile-text{font-family:var(--type-ui);font-size:13.5px;fill:var(--ink-body);}
+.tile-badge{font-family:var(--type-data);font-size:8px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
+.tile-badge-high{fill:var(--accent-red);}.tile-badge-med{fill:var(--accent-orange);}.tile-badge-low{fill:var(--ink-dim);}
+.bg-row-text{font-family:var(--type-ui);font-size:12px;fill:var(--ink-body);}
+.bg-row-id{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.14em;}
+.ip-question{font-family:var(--type-ui);font-size:15px;font-weight:700;fill:var(--ink-navy);}
+.ip-default-label{font-family:var(--type-data);font-size:9px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
+.ip-default{font-family:var(--type-ui);font-size:13px;font-weight:700;fill:var(--ink-navy);}
+.ip-alt-label{font-family:var(--type-data);font-size:9px;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
+.ip-alt{font-family:var(--type-ui);font-size:13px;fill:var(--ink-dim);}
+.ip-fork-dot{font-family:var(--type-data);font-size:14px;fill:var(--ink-rule);}
+.oos-cross{font-family:var(--type-data);font-size:13px;font-weight:700;fill:var(--accent-red);}
+.oos-text{font-family:var(--type-ui);font-size:13px;fill:var(--ink-dim);}
+/* rat-row resolution sweep — each ratified IP gets a left-to-right wipe
+   in its own accent colour once it has landed in D-TD-2. */
+.rat-hl{opacity:0;transform:scaleX(0.02);transform-box:fill-box;transform-origin:left center;
+  transition:opacity 180ms ease-out,transform 520ms cubic-bezier(0.3,0,0.2,1);}
+.rat-hl-red{fill:var(--accent-red);fill-opacity:0.20;}
+.rat-hl-orange{fill:var(--accent-orange);fill-opacity:0.20;}
+.rat-hl-yellow{fill:var(--accent-yellow);fill-opacity:0.24;}
+.rat-hl-blue{fill:var(--accent-blue);fill-opacity:0.20;}
+.rat-row.lit .rat-hl{opacity:1;transform:scaleX(1);}
+/* Editor checklist rows — green when a check clears, orange when flagged */
+.chk-bg{fill:var(--paper-light);}
+.chk-border{fill:none;stroke:var(--ink-rule);stroke-width:1;}
+.chk-bar-pass{fill:#3a7a5a;}
+.chk-bar-flag{fill:var(--accent-orange);}
+.chk-pass{fill:#3a7a5a;}
+.chk-flag{fill:var(--accent-orange);}
+.chk-glyph{font-family:var(--type-data);font-size:15px;font-weight:700;}
+.chk-id{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.12em;}
+.chk-label{font-family:var(--type-ui);font-size:14px;font-weight:700;fill:var(--ink-navy);}
+.chk-detail{font-family:var(--type-ui);font-size:11.5px;fill:var(--ink-dim);}
+/* Coordinator wave rows */
+.wave-num{font-family:var(--type-data);font-size:12px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.14em;}
+.wave-sections{font-family:var(--type-ui);font-size:14px;font-weight:700;fill:var(--ink-navy);}
+.wave-note{font-family:var(--type-ui);font-size:11.5px;fill:var(--ink-dim);}
+.slot-tbd-bg{fill:var(--paper-cream);fill-opacity:0.5;}
+.slot-tbd-border{stroke:var(--ink-rule);stroke-width:1;fill:none;stroke-dasharray:6,4;}
+.slot-tbd-q{font-family:var(--type-display);font-size:28px;font-style:italic;font-weight:700;fill:var(--ink-rule);}
+.slot-tbd-section{font-family:var(--type-data);font-size:9px;font-weight:700;fill:var(--accent-blue);letter-spacing:0.20em;text-transform:uppercase;}
+.slot-tbd-title{font-family:var(--type-display);font-size:13px;font-style:italic;fill:var(--ink-navy);}
+.slot-tbd-hint{font-family:var(--type-data);font-size:9px;fill:var(--ink-dim);letter-spacing:0.10em;text-transform:uppercase;}
+/* sections block — the "?" slot that materializes into N workstream cards
+   when D-TD-3 resolves. Two layers cross-fade; cards arrive one per token. */
+.sec-tbd{transition:opacity 400ms ease-out;}
+.sec-real{opacity:0;transition:opacity 600ms ease-out;}
+.sections-block.materialized .sec-tbd{opacity:0;}
+.sections-block.materialized .sec-real{opacity:1;}
+.sec-real-accent{fill:var(--accent-blue);}
+.sec-real-kicker{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.18em;text-transform:uppercase;}
+.sec-real-title{font-family:var(--type-display);font-size:24px;font-style:italic;font-weight:700;fill:var(--ink-navy);}
+.sec-card-bg{fill:var(--paper-light);}
+.sec-card-border{fill:none;stroke:var(--ink-rule);stroke-width:1;}
+.sec-card{opacity:0;}
+.sec-card.arrived{opacity:1;transition:opacity 350ms ease-out;}
+
+/* dispatch footer — at the source cell, foreshadows that data is bound elsewhere */
+.dispatch-label{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--accent-blue);letter-spacing:0.18em;text-transform:uppercase;}
+.dispatch-arrow{animation:dispatch-pulse 1.7s ease-in-out infinite;}
+.dispatch-dot{animation:dispatch-pulse 1.7s ease-in-out infinite;}
+@keyframes dispatch-pulse{0%,100%{transform:translateY(0);opacity:0.78;}50%{transform:translateY(3px);opacity:1;}}
+
+/* transit — connector paths showing inflection points pass D-DSC-3 -> D-TD-2 */
+.transit-path{fill:none;stroke-width:3.5;opacity:0.9;stroke-linecap:round;}
+.transit-red{stroke:var(--accent-red);}
+.transit-orange{stroke:var(--accent-orange);}
+.transit-yellow{stroke:var(--accent-yellow);}
+.transit-blue{stroke:var(--accent-blue);}
+.transit-dot{stroke:none;}
+.transit-dot-red{fill:var(--accent-red);}
+.transit-dot-orange{fill:var(--accent-orange);}
+.transit-dot-yellow{fill:var(--accent-yellow);}
+.transit-dot-blue{fill:var(--accent-blue);}
+/* labeled source + destination regions during the transit */
+.transit-srcbox{fill:rgba(200,58,58,0.05);stroke:var(--accent-red);stroke-width:2.5;stroke-dasharray:9 6;}
+.transit-dstbox{fill:rgba(26,58,94,0.04);stroke:var(--ink-navy);stroke-width:2.5;stroke-dasharray:9 6;}
+.transit-label{font-family:var(--type-data);font-size:24px;font-weight:700;letter-spacing:0.16em;}
+.transit-label-src{fill:var(--accent-red);}
+.transit-label-dst{fill:var(--ink-navy);}
+
+/* handoff envelope — a small OttoBLD dispatch slip carrying one task's output
+   to the next task: packs at the dispatch footer, travels, unpacks on arrival */
+.env-body{fill:var(--paper-warm);stroke:var(--ink-navy);stroke-width:1.4;}
+.env-stripe-r{fill:var(--accent-red);}.env-stripe-o{fill:var(--accent-orange);}
+.env-stripe-y{fill:var(--accent-yellow);}.env-stripe-b{fill:var(--accent-blue);}
+.env-flap{fill:var(--paper-deep);stroke:var(--ink-navy);stroke-width:1.4;stroke-linejoin:round;}
+.env-seal{fill:var(--accent-red);}
+.env-rule{stroke:var(--ink-rule);stroke-width:1;stroke-dasharray:3,2;}
+.env-from{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--accent-red);letter-spacing:0.13em;}
+.env-contents{font-family:var(--type-ui);font-size:13px;font-weight:700;fill:var(--ink-navy);}
+.env-token{stroke:var(--paper-light);stroke-width:1.5;}
+
+/* highlight */
+.placed-highlight{fill:none;stroke:var(--accent-red);stroke-width:3;stroke-dasharray:8 6;opacity:0;pointer-events:none;}
+.placed-highlight.flashing{animation:placed-flash 1800ms ease-out forwards;}
+@keyframes placed-flash{0%{opacity:0;}12%{opacity:1;}72%{opacity:1;}100%{opacity:0;}}
+</style>
+</head>
+<body>
+<div class="stripe-band">
+  <span class="s-r"></span><span class="s-o"></span><span class="s-y"></span><span class="s-b"></span>
+</div>
+<div id="toolbar">
+  <span class="wordmark">OttoBLD</span>
+  <span class="doc-class">WALKTHROUGH · v2.22 · 2026-05-22 10:25</span>
+  <span class="meta-strip">
+    <span><span class="key">SLUG · </span><span class="val">closest-liquor-store</span></span>
+    <span><span class="key">DECISION · </span><span class="val" id="cur-decision">D-UP-1</span></span>
+  </span>
+  <button id="step-btn">Step ▶</button>
+  <button id="reset-btn">Reset</button>
+  <label class="focus-toggle"><input id="focus-toggle" type="checkbox" checked/><span>auto-focus</span></label>
+  <span class="speed">
+    <label>speed</label>
+    <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"/>
+    <span class="speed-readout" id="speed-readout">1.0x</span>
+  </span>
+  <span class="progress" id="progress"></span>
+</div>
+<div id="stage">
+  <div id="canvas-wrap"><svg id="canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 2000"
+    preserveAspectRatio="xMidYMid meet" font-family="Arial, Helvetica, sans-serif">
+  <rect class="placed-highlight" id="placed-hi" x="0" y="0" width="10" height="10"/>
+  <g id="blk-up1" class="block">
+    <text class="up-tag" x="630" y="22" text-anchor="middle">D-UP-1 · USER</text>
+    <text class="up-label" x="630" y="78" text-anchor="middle">User prompt</text>
+    <!-- prompt card -->
+    <rect class="up-stripe-r" x="240" y="100" width="195" height="4"/>
+    <rect class="up-stripe-o" x="435" y="100" width="195" height="4"/>
+    <rect class="up-stripe-y" x="630" y="100" width="195" height="4"/>
+    <rect class="up-stripe-b" x="825" y="100" width="195" height="4"/>
+    <rect class="up-card" x="240" y="104" width="780" height="120"/>
+    <text class="up-prompt-text" x="290" y="160" data-typed="">
+      <tspan x="290" dy="0"></tspan>
+    </text>
+    <text class="up-prompt-full" x="290" y="160" visibility="hidden"><tspan x="290" dy="0">Build me an app that points me to the closest liquor</tspan><tspan x="290" dy="30">store</tspan></text>
+  </g>
+<g id="blk-orc1" class="block">
+    <g id="orc-stamp-g" transform="translate(630, 46)">
+      <rect class="orc-stamp-box" x="-150" y="-26" width="300" height="52" transform="rotate(-2)"/>
+      <text class="orc-stamp-id" x="0" y="-2" text-anchor="middle" transform="rotate(-2)">D-ORC-1</text>
+      <text class="orc-stamp-role" x="0" y="15" text-anchor="middle" transform="rotate(-2)">ORCHESTRATOR</text>
+    </g>
+    <text class="orc-desc" x="630" y="98" text-anchor="middle">Receives the prompt and starts the build by waking Discovery.</text>
+    <text class="orc-caption" id="orc-caption" x="630" y="124" text-anchor="middle"> </text>
+  </g>
+<g id="blk-band1" class="block">
+    <text class="phase-band-meta" x="40" y="14">PHASE 1</text>
+    <text class="phase-band-text" x="40" y="30">Discovery</text>
+    <line class="phase-band-line" x1="40" y1="40" x2="1220" y2="40"/>
+  </g>
+<g id="blk-discovery" class="block role-container">
+    <rect class="container-bg" id="discovery-bg" x="0" y="0" width="900" height="300"/>
+    <rect class="container-border" id="discovery-border" x="0" y="0" width="900" height="300"/>
+    
+    <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
+    <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
+    <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
+    <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
+    <text class="masthead-kicker" x="450" y="34" text-anchor="middle">INITIAL MODE</text>
+    <text class="masthead-title" x="450" y="78.19999999999999" text-anchor="middle" font-size="52">Discovery</text>
+    <text class="masthead-telos" x="450" y="106.19999999999999" text-anchor="middle">Reads the prompt and writes down what the build needs to assume.</text>
+    <line class="masthead-rule" x1="40" y1="126.19999999999999" x2="860" y2="126.19999999999999"/>
+    <g class="waiting-block" id="discovery-waiting">
+      <text class="role-await" x="450" y="178.2" text-anchor="middle">WAITING TO START</text>
+      <text class="role-await-hint" x="450" y="200.2" text-anchor="middle">Discovery’s decisions (D-DSC-1, D-DSC-2, …) will fill this box.</text>
+    </g>
+    <g class="container-content" id="discovery-content" data-masthead-h="138.2" transform="translate(0, 138.2)">
+      <g class="cell" data-cell="D-DSC-1">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-DSC-1</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">What does the user want?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">RESTATEMENT OF THE USER PROMPT</text>
+    <circle cx="425" cy="32" r="2" fill="#c83a3a"/>
+    <line x1="435" y1="32" x2="465" y2="32" stroke="#6a6258" stroke-width="0.8"/>
+    <circle cx="475" cy="32" r="2" fill="#c83a3a"/>
+    <text class="dsc-answer" x="450" y="62" text-anchor="middle"><tspan x="450" dy="0">The user wants a small application that, given their</tspan><tspan x="450" dy="24">current location, identifies and directs them to the</tspan><tspan x="450" dy="24">closest liquor store.</tspan></text>
+    <text class="dsc-srcnote" x="450" y="152" text-anchor="middle">FROM LEDGER-V1.JSON · RESTATEMENT</text></g>
+  </g><g class="cell" data-cell="D-DSC-2">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-DSC-2</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">What does the build need to assume?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">LOGGED 6 ASSUMPTIONS · RATED BY CONFIDENCE</text><text class="dsc2-key-label" x="30" y="44">KEY DECISIONS — high impact on at least one axis</text><line x1="30" y1="54" x2="870" y2="54" stroke="#c83a3a" stroke-width="1.5"/><g>
+      <rect class="tile-accent-red" x="30" y="66" width="4" height="60"/>
+      <rect class="tile-bg" x="34" y="66" width="404" height="60"/>
+      <rect class="tile-border" x="34" y="66" width="404" height="60"/>
+      <text class="tile-id" x="46" y="85">A1</text>
+      <text class="tile-badge tile-badge-high" x="430" y="85" text-anchor="end">PROMPT • HIGH  TECH • HIGH</text>
+      <text class="tile-text" x="46" y="111" font-size="15">The artifact is a single-user app with no accounts</text>
+    </g><g>
+      <rect class="tile-accent-red" x="462" y="66" width="4" height="60"/>
+      <rect class="tile-bg" x="466" y="66" width="404" height="60"/>
+      <rect class="tile-border" x="466" y="66" width="404" height="60"/>
+      <text class="tile-id" x="478" y="85">A2</text>
+      <text class="tile-badge tile-badge-high" x="862" y="85" text-anchor="end">PROMPT • HIGH  TECH • HIGH</text>
+      <text class="tile-text" x="478" y="111" font-size="15">'Closest' means closest by geographic proximity to…</text>
+    </g><g>
+      <rect class="tile-accent-red" x="30" y="138" width="4" height="60"/>
+      <rect class="tile-bg" x="34" y="138" width="404" height="60"/>
+      <rect class="tile-border" x="34" y="138" width="404" height="60"/>
+      <text class="tile-id" x="46" y="157">A4</text>
+      <text class="tile-badge tile-badge-high" x="430" y="157" text-anchor="end">PROMPT • HIGH  TECH • HIGH</text>
+      <text class="tile-text" x="46" y="183" font-size="15">'Liquor store' means a retail business that sells…</text>
+    </g><text class="dsc2-bg-label" x="30" y="234">BACKGROUND ASSUMPTIONS — lower impact</text><line x1="30" y1="244" x2="870" y2="244" stroke="#c8c0aa" stroke-width="1" stroke-dasharray="3,3"/><g>
+      <rect class="tile-accent-yellow" x="30" y="246" width="3" height="26"/>
+      <text class="bg-row-id" x="48" y="264">A3</text>
+      <text class="bg-row-text" x="92" y="264">The app must determine the user's current location at…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="264" text-anchor="end">PROMPT • MED  TECH • MED</text>
+    </g><g>
+      <rect class="tile-accent-yellow" x="30" y="278" width="3" height="26"/>
+      <text class="bg-row-id" x="48" y="296">A5</text>
+      <text class="bg-row-text" x="92" y="296">'Points me to' means the app shows the user where the…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="296" text-anchor="end">PROMPT • MED  TECH • MED</text>
+    </g><g>
+      <rect class="tile-accent-yellow" x="30" y="310" width="3" height="26"/>
+      <text class="bg-row-id" x="48" y="328">A6</text>
+      <text class="bg-row-text" x="92" y="328">The app runs on the user's machine/browser as a…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="328" text-anchor="end">PROMPT • MED  TECH • MED</text>
+    </g><text class="dsc-srcnote" x="450" y="366" text-anchor="middle">6 ASSUMPTIONS · DERIVED FROM LEDGER-V1.JSON</text></g>
+  </g><g class="cell" data-cell="D-DSC-3">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-DSC-3</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">Where could this go wrong?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">SURFACED 3 INFLECTION POINTS · OPEN QUESTIONS FOR TD</text><g data-ip="IP1">
+      <rect class="tile-accent-red" x="30" y="30" width="5" height="68"/>
+      <rect class="tile-bg" x="34" y="30" width="836" height="68"/>
+      <rect class="tile-border" x="34" y="30" width="836" height="68"/>
+      <text class="tile-id" x="48" y="48">IP1</text>
+      <text class="tile-badge tile-badge-high" x="856" y="48" text-anchor="end">IMPORTANCE • HIGH</text>
+      <text class="ip-question" x="48" y="72">Where the liquor-store location data comes from</text>
+      <text class="ip-default-label" x="48" y="90">DEFAULT</text>
+      <text class="ip-default" x="118" y="90">Use a live external source of…</text>
+      <text class="ip-fork-dot" x="340" y="90">·</text>
+      <text class="ip-alt-label" x="360" y="90">ALT</text>
+      <text class="ip-alt" x="410" y="90">Use a bundled/static…</text>
+    </g><g data-ip="IP2">
+      <rect class="tile-accent-orange" x="30" y="112" width="5" height="68"/>
+      <rect class="tile-bg" x="34" y="112" width="836" height="68"/>
+      <rect class="tile-border" x="34" y="112" width="836" height="68"/>
+      <text class="tile-id" x="48" y="130">IP2</text>
+      <text class="tile-badge tile-badge-high" x="856" y="130" text-anchor="end">IMPORTANCE • HIGH</text>
+      <text class="ip-question" x="48" y="154">How the user's current location is established</text>
+      <text class="ip-default-label" x="48" y="172">DEFAULT</text>
+      <text class="ip-default" x="118" y="172">Automatically detect the…</text>
+      <text class="ip-fork-dot" x="340" y="172">·</text>
+      <text class="ip-alt-label" x="360" y="172">ALT</text>
+      <text class="ip-alt" x="410" y="172">Have the user enter or pick…</text>
+    </g><g data-ip="IP3">
+      <rect class="tile-accent-yellow" x="30" y="194" width="3" height="68"/>
+      <rect class="tile-bg" x="34" y="194" width="836" height="68"/>
+      <rect class="tile-border" x="34" y="194" width="836" height="68"/>
+      <text class="tile-id" x="48" y="212">IP3</text>
+      <text class="tile-badge tile-badge-low" x="856" y="212" text-anchor="end">IMPORTANCE • MEDIUM</text>
+      <text class="ip-question" x="48" y="236">How the result is presented to the user</text>
+      <text class="ip-default-label" x="48" y="254">DEFAULT</text>
+      <text class="ip-default" x="118" y="254">Show the single closest store…</text>
+      <text class="ip-fork-dot" x="340" y="254">·</text>
+      <text class="ip-alt-label" x="360" y="254">ALT</text>
+      <text class="ip-alt" x="410" y="254">Show a short ranked list of…</text>
+    </g><line x1="220" y1="294" x2="680" y2="294" stroke="#c8c0aa" stroke-width="1" stroke-dasharray="3,3"/><circle class="dispatch-dot" cx="424" cy="318" r="6" fill="var(--accent-red)"/><circle class="dispatch-dot" cx="450" cy="318" r="6" fill="var(--accent-orange)"/><circle class="dispatch-dot" cx="476" cy="318" r="6" fill="var(--accent-yellow)"/><path class="dispatch-arrow" d="M 450 332 L 450 350" stroke="var(--accent-blue)" stroke-width="2.5" fill="none"/><path class="dispatch-arrow" d="M 443 344 L 450 353 L 457 344" stroke="var(--accent-blue)" stroke-width="2.5" fill="none"/><text class="dispatch-label" x="450" y="374" text-anchor="middle">SENT TO D-TD-2 FOR RESOLUTION</text><text class="dsc-srcnote" x="450" y="394" text-anchor="middle">3 FORKS · EACH RESOLVED AT D-TD-2</text></g>
+  </g><g class="cell" data-cell="D-DSC-4">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-DSC-4</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">What is explicitly out of scope?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">MARKED 7 ITEMS NOT IN THIS BUILD</text><text class="oos-cross" x="60" y="44">×</text><text class="oos-text" x="82" y="44">User accounts</text><text class="oos-cross" x="60" y="76">×</text><text class="oos-text" x="82" y="76">Trip history</text><text class="oos-cross" x="60" y="108">×</text><text class="oos-text" x="82" y="108">Live turn-by-turn navigation…</text><text class="oos-cross" x="60" y="140">×</text><text class="oos-text" x="82" y="140">Filtering or ranking by price</text><text class="oos-cross" x="480" y="44">×</text><text class="oos-text" x="502" y="44">In-app purchasing</text><text class="oos-cross" x="480" y="76">×</text><text class="oos-text" x="502" y="76">Multi-user or social/sharing…</text><text class="oos-cross" x="480" y="108">×</text><text class="oos-text" x="502" y="108">Native mobile app packaging</text><line x1="450" y1="30" x2="450" y2="162" stroke="#c8c0aa" stroke-width="1" stroke-dasharray="2,3"/><text class="dsc-srcnote" x="450" y="190" text-anchor="middle">DISCOVERY COMPLETE · HANDOFF TO TECHNICAL DISCOVERY</text></g>
+  </g>
+    </g>
+  </g>
+<g id="blk-band2" class="block">
+    <text class="phase-band-meta" x="40" y="14">PHASE 2</text>
+    <text class="phase-band-text" x="40" y="30">Planning</text>
+    <line class="phase-band-line" x1="40" y1="40" x2="1220" y2="40"/>
+  </g>
+<g id="blk-editor" class="block">
+    <rect class="container-bg" x="0" y="0" width="900" height="176.3"/>
+    <rect class="container-border" x="0" y="0" width="900" height="176.3"/>
+    
+    <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
+    <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
+    <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
+    <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
+    <text class="masthead-kicker" x="450" y="34" text-anchor="middle">GUARANTEED · AFTER TECHNICAL DISCOVERY</text>
+    <text class="masthead-title" x="450" y="66.3" text-anchor="middle" font-size="38">Editor</text>
+    <text class="masthead-telos" x="450" y="94.3" text-anchor="middle">Audits TD’s plan against Discovery’s intent before any code is written.</text>
+    <line class="masthead-rule" x1="40" y1="114.3" x2="860" y2="114.3"/>
+    <text class="role-await" x="450" y="154.3" text-anchor="middle">WAITING TO START</text>
+  </g>
+<g id="blk-band3" class="block">
+    <text class="phase-band-meta" x="40" y="14">PHASE 3</text>
+    <text class="phase-band-text" x="40" y="30">Build</text>
+    <line class="phase-band-line" x1="40" y1="40" x2="1220" y2="40"/>
+  </g>
+<g id="blk-coordinator" class="block">
+    <rect class="container-bg" x="0" y="0" width="900" height="176.3"/>
+    <rect class="container-border" x="0" y="0" width="900" height="176.3"/>
+    
+    <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
+    <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
+    <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
+    <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
+    <text class="masthead-kicker" x="450" y="34" text-anchor="middle">GUARANTEED · AFTER EDITOR</text>
+    <text class="masthead-title" x="450" y="66.3" text-anchor="middle" font-size="38">Coordinator</text>
+    <text class="masthead-telos" x="450" y="94.3" text-anchor="middle">Sequences the section workstreams and dispatches builders.</text>
+    <line class="masthead-rule" x1="40" y1="114.3" x2="860" y2="114.3"/>
+    <text class="role-await" x="450" y="154.3" text-anchor="middle">WAITING TO START</text>
+  </g>
+<g id="blk-sections" class="block sections-block">
+    <g class="sec-layer sec-tbd">
+    <rect class="slot-tbd-bg" x="0" y="0" width="900" height="110"/>
+    <rect class="slot-tbd-border" x="0" y="0" width="900" height="110"/>
+    <text class="slot-tbd-q" x="44" y="66" text-anchor="middle">?</text>
+    <text class="slot-tbd-section" x="84" y="40">SECTIONS — COUNT NOT YET KNOWN</text>
+    <text class="slot-tbd-title" x="84" y="64">TD decides how many sections at D-TD-3. Each gets its own builder.</text>
+    <text class="slot-tbd-hint" x="84" y="86">Materializes when D-TD-3 resolves.</text>
+  </g>
+    <g class="sec-layer sec-real">
+    <rect class="container-bg" x="0" y="0" width="900" height="84"/>
+    <rect class="container-border" x="0" y="0" width="900" height="84"/>
+    <rect class="sec-real-accent" x="0" y="0" width="6" height="84"/>
+    <text class="sec-real-kicker" x="32" y="30">MATERIALIZED · PHASE 3 BUILD</text>
+    <text class="sec-real-title" x="32" y="56">0 Parallel Workstreams</text>
+    <line x1="32" y1="64" x2="868" y2="64" stroke="#c8c0aa" stroke-width="1"/>
+    
+  </g>
+  </g>
+<g id="blk-band4" class="block">
+    <text class="phase-band-meta" x="40" y="14">PHASE 4</text>
+    <text class="phase-band-text" x="40" y="30">Verification</text>
+    <line class="phase-band-line" x1="40" y1="40" x2="1220" y2="40"/>
+  </g>
+<g id="blk-integrator" class="block">
+    <rect class="container-bg" x="0" y="0" width="900" height="176.3"/>
+    <rect class="container-border" x="0" y="0" width="900" height="176.3"/>
+    
+    <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
+    <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
+    <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
+    <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
+    <text class="masthead-kicker" x="450" y="34" text-anchor="middle">GUARANTEED · AFTER SECTIONS</text>
+    <text class="masthead-title" x="450" y="66.3" text-anchor="middle" font-size="38">Integrator</text>
+    <text class="masthead-telos" x="450" y="94.3" text-anchor="middle">Assembles every section’s output into a single artifact.</text>
+    <line class="masthead-rule" x1="40" y1="114.3" x2="860" y2="114.3"/>
+    <text class="role-await" x="450" y="154.3" text-anchor="middle">WAITING TO START</text>
+  </g>
+<g id="blk-critic" class="block">
+    <rect class="container-bg" x="0" y="0" width="900" height="176.3"/>
+    <rect class="container-border" x="0" y="0" width="900" height="176.3"/>
+    
+    <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
+    <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
+    <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
+    <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
+    <text class="masthead-kicker" x="450" y="34" text-anchor="middle">GUARANTEED · AFTER INTEGRATION</text>
+    <text class="masthead-title" x="450" y="66.3" text-anchor="middle" font-size="38">Critic</text>
+    <text class="masthead-telos" x="450" y="94.3" text-anchor="middle">Audits the assembled artifact for structural issues.</text>
+    <line class="masthead-rule" x1="40" y1="114.3" x2="860" y2="114.3"/>
+    <text class="role-await" x="450" y="154.3" text-anchor="middle">WAITING TO START</text>
+  </g>
+<g id="blk-cv" class="block">
+    <rect class="container-bg" x="0" y="0" width="900" height="176.3"/>
+    <rect class="container-border" x="0" y="0" width="900" height="176.3"/>
+    
+    <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
+    <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
+    <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
+    <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
+    <text class="masthead-kicker" x="450" y="34" text-anchor="middle">GUARANTEED · LAST</text>
+    <text class="masthead-title" x="450" y="66.3" text-anchor="middle" font-size="38">Convergence Verifier</text>
+    <text class="masthead-telos" x="450" y="94.3" text-anchor="middle">Exercises the artifact the way a real user would.</text>
+    <line class="masthead-rule" x1="40" y1="114.3" x2="860" y2="114.3"/>
+    <text class="role-await" x="450" y="154.3" text-anchor="middle">WAITING TO START</text>
+  </g>
+<g id="blk-helpers" class="block">
+    <rect class="slot-tbd-bg" x="0" y="0" width="900" height="110"/>
+    <rect class="slot-tbd-border" x="0" y="0" width="900" height="110"/>
+    <text class="slot-tbd-q" x="44" y="66" text-anchor="middle">?</text>
+    <text class="slot-tbd-section" x="84" y="40">OPTIONAL HELPERS — ONLY IF NEEDED</text>
+    <text class="slot-tbd-title" x="84" y="64">Researchers run if TD has a question. Arbiter runs if something escalates.</text>
+    <text class="slot-tbd-hint" x="84" y="86">Materializes when its trigger event resolves.</text>
+  </g>
+  <!-- transit layer — connector paths drawn at SVG-root coords (no parent transform) -->
+  <g id="transit-layer"></g>
+  <!-- envelope layer — handoff dispatch pouches, drawn above everything -->
+  <g id="envelope-layer"></g>
+</svg></div>
+</div>
+<script>
+(function(){
+  const PROMPT_TEXT = "Build me an app that points me to the closest liquor store";
+  const DSC_IDS = ["D-DSC-1","D-DSC-2","D-DSC-3","D-DSC-4"];
+  const TD_IDS = [];
+  const ED_IDS = [];
+  const CO_IDS = [];
+  const IN_IDS = [];
+  const CR_IDS = [];
+  const CV_IDS = [];
+  const CELL_RATIFIES = {};
+  const CELL_MATERIALIZES = {};
+  const SEC_COUNT = 0;
+  const SEC_FULL_H = 84;  // materialized sections-block height
+  const BASE_TYPE_MS = 17;
+  const TITLE_H = 84;
+  let speedMul = 1.0;
+  function typeMs(){ return Math.max(2, Math.round(BASE_TYPE_MS / speedMul)); }
+
+  const canvas = document.getElementById('canvas');
+  const stepBtn = document.getElementById('step-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const progress = document.getElementById('progress');
+  const speedSlider = document.getElementById('speed-slider');
+  const speedReadout = document.getElementById('speed-readout');
+  const curDecision = document.getElementById('cur-decision');
+  const focusToggle = document.getElementById('focus-toggle');
+  const placedHi = document.getElementById('placed-hi');
+
+  // ---- BLOCK MODEL ----
+  // Ordered list of blocks. Each block is an SVG <g id="blk-*">.
+  // visible=false blocks are skipped by relayout (height 0, hidden).
+  const BLOCK_ORDER = ['up1','orc1','band1','discovery','band2']
+    .concat([])
+    .concat(['editor','band3','coordinator','sections','band4','integrator','critic','cv','helpers']);
+  const GAP = 26;
+  const blocks = {};
+  BLOCK_ORDER.forEach(id => {
+    const g = document.getElementById('blk-' + id);
+    blocks[id] = { id, g, visible: false };
+  });
+  // sections block resolves from a "?" slot to N workstream cards at D-TD-3.
+  const sectionsState = { materialized: false };
+
+  // ---- LAYOUT ENGINE ----
+  // relayout() stacks visible blocks top-to-bottom. Each block's height is
+  // MEASURED from its actual rendered content via getBBox(). No magic numbers.
+  function blockHeight(id){
+    const b = blocks[id];
+    if (!b || !b.visible) return 0;
+    // Role containers: height = the sized bg rect (content-driven), NOT the
+    // group getBBox — getBBox would count opacity:0 unrevealed cells.
+    if (id === 'discovery' || id === 'td' || id === 'editor' || id === 'coordinator'
+        || id === 'integrator' || id === 'critic' || id === 'cv') return sizeContainer(id);
+    // Sections block: two stacked layers — height is state-driven, not getBBox
+    // (getBBox would count the opacity:0 materialized layer before it resolves).
+    if (id === 'sections') return sectionsState.materialized ? SEC_FULL_H : 110;
+    try {
+      const bb = b.g.getBBox();
+      return bb.height + bb.y;
+    } catch(e){ return 0; }
+  }
+  // Stack cells whose TITLE is shown (.cell.in). A cell with its body filled
+  // (.cell-body.in) takes title+body height; otherwise just the title.
+  // Records cellLayout[cellId] = {y,h} (content-group-local) for frameCell.
+  const CELL_GAP = 30;
+  const cellLayout = {};
+  function relayoutCells(id){
+    const content = document.getElementById(id + '-content');
+    if (!content) return 0;
+    let y = 0;
+    content.querySelectorAll('.cell').forEach(cell => {
+      if (!cell.classList.contains('in')) return;  // title not shown yet
+      const cid = cell.getAttribute('data-cell');
+      const body = cell.querySelector('.cell-body');
+      let h = TITLE_H + 12;  // title-only height
+      if (body && body.classList.contains('in')) {
+        try {
+          const bb = body.getBBox();
+          h = TITLE_H + bb.y + bb.height + 20;
+        } catch(e){}
+      }
+      cell.setAttribute('transform', 'translate(0,' + y + ')');
+      cellLayout[cid] = { y: y, h: h };
+      y += h + CELL_GAP;
+    });
+    return y;
+  }
+  // Size a container's bg rect to enclose masthead + revealed, stacked cells.
+  function sizeContainer(id){
+    const content = document.getElementById(id + '-content');
+    const bg = document.getElementById(id + '-bg');
+    const border = document.getElementById(id + '-border');
+    if (!content || !bg) return 0;
+    const mh = parseFloat(content.getAttribute('data-masthead-h')) || 180;
+    const stacked = relayoutCells(id);
+    const h = mh + (stacked > 0 ? stacked + 24 : 56);
+    bg.setAttribute('height', h);
+    if (border) border.setAttribute('height', h);
+    return h;
+  }
+  function relayout(){
+    let y = 0;
+    BLOCK_ORDER.forEach(id => {
+      const b = blocks[id];
+      if (!b || !b.g) return;
+      if (!b.visible){ b.g.setAttribute('visibility','hidden'); return; }
+      b.g.setAttribute('visibility','visible');
+      b.g.setAttribute('transform','translate(0,' + y + ')');
+      b.y = y;
+      const h = blockHeight(id);
+      b.h = h;
+      y += h + GAP;
+    });
+    totalHeight = y;
+  }
+  let totalHeight = 2000;
+
+  // ---- VIEW ENGINE ----
+  // frameBlock(id) measures a block's real position+size and animates the
+  // viewBox to frame it. Pure read of the layout — never writes structure.
+  let vbAnim = null;
+  function animateViewBox(target, durationMs){
+    if (focusToggle && !focusToggle.checked){ canvas.setAttribute('viewBox', target.join(' ')); return; }
+    if (vbAnim) cancelAnimationFrame(vbAnim);
+    const cur = (canvas.getAttribute('viewBox')||'0 0 1260 2000').split(/\s+/).map(parseFloat);
+    const dur = Math.max(60, durationMs || Math.round(900 / speedMul));
+    const start = performance.now();
+    function tick(now){
+      const t = Math.min(1, (now-start)/dur);
+      const e = 1 - Math.pow(1-t, 3);
+      const v = cur.map((c,i) => c + (target[i]-c)*e);
+      canvas.setAttribute('viewBox', v.join(' '));
+      if (t < 1) vbAnim = requestAnimationFrame(tick); else vbAnim = null;
+    }
+    vbAnim = requestAnimationFrame(tick);
+  }
+  function frameBlock(id, pad){
+    const b = blocks[id];
+    if (!b || !b.visible) return;
+    pad = pad == null ? 60 : pad;
+    const y = b.y || 0;
+    const h = b.h || blockHeight(id);
+    // Block content spans roughly x=0..1260 (full) or centered 900-wide.
+    // Frame the full width so containers + bands are all visible.
+    animateViewBox([ -pad, y - pad, 1260 + pad*2, h + pad*2 ]);
+  }
+  function frameWide(){
+    // Frame everything currently visible.
+    animateViewBox([ -40, -40, 1340, totalHeight + 40 ]);
+  }
+  function frameRange(idFrom, idTo, pad){
+    pad = pad == null ? 50 : pad;
+    const a = blocks[idFrom], b = blocks[idTo];
+    if (!a || !b) return;
+    const top = a.y || 0;
+    const bot = (b.y||0) + (b.h||0);
+    animateViewBox([ -pad, top - pad, 1260 + pad*2, (bot-top) + pad*2 ]);
+  }
+  // cellAbsRect — a cell's {y,h} in viewBox coords, from the layout engine
+  // (the trustworthy source — same data frameCell + relayout use).
+  function cellAbsRect(containerId, cellId){
+    const b = blocks[containerId];
+    const content = document.getElementById(containerId + '-content');
+    const cl = cellLayout[cellId];
+    if (!b || !content || !cl) return null;
+    const mh = parseFloat(content.getAttribute('data-masthead-h')) || 180;
+    return { y: (b.y || 0) + mh + cl.y, h: cl.h };
+  }
+  // Frame a single cell inside a container — used while a decision fills in.
+  function frameCell(containerId, cellId, pad){
+    pad = pad == null ? 46 : pad;
+    const r = cellAbsRect(containerId, cellId);
+    if (!r) return;
+    animateViewBox([ -pad, r.y - pad, 1260 + pad*2, r.h + pad*2 ]);
+  }
+
+  function flashHighlight(id){
+    const b = blocks[id];
+    if (!b || !b.g) return;
+    try {
+      const y = b.y || 0;
+      let x, w, h;
+      if (id === 'discovery' || id === 'td'){
+        // Use the sized bg rect — getBBox of the group would count the
+        // opacity:0 unrevealed cells and balloon the box far past the container.
+        const bg = document.getElementById(id + '-bg');
+        x = parseFloat(bg.getAttribute('x')) || 0;
+        w = parseFloat(bg.getAttribute('width')) || 900;
+        h = parseFloat(bg.getAttribute('height')) || 200;
+        placedHi.setAttribute('x', x - 8);
+        placedHi.setAttribute('y', y - 8);
+        placedHi.setAttribute('width', w + 16);
+        placedHi.setAttribute('height', h + 16);
+      } else {
+        const bb = b.g.getBBox();
+        placedHi.setAttribute('x', bb.x - 8);
+        placedHi.setAttribute('y', y + bb.y - 8);
+        placedHi.setAttribute('width', bb.width + 16);
+        placedHi.setAttribute('height', bb.height + 16);
+      }
+      placedHi.classList.remove('flashing');
+      void placedHi.getBBox();
+      placedHi.classList.add('flashing');
+    } catch(e){}
+  }
+
+  // ---- TRANSIT — visualizes data passing between cells ----
+  function ipAccent(id){
+    const m = String(id).match(/(\d+)/);
+    const n = m ? parseInt(m[1],10) : 1;
+    return ['red','orange','yellow','blue'][(n-1)%4];
+  }
+  // absPos — an element's bbox in viewBox coords, computed from the LAYOUT
+  // ENGINE (block y + masthead + cell y + cell-body offset), the SAME data
+  // the camera (cellAbsRect) uses. This keeps the transit animation locked to
+  // the container positions. Falls back to getCTM only for elements outside
+  // the cell structure.
+  function absPos(el){
+    if (!el) return null;
+    let bb; try { bb = el.getBBox(); } catch(e){ return null; }
+    // sections block — a plain block; its children sit at block.y + local y.
+    const secBlk = el.closest('.sections-block');
+    if (secBlk){
+      const b = blocks['sections'];
+      if (b) return { x: bb.x, y: bb.y + (b.y||0), w: bb.width, h: bb.height };
+    }
+    const cellG = el.closest('[data-cell]');
+    const rc = el.closest('.role-container');
+    if (cellG && rc){
+      const containerId = rc.id.replace('blk-','');
+      const cellId = cellG.getAttribute('data-cell');
+      const b = blocks[containerId];
+      const content = document.getElementById(containerId + '-content');
+      const cl = cellLayout[cellId];
+      if (b && content && cl){
+        const mh = parseFloat(content.getAttribute('data-masthead-h')) || 180;
+        const inBody = !!el.closest('.cell-body');
+        const offY = (b.y||0) + mh + cl.y + (inBody ? TITLE_H : 0);
+        return { x: bb.x, y: bb.y + offY, w: bb.width, h: bb.height };
+      }
+    }
+    // fallback — getCTM, for elements not inside the cell structure
+    const m = el.getCTM();
+    if (!m) return null;
+    const p = canvas.createSVGPoint();
+    p.x = bb.x; p.y = bb.y;
+    const a = p.matrixTransform(m);
+    p.x = bb.x+bb.width; p.y = bb.y+bb.height;
+    const c = p.matrixTransform(m);
+    return { x:Math.min(a.x,c.x), y:Math.min(a.y,c.y), w:Math.abs(c.x-a.x), h:Math.abs(c.y-a.y) };
+  }
+  // runTransit — shows ratified IPs passing from their source cell to the
+  // destination cell. BOTH camera moves use cellAbsRect (the reliable
+  // layout-engine frame) — never the getCTM union, which mis-resolves on
+  // hidden bodies. Connector-path endpoints still use absPos (sub-cell precision).
+  function runTransit(ipIds, containerId, cellId, onComplete){
+    const layer = document.getElementById('transit-layer');
+    if (!layer){ onComplete(); return; }
+    while (layer.firstChild) layer.removeChild(layer.firstChild);
+    const NS = 'http://www.w3.org/2000/svg';
+    function mkRect(x,y,w,h,cls){
+      const r = document.createElementNS(NS,'rect');
+      r.setAttribute('x',x); r.setAttribute('y',y);
+      r.setAttribute('width',w); r.setAttribute('height',h);
+      r.setAttribute('class',cls); layer.appendChild(r); return r;
+    }
+    function mkLabel(x,y,txt,cls){
+      const t = document.createElementNS(NS,'text');
+      t.setAttribute('x',x); t.setAttribute('y',y);
+      t.setAttribute('class','transit-label '+cls);
+      t.textContent = txt; layer.appendChild(t); return t;
+    }
+    const pad = 18;
+
+    // measure the SOURCE tiles (already revealed + stable; revealing the
+    // dest later won't move them — the dest is below the source)
+    const srcItems = [];
+    let srcCellId = '', srcContainerId = 'discovery';
+    ipIds.forEach(ipid => {
+      const src = canvas.querySelector('[data-ip="' + ipid + '"]');
+      if (src){
+        const s = absPos(src);
+        if (s){
+          srcItems.push({ ipid:ipid, s:s, accent:ipAccent(ipid) });
+          const c = src.closest('[data-cell]'); if (c) srcCellId = c.getAttribute('data-cell');
+          const rc = src.closest('.role-container'); if (rc) srcContainerId = rc.id.replace('blk-','');
+        }
+      }
+    });
+    if (!srcItems.length){ onComplete(); return; }
+    let sT=Infinity,sB=-Infinity,sL=Infinity,sR=-Infinity;
+    srcItems.forEach(l => {
+      sT=Math.min(sT,l.s.y); sB=Math.max(sB,l.s.y+l.s.h);
+      sL=Math.min(sL,l.s.x); sR=Math.max(sR,l.s.x+l.s.w);
+    });
+
+    // STEP 1 — frame the SOURCE cell via cellAbsRect (reliable). Dwell.
+    const srcRect = cellAbsRect(srcContainerId, srcCellId);
+    if (srcRect) animateViewBox([ -50, srcRect.y - 60, 1360, srcRect.h + 120 ], Math.round(650/speedMul));
+    mkRect(sL-pad, sT-pad, (sR-sL)+pad*2, (sB-sT)+pad*2, 'transit-srcbox');
+    mkLabel(sL-pad, sT-pad-16, 'DATA FROM ' + srcCellId, 'transit-label-src');
+
+    // STEP 2 — populate the destination, ZOOM OUT to show the whole data flow
+    // (source -> connector paths + tokens -> destination), then settle on the
+    // destination. Both camera frames use cellAbsRect (reliable).
+    setTimeout(() => {
+      revealCellBody(cellId);   // dest now populated
+      relayout();               // cellLayout[cellId] now has full height
+      // measure dest rows post-reveal (accurate, visible)
+      const links = [];
+      srcItems.forEach(sl => {
+        const dst = canvas.querySelector('[data-rat="' + sl.ipid + '"]');
+        if (dst){ const d = absPos(dst); if (d) links.push({ ipid:sl.ipid, s:sl.s, d:d, accent:sl.accent }); }
+      });
+      if (links.length){
+        let dT=Infinity,dB=-Infinity,dL=Infinity,dR=-Infinity;
+        links.forEach(l => {
+          dT=Math.min(dT,l.d.y); dB=Math.max(dB,l.d.y+l.d.h);
+          dL=Math.min(dL,l.d.x); dR=Math.max(dR,l.d.x+l.d.w);
+        });
+        mkRect(dL-pad, dT-pad, (dR-dL)+pad*2, (dB-dT)+pad*2, 'transit-dstbox');
+        mkLabel(dL-pad, dT-pad-16, 'RESOLVED IN ' + cellId, 'transit-label-dst');
+      }
+      const srcRectN = cellAbsRect(srcContainerId, srcCellId);
+      const dstRect  = cellAbsRect(containerId, cellId);
+      // ZOOM OUT — frame the whole arc: source through destination
+      const arcTop = (srcRectN ? srcRectN.y : sT) - 100;
+      const arcBot = (dstRect ? dstRect.y + dstRect.h : sB) + 100;
+      const zoomMs = Math.round(850 / speedMul);
+      animateViewBox([ -70, arcTop, 1400, arcBot - arcTop ], zoomMs);
+      // after the zoom-out settles, draw the paths + run the tokens
+      setTimeout(() => {
+        const travelMs = Math.round(1700 / speedMul);
+        links.forEach((l, i) => {
+          const sx = l.s.x + l.s.w, sy = l.s.y + l.s.h/2;
+          const dx = l.d.x, dy = l.d.y + l.d.h/2;
+          const midX = Math.max(sx, dx, 1140) + 30 + i*26;
+          const path = document.createElementNS(NS, 'path');
+          path.setAttribute('d', 'M '+sx+' '+sy+' C '+midX+' '+sy+', '+midX+' '+dy+', '+dx+' '+dy);
+          path.setAttribute('class', 'transit-path transit-' + l.accent);
+          layer.appendChild(path);
+          const len = path.getTotalLength();
+          path.style.strokeDasharray = len;
+          path.style.strokeDashoffset = len;
+          path.getBoundingClientRect();
+          path.style.transition = 'stroke-dashoffset ' + travelMs + 'ms cubic-bezier(0.3,0,0.2,1)';
+          path.style.strokeDashoffset = '0';
+          const dot = document.createElementNS(NS, 'circle');
+          dot.setAttribute('r', '10');
+          dot.setAttribute('class', 'transit-dot transit-dot-' + l.accent);
+          dot.setAttribute('cx', sx); dot.setAttribute('cy', sy);
+          layer.appendChild(dot);
+          const t0 = performance.now();
+          (function move(now){
+            const t = Math.min(1, (now - t0)/travelMs);
+            const te = 1 - Math.pow(1-t, 3);
+            const pt = path.getPointAtLength(len * te);
+            dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
+            if (t < 1) requestAnimationFrame(move);
+            else dot.style.opacity = '0';
+          })(performance.now());
+        });
+        // after the tokens arrive: settle the camera onto the destination,
+        // reveal-complete, then clean up the transit layer
+        setTimeout(() => {
+          if (dstRect) animateViewBox([ -50, dstRect.y - 60, 1360, dstRect.h + 120 ], Math.round(750/speedMul));
+          onComplete();
+          setTimeout(() => { while (layer.firstChild) layer.removeChild(layer.firstChild); }, Math.round(900/speedMul));
+          // each resolved IP now gets its own left-to-right wipe, in order
+          setTimeout(() => highlightRatRows(cellId), Math.round(620/speedMul));
+        }, travelMs + 250);
+      }, zoomMs + 120);
+    }, Math.round(950 / speedMul));
+  }
+
+  // highlightRatRows — once the ratified IPs have landed in their cell,
+  // sweep each row left-to-right in turn so the eye reads one resolution
+  // at a time (IP1, then IP2, then IP3 ...).
+  function highlightRatRows(cellId){
+    const cell = canvas.querySelector('.cell[data-cell="' + cellId + '"]');
+    if (!cell) return;
+    const rows = Array.from(cell.querySelectorAll('.rat-row'));
+    rows.forEach((row, i) => {
+      setTimeout(() => row.classList.add('lit'), Math.round(i * 450 / speedMul));
+    });
+  }
+
+  // materializeSections — the "?" sections slot resolves into N workstream
+  // cards. Cross-fades the two layers and re-sizes the block via the layout
+  // engine (height switches 110 -> SEC_FULL_H, blocks below shift down).
+  function materializeSections(){
+    const blk = document.getElementById('blk-sections');
+    if (blk) blk.classList.add('materialized');
+    sectionsState.materialized = true;
+    relayout();
+  }
+
+  // runSectionsTransit — D-TD-3's section breakdown flows DOWN into the
+  // sections container. Same visual grammar as runTransit (source box,
+  // zoom-out arc, traveling tokens) but the destination is a whole block,
+  // not a cell — and arrival MATERIALIZES the "?" slot, one card per token.
+  function runSectionsTransit(srcContainerId, srcCellId, onComplete){
+    const layer = document.getElementById('transit-layer');
+    if (!layer){ materializeSections(); onComplete(); return; }
+    while (layer.firstChild) layer.removeChild(layer.firstChild);
+    const NS = 'http://www.w3.org/2000/svg';
+    function mkRect(x,y,w,h,cls){
+      const r = document.createElementNS(NS,'rect');
+      r.setAttribute('x',x); r.setAttribute('y',y);
+      r.setAttribute('width',w); r.setAttribute('height',h);
+      r.setAttribute('class',cls); layer.appendChild(r); return r;
+    }
+    function mkLabel(x,y,txt,cls){
+      const t = document.createElementNS(NS,'text');
+      t.setAttribute('x',x); t.setAttribute('y',y);
+      t.setAttribute('class','transit-label '+cls);
+      t.textContent = txt; layer.appendChild(t); return t;
+    }
+    const pad = 18;
+    const accents = ['red','orange','yellow','blue'];
+    // SOURCE — the section tiles rendered inside D-TD-3
+    const srcItems = [];
+    canvas.querySelectorAll('.cell[data-cell="'+srcCellId+'"] [data-sec]').forEach((el,i) => {
+      const s = absPos(el);
+      if (s) srcItems.push({ id: el.getAttribute('data-sec'), s:s, accent: accents[i%4] });
+    });
+    if (!srcItems.length){ materializeSections(); onComplete(); return; }
+    let sT=Infinity,sB=-Infinity,sL=Infinity,sR=-Infinity;
+    srcItems.forEach(l => {
+      sT=Math.min(sT,l.s.y); sB=Math.max(sB,l.s.y+l.s.h);
+      sL=Math.min(sL,l.s.x); sR=Math.max(sR,l.s.x+l.s.w);
+    });
+
+    // STEP 1 — frame the D-TD-3 source cell, draw the labeled source box
+    const srcRect = cellAbsRect(srcContainerId, srcCellId);
+    if (srcRect) animateViewBox([ -50, srcRect.y - 60, 1360, srcRect.h + 120 ], Math.round(650/speedMul));
+    mkRect(sL-pad, sT-pad, (sR-sL)+pad*2, (sB-sT)+pad*2, 'transit-srcbox');
+    mkLabel(sL-pad, sT-pad-16, 'SECTION BREAKDOWN FROM ' + srcCellId, 'transit-label-src');
+
+    // STEP 2 — measure the destination cards, zoom out to the whole arc,
+    // then run the tokens; each arrival reveals its card.
+    setTimeout(() => {
+      const links = [];
+      srcItems.forEach(sl => {
+        const dst = canvas.querySelector('[data-seccard="' + sl.id + '"]');
+        if (dst){ const d = absPos(dst); if (d) links.push({ id:sl.id, s:sl.s, d:d, accent:sl.accent }); }
+      });
+      const secBlk = blocks['sections'];
+      const secTop = secBlk ? (secBlk.y||0) : sB + 200;
+      if (links.length){
+        let dT=Infinity,dB=-Infinity,dL=Infinity,dR=-Infinity;
+        links.forEach(l => {
+          dT=Math.min(dT,l.d.y); dB=Math.max(dB,l.d.y+l.d.h);
+          dL=Math.min(dL,l.d.x); dR=Math.max(dR,l.d.x+l.d.w);
+        });
+        mkRect(dL-pad, dT-pad, (dR-dL)+pad*2, (dB-dT)+pad*2, 'transit-dstbox');
+        mkLabel(dL-pad, dT-pad-16, 'MATERIALIZED IN SECTIONS', 'transit-label-dst');
+      }
+      // ZOOM OUT — frame the whole arc: D-TD-3 through the sections block
+      const arcTop = (srcRect ? srcRect.y : sT) - 100;
+      const arcBot = secTop + SEC_FULL_H + 100;
+      const zoomMs = Math.round(850 / speedMul);
+      animateViewBox([ -70, arcTop, 1400, arcBot - arcTop ], zoomMs);
+      setTimeout(() => {
+        const travelMs = Math.round(1700 / speedMul);
+        // materialize up front so the empty workstream frame fades in while
+        // the tokens are still travelling; each card stays hidden until hit.
+        materializeSections();
+        links.forEach((l, i) => {
+          const sx = l.s.x + l.s.w/2, sy = l.s.y + l.s.h;
+          const dx = l.d.x + l.d.w/2, dy = l.d.y;
+          const midX = Math.max(sx, dx) + 90 + i*30;
+          const path = document.createElementNS(NS, 'path');
+          path.setAttribute('d', 'M '+sx+' '+sy+' C '+midX+' '+sy+', '+midX+' '+dy+', '+dx+' '+dy);
+          path.setAttribute('class', 'transit-path transit-' + l.accent);
+          layer.appendChild(path);
+          const len = path.getTotalLength();
+          path.style.strokeDasharray = len;
+          path.style.strokeDashoffset = len;
+          path.getBoundingClientRect();
+          path.style.transition = 'stroke-dashoffset ' + travelMs + 'ms cubic-bezier(0.3,0,0.2,1)';
+          path.style.strokeDashoffset = '0';
+          const dot = document.createElementNS(NS, 'circle');
+          dot.setAttribute('r', '10');
+          dot.setAttribute('class', 'transit-dot transit-dot-' + l.accent);
+          dot.setAttribute('cx', sx); dot.setAttribute('cy', sy);
+          layer.appendChild(dot);
+          const t0 = performance.now();
+          (function move(now){
+            const t = Math.min(1, (now - t0)/travelMs);
+            const te = 1 - Math.pow(1-t, 3);
+            const pt = path.getPointAtLength(len * te);
+            dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
+            if (t < 1) requestAnimationFrame(move);
+            else {
+              dot.style.opacity = '0';
+              const card = canvas.querySelector('[data-seccard="' + l.id + '"]');
+              if (card) card.classList.add('arrived');
+            }
+          })(performance.now());
+        });
+        setTimeout(() => {
+          if (secBlk) animateViewBox([ -50, (secBlk.y||0) - 60, 1360, SEC_FULL_H + 120 ], Math.round(750/speedMul));
+          onComplete();
+          setTimeout(() => { while (layer.firstChild) layer.removeChild(layer.firstChild); }, Math.round(900/speedMul));
+        }, travelMs + 250);
+      }, zoomMs + 120);
+    }, Math.round(950 / speedMul));
+  }
+
+  // ---- ENVELOPE — a task-to-task handoff. The PACK is performed in the
+  // source task: the camera holds on the dispatching cell while that cell's
+  // inflection-point tokens fly into a small OttoBLD dispatch slip and it
+  // seals. The slip then travels (camera panning with it). The UNPACK is
+  // performed in the receiving task: the camera holds on the destination
+  // cell while the slip opens and its tokens drop into it. ONE rAF clock
+  // drives every property, so the motion stays smooth.
+  function runCellEnvelope(srcEl, ipIds, dstContainerId, dstCellId, sender, contents, onComplete){
+    const layer = document.getElementById('envelope-layer');
+    const done = onComplete || function(){};
+    const src = srcEl ? absPos(srcEl) : null;
+    relayout();
+    const dst = cellAbsRect(dstContainerId, dstCellId);
+    if (!layer || !src || !dst){ done(); return; }
+    if (vbAnim){ cancelAnimationFrame(vbAnim); vbAnim = null; }
+    while (layer.firstChild) layer.removeChild(layer.firstChild);
+    const NS = 'http://www.w3.org/2000/svg';
+    const EW = 252, EH = 96, FLAP = 26;
+    const cx = src.x + src.w/2;
+    const exLeft = cx - EW/2;
+    const srcY = src.y + src.h/2 - EH/2;
+    const dstY = dst.y - EH*0.16;
+    const clamp01 = v => Math.min(1, Math.max(0, v));
+    const easeIO = u => u < 0.5 ? 4*u*u*u : 1 - Math.pow(-2*u+2,3)/2;
+
+    function mk(tag, attrs, cls, parent){
+      const e = document.createElementNS(NS, tag);
+      for (const k in attrs) e.setAttribute(k, attrs[k]);
+      if (cls) e.setAttribute('class', cls);
+      (parent||layer).appendChild(e); return e;
+    }
+
+    // data tokens — one per inflection point. Pack origins = the source cell's
+    // dispatch-footer dots; unpack targets = a tidy stack inside the dest cell.
+    const ids = (ipIds && ipIds.length) ? ipIds : [];
+    const srcCellG = srcEl ? srcEl.closest('[data-cell]') : null;
+    const footDots = srcCellG ? Array.from(srcCellG.querySelectorAll('.dispatch-dot')) : [];
+    const tok = ids.map((id, i) => {
+      const fd = footDots[i] ? absPos(footDots[i]) : null;
+      const ox = fd ? fd.x + fd.w/2 : (cx - (ids.length-1)*13 + i*26);
+      const oy = fd ? fd.y + fd.h/2 : srcY;
+      const c = mk('circle', {r:6, cx:ox, cy:oy, opacity:0,
+        fill:'var(--accent-' + ipAccent(id) + ')'}, 'env-token', layer);
+      return { el:c, ox:ox, oy:oy, tx:70, ty:dst.y + 104 + i*26 };
+    });
+
+    // envelope (drawn above the tokens so they fly into / out of it)
+    const g = mk('g', {}, 'envelope', layer);
+    mk('rect', {x:0,y:0,width:EW,height:EH}, 'env-body', g);
+    const seg = EH/4;
+    ['r','o','y','b'].forEach((c,i) => mk('rect', {x:0,y:i*seg,width:5,height:seg}, 'env-stripe-'+c, g));
+    const cg = mk('g', {}, 'env-contents-grp', g);
+    const tFrom = mk('text', {x:20,y:42}, 'env-from', cg); tFrom.textContent = 'FROM ' + sender;
+    mk('line', {x1:20,y1:52,x2:EW-18,y2:52}, 'env-rule', cg);
+    const tCon = mk('text', {x:20,y:76}, 'env-contents', cg); tCon.textContent = contents;
+    // flap — a triangle hinged on the top edge; scale(1,s) sweeps it from
+    // open (s=-1, apex up) to sealed (s=1, apex down).
+    const flap = mk('path', {d:'M 0 0 L '+EW+' 0 L '+(EW/2)+' '+FLAP+' Z'}, 'env-flap', g);
+    const seal = mk('circle', {cx:EW/2,cy:FLAP,r:6}, 'env-seal', g);
+
+    // initial state (avoids a one-frame flash at canvas origin)
+    g.setAttribute('transform', 'translate('+exLeft+','+srcY+')');
+    g.setAttribute('opacity', '0');
+    cg.setAttribute('opacity', '0');
+    flap.setAttribute('transform', 'scale(1,-1)');
+    seal.setAttribute('opacity', '0');
+
+    // camera: holds on the SOURCE task through the pack, pans during travel,
+    // holds on the DESTINATION task through the unpack.
+    const VW = 1352, VH = 600, viewX = -46;
+    const srcView = (srcY + EH/2) - VH/2;
+    const dstView = (dstY + EH/2) + 110 - VH/2;
+    const followOn = !focusToggle || focusToggle.checked;
+
+    const T = Math.round(3200 / speedMul);
+    const t0 = performance.now();
+    (function frame(now){
+      const t = Math.min(1, (now - t0)/T);
+      // travel window t in [0.37, 0.72] — also drives the camera pan
+      const te = easeIO(clamp01((t - 0.37)/0.35));
+      const envY = srcY + (dstY - srcY)*te;
+      g.setAttribute('transform', 'translate('+exLeft+','+envY+')');
+      if (followOn){
+        canvas.setAttribute('viewBox',
+          viewX + ' ' + (srcView + (dstView-srcView)*te) + ' ' + VW + ' ' + VH);
+      }
+      // envelope fade in / out
+      g.setAttribute('opacity',
+        clamp01(t < 0.07 ? t/0.07 : (t > 0.96 ? (1-t)/0.04 : 1)).toFixed(3));
+      // contents load during the pack
+      cg.setAttribute('opacity', clamp01((t-0.10)/0.14).toFixed(3));
+      // flap: open -> sealed over the pack; sealed; -> open over the unpack
+      let s;
+      if (t < 0.27) s = -1 + 2*clamp01((t-0.10)/0.15);
+      else if (t < 0.80) s = 1;
+      else s = 1 - 2*clamp01((t-0.81)/0.12);
+      flap.setAttribute('transform', 'scale(1,'+s.toFixed(3)+')');
+      seal.setAttribute('opacity', s > 0.55 ? '1' : '0');
+      // tokens — fly into the slip during the pack, ride sealed + hidden
+      // through travel, fly out into the destination cell during the unpack.
+      const pe = easeIO(clamp01((t-0.08)/0.18));
+      const ue = easeIO(clamp01((t-0.80)/0.14));
+      const pk = clamp01((t-0.08)/0.18), up = clamp01((t-0.80)/0.14);
+      const packX = exLeft + EW/2, packY = srcY + EH/2;
+      const upX = exLeft + EW/2, upY = dstY + EH/2;
+      tok.forEach(tk => {
+        if (t < 0.27){
+          tk.el.setAttribute('cx', (tk.ox + (packX-tk.ox)*pe).toFixed(1));
+          tk.el.setAttribute('cy', (tk.oy + (packY-tk.oy)*pe).toFixed(1));
+          tk.el.setAttribute('opacity', clamp01(Math.min(pk*4, (1-pk)*3)).toFixed(2));
+        } else if (t < 0.80){
+          tk.el.setAttribute('opacity', '0');
+        } else {
+          tk.el.setAttribute('cx', (upX + (tk.tx-upX)*ue).toFixed(1));
+          tk.el.setAttribute('cy', (upY + (tk.ty-upY)*ue).toFixed(1));
+          tk.el.setAttribute('opacity', clamp01(Math.min(up*4, (1-up)*2.4)).toFixed(2));
+        }
+      });
+      if (t < 1) requestAnimationFrame(frame);
+      else {
+        done();
+        setTimeout(() => { while (layer.firstChild) layer.removeChild(layer.firstChild); },
+                   Math.round(420 / speedMul));
+      }
+    })(performance.now());
+  }
+
+  // ---- content reveal helpers ----
+  function showBlock(id){ if (blocks[id]) blocks[id].visible = true; }
+  // revealCellTitle — shows a cell's TITLE (table-of-contents skeleton)
+  function revealCellTitle(cellId){
+    const cell = canvas.querySelector('.cell[data-cell="' + cellId + '"]');
+    if (cell) cell.classList.add('in');
+  }
+  // revealCellBody — fills a cell's body (the decision's actual content)
+  function revealCellBody(cellId){
+    const cell = canvas.querySelector('.cell[data-cell="' + cellId + '"]');
+    if (!cell) return;
+    cell.classList.add('in');
+    const body = cell.querySelector('.cell-body');
+    if (body) body.classList.add('in');
+  }
+  function setWaiting(id, gone){
+    const w = document.getElementById(id + '-waiting');
+    if (w){ if (gone) w.classList.add('gone'); else w.classList.remove('gone'); }
+  }
+  // setActiveCell — marks exactly one cell as the selected focus (highlighter
+  // band + accent bar sweep in). Pass null to clear.
+  function setActiveCell(cellId){
+    canvas.querySelectorAll('.cell.active').forEach(c => c.classList.remove('active'));
+    if (cellId){
+      const cell = canvas.querySelector('.cell[data-cell="' + cellId + '"]');
+      if (cell) cell.classList.add('active');
+    }
+  }
+
+  // ---- D-UP-1 typewriter (SVG text) ----
+  let typeTimer = null;
+  function typePrompt(done){
+    const tnode = canvas.querySelector('.up-prompt-text tspan');
+    if (!tnode){ if (done) done(); return; }
+    let i = 0;
+    function tick(){
+      if (i >= PROMPT_TEXT.length){ if (done) done(); return; }
+      tnode.textContent += PROMPT_TEXT[i]; i++;
+      relayout();
+      typeTimer = setTimeout(tick, typeMs());
+    }
+    tick();
+  }
+
+  // ---- ORCHESTRATOR captions ----
+  const ORC_CAPTIONS = {
+    4:'Reading the prompt…',
+    5:'Phase 1 — Discovery. The first role to run.',
+    6:'Laying out the phases the build will move through.',
+    7:'Placing every guaranteed role into its phase.',
+    8:'Discovery starts here.'
+  };
+  function setCaption(p){
+    const c = document.getElementById('orc-caption');
+    if (c) c.textContent = ORC_CAPTIONS[p] || ' ';
+  }
+
+  // ---- PHASE MACHINE ----
+  // Choreography:
+  //  1-3   D-UP-1 typewriter
+  //  4     ORC wakes
+  //  5     Phase 1 band placed
+  //  6     Discovery container placed
+  //  7     downstream stack placed
+  //  8     ORC hands off
+  //  P_DSC_ACT   Discovery activates — ALL decision titles shown (skeleton)
+  //  then EACH decision gets TWO beats:
+  //    focus-empty  — camera moves to the empty titled section (keyframe)
+  //    populate     — that section's body fills in
+  //  P_DSC_OUT   camera zooms out to the whole filled Discovery
+  //  ...same pattern for TD.
+  const N_DSC = DSC_IDS.length;
+  const N_TD = TD_IDS.length;
+  const HAS_TD = N_TD > 0;
+  const N_ED = ED_IDS.length;
+  const HAS_ED = N_ED > 0;
+  const N_CO = CO_IDS.length;
+  const HAS_CO = N_CO > 0;
+  const N_IN = IN_IDS.length;
+  const HAS_IN = N_IN > 0;
+  const N_CR = CR_IDS.length;
+  const HAS_CR = N_CR > 0;
+  const N_CV = CV_IDS.length;
+  const HAS_CV = N_CV > 0;
+  const P_DSC_ACT = 9;
+  const P_DSC_OUT = P_DSC_ACT + 1 + N_DSC;   // 1 step per decision (highlight → reveal)
+  const P_TD_ACT  = P_DSC_OUT + 1;
+  const P_TD_OUT  = P_TD_ACT + 1 + N_TD;
+  const P_ED_ACT  = P_TD_OUT + 1;
+  const P_ED_OUT  = P_ED_ACT + 1 + N_ED;
+  const P_CO_ACT  = P_ED_OUT + 1;
+  const P_CO_OUT  = P_CO_ACT + 1 + N_CO;
+  const P_IN_ACT  = P_CO_OUT + 1;
+  const P_IN_OUT  = P_IN_ACT + 1 + N_IN;
+  const P_CR_ACT  = P_IN_OUT + 1;
+  const P_CR_OUT  = P_CR_ACT + 1 + N_CR;
+  const P_CV_ACT  = P_CR_OUT + 1;
+  const P_CV_OUT  = P_CV_ACT + 1 + N_CV;
+  // MAX_PHASE = the last role's OUT phase that actually has content
+  let MAX_PHASE = P_DSC_OUT;
+  if (HAS_TD) MAX_PHASE = P_TD_OUT;
+  if (HAS_ED) MAX_PHASE = P_ED_OUT;
+  if (HAS_CO) MAX_PHASE = P_CO_OUT;
+  if (HAS_IN) MAX_PHASE = P_IN_OUT;
+  if (HAS_CR) MAX_PHASE = P_CR_OUT;
+  if (HAS_CV) MAX_PHASE = P_CV_OUT;
+  let phase = 0;
+
+  // For a phase in a role's cell range, return which cell it addresses.
+  function cellStep(ph, actPhase, ids){
+    const rel = ph - actPhase - 1;
+    if (rel < 0 || rel >= ids.length) return null;
+    return { id: ids[rel], idx: rel };
+  }
+
+  function updateProgress(){
+    progress.textContent = 'PHASE ' + phase + ' / ' + MAX_PHASE;
+    stepBtn.disabled = (phase < 3) || phase >= MAX_PHASE;
+    let lbl = 'D-UP-1';
+    if (HAS_CV && phase === P_CV_OUT) lbl = 'CONVERGED ✓';
+    else if (HAS_CV && phase === P_CV_ACT) lbl = 'CONVERGENCE VERIFIER';
+    else if (HAS_CV && phase > P_CV_ACT && phase < P_CV_OUT){
+      const cs = cellStep(phase, P_CV_ACT, CV_IDS); lbl = cs ? cs.id : 'D-CV';
+    }
+    else if (HAS_CR && phase === P_CR_OUT) lbl = 'CRITIC ✓';
+    else if (HAS_CR && phase === P_CR_ACT) lbl = 'CRITIC';
+    else if (HAS_CR && phase > P_CR_ACT && phase < P_CR_OUT){
+      const cs = cellStep(phase, P_CR_ACT, CR_IDS); lbl = cs ? cs.id : 'D-CR';
+    }
+    else if (HAS_IN && phase === P_IN_OUT) lbl = 'INTEGRATOR ✓';
+    else if (HAS_IN && phase === P_IN_ACT) lbl = 'INTEGRATOR';
+    else if (HAS_IN && phase > P_IN_ACT && phase < P_IN_OUT){
+      const cs = cellStep(phase, P_IN_ACT, IN_IDS); lbl = cs ? cs.id : 'D-IN';
+    }
+    else if (HAS_CO && phase === P_CO_OUT) lbl = 'COORDINATOR ✓';
+    else if (HAS_CO && phase === P_CO_ACT) lbl = 'COORDINATOR';
+    else if (HAS_CO && phase > P_CO_ACT && phase < P_CO_OUT){
+      const cs = cellStep(phase, P_CO_ACT, CO_IDS); lbl = cs ? cs.id : 'D-CO';
+    }
+    else if (HAS_ED && phase === P_ED_OUT) lbl = 'EDITOR ✓';
+    else if (HAS_ED && phase === P_ED_ACT) lbl = 'EDITOR';
+    else if (HAS_ED && phase > P_ED_ACT && phase < P_ED_OUT){
+      const cs = cellStep(phase, P_ED_ACT, ED_IDS); lbl = cs ? cs.id : 'D-ED';
+    }
+    else if (HAS_TD && phase === P_TD_OUT) lbl = 'TD ✓';
+    else if (HAS_TD && phase === P_TD_ACT) lbl = 'TECHNICAL DISCOVERY';
+    else if (HAS_TD && phase > P_TD_ACT && phase < P_TD_OUT){
+      const cs = cellStep(phase, P_TD_ACT, TD_IDS); lbl = cs ? cs.id : 'D-TD';
+    }
+    else if (phase === P_DSC_OUT) lbl = 'DISCOVERY ✓';
+    else if (phase === P_DSC_ACT) lbl = 'DISCOVERY';
+    else if (phase > P_DSC_ACT && phase < P_DSC_OUT){
+      const cs = cellStep(phase, P_DSC_ACT, DSC_IDS); lbl = cs ? cs.id : 'D-DSC';
+    }
+    else if (phase >= 4) lbl = 'D-ORC-1';
+    curDecision.textContent = lbl;
+  }
+
+  // Run the two-beat cell logic for a role. Returns true if handled.
+  // One step per subsection:
+  //  - highlight the section's title, camera lands on it
+  //  - if the decision ratifies IPs surfaced elsewhere, run the transit
+  //    animation (connector paths + traveling tokens) before revealing
+  //  - otherwise just reveal the body after a beat
+  function runCellBeat(actPhase, ids, containerId){
+    const cs = cellStep(phase, actPhase, ids);
+    if (!cs) return false;
+    setActiveCell(cs.id);
+    const reveal = () => {
+      revealCellBody(cs.id);
+      requestAnimationFrame(() => { relayout(); frameCell(containerId, cs.id); });
+    };
+    const ratifies = CELL_RATIFIES[cs.id];
+    const materializes = CELL_MATERIALIZES[cs.id];
+    if (ratifies && ratifies.length){
+      // Task-to-task handoff — an earlier cell dispatched its data here (e.g.
+      // D-DSC-3's "SENT TO D-TD-2" footer). The envelope drives the camera
+      // itself, so this cell is NOT pre-framed (that would snap then jump).
+      const n = ratifies.length;
+      const srcIp = canvas.querySelector('[data-ip="' + ratifies[0] + '"]');
+      const srcCell = srcIp ? srcIp.closest('[data-cell]') : null;
+      const srcAnchor = srcCell ? (srcCell.querySelector('.dispatch-label') || srcCell) : null;
+      const sender = srcCell ? srcCell.getAttribute('data-cell') : 'DISCOVERY';
+      setTimeout(() => runCellEnvelope(srcAnchor, ratifies, containerId, cs.id, sender,
+        n + ' inflection point' + (n > 1 ? 's' : ''),
+        () => { reveal(); setTimeout(() => highlightRatRows(cs.id), Math.round(620 / speedMul)); }
+      ), Math.round(360 / speedMul));
+    } else if (materializes === 'sections'){
+      // reveal D-TD-3's own breakdown first, THEN flow it down to the
+      // sections container — the "?" slot materializes on arrival.
+      requestAnimationFrame(() => { relayout(); frameCell(containerId, cs.id); });
+      setTimeout(() => {
+        reveal();
+        setTimeout(() => runSectionsTransit(containerId, cs.id, function(){}),
+                   Math.round(1100 / speedMul));
+      }, Math.round(750 / speedMul));
+    } else {
+      requestAnimationFrame(() => { relayout(); frameCell(containerId, cs.id); });
+      setTimeout(reveal, Math.round(750 / speedMul));
+    }
+    return true;
+  }
+
+  function advance(){
+    if (phase < 3 || phase >= MAX_PHASE) return;
+    phase++;
+    if (phase === 4){
+      showBlock('orc1'); relayout(); setCaption(4); frameRange('up1','orc1');
+    } else if (phase === 5){
+      // Phase 1 + Discovery placed together — Phase 1 IS Discovery
+      showBlock('band1'); showBlock('discovery');
+      relayout(); setCaption(5);
+      frameBlock('discovery'); flashHighlight('discovery');
+    } else if (phase === 6){
+      // Build the rest of the phases — the phase-band skeleton
+      showBlock('band2'); showBlock('band3'); showBlock('band4');
+      relayout(); setCaption(6); frameWide();
+    } else if (phase === 7){
+      // Introduce the guaranteed role containers into each phase
+      ['td','editor','coordinator','sections','integrator','critic','cv','helpers']
+        .forEach(showBlock);
+      relayout(); setCaption(7); frameWide();
+    } else if (phase === 8){
+      // Zoom back to Discovery — interaction starts here
+      setCaption(8); frameBlock('discovery');
+    } else if (phase === P_DSC_ACT){
+      setWaiting('discovery', true);
+      setActiveCell(null);
+      DSC_IDS.forEach(revealCellTitle);
+      requestAnimationFrame(() => { relayout(); frameBlock('discovery'); });
+    } else if (phase > P_DSC_ACT && phase < P_DSC_OUT){
+      runCellBeat(P_DSC_ACT, DSC_IDS, 'discovery');
+    } else if (phase === P_DSC_OUT){
+      setActiveCell(null);
+      requestAnimationFrame(() => { relayout(); frameBlock('discovery'); });
+    } else if (HAS_TD && phase === P_TD_ACT){
+      setWaiting('td', true);
+      setActiveCell(null);
+      TD_IDS.forEach(revealCellTitle);
+      requestAnimationFrame(() => { relayout(); frameBlock('td'); flashHighlight('td'); });
+    } else if (HAS_TD && phase > P_TD_ACT && phase < P_TD_OUT){
+      runCellBeat(P_TD_ACT, TD_IDS, 'td');
+    } else if (HAS_TD && phase === P_TD_OUT){
+      setActiveCell(null);
+      requestAnimationFrame(() => { relayout(); frameBlock('td'); });
+    } else if (HAS_ED && phase === P_ED_ACT){
+      // Editor activates — its check titles appear as a skeleton, then fill
+      setWaiting('editor', true);
+      setActiveCell(null);
+      ED_IDS.forEach(revealCellTitle);
+      requestAnimationFrame(() => { relayout(); frameBlock('editor'); flashHighlight('editor'); });
+    } else if (HAS_ED && phase > P_ED_ACT && phase < P_ED_OUT){
+      runCellBeat(P_ED_ACT, ED_IDS, 'editor');
+    } else if (HAS_ED && phase === P_ED_OUT){
+      setActiveCell(null);
+      requestAnimationFrame(() => { relayout(); frameBlock('editor'); });
+    } else if (HAS_CO && phase === P_CO_ACT){
+      // Coordinator activates — Phase 3, the build phase
+      setWaiting('coordinator', true);
+      setActiveCell(null);
+      CO_IDS.forEach(revealCellTitle);
+      requestAnimationFrame(() => { relayout(); frameBlock('coordinator'); flashHighlight('coordinator'); });
+    } else if (HAS_CO && phase > P_CO_ACT && phase < P_CO_OUT){
+      runCellBeat(P_CO_ACT, CO_IDS, 'coordinator');
+    } else if (HAS_CO && phase === P_CO_OUT){
+      setActiveCell(null);
+      requestAnimationFrame(() => { relayout(); frameBlock('coordinator'); });
+    } else if (HAS_IN && phase === P_IN_ACT){
+      setWaiting('integrator', true);
+      setActiveCell(null);
+      IN_IDS.forEach(revealCellTitle);
+      requestAnimationFrame(() => { relayout(); frameBlock('integrator'); flashHighlight('integrator'); });
+    } else if (HAS_IN && phase > P_IN_ACT && phase < P_IN_OUT){
+      runCellBeat(P_IN_ACT, IN_IDS, 'integrator');
+    } else if (HAS_IN && phase === P_IN_OUT){
+      setActiveCell(null);
+      requestAnimationFrame(() => { relayout(); frameBlock('integrator'); });
+    } else if (HAS_CR && phase === P_CR_ACT){
+      setWaiting('critic', true);
+      setActiveCell(null);
+      CR_IDS.forEach(revealCellTitle);
+      requestAnimationFrame(() => { relayout(); frameBlock('critic'); flashHighlight('critic'); });
+    } else if (HAS_CR && phase > P_CR_ACT && phase < P_CR_OUT){
+      runCellBeat(P_CR_ACT, CR_IDS, 'critic');
+    } else if (HAS_CR && phase === P_CR_OUT){
+      setActiveCell(null);
+      requestAnimationFrame(() => { relayout(); frameBlock('critic'); });
+    } else if (HAS_CV && phase === P_CV_ACT){
+      setWaiting('cv', true);
+      setActiveCell(null);
+      CV_IDS.forEach(revealCellTitle);
+      requestAnimationFrame(() => { relayout(); frameBlock('cv'); flashHighlight('cv'); });
+    } else if (HAS_CV && phase > P_CV_ACT && phase < P_CV_OUT){
+      runCellBeat(P_CV_ACT, CV_IDS, 'cv');
+    } else if (HAS_CV && phase === P_CV_OUT){
+      setActiveCell(null);
+      requestAnimationFrame(() => { relayout(); frameBlock('cv'); });
+    }
+    updateProgress();
+  }
+
+  function reset(){
+    if (typeTimer){ clearTimeout(typeTimer); typeTimer = null; }
+    if (vbAnim){ cancelAnimationFrame(vbAnim); vbAnim = null; }
+    const envL0 = document.getElementById('envelope-layer');
+    if (envL0){ while (envL0.firstChild) envL0.removeChild(envL0.firstChild); }
+    phase = 0;
+    BLOCK_ORDER.forEach(id => { blocks[id].visible = false; });
+    canvas.querySelectorAll('.cell').forEach(c => c.classList.remove('in','active'));
+    canvas.querySelectorAll('.cell-body').forEach(b => b.classList.remove('in'));
+    canvas.querySelectorAll('.rat-row.lit').forEach(r => r.classList.remove('lit'));
+    // sections block back to its un-resolved "?" state
+    sectionsState.materialized = false;
+    const secBlk = document.getElementById('blk-sections');
+    if (secBlk) secBlk.classList.remove('materialized');
+    canvas.querySelectorAll('.sec-card.arrived').forEach(c => c.classList.remove('arrived'));
+    const tnode = canvas.querySelector('.up-prompt-text tspan');
+    if (tnode) tnode.textContent = '';
+    setWaiting('discovery', false);
+    setWaiting('td', false);
+    setWaiting('editor', false);
+    setWaiting('coordinator', false);
+    setWaiting('integrator', false);
+    setWaiting('critic', false);
+    setWaiting('cv', false);
+    setCaption(0);
+    placedHi.classList.remove('flashing');
+    // up1 visible from the start
+    blocks.up1.visible = true;
+    relayout();
+    frameBlock('up1', 40);
+    updateProgress();
+    setTimeout(startPrompt, 300);
+  }
+
+  function startPrompt(){
+    phase = 1;
+    relayout();
+    frameBlock('up1', 40);
+    typePrompt(() => { phase = 3; updateProgress(); });
+    updateProgress();
+  }
+
+  stepBtn.addEventListener('click', advance);
+  resetBtn.addEventListener('click', reset);
+  speedSlider.addEventListener('input', () => {
+    speedMul = parseFloat(speedSlider.value);
+    speedReadout.textContent = speedMul.toFixed(2).replace(/\.?0+$/,'') + 'x';
+  });
+  speedSlider.dispatchEvent(new Event('input'));
+
+  // boot
+  blocks.up1.visible = true;
+  relayout();
+  frameBlock('up1', 40);
+  updateProgress();
+  setTimeout(startPrompt, 250);
+})();
+</script>
+</body>
+</html>

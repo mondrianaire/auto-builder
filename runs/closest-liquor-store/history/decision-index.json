@@ -1,0 +1,103 @@
+{
+  "updated_at": "2026-05-22T00:00:00Z",
+  "decisions": [
+    {
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "version": 1,
+      "produced_by": "discovery",
+      "trigger": { "type": "initial", "detail": "Translated the one-line prompt 'Build me an app that points me to the closest liquor store' into an assumption ledger, six assumptions, three inflection points, four first-contact requirements, and out-of-scope items." },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "ledger", "detail": "Resolved IP1 via Researcher probe-IP1 (live OSM Overpass API), quick-reasoned IP2 and IP3, introduced and resolved TD-level IP4 (external directions hand-off), and broke the build into 5 sections with 7 interface contracts." },
+      "supersedes": null
+    },
+    {
+      "artifact": "research/probes/probe-IP1/findings.json",
+      "version": 1,
+      "produced_by": "researcher",
+      "trigger": { "type": "inflection_point", "ip_id": "IP1", "detail": "Probe dispatched by technical-discovery to resolve IP1 (store-data provenance); returned canonical evidence that the public OSM Overpass API (shop=alcohol, no key, browser-callable) gives global coverage." },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/editor/review-v1.json",
+      "version": 1,
+      "produced_by": "editor",
+      "trigger": { "type": "review", "detail": "Structural audit of the TD output against the literal prompt and Discovery's intent. Verdict: pass — no proper-noun citation owed, both high-importance IPs evidence-backed, all assertions sourced, all first-contact requirements covered, telos coherent." },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-1--section-2.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "section_breakdown", "detail": "Interface contract: section-1 yields a resolved-location object consumed by section-2's Overpass query." },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-1--section-3.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "section_breakdown", "detail": "Interface contract: section-3 consumes the resolved-location object as the distance reference point." },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-2--section-3.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "section_breakdown", "detail": "Interface contract: section-2 emits normalized {status,stores,message}; section-3 selects and renders." },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-1--section-4.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "section_breakdown", "detail": "Interface contract: section-4 supplies section-1 a container and callbacks; location delivered async via onResolved." },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-2--section-4.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "section_breakdown", "detail": "Interface contract: section-4 awaits findNearbyLiquorStores, owns radius-widening retry policy." },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/section-3--section-4.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "section_breakdown", "detail": "Interface contract: section-4 passes userLocation, raw lookupResult, and a container to section-3's renderClosestStore." },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/integrator--section-5.json",
+      "version": 1,
+      "produced_by": "technical-discovery",
+      "trigger": { "type": "section_breakdown", "detail": "Interface contract: section-5 exercises the integrated artifact under production fidelity without substituting its runtime dependencies." },
+      "supersedes": null
+    },
+    {
+      "artifact": "state/coordinator/dag.json",
+      "version": 1,
+      "produced_by": "coordinator",
+      "trigger": { "type": "build_start", "detail": "Dependency DAG built from sections-v1.json; integrator pseudo-node and section-5 dependency added; six execution waves." },
+      "supersedes": null
+    },
+    {
+      "artifact": "output/integration/manifest.json",
+      "version": 1,
+      "produced_by": "integrator",
+      "trigger": { "type": "integration", "detail": "Sections 1-4 assembled into output/integration/index.html; init-order, naming, and asset seams resolved." },
+      "supersedes": null
+    },
+    {
+      "artifact": "output/builders/edge-case-testing/ect-1/report.json",
+      "version": 1,
+      "produced_by": "edge_case_testing",
+      "trigger": { "type": "verification", "detail": "All 11 edge_case_testing assertions exercised against the integrated artifact under production fidelity; 11/11 pass." },
+      "supersedes": null
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "role": "TechnicalDiscovery",
+  "instance_id": "td-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "2026-05-22T00:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "How are you breaking this into pieces?",
+      "answer": "Five pieces. First, figuring out where you are: the app asks your browser for your location automatically, and if that is blocked or unavailable it shows a box where you can type a place instead. Second, finding real liquor stores near that location by looking them up from a free public map service. Third, working out which store is closest and showing it with its name, address, and how far away it is, plus a button that opens directions in a maps app. Fourth, the app itself that you open in your browser, which ties the other parts together and shows loading and error messages along the way. Fifth, a thorough round of testing that puts the finished app through awkward situations, like location being denied or the internet being down, to make sure it never crashes or shows a blank screen.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What tech choices did you make, and why?",
+      "answer": "For the store data, I chose to look up real, current liquor stores from OpenStreetMap's public Overpass service. It works anywhere in the world, needs no sign-up or paid key, and the app can call it directly from your browser with no server you have to run. I considered shipping a fixed list of stores baked into the app instead, but that would only work in one region and would quietly give wrong answers everywhere else, so I ruled it out. This does mean the app needs an internet connection when you use it, which is unavoidable for getting real, up-to-date stores. For finding where you are, I used the standard location feature built into every browser, with a type-it-in fallback so you are never stuck. For getting to the store, the app gives you a directions link that opens your usual maps app rather than building turn-by-turn navigation inside the app, which matches a lightweight 'point me there' tool. The app itself is a plain self-contained page with no install and no setup.",
+      "kind": "always",
+      "importance": "high"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "Editor"
+}
