@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-22T18:07:08.770Z",
+    "generated_at": "2026-05-22T18:22:18.319Z",
     "codex_version": "0.16",
     "architecture_versions_seen": [
       "v1.10.1",
