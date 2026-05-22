@@ -72,7 +72,10 @@ function extractGraph(slug, runDir) {
     telos: labels.convergence_verifier.telos || 'Exercises the finished artifact the way a real user would.',
     decisions: labels.convergence_verifier.decisions || []
   } : null;
-  return { slug, prompt, phase1, telos, decisions, td, editor, coordinator, integrator, critic, cv };
+  // wrap-up diagnosis (interactive-wrapup-spec §8.2) — optional; drives the
+  // diagnosis overlay when runs/{slug}/wrap-up-diagnosis.json exists.
+  const diagnosis = readJsonSafe(path.join(runDir, 'wrap-up-diagnosis.json'));
+  return { slug, prompt, phase1, telos, decisions, td, editor, coordinator, integrator, critic, cv, diagnosis };
 }
 
 // ---------------------------------------------------------------------------
@@ -696,6 +699,8 @@ function renderSvg(graph) {
   <g id="transit-layer"></g>
   <!-- envelope layer — handoff dispatch pouches, drawn above everything -->
   <g id="envelope-layer"></g>
+  <!-- diagnosis overlay — frames the diagnosed culprit cell (wrapup-spec §8.2) -->
+  <rect class="diag-highlight" id="diag-hi" x="0" y="0" width="10" height="10"/>
 </svg>`;
 }
 
@@ -705,7 +710,7 @@ function renderSvg(graph) {
 
 // Bump this on every change set so the top-left toolbar string lets the
 // user confirm they're viewing the freshly-generated HTML, not a cached one.
-const WALKTHROUGH_VERSION = '2.23';
+const WALKTHROUGH_VERSION = '2.24';
 
 function render(graph) {
   // date + time so every regeneration produces a distinct stamp
@@ -730,6 +735,7 @@ function render(graph) {
   </span>
   <button id="step-btn">Step ▶</button>
   <button id="reset-btn">Reset</button>
+  ${graph.diagnosis ? '<button id="diag-btn" aria-pressed="false">⚠ Diagnosis</button>' : ''}
   <label class="focus-toggle"><input id="focus-toggle" type="checkbox" checked/><span>auto-focus</span></label>
   <span class="speed">
     <label>speed</label>
@@ -738,6 +744,7 @@ function render(graph) {
   </span>
   <span class="progress" id="progress"></span>
 </div>
+<div id="diag-banner"></div>
 <div id="stage">
   <div id="canvas-wrap">${renderSvg(graph)}</div>
 </div>
@@ -878,6 +885,13 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 .tile-badge{font-family:var(--type-data);font-size:8px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
 .tile-badge-high{fill:var(--accent-red);}.tile-badge-med{fill:var(--accent-orange);}.tile-badge-low{fill:var(--ink-dim);}
 .tile-breaks{font-family:var(--type-data);font-size:9px;fill:var(--accent-orange);letter-spacing:0.05em;}
+/* diagnosis overlay — frames the diagnosed culprit cell (interactive-wrapup-spec §8.2) */
+.diag-highlight{fill:none;stroke:#6a6258;stroke-width:3.5;stroke-dasharray:10 6;opacity:0;pointer-events:none;}
+#diag-banner{display:none;flex-shrink:0;background:#241f1c;color:var(--paper-light);
+  font-family:var(--type-data);font-size:11.5px;line-height:1.55;padding:9px 20px;
+  border-bottom:2px solid #6a6258;letter-spacing:0.03em;}
+#diag-banner b{color:var(--accent-orange);font-weight:700;letter-spacing:0.10em;}
+#toolbar #diag-btn[aria-pressed="true"]{background:#6a6258;border-color:#6a6258;color:var(--paper-light);}
 .bg-row-text{font-family:var(--type-ui);font-size:12px;fill:var(--ink-body);}
 .bg-row-id{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.14em;}
 .ip-question{font-family:var(--type-ui);font-size:15px;font-weight:700;fill:var(--ink-navy);}
@@ -1016,6 +1030,7 @@ function renderJs(graph) {
   const SEC_FULL_H = ${70 + secCount*60 + 14};  // materialized sections-block height
   const BASE_TYPE_MS = 17;
   const TITLE_H = ${TITLE_H};
+  const DIAGNOSIS = ${JSON.stringify(graph.diagnosis || null)};
   let speedMul = 1.0;
   function typeMs(){ return Math.max(2, Math.round(BASE_TYPE_MS / speedMul)); }
 
@@ -1028,6 +1043,10 @@ function renderJs(graph) {
   const curDecision = document.getElementById('cur-decision');
   const focusToggle = document.getElementById('focus-toggle');
   const placedHi = document.getElementById('placed-hi');
+  const diagHi = document.getElementById('diag-hi');
+  const diagBtn = document.getElementById('diag-btn');
+  const diagBanner = document.getElementById('diag-banner');
+  let diagnosisOn = false;
 
   // ---- BLOCK MODEL ----
   // Ordered list of blocks. Each block is an SVG <g id="blk-*">.
@@ -1981,8 +2000,58 @@ function renderJs(graph) {
     updateProgress();
   }
 
+  // ---- DIAGNOSIS OVERLAY (interactive-wrapup-spec §8.2) ----
+  function htmlesc(s){
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  // Reveal the whole completed walkthrough so the highlight has stable layout.
+  function revealAll(){
+    BLOCK_ORDER.forEach(showBlock);
+    [].concat(DSC_IDS, TD_IDS, ED_IDS, CO_IDS, IN_IDS, CR_IDS, CV_IDS)
+      .forEach(id => revealCellBody(id));
+    if (SEC_COUNT) materializeSections();
+    relayout();
+  }
+  function toggleDiagnosis(){
+    if (!DIAGNOSIS || !diagBtn) return;
+    diagnosisOn = !diagnosisOn;
+    diagBtn.setAttribute('aria-pressed', diagnosisOn ? 'true' : 'false');
+    if (!diagnosisOn){
+      diagHi.style.opacity = '0';
+      diagBanner.style.display = 'none';
+      return;
+    }
+    revealAll();
+    const cul = DIAGNOSIS.culprit || {};
+    const cellEl = cul.cell_id ? canvas.querySelector('.cell[data-cell="' + cul.cell_id + '"]') : null;
+    const rc = cellEl ? cellEl.closest('.role-container') : null;
+    if (cellEl && rc){
+      const containerId = rc.id.replace('blk-', '');
+      requestAnimationFrame(() => {
+        relayout();
+        const r = cellAbsRect(containerId, cul.cell_id);
+        if (r){
+          diagHi.setAttribute('x', -10);
+          diagHi.setAttribute('y', r.y - 10);
+          diagHi.setAttribute('width', ${FULL_W} + 20);
+          diagHi.setAttribute('height', r.h + 20);
+          diagHi.style.opacity = '1';
+          frameCell(containerId, cul.cell_id);
+        }
+      });
+    }
+    const cs = DIAGNOSIS.called_shot && DIAGNOSIS.called_shot.predicted;
+    diagBanner.innerHTML =
+      '<b>⚠ DIAGNOSIS</b>&nbsp;&nbsp;Culprit: <b>' + htmlesc(cul.id || '?') + '</b> ('
+      + htmlesc(cul.role || '') + ' · ' + htmlesc(cul.layer || '') + ' layer) — '
+      + htmlesc(cul.decision_text || '')
+      + (cs ? '&nbsp;&nbsp;·&nbsp;&nbsp;the build\\'s own ⚠ IF WRONG note on this decision predicted the fault.' : '');
+    diagBanner.style.display = 'block';
+  }
+
   stepBtn.addEventListener('click', advance);
-  resetBtn.addEventListener('click', reset);
+  resetBtn.addEventListener('click', () => { if (diagnosisOn) toggleDiagnosis(); reset(); });
+  if (diagBtn) diagBtn.addEventListener('click', toggleDiagnosis);
   speedSlider.addEventListener('input', () => {
     speedMul = parseFloat(speedSlider.value);
     speedReadout.textContent = speedMul.toFixed(2).replace(/\\.?0+$/,'') + 'x';

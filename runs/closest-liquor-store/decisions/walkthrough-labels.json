@@ -2,7 +2,7 @@
   "version": 1,
   "slug": "closest-liquor-store",
   "generator": "walkthrough-labels-derive/v1",
-  "generated_at": "2026-05-22T18:01:06.184Z",
+  "generated_at": "2026-05-22T18:18:04.660Z",
   "note": "Mechanically derived from raw build substrate by walkthrough-labels-derive.mjs. This is a fallback for hand-authored labels; blurbs are clipped from full-sentence substrate and are necessarily crude. Superseded once roles emit their own Completion Reports (the v1.11/v1.12 substrate amendment).",
   "prompt": "Build me an app that points me to the closest liquor store",
   "phases": {

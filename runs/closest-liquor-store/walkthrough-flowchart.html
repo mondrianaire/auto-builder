@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>closest-liquor-store · Walkthrough · v2.23</title>
+<title>closest-liquor-store · Walkthrough · v2.24</title>
 <style>
 :root {
   --paper-light:#f5efe2; --paper-warm:#ede4ca; --paper-cream:#f7f1e3; --paper-deep:#ece4cb;
@@ -133,6 +133,13 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 .tile-badge{font-family:var(--type-data);font-size:8px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
 .tile-badge-high{fill:var(--accent-red);}.tile-badge-med{fill:var(--accent-orange);}.tile-badge-low{fill:var(--ink-dim);}
 .tile-breaks{font-family:var(--type-data);font-size:9px;fill:var(--accent-orange);letter-spacing:0.05em;}
+/* diagnosis overlay — frames the diagnosed culprit cell (interactive-wrapup-spec §8.2) */
+.diag-highlight{fill:none;stroke:#6a6258;stroke-width:3.5;stroke-dasharray:10 6;opacity:0;pointer-events:none;}
+#diag-banner{display:none;flex-shrink:0;background:#241f1c;color:var(--paper-light);
+  font-family:var(--type-data);font-size:11.5px;line-height:1.55;padding:9px 20px;
+  border-bottom:2px solid #6a6258;letter-spacing:0.03em;}
+#diag-banner b{color:var(--accent-orange);font-weight:700;letter-spacing:0.10em;}
+#toolbar #diag-btn[aria-pressed="true"]{background:#6a6258;border-color:#6a6258;color:var(--paper-light);}
 .bg-row-text{font-family:var(--type-ui);font-size:12px;fill:var(--ink-body);}
 .bg-row-id{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.14em;}
 .ip-question{font-family:var(--type-ui);font-size:15px;font-weight:700;fill:var(--ink-navy);}
@@ -235,13 +242,14 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 </div>
 <div id="toolbar">
   <span class="wordmark">OttoBLD</span>
-  <span class="doc-class">WALKTHROUGH · v2.23 · 2026-05-22 18:01</span>
+  <span class="doc-class">WALKTHROUGH · v2.24 · 2026-05-22 18:18</span>
   <span class="meta-strip">
     <span><span class="key">SLUG · </span><span class="val">closest-liquor-store</span></span>
     <span><span class="key">DECISION · </span><span class="val" id="cur-decision">D-UP-1</span></span>
   </span>
   <button id="step-btn">Step ▶</button>
   <button id="reset-btn">Reset</button>
+  <button id="diag-btn" aria-pressed="false">⚠ Diagnosis</button>
   <label class="focus-toggle"><input id="focus-toggle" type="checkbox" checked/><span>auto-focus</span></label>
   <span class="speed">
     <label>speed</label>
@@ -250,6 +258,7 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
   </span>
   <span class="progress" id="progress"></span>
 </div>
+<div id="diag-banner"></div>
 <div id="stage">
   <div id="canvas-wrap"><svg id="canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 2000"
     preserveAspectRatio="xMidYMid meet" font-family="Arial, Helvetica, sans-serif">
@@ -759,6 +768,8 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
   <g id="transit-layer"></g>
   <!-- envelope layer — handoff dispatch pouches, drawn above everything -->
   <g id="envelope-layer"></g>
+  <!-- diagnosis overlay — frames the diagnosed culprit cell (wrapup-spec §8.2) -->
+  <rect class="diag-highlight" id="diag-hi" x="0" y="0" width="10" height="10"/>
 </svg></div>
 </div>
 <script>
@@ -777,6 +788,7 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
   const SEC_FULL_H = 384;  // materialized sections-block height
   const BASE_TYPE_MS = 17;
   const TITLE_H = 84;
+  const DIAGNOSIS = {"schema_version":"0.1","slug":"closest-liquor-store","generated_at":"2026-05-22T00:00:00Z","generated_by":"interactive wrap-up — v1 conversational walk, conducted manually as the first dogfood of architecture/interactive-wrapup-spec.md","outcome_lane":"B","outcome_lane_label":"works, but not what I asked for (Discovery misalignment)","verdict_cross_check":{"user_answer":"B","recorded_verdict":"unknown","reading":"Orthogonal. A build can pass verification and still miss intent; Lane B is Discovery misalignment by definition, so the recorded verdict does not contradict the user's answer."},"divergence":{"delivered":"The app returns the closest wine shop.","intended":"The closest liquor store.","user_detail":"It shows a wine shop; I wanted a liquor store."},"culprit":{"id":"A4","role":"Discovery","task":"assumption ledger (D-DSC-2)","cell_id":"D-DSC-2","layer":"assumption","confidence_logged":"high","decision_text":"'Liquor store' means a retail business that sells packaged alcoholic beverages (a category, not a specific named chain).","explanation":"A4 flattened a jurisdiction-defined legal category into one universal definition. What legally counts as a 'liquor store', and what such a store may sell, is set by local alcohol law and varies by jurisdiction. TD faithfully implemented A4 — IP1's resolution to OpenStreetMap shop=alcohol is precisely A4's definition — so the implementation is not the bug; the assumption is."},"compounding_factor":{"id":"IP1","role":"Technical Discovery","cell_id":"D-TD-2","decision_text":"Use the OpenStreetMap Overpass API for shop=alcohol features near the user.","note":"shop=alcohol is a single global, jurisdiction-agnostic tag. It cannot represent local legal store categories, so even a corrected A4 could not be honored by this data source without a different approach."},"called_shot":{"predicted":true,"predicting_field":"A4.what_breaks_if_wrong","note":"A4's own what_breaks_if_wrong read: 'Edge regions where liquor store maps to a different store type (e.g., grocery with alcohol) could surface unexpected results.' The architecture flagged this exact failure mode — at high confidence — and proceeded on the assumption anyway."},"corrected_intent":"'Liquor store' is a jurisdiction-defined legal category. The build needed to resolve the user's locale and its alcohol laws — or surface the jurisdiction-dependence as an inflection point — rather than logging a universal high-confidence assumption.","amendment_candidate":"When a prompt uses a term whose meaning is set by local law or jurisdiction (liquor store, pharmacy, notary, ...), Discovery must not log a single universal high-confidence assumption for it. It must surface the jurisdiction-dependence as an inflection point grounded in the user's locale; and TD must verify the chosen data source can represent the jurisdiction-specific distinction.","ab_rerun_input":{"kind":"confirmatory","note":"Re-run with the corrected assumption pinned ('liquor store' resolved per the user's jurisdiction) to confirm A4 is the real culprit — or re-run the verbatim prompt after the amendment lands, as the clean A/B."},"lifecycle":{"phase1_documented_gap":true,"triggers_phase2":false,"first_delivery_outcome_changed":false,"note":"Discovery misalignment is a Phase-1 documented gap, not a Phase 2 trigger (build-lifecycle.md). first_delivery_outcome is untouched."}};
   let speedMul = 1.0;
   function typeMs(){ return Math.max(2, Math.round(BASE_TYPE_MS / speedMul)); }
 
@@ -789,6 +801,10 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
   const curDecision = document.getElementById('cur-decision');
   const focusToggle = document.getElementById('focus-toggle');
   const placedHi = document.getElementById('placed-hi');
+  const diagHi = document.getElementById('diag-hi');
+  const diagBtn = document.getElementById('diag-btn');
+  const diagBanner = document.getElementById('diag-banner');
+  let diagnosisOn = false;
 
   // ---- BLOCK MODEL ----
   // Ordered list of blocks. Each block is an SVG <g id="blk-*">.
@@ -1742,8 +1758,58 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
     updateProgress();
   }
 
+  // ---- DIAGNOSIS OVERLAY (interactive-wrapup-spec §8.2) ----
+  function htmlesc(s){
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  // Reveal the whole completed walkthrough so the highlight has stable layout.
+  function revealAll(){
+    BLOCK_ORDER.forEach(showBlock);
+    [].concat(DSC_IDS, TD_IDS, ED_IDS, CO_IDS, IN_IDS, CR_IDS, CV_IDS)
+      .forEach(id => revealCellBody(id));
+    if (SEC_COUNT) materializeSections();
+    relayout();
+  }
+  function toggleDiagnosis(){
+    if (!DIAGNOSIS || !diagBtn) return;
+    diagnosisOn = !diagnosisOn;
+    diagBtn.setAttribute('aria-pressed', diagnosisOn ? 'true' : 'false');
+    if (!diagnosisOn){
+      diagHi.style.opacity = '0';
+      diagBanner.style.display = 'none';
+      return;
+    }
+    revealAll();
+    const cul = DIAGNOSIS.culprit || {};
+    const cellEl = cul.cell_id ? canvas.querySelector('.cell[data-cell="' + cul.cell_id + '"]') : null;
+    const rc = cellEl ? cellEl.closest('.role-container') : null;
+    if (cellEl && rc){
+      const containerId = rc.id.replace('blk-', '');
+      requestAnimationFrame(() => {
+        relayout();
+        const r = cellAbsRect(containerId, cul.cell_id);
+        if (r){
+          diagHi.setAttribute('x', -10);
+          diagHi.setAttribute('y', r.y - 10);
+          diagHi.setAttribute('width', 1260 + 20);
+          diagHi.setAttribute('height', r.h + 20);
+          diagHi.style.opacity = '1';
+          frameCell(containerId, cul.cell_id);
+        }
+      });
+    }
+    const cs = DIAGNOSIS.called_shot && DIAGNOSIS.called_shot.predicted;
+    diagBanner.innerHTML =
+      '<b>⚠ DIAGNOSIS</b>&nbsp;&nbsp;Culprit: <b>' + htmlesc(cul.id || '?') + '</b> ('
+      + htmlesc(cul.role || '') + ' · ' + htmlesc(cul.layer || '') + ' layer) — '
+      + htmlesc(cul.decision_text || '')
+      + (cs ? '&nbsp;&nbsp;·&nbsp;&nbsp;the build\'s own ⚠ IF WRONG note on this decision predicted the fault.' : '');
+    diagBanner.style.display = 'block';
+  }
+
   stepBtn.addEventListener('click', advance);
-  resetBtn.addEventListener('click', reset);
+  resetBtn.addEventListener('click', () => { if (diagnosisOn) toggleDiagnosis(); reset(); });
+  if (diagBtn) diagBtn.addEventListener('click', toggleDiagnosis);
   speedSlider.addEventListener('input', () => {
     speedMul = parseFloat(speedSlider.value);
     speedReadout.textContent = speedMul.toFixed(2).replace(/\.?0+$/,'') + 'x';
