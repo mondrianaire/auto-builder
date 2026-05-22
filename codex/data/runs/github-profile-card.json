@@ -3,7 +3,7 @@
   "slug": "github-profile-card",
   "summary": {
     "slug": "github-profile-card",
-    "prompt": null,
+    "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
     "date": "2026-05-16",
     "architecture_version": null,
     "dispatch_mode": null,
