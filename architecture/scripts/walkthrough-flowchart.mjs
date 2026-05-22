@@ -318,20 +318,32 @@ function renderAssumptionsCell(d) {
   let ty = 44;
   p.push(`<text class="dsc2-key-label" x="30" y="${ty}">KEY DECISIONS — high impact on at least one axis</text>`);
   p.push(`<line x1="30" y1="${ty+10}" x2="${BLOCK_W-30}" y2="${ty+10}" stroke="#c83a3a" stroke-width="1.5"/>`);
+  // When assumptions carry a breaks_if_wrong risk note, key tiles grow a row
+  // to show it — the build's organic per-decision risk-sensing (interactive-
+  // wrapup-spec §8.1). Tiles without one keep the compact 60px height.
+  const hasBreaks = keys.some(a => a.breaks_if_wrong);
+  const TH = hasBreaks ? 80 : 60;
+  const ROWH = hasBreaks ? 92 : 72;
   keys.forEach((a, i) => {
     const col = i % 2, row = Math.floor(i/2);
     const tx = col === 0 ? 30 : 462;
-    const tyy = ty + 22 + row*72;
-    p.push(`<g>
-      <rect class="tile-accent-${a.accent}" x="${tx}" y="${tyy}" width="4" height="60"/>
-      <rect class="tile-bg" x="${tx+4}" y="${tyy}" width="404" height="60"/>
-      <rect class="tile-border" x="${tx+4}" y="${tyy}" width="404" height="60"/>
+    const tyy = ty + 22 + row*ROWH;
+    let tile = `<g>
+      <rect class="tile-accent-${a.accent}" x="${tx}" y="${tyy}" width="4" height="${TH}"/>
+      <rect class="tile-bg" x="${tx+4}" y="${tyy}" width="404" height="${TH}"/>
+      <rect class="tile-border" x="${tx+4}" y="${tyy}" width="404" height="${TH}"/>
       <text class="tile-id" x="${tx+16}" y="${tyy+19}">${esc(a.id)}</text>
       <text class="tile-badge ${a.badge}" x="${tx+400}" y="${tyy+19}" text-anchor="end">PROMPT • ${esc((a.prompt_impact||'').toUpperCase())}  TECH • ${esc((a.tech_impact||'').toUpperCase())}</text>
-      <text class="tile-text" x="${tx+16}" y="${tyy+45}" font-size="15">${esc(a.label)}</text>
-    </g>`);
+      <text class="tile-text" x="${tx+16}" y="${tyy+45}" font-size="15">${esc(a.label)}</text>`;
+    if (a.breaks_if_wrong){
+      tile += `
+      <text class="tile-breaks" x="${tx+16}" y="${tyy+66}">⚠ IF WRONG · ${esc(a.breaks_if_wrong)}</text>`;
+    }
+    tile += `
+    </g>`;
+    p.push(tile);
   });
-  let by = ty + 22 + Math.ceil(keys.length/2)*72 + 24;
+  let by = ty + 22 + Math.ceil(keys.length/2)*ROWH + 24;
   p.push(`<text class="dsc2-bg-label" x="30" y="${by}">BACKGROUND ASSUMPTIONS — lower impact</text>`);
   p.push(`<line x1="30" y1="${by+10}" x2="${BLOCK_W-30}" y2="${by+10}" stroke="#c8c0aa" stroke-width="1" stroke-dasharray="3,3"/>`);
   bg.forEach((a, i) => {
@@ -693,7 +705,7 @@ function renderSvg(graph) {
 
 // Bump this on every change set so the top-left toolbar string lets the
 // user confirm they're viewing the freshly-generated HTML, not a cached one.
-const WALKTHROUGH_VERSION = '2.22';
+const WALKTHROUGH_VERSION = '2.23';
 
 function render(graph) {
   // date + time so every regeneration produces a distinct stamp
@@ -865,6 +877,7 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 .tile-text{font-family:var(--type-ui);font-size:13.5px;fill:var(--ink-body);}
 .tile-badge{font-family:var(--type-data);font-size:8px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
 .tile-badge-high{fill:var(--accent-red);}.tile-badge-med{fill:var(--accent-orange);}.tile-badge-low{fill:var(--ink-dim);}
+.tile-breaks{font-family:var(--type-data);font-size:9px;fill:var(--accent-orange);letter-spacing:0.05em;}
 .bg-row-text{font-family:var(--type-ui);font-size:12px;fill:var(--ink-body);}
 .bg-row-id{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.14em;}
 .ip-question{font-family:var(--type-ui);font-size:15px;font-weight:700;fill:var(--ink-navy);}

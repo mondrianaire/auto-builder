@@ -154,7 +154,12 @@ function deriveDiscovery(ledger) {
           id: a.id,
           label: clip(firstClause(a.assumption), 54),
           prompt_impact: imp,
-          tech_impact: imp
+          tech_impact: imp,
+          // the build's organic per-decision risk note (interactive-wrapup-spec
+          // §8.1). Dropped from the JSON when the ledger has none.
+          breaks_if_wrong: a.what_breaks_if_wrong
+            ? clip(firstClause(a.what_breaks_if_wrong), 72)
+            : undefined
         };
       }),
       answer_source: `${al.length} assumptions · derived from ledger-v1.json`
