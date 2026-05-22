@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Closest Liquor Store</title>
+  <!-- ============================================================
+       Closest Liquor Store — integrated single-file app.
+       Assembled by the Coordinator (inline Integrator) from:
+         section-1  Location acquisition       (b1-location/location.js)
+         section-2  Liquor-store data lookup    (b2-storelookup/storelookup.js)
+         section-3  Closest-store selection     (b3-presentation/presentation.js)
+         section-4  App shell, flow, and launch (b4-shell/shell.{html,css,js})
+       All app code and styling are vendored inline — NO CDN. The only
+       network calls the app makes are to the public OpenStreetMap APIs
+       (Overpass + Nominatim). Open by double-clicking this file; no
+       server and no build step are required.
+       ============================================================ -->
+  <style>
+/* ===== section-4 — App shell styling (b4-shell/shell.css) ===== */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f4ede1;
+  color: #2b2620;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.cls-app {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 20px 56px;
+}
+
+.cls-header { text-align: center; margin-bottom: 24px; }
+
+.cls-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+.cls-subtitle {
+  font-size: 14px;
+  color: #6b6155;
+  margin: 0;
+}
+
+.cls-panel {
+  background: #fffaf2;
+  border: 1px solid #e4d8c4;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(43, 38, 32, 0.06);
+}
+
+/* ---- location module surface (section-1 renders into this) ---- */
+.cls-loc-row { display: flex; gap: 8px; }
+
+.cls-loc-input {
+  flex: 1;
+  padding: 11px 13px;
+  font-size: 15px;
+  border: 1px solid #d8cbb5;
+  border-radius: 9px;
+  background: #fff;
+  color: #2b2620;
+  min-width: 0;
+}
+.cls-loc-input:focus {
+  outline: none;
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.15);
+}
+
+.cls-loc-btn {
+  padding: 11px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #c0392b;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cls-loc-btn:hover { background: #a93226; }
+.cls-loc-btn:disabled { opacity: 0.55; cursor: default; }
+
+.cls-loc-status {
+  margin-top: 9px;
+  font-size: 13px;
+  color: #6b6155;
+  min-height: 18px;
+}
+
+/* ---- shell status banner ---- */
+.cls-status {
+  margin: 16px 0 0;
+  padding: 10px 13px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  background: #efe6d6;
+  color: #4a4338;
+}
+.cls-status-ok    { background: #e3efe1; color: #2f5a2c; }
+.cls-status-warn  { background: #f6ecd2; color: #7a5d1e; }
+.cls-status-error { background: #f6dcd8; color: #8c2c20; }
+
+/* ---- loading indicator ---- */
+.cls-loading {
+  display: none;
+  align-items: center;
+  gap: 11px;
+  margin-top: 18px;
+  padding: 14px;
+  font-size: 14px;
+  color: #6b6155;
+  background: #fffaf2;
+  border: 1px solid #e4d8c4;
+  border-radius: 12px;
+}
+.cls-spinner {
+  width: 20px; height: 20px;
+  border: 3px solid #e4d8c4;
+  border-top-color: #c0392b;
+  border-radius: 50%;
+  animation: cls-spin 0.8s linear infinite;
+  flex: none;
+}
+@keyframes cls-spin { to { transform: rotate(360deg); } }
+
+/* ---- result region ---- */
+.cls-result { margin-top: 18px; }
+
+.cls-card {
+  background: #fffaf2;
+  border: 1px solid #e4d8c4;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 2px 8px rgba(43, 38, 32, 0.08);
+}
+.cls-card-eyebrow {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c0392b;
+  margin-bottom: 6px;
+}
+.cls-card-name {
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.cls-card-address {
+  font-size: 14.5px;
+  color: #5a5246;
+  margin-bottom: 12px;
+}
+.cls-card-distance { margin-bottom: 16px; }
+.cls-card-distance-num {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2b2620;
+}
+.cls-card-distance-label {
+  font-size: 13.5px;
+  color: #6b6155;
+}
+
+.cls-card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.cls-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 9px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.cls-btn-primary { background: #c0392b; color: #fff; }
+.cls-btn-primary:hover { background: #a93226; }
+.cls-btn-secondary {
+  background: #efe6d6;
+  color: #4a4338;
+  border: 1px solid #d8cbb5;
+}
+.cls-btn-secondary:hover { background: #e6dac4; }
+
+/* ---- empty / error message states ---- */
+.cls-msg {
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e4d8c4;
+  background: #fffaf2;
+}
+.cls-msg-headline { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+.cls-msg-detail { font-size: 14px; color: #5a5246; }
+.cls-msg-error { background: #f6dcd8; border-color: #e6b8b0; }
+.cls-msg-error .cls-msg-headline { color: #8c2c20; }
+.cls-msg-empty { background: #f6ecd2; border-color: #e6d6a8; }
+.cls-msg-empty .cls-msg-headline { color: #7a5d1e; }
+
+.cls-footer {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 11.5px;
+  color: #9a8f7e;
+}
+  </style>
+</head>
+<body>
+
+  <!-- ===== section-4 — App shell HTML skeleton (b4-shell/shell.html) ===== -->
+  <div class="cls-app">
+    <header class="cls-header">
+      <h1 class="cls-title">Closest Liquor Store</h1>
+      <p class="cls-subtitle">Finds the nearest store selling liquor, wherever you are.</p>
+    </header>
+
+    <section class="cls-panel" aria-label="Your location">
+      <!-- section-1 (Location acquisition) renders its UI in here. -->
+      <div id="cls-location"></div>
+    </section>
+
+    <!-- shell status banner -->
+    <div id="cls-status" class="cls-status" role="status" aria-live="polite" style="display:none;"></div>
+
+    <!-- loading indicator -->
+    <div id="cls-loading" class="cls-loading" aria-live="polite">
+      <div class="cls-spinner" aria-hidden="true"></div>
+      <div class="cls-loading-text">Working...</div>
+    </div>
+
+    <!-- section-3 (Closest-store presentation) renders the result card
+         or the empty/error state in here. -->
+    <div id="cls-result" class="cls-result"></div>
+
+    <footer class="cls-footer">
+      Store data from OpenStreetMap (Overpass API). Location lookup via OSM Nominatim.
+    </footer>
+  </div>
+
+  <!-- ============================================================
+       Section modules, inlined in dependency order. Each module is a
+       self-contained IIFE that publishes a single global; the shell
+       (loaded last) consumes those globals. The DOM skeleton above is
+       fully parsed before any script runs, so start() finds it.
+       ============================================================ -->
+
+  <script>
+/* ===== section-1 — Location acquisition (b1-location/location.js) ===== */
+(function (global) {
+  'use strict';
+
+  var NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+  var GEO_TIMEOUT_MS = 12000;   // how long we wait on the Geolocation API
+  var GEOCODE_TIMEOUT_MS = 15000;
+
+  var _resolved = null; // last resolved {lat,lon,label,source}
+
+  /* fetch with a hard timeout — never hangs forever */
+  function fetchWithTimeout(url, opts, timeoutMs) {
+    opts = opts || {};
+    return new Promise(function (resolve, reject) {
+      var timedOut = false;
+      var timer = setTimeout(function () {
+        timedOut = true;
+        reject(new Error('timeout'));
+      }, timeoutMs);
+      fetch(url, opts).then(function (resp) {
+        if (timedOut) return;
+        clearTimeout(timer);
+        resolve(resp);
+      }).catch(function (err) {
+        if (timedOut) return;
+        clearTimeout(timer);
+        reject(err);
+      });
+    });
+  }
+
+  /* Resolve a typed location string to coordinates via OSM Nominatim. */
+  function geocode(query) {
+    var url = NOMINATIM_URL + '?format=json&limit=1&q=' + encodeURIComponent(query);
+    return fetchWithTimeout(url, { headers: { 'Accept': 'application/json' } }, GEOCODE_TIMEOUT_MS)
+      .then(function (resp) {
+        if (!resp.ok) throw new Error('Geocoding service returned HTTP ' + resp.status);
+        return resp.json();
+      })
+      .then(function (data) {
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('No place matched "' + query + '". Try a more specific address or a nearby city.');
+        }
+        var hit = data[0];
+        var lat = parseFloat(hit.lat);
+        var lon = parseFloat(hit.lon);
+        if (!isFinite(lat) || !isFinite(lon)) {
+          throw new Error('Could not read coordinates for "' + query + '".');
+        }
+        return {
+          lat: lat,
+          lon: lon,
+          label: hit.display_name || query,
+          source: 'manual'
+        };
+      });
+  }
+
+  /* Attempt browser Geolocation. Resolves with a location object or
+   * rejects with an Error carrying a human-readable .message. */
+  function detectGeolocation() {
+    return new Promise(function (resolve, reject) {
+      if (!global.navigator || !global.navigator.geolocation) {
+        reject(new Error('This browser does not support automatic location. Enter a location below.'));
+        return;
+      }
+      var settled = false;
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          if (settled) return;
+          settled = true;
+          resolve({
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            label: 'Your current location',
+            source: 'auto'
+          });
+        },
+        function (err) {
+          if (settled) return;
+          settled = true;
+          var msg;
+          if (err && err.code === 1) {
+            msg = 'Location access was denied. Enter a location below instead.';
+          } else if (err && err.code === 2) {
+            msg = 'Your location is currently unavailable. Enter a location below instead.';
+          } else if (err && err.code === 3) {
+            msg = 'Detecting your location timed out. Enter a location below instead.';
+          } else {
+            msg = 'Could not detect your location automatically. Enter a location below instead.';
+          }
+          reject(new Error(msg));
+        },
+        { enableHighAccuracy: false, timeout: GEO_TIMEOUT_MS, maximumAge: 60000 }
+      );
+    });
+  }
+
+  /* Build the location UI + run the flow. Returns { renderInto }. */
+  function acquireLocation(callbacks) {
+    callbacks = callbacks || {};
+    var onResolved = typeof callbacks.onResolved === 'function' ? callbacks.onResolved : function () {};
+    var onStatus = typeof callbacks.onStatus === 'function' ? callbacks.onStatus : function () {};
+
+    var els = {}; // filled in renderInto
+
+    function setStatus(text) {
+      if (els.status) els.status.textContent = text || '';
+      onStatus(text || '');
+    }
+
+    function deliver(location) {
+      _resolved = location;
+      setStatus('Using: ' + location.label);
+      onResolved(location);
+    }
+
+    function handleManualSubmit() {
+      var q = (els.input.value || '').trim();
+      if (!q) {
+        setStatus('Type a city, address, or place name, then press Find.');
+        els.input.focus();
+        return;
+      }
+      els.button.disabled = true;
+      setStatus('Looking up "' + q + '"...');
+      geocode(q).then(function (loc) {
+        els.button.disabled = false;
+        deliver(loc);
+      }).catch(function (err) {
+        els.button.disabled = false;
+        setStatus((err && err.message) || 'Could not resolve that location. Try again.');
+        els.input.focus();
+      });
+    }
+
+    function renderInto(container) {
+      // Manual-entry control is ALWAYS rendered and visible/usable —
+      // it is never hidden, so the user is never stuck (S1.A2 / S1.A5).
+      container.innerHTML = '';
+
+      var wrap = document.createElement('div');
+      wrap.className = 'cls-loc';
+
+      var row = document.createElement('div');
+      row.className = 'cls-loc-row';
+
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'cls-loc-input';
+      input.placeholder = 'Enter a city, address, or place';
+      input.setAttribute('aria-label', 'Enter your location manually');
+      input.autocomplete = 'off';
+
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'cls-loc-btn';
+      button.textContent = 'Find';
+
+      var status = document.createElement('div');
+      status.className = 'cls-loc-status';
+      status.setAttribute('role', 'status');
+      status.setAttribute('aria-live', 'polite');
+
+      row.appendChild(input);
+      row.appendChild(button);
+      wrap.appendChild(row);
+      wrap.appendChild(status);
+      container.appendChild(wrap);
+
+      els.input = input;
+      els.button = button;
+      els.status = status;
+
+      button.addEventListener('click', handleManualSubmit);
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); handleManualSubmit(); }
+      });
+
+      // Kick off automatic detection. On any failure the manual path
+      // (already rendered above) stays available — S1.A3 / S1.A5 / IP2.A3.
+      setStatus('Detecting your location...');
+      detectGeolocation().then(function (loc) {
+        deliver(loc);
+      }).catch(function (err) {
+        setStatus((err && err.message) || 'Enter a location below to continue.');
+        els.input.focus();
+      });
+    }
+
+    return { renderInto: renderInto };
+  }
+
+  function getResolvedLocation() {
+    return _resolved;
+  }
+
+  var api = {
+    acquireLocation: acquireLocation,
+    getResolvedLocation: getResolvedLocation,
+    _geocode: geocode // exposed for edge-case testing only
+  };
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = api;
+  } else {
+    global.CLS_Location = api;
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
+  </script>
+
+  <script>
+/* ===== section-2 — Liquor-store data lookup (b2-storelookup/storelookup.js) ===== */
+(function (global) {
+  'use strict';
+
+  /* IP1.A1 — canonical Overpass interpreter endpoint. */
+  var OVERPASS_ENDPOINT = 'https://overpass-api.de/api/interpreter';
+  var OVERPASS_TIMEOUT_MS = 25000;
+
+  /* Build the Overpass QL query string.
+   * IP1.A2 — filters on the shop=alcohol tag (also shop=wine / shop=beverages).
+   * IP1.A3 / S2.A3 — constrains to an around:<radius> filter bound to
+   *   the user's lat/lon. nodes + ways + relations; `out center;` so
+   *   ways/relations carry coordinates. */
+  function buildOverpassQuery(lat, lon, radiusMeters) {
+    var r = Math.round(radiusMeters);
+    var ll = lat + ',' + lon;
+    return '[out:json][timeout:25];' +
+      '(' +
+        'node["shop"="alcohol"](around:' + r + ',' + ll + ');' +
+        'way["shop"="alcohol"](around:' + r + ',' + ll + ');' +
+        'relation["shop"="alcohol"](around:' + r + ',' + ll + ');' +
+        'node["shop"="wine"](around:' + r + ',' + ll + ');' +
+        'way["shop"="wine"](around:' + r + ',' + ll + ');' +
+        'node["shop"="beverages"](around:' + r + ',' + ll + ');' +
+        'way["shop"="beverages"](around:' + r + ',' + ll + ');' +
+      ');' +
+      'out center tags;';
+  }
+
+  function fetchWithTimeout(url, opts, timeoutMs) {
+    opts = opts || {};
+    return new Promise(function (resolve, reject) {
+      var timedOut = false;
+      var timer = setTimeout(function () {
+        timedOut = true;
+        reject(new Error('timeout'));
+      }, timeoutMs);
+      fetch(url, opts).then(function (resp) {
+        if (timedOut) return;
+        clearTimeout(timer);
+        resolve(resp);
+      }).catch(function (err) {
+        if (timedOut) return;
+        clearTimeout(timer);
+        reject(err);
+      });
+    });
+  }
+
+  /* Compose a human-readable address from OSM addr:* tags. */
+  function composeAddress(tags) {
+    if (!tags) return 'Address not listed';
+    var house = tags['addr:housenumber'];
+    var street = tags['addr:street'];
+    var city = tags['addr:city'] || tags['addr:town'] || tags['addr:village'];
+    var state = tags['addr:state'];
+    var postcode = tags['addr:postcode'];
+
+    var line1 = '';
+    if (house && street) line1 = house + ' ' + street;
+    else if (street) line1 = street;
+
+    var parts = [];
+    if (line1) parts.push(line1);
+    var cityState = [city, state].filter(Boolean).join(', ');
+    if (cityState) parts.push(cityState);
+    if (postcode) parts.push(postcode);
+
+    var addr = parts.join(', ');
+    return addr || 'Address not listed';
+  }
+
+  /* Normalize one Overpass element to a store record, or null if it
+   * has no usable coordinate. S2.A2 — every record carries name,
+   * address, lat, lon; placeholders substituted, never omitted. */
+  function normalizeElement(el) {
+    var lat, lon;
+    if (typeof el.lat === 'number' && typeof el.lon === 'number') {
+      lat = el.lat; lon = el.lon;
+    } else if (el.center && typeof el.center.lat === 'number' && typeof el.center.lon === 'number') {
+      lat = el.center.lat; lon = el.center.lon;
+    } else {
+      return null; // no coordinate — cannot be a usable result
+    }
+    var tags = el.tags || {};
+    var name = (tags.name || tags['brand'] || '').trim() || 'Unnamed liquor store';
+    return {
+      name: name,
+      address: composeAddress(tags),
+      lat: lat,
+      lon: lon
+    };
+  }
+
+  /* Main lookup. Always resolves (never rejects). */
+  function findNearbyLiquorStores(lat, lon, radiusMeters) {
+    if (typeof lat !== 'number' || typeof lon !== 'number' ||
+        !isFinite(lat) || !isFinite(lon)) {
+      return Promise.resolve({
+        status: 'error',
+        stores: [],
+        message: 'No valid location was supplied to the store lookup.'
+      });
+    }
+    var radius = (typeof radiusMeters === 'number' && radiusMeters > 0) ? radiusMeters : 4000;
+    var query = buildOverpassQuery(lat, lon, radius);
+
+    return fetchWithTimeout(
+      OVERPASS_ENDPOINT,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'data=' + encodeURIComponent(query)
+      },
+      OVERPASS_TIMEOUT_MS
+    ).then(function (resp) {
+      if (!resp.ok) {
+        // S2.A4 / IP1.A4 — HTTP error reported, not thrown.
+        throw new Error(
+          'The store directory service returned an error (HTTP ' + resp.status +
+          '). It may be busy — please try again in a moment.'
+        );
+      }
+      return resp.json();
+    }).then(function (data) {
+      var elements = (data && Array.isArray(data.elements)) ? data.elements : [];
+      var stores = [];
+      var seen = {};
+      for (var i = 0; i < elements.length; i++) {
+        var rec = normalizeElement(elements[i]);
+        if (!rec) continue;
+        var key = rec.lat.toFixed(6) + ',' + rec.lon.toFixed(6);
+        if (seen[key]) continue;
+        seen[key] = true;
+        stores.push(rec);
+      }
+      if (stores.length === 0) {
+        // S2.A5 — empty state; caller can widen the radius and retry.
+        return {
+          status: 'empty',
+          stores: [],
+          message: 'No liquor stores found within ' +
+            Math.round(radius / 1000 * 10) / 10 + ' km of this location.'
+        };
+      }
+      return {
+        status: 'ok',
+        stores: stores,
+        message: 'Found ' + stores.length + ' liquor store' +
+          (stores.length === 1 ? '' : 's') + ' nearby.'
+      };
+    }).catch(function (err) {
+      // S2.A4 / IP1.A4 — offline, timeout, parse error, HTTP error:
+      // a clear human-readable message, never a crash.
+      var msg;
+      if (err && err.message === 'timeout') {
+        msg = 'The store directory took too long to respond. Check your connection and try again.';
+      } else if (err && /HTTP/.test(err.message || '')) {
+        msg = err.message;
+      } else if (typeof global.navigator !== 'undefined' && global.navigator &&
+                 global.navigator.onLine === false) {
+        msg = 'You appear to be offline. Connect to the internet and try again.';
+      } else {
+        msg = 'Could not reach the store directory service. Check your internet connection and try again.';
+      }
+      return { status: 'error', stores: [], message: msg };
+    });
+  }
+
+  var api = {
+    findNearbyLiquorStores: findNearbyLiquorStores,
+    buildOverpassQuery: buildOverpassQuery,   // exposed for edge-case testing
+    OVERPASS_ENDPOINT: OVERPASS_ENDPOINT,
+    _normalizeElement: normalizeElement       // exposed for edge-case testing
+  };
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = api;
+  } else {
+    global.CLS_StoreLookup = api;
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
+  </script>
+
+  <script>
+/* ===== section-3 — Closest-store selection and presentation (b3-presentation/presentation.js) ===== */
+(function (global) {
+  'use strict';
+
+  var EARTH_RADIUS_M = 6371000;
+
+  function toRad(deg) { return deg * Math.PI / 180; }
+
+  /* Great-circle (haversine) distance in metres. DCA.3 / S3.A1. */
+  function haversineMeters(lat1, lon1, lat2, lon2) {
+    var dLat = toRad(lat2 - lat1);
+    var dLon = toRad(lon2 - lon1);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return EARTH_RADIUS_M * c;
+  }
+
+  /* Select the single store with the minimum great-circle distance.
+   * Returns null if there are no usable stores. */
+  function selectClosest(userLocation, stores) {
+    if (!userLocation || !Array.isArray(stores) || stores.length === 0) return null;
+    var best = null;
+    for (var i = 0; i < stores.length; i++) {
+      var s = stores[i];
+      if (!s || typeof s.lat !== 'number' || typeof s.lon !== 'number') continue;
+      var d = haversineMeters(userLocation.lat, userLocation.lon, s.lat, s.lon);
+      if (best === null || d < best.distanceMeters) {
+        best = {
+          name: s.name,
+          address: s.address,
+          lat: s.lat,
+          lon: s.lon,
+          distanceMeters: d
+        };
+      }
+    }
+    return best;
+  }
+
+  /* Human-readable distance — shows both miles and km. */
+  function formatDistance(meters) {
+    var km = meters / 1000;
+    var miles = meters / 1609.344;
+    function r(n) { return n < 10 ? Math.round(n * 10) / 10 : Math.round(n); }
+    return r(miles) + ' mi (' + r(km) + ' km)';
+  }
+
+  function el(tag, className, text) {
+    var n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  /* Render the closest-store result card. */
+  function renderResultCard(container, userLocation, closest) {
+    container.innerHTML = '';
+    var card = el('div', 'cls-card');
+
+    card.appendChild(el('div', 'cls-card-eyebrow', 'Closest liquor store'));
+    card.appendChild(el('h2', 'cls-card-name', closest.name));
+    card.appendChild(el('div', 'cls-card-address', closest.address));
+
+    var dist = el('div', 'cls-card-distance');
+    dist.appendChild(el('span', 'cls-card-distance-num', formatDistance(closest.distanceMeters)));
+    dist.appendChild(el('span', 'cls-card-distance-label', ' from ' +
+      ((userLocation && userLocation.label) || 'your location')));
+    card.appendChild(dist);
+
+    // IP4.A1 / S3.A3 — directions hand-off: an external maps link
+    // prefilled with the chosen store's coordinates. Just a hyperlink,
+    // no in-app routing engine (IP4.A2 / S3.A5).
+    var coords = closest.lat + ',' + closest.lon;
+    var fromCoords = (userLocation && typeof userLocation.lat === 'number')
+      ? (userLocation.lat + ',' + userLocation.lon) : '';
+    var osmUrl = 'https://www.openstreetmap.org/directions?' +
+      (fromCoords ? 'from=' + encodeURIComponent(fromCoords) + '&' : '') +
+      'to=' + encodeURIComponent(coords);
+    var googleUrl = 'https://www.google.com/maps/dir/?api=1&destination=' +
+      encodeURIComponent(coords);
+
+    var actions = el('div', 'cls-card-actions');
+
+    var dirLink = el('a', 'cls-btn cls-btn-primary', 'Get directions');
+    dirLink.href = osmUrl;
+    dirLink.target = '_blank';
+    dirLink.rel = 'noopener noreferrer';
+
+    var mapLink = el('a', 'cls-btn cls-btn-secondary', 'Open in Google Maps');
+    mapLink.href = googleUrl;
+    mapLink.target = '_blank';
+    mapLink.rel = 'noopener noreferrer';
+
+    actions.appendChild(dirLink);
+    actions.appendChild(mapLink);
+    card.appendChild(actions);
+
+    container.appendChild(card);
+  }
+
+  /* Render a clear, human-readable empty/error state — never blank. */
+  function renderMessageState(container, kind, headline, detail) {
+    container.innerHTML = '';
+    var box = el('div', 'cls-msg cls-msg-' + kind);
+    box.appendChild(el('div', 'cls-msg-headline', headline));
+    if (detail) box.appendChild(el('div', 'cls-msg-detail', detail));
+    container.appendChild(box);
+  }
+
+  /* Main entry per the section-3--section-4 contract. */
+  function renderClosestStore(params) {
+    params = params || {};
+    var userLocation = params.userLocation;
+    var lookupResult = params.lookupResult || {};
+    var container = params.container;
+    if (!container) return { rendered: 'error' };
+
+    // S3.A4 — error state from upstream.
+    if (lookupResult.status === 'error') {
+      renderMessageState(container, 'error', 'Something went wrong',
+        lookupResult.message || 'The store lookup could not be completed. Please try again.');
+      return { rendered: 'error' };
+    }
+
+    // S3.A4 — empty state (no stores in the searched radius).
+    if (lookupResult.status === 'empty' ||
+        !Array.isArray(lookupResult.stores) || lookupResult.stores.length === 0) {
+      renderMessageState(container, 'empty', 'No liquor store found nearby',
+        lookupResult.message ||
+        'There were no liquor stores within the search area. Try a wider search or a different location.');
+      return { rendered: 'empty' };
+    }
+
+    // S3.A1 / IP3.A1 — pick the single closest store.
+    var closest = selectClosest(userLocation, lookupResult.stores);
+    if (!closest) {
+      renderMessageState(container, 'empty', 'No liquor store found nearby',
+        'The nearby stores were missing location data, so a closest store could not be determined.');
+      return { rendered: 'empty' };
+    }
+
+    // S3.A2 / IP3.A2 — card with name, address, distance.
+    renderResultCard(container, userLocation, closest);
+    return { rendered: 'result' };
+  }
+
+  var api = {
+    renderClosestStore: renderClosestStore,
+    haversineMeters: haversineMeters,
+    selectClosest: selectClosest,
+    formatDistance: formatDistance
+  };
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = api;
+  } else {
+    global.CLS_Presentation = api;
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
+  </script>
+
+  <script>
+/* ===== section-4 — App shell, flow, and launch (b4-shell/shell.js) ===== */
+(function (global) {
+  'use strict';
+
+  // Radius-widening schedule for empty results (section-2 returns
+  // 'empty'; the shell owns retry policy per the section-2--section-4
+  // contract). Metres.
+  var RADIUS_SCHEDULE = [4000, 12000, 30000, 80000];
+
+  function byId(id) { return document.getElementById(id); }
+
+  function setStatus(text, tone) {
+    var banner = byId('cls-status');
+    if (!banner) return;
+    banner.textContent = text || '';
+    banner.className = 'cls-status' + (tone ? ' cls-status-' + tone : '');
+    banner.style.display = text ? 'block' : 'none';
+  }
+
+  function showLoading(text) {
+    var ld = byId('cls-loading');
+    if (!ld) return;
+    ld.querySelector('.cls-loading-text').textContent = text || 'Working...';
+    ld.style.display = 'flex';
+  }
+
+  function hideLoading() {
+    var ld = byId('cls-loading');
+    if (ld) ld.style.display = 'none';
+  }
+
+  function clearResult() {
+    var r = byId('cls-result');
+    if (r) r.innerHTML = '';
+  }
+
+  /* Run the store lookup for a resolved location, widening the radius
+   * when nothing is found, then hand the result to section-3. */
+  function runLookup(location) {
+    var resultEl = byId('cls-result');
+    clearResult();
+    setStatus('Location set: ' + location.label, 'ok');
+
+    var attempt = 0;
+
+    function tryRadius() {
+      var radius = RADIUS_SCHEDULE[attempt];
+      showLoading(attempt === 0
+        ? 'Searching for liquor stores nearby...'
+        : 'Nothing found nearby — widening the search to ' +
+          Math.round(radius / 1000) + ' km...');
+
+      CLS_StoreLookup.findNearbyLiquorStores(location.lat, location.lon, radius)
+        .then(function (lookupResult) {
+          // 'empty' -> widen and retry if the schedule has more steps.
+          if (lookupResult.status === 'empty' && attempt < RADIUS_SCHEDULE.length - 1) {
+            attempt++;
+            tryRadius();
+            return;
+          }
+          hideLoading();
+          if (lookupResult.status === 'error') {
+            setStatus('Could not complete the search.', 'error');
+          } else if (lookupResult.status === 'empty') {
+            setStatus('No liquor stores found, even after widening the search.', 'warn');
+          } else {
+            setStatus('Showing the closest liquor store to ' + location.label + '.', 'ok');
+          }
+          // Hand off to section-3 for selection + presentation.
+          CLS_Presentation.renderClosestStore({
+            userLocation: location,
+            lookupResult: lookupResult,
+            container: resultEl
+          });
+        })
+        .catch(function (err) {
+          // Defensive: the lookup contract says it never rejects, but
+          // the shell still degrades gracefully if something slips.
+          hideLoading();
+          setStatus('An unexpected problem occurred during the search.', 'error');
+          CLS_Presentation.renderClosestStore({
+            userLocation: location,
+            lookupResult: {
+              status: 'error',
+              stores: [],
+              message: 'Unexpected error: ' + ((err && err.message) || 'unknown') +
+                '. Please try again.'
+            },
+            container: resultEl
+          });
+        });
+    }
+
+    tryRadius();
+  }
+
+  /* Boot the app — called on DOMContentLoaded. */
+  function start() {
+    // Guard: if a feature module failed to load, show an honest
+    // message instead of a blank or broken screen (S4.A1).
+    if (!global.CLS_Location || !global.CLS_StoreLookup || !global.CLS_Presentation) {
+      var rootErr = byId('cls-result') || document.body;
+      rootErr.innerHTML = '<div class="cls-msg cls-msg-error">' +
+        '<div class="cls-msg-headline">The app could not start</div>' +
+        '<div class="cls-msg-detail">A required component failed to load. ' +
+        'Please re-download the app file and open it

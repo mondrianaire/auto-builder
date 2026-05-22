@@ -2,7 +2,7 @@
   "version": 1,
   "slug": "closest-liquor-store",
   "generator": "walkthrough-labels-derive/v1",
-  "generated_at": "2026-05-22T10:25:51.022Z",
+  "generated_at": "2026-05-22T11:05:56.269Z",
   "note": "Mechanically derived from raw build substrate by walkthrough-labels-derive.mjs. This is a fallback for hand-authored labels; blurbs are clipped from full-sentence substrate and are necessarily crude. Superseded once roles emit their own Completion Reports (the v1.11/v1.12 substrate amendment).",
   "prompt": "Build me an app that points me to the closest liquor store",
   "phases": {
@@ -113,6 +113,150 @@
           "Native mobile app packaging"
         ],
         "answer_source": "Discovery complete · handoff to Technical Discovery"
+      }
+    ]
+  },
+  "technical_discovery": {
+    "telos": "Turns Discovery's intent into a technical plan TD can hand to builders.",
+    "decisions": [
+      {
+        "id": "D-TD-1",
+        "question": "What kind of thing are we building?",
+        "short_description": "Deliverable kind · anchors every downstream technical decision",
+        "answer_lines": [
+          "Web application"
+        ],
+        "answer_source": "DERIVED · deliverable_kind absent from substrate · defaulted"
+      },
+      {
+        "id": "D-TD-2",
+        "question": "How does TD resolve the open questions?",
+        "short_description": "4 inflection points · 3 ratified from Discovery + 1 new technical questions",
+        "ratifications": [
+          {
+            "id": "IP1",
+            "question": "",
+            "chosen": "Use a live external…"
+          },
+          {
+            "id": "IP2",
+            "question": "",
+            "chosen": "Automatically detect the…"
+          },
+          {
+            "id": "IP3",
+            "question": "",
+            "chosen": "Show the single closest…"
+          }
+        ],
+        "new_td_ips": [
+          {
+            "id": "IP4",
+            "question": "How the user acts on the result (the…",
+            "chosen": "Provide a directions…"
+          }
+        ],
+        "answer_source": "FROM sections · inflection_resolutions[]"
+      },
+      {
+        "id": "D-TD-3",
+        "question": "How do we split the build?",
+        "short_description": "Section breakdown · 5 parallel workstreams",
+        "materializes": "sections",
+        "sections": [
+          {
+            "id": "S1",
+            "name": "Location acquisition",
+            "builders": 1,
+            "depends": "no dependencies"
+          },
+          {
+            "id": "S2",
+            "name": "Liquor-store data lookup",
+            "builders": 1,
+            "depends": "needs S1"
+          },
+          {
+            "id": "S3",
+            "name": "Closest-store selection and presentation",
+            "builders": 1,
+            "depends": "needs S1 + S2"
+          },
+          {
+            "id": "S4",
+            "name": "App shell, flow, and launch",
+            "builders": 1,
+            "depends": "needs S1 + S2 + S3"
+          },
+          {
+            "id": "S5",
+            "name": "Edge-case testing",
+            "builders": 1,
+            "depends": "after integration"
+          }
+        ],
+        "answer_source": "FROM sections · sections[]"
+      },
+      {
+        "id": "D-TD-4",
+        "question": "How do we know the build is correct?",
+        "short_description": "Coverage checks + the prompt-named verb",
+        "answer_lines": [
+          "45 checks written across the build.",
+          "Plus the prompt-named-verb check —",
+          "the one that decides pass or fail."
+        ],
+        "answer_source": "FROM sections · coverage assertion counts"
+      }
+    ]
+  },
+  "coordinator": {
+    "telos": "Sequences the section workstreams and dispatches the builders.",
+    "decisions": [
+      {
+        "id": "D-CO-1",
+        "question": "What is the Coordinator's job?",
+        "short_description": "Coordinator's mandate · flow control, no product calls",
+        "answer_lines": [
+          "Sequence the build. Build the dependency graph,",
+          "dispatch sections in waves as their inputs come",
+          "ready, and watch for completion. The Coordinator",
+          "makes no architectural or product decisions."
+        ],
+        "answer_source": "FROM role_charters.md · Coordinator Charter"
+      },
+      {
+        "id": "D-CO-2",
+        "question": "What order does the build run in?",
+        "short_description": "Wave plan · 5 sections sequenced by dependency",
+        "waves": [
+          {
+            "n": 1,
+            "sections": "S1 · Location acquisition",
+            "note": "No dependencies — dispatched first"
+          },
+          {
+            "n": 2,
+            "sections": "S2 · Liquor-store data lookup",
+            "note": "Waits for S1"
+          },
+          {
+            "n": 3,
+            "sections": "S3 · Closest-store selection and…",
+            "note": "Waits for S1 + S2"
+          },
+          {
+            "n": 4,
+            "sections": "S4 · App shell, flow, and launch",
+            "note": "Waits for S1 + S2 + S3"
+          },
+          {
+            "n": 5,
+            "sections": "S5 · Edge-case testing",
+            "note": "Runs after the Integrator assembles the earlier sections"
+          }
+        ],
+        "answer_source": "DERIVED · sections depends_on DAG"
       }
     ]
   }

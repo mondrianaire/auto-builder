@@ -234,7 +234,7 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 </div>
 <div id="toolbar">
   <span class="wordmark">OttoBLD</span>
-  <span class="doc-class">WALKTHROUGH · v2.22 · 2026-05-22 10:25</span>
+  <span class="doc-class">WALKTHROUGH · v2.22 · 2026-05-22 11:05</span>
   <span class="meta-strip">
     <span><span class="key">SLUG · </span><span class="val">closest-liquor-store</span></span>
     <span><span class="key">DECISION · </span><span class="val" id="cur-decision">D-UP-1</span></span>
@@ -419,6 +419,135 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
     <text class="phase-band-text" x="40" y="30">Planning</text>
     <line class="phase-band-line" x1="40" y1="40" x2="1220" y2="40"/>
   </g>
+<g id="blk-td" class="block role-container">
+    <rect class="container-bg" id="td-bg" x="0" y="0" width="900" height="300"/>
+    <rect class="container-border" id="td-border" x="0" y="0" width="900" height="300"/>
+    
+    <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
+    <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
+    <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
+    <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
+    <text class="masthead-kicker" x="450" y="34" text-anchor="middle">INITIAL MODE · AFTER DISCOVERY</text>
+    <text class="masthead-title" x="450" y="71.4" text-anchor="middle" font-size="44">Technical Discovery</text>
+    <text class="masthead-telos" x="450" y="99.4" text-anchor="middle">Turns Discovery's intent into a technical plan TD can hand to builders.</text>
+    <line class="masthead-rule" x1="40" y1="119.4" x2="860" y2="119.4"/>
+    <g class="waiting-block" id="td-waiting">
+      <text class="role-await" x="450" y="171.4" text-anchor="middle">WAITING TO START</text>
+      <text class="role-await-hint" x="450" y="193.4" text-anchor="middle">TD’s decisions (D-TD-1, D-TD-2, …) will fill this box.</text>
+    </g>
+    <g class="container-content" id="td-content" data-masthead-h="131.4" transform="translate(0, 131.4)">
+      <g class="cell" data-cell="D-TD-1">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-TD-1</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">What kind of thing are we building?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">DELIVERABLE KIND · ANCHORS EVERY DOWNSTREAM TECHNICAL DECISION</text>
+    <text class="dsc-answer-big" x="450" y="58" text-anchor="middle"><tspan x="450" dy="0">Web application</tspan></text>
+    <text class="dsc-srcnote" x="450" y="100" text-anchor="middle">DERIVED · DELIVERABLE_KIND ABSENT FROM SUBSTRATE · DEFAULTED</text></g>
+  </g><g class="cell" data-cell="D-TD-2">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-TD-2</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">How does TD resolve the open questions?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">4 INFLECTION POINTS · 3 RATIFIED FROM DISCOVERY + 1 NEW TECHNICAL QUESTIONS</text><text class="dsc2-bg-label" x="30" y="40">RATIFIED FROM D-DSC-3 — DISCOVERY’S INFLECTION POINTS, RESOLVED</text><line x1="30" y1="50" x2="870" y2="50" stroke="#c8c0aa" stroke-width="1" stroke-dasharray="3,3"/><g class="rat-row" data-rat="IP1">
+      <rect class="rat-hl rat-hl-red" x="26" y="50" width="848" height="32"/>
+      <rect class="tile-accent-red" x="30" y="54" width="4" height="24"/>
+      <text class="bg-row-id" x="50" y="72">IP1</text>
+      <text class="ip-fork-dot" x="92" y="72">↩</text>
+      <text class="bg-row-text" x="112" y="72"></text>
+      <text class="oos-cross" x="500" y="72" fill="#3a7a5a">✓</text>
+      <text class="ip-default" x="522" y="72" font-size="12">Use a live external…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="72" text-anchor="end">DEFAULT KEPT</text>
+    </g><g class="rat-row" data-rat="IP2">
+      <rect class="rat-hl rat-hl-orange" x="26" y="80" width="848" height="32"/>
+      <rect class="tile-accent-orange" x="30" y="84" width="4" height="24"/>
+      <text class="bg-row-id" x="50" y="102">IP2</text>
+      <text class="ip-fork-dot" x="92" y="102">↩</text>
+      <text class="bg-row-text" x="112" y="102"></text>
+      <text class="oos-cross" x="500" y="102" fill="#3a7a5a">✓</text>
+      <text class="ip-default" x="522" y="102" font-size="12">Automatically detect the…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="102" text-anchor="end">DEFAULT KEPT</text>
+    </g><g class="rat-row" data-rat="IP3">
+      <rect class="rat-hl rat-hl-yellow" x="26" y="110" width="848" height="32"/>
+      <rect class="tile-accent-yellow" x="30" y="114" width="4" height="24"/>
+      <text class="bg-row-id" x="50" y="132">IP3</text>
+      <text class="ip-fork-dot" x="92" y="132">↩</text>
+      <text class="bg-row-text" x="112" y="132"></text>
+      <text class="oos-cross" x="500" y="132" fill="#3a7a5a">✓</text>
+      <text class="ip-default" x="522" y="132" font-size="12">Show the single closest…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="132" text-anchor="end">DEFAULT KEPT</text>
+    </g><text class="dsc2-key-label" x="30" y="190" fill="#4a6a8a">NEW TECHNICAL QUESTIONS — surfaced by TD</text><line x1="30" y1="200" x2="870" y2="200" stroke="#4a6a8a" stroke-width="1.5"/><g>
+      <rect class="tile-accent-blue" x="30" y="204" width="4" height="28"/>
+      <text class="bg-row-id" x="48" y="224">IP4</text>
+      <text class="bg-row-text" x="118" y="224" font-size="13">How the user acts on the result (the…</text>
+      <text class="ip-fork-dot" x="500" y="224">→</text>
+      <text class="ip-default" x="522" y="224" font-size="13">Provide a directions…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="224" text-anchor="end">NEW • TD-INTRODUCED</text>
+    </g><text class="dsc-srcnote" x="450" y="276" text-anchor="middle">FROM SECTIONS · INFLECTION_RESOLUTIONS[]</text></g>
+  </g><g class="cell" data-cell="D-TD-3">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-TD-3</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">How do we split the build?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">SECTION BREAKDOWN · 5 PARALLEL WORKSTREAMS</text><g data-sec="S1">
+      <rect class="tile-accent-red" x="30" y="40" width="4" height="46"/>
+      <rect class="tile-bg" x="34" y="40" width="836" height="46"/>
+      <rect class="tile-border" x="34" y="40" width="836" height="46"/>
+      <text class="tile-id" x="48" y="68">S1</text>
+      <text class="tile-text" x="100" y="68" font-size="15">Location acquisition</text>
+      <text class="tile-badge tile-badge-low" x="856" y="68" text-anchor="end">1 BUILDER · NO DEPENDENCIES</text>
+    </g><g data-sec="S2">
+      <rect class="tile-accent-orange" x="30" y="98" width="4" height="46"/>
+      <rect class="tile-bg" x="34" y="98" width="836" height="46"/>
+      <rect class="tile-border" x="34" y="98" width="836" height="46"/>
+      <text class="tile-id" x="48" y="126">S2</text>
+      <text class="tile-text" x="100" y="126" font-size="15">Liquor-store data lookup</text>
+      <text class="tile-badge tile-badge-low" x="856" y="126" text-anchor="end">1 BUILDER · NEEDS S1</text>
+    </g><g data-sec="S3">
+      <rect class="tile-accent-yellow" x="30" y="156" width="4" height="46"/>
+      <rect class="tile-bg" x="34" y="156" width="836" height="46"/>
+      <rect class="tile-border" x="34" y="156" width="836" height="46"/>
+      <text class="tile-id" x="48" y="184">S3</text>
+      <text class="tile-text" x="100" y="184" font-size="15">Closest-store selection and presentation</text>
+      <text class="tile-badge tile-badge-low" x="856" y="184" text-anchor="end">1 BUILDER · NEEDS S1 + S2</text>
+    </g><g data-sec="S4">
+      <rect class="tile-accent-blue" x="30" y="214" width="4" height="46"/>
+      <rect class="tile-bg" x="34" y="214" width="836" height="46"/>
+      <rect class="tile-border" x="34" y="214" width="836" height="46"/>
+      <text class="tile-id" x="48" y="242">S4</text>
+      <text class="tile-text" x="100" y="242" font-size="15">App shell, flow, and launch</text>
+      <text class="tile-badge tile-badge-low" x="856" y="242" text-anchor="end">1 BUILDER · NEEDS S1 + S2 + S3</text>
+    </g><g data-sec="S5">
+      <rect class="tile-accent-red" x="30" y="272" width="4" height="46"/>
+      <rect class="tile-bg" x="34" y="272" width="836" height="46"/>
+      <rect class="tile-border" x="34" y="272" width="836" height="46"/>
+      <text class="tile-id" x="48" y="300">S5</text>
+      <text class="tile-text" x="100" y="300" font-size="15">Edge-case testing</text>
+      <text class="tile-badge tile-badge-low" x="856" y="300" text-anchor="end">1 BUILDER · AFTER INTEGRATION</text>
+    </g><text class="dsc-srcnote" x="450" y="346" text-anchor="middle">FROM SECTIONS · SECTIONS[]</text></g>
+  </g><g class="cell" data-cell="D-TD-4">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-TD-4</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">How do we know the build is correct?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">COVERAGE CHECKS + THE PROMPT-NAMED VERB</text>
+    <text class="dsc-answer-big" x="450" y="58" text-anchor="middle"><tspan x="450" dy="0">45 checks written across the build.</tspan><tspan x="450" dy="30">Plus the prompt-named-verb check —</tspan><tspan x="450" dy="30">the one that decides pass or fail.</tspan></text>
+    <text class="dsc-srcnote" x="450" y="160" text-anchor="middle">FROM SECTIONS · COVERAGE ASSERTION COUNTS</text></g>
+  </g>
+    </g>
+  </g>
 <g id="blk-editor" class="block">
     <rect class="container-bg" x="0" y="0" width="900" height="176.3"/>
     <rect class="container-border" x="0" y="0" width="900" height="176.3"/>
@@ -438,19 +567,80 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
     <text class="phase-band-text" x="40" y="30">Build</text>
     <line class="phase-band-line" x1="40" y1="40" x2="1220" y2="40"/>
   </g>
-<g id="blk-coordinator" class="block">
-    <rect class="container-bg" x="0" y="0" width="900" height="176.3"/>
-    <rect class="container-border" x="0" y="0" width="900" height="176.3"/>
+<g id="blk-coordinator" class="block role-container">
+    <rect class="container-bg" id="coordinator-bg" x="0" y="0" width="900" height="300"/>
+    <rect class="container-border" id="coordinator-border" x="0" y="0" width="900" height="300"/>
     
     <rect class="cstripe-r" x="0" y="0" width="225" height="6"/>
     <rect class="cstripe-o" x="225" y="0" width="225" height="6"/>
     <rect class="cstripe-y" x="450" y="0" width="225" height="6"/>
     <rect class="cstripe-b" x="675" y="0" width="225" height="6"/>
     <text class="masthead-kicker" x="450" y="34" text-anchor="middle">GUARANTEED · AFTER EDITOR</text>
-    <text class="masthead-title" x="450" y="66.3" text-anchor="middle" font-size="38">Coordinator</text>
-    <text class="masthead-telos" x="450" y="94.3" text-anchor="middle">Sequences the section workstreams and dispatches builders.</text>
-    <line class="masthead-rule" x1="40" y1="114.3" x2="860" y2="114.3"/>
-    <text class="role-await" x="450" y="154.3" text-anchor="middle">WAITING TO START</text>
+    <text class="masthead-title" x="450" y="71.4" text-anchor="middle" font-size="44">Coordinator</text>
+    <text class="masthead-telos" x="450" y="99.4" text-anchor="middle">Sequences the section workstreams and dispatches the builders.</text>
+    <line class="masthead-rule" x1="40" y1="119.4" x2="860" y2="119.4"/>
+    <g class="waiting-block" id="coordinator-waiting">
+      <text class="role-await" x="450" y="171.4" text-anchor="middle">WAITING TO START</text>
+      <text class="role-await-hint" x="450" y="193.4" text-anchor="middle">The Coordinator’s decisions (D-CO-1, D-CO-2, …) will fill this box.</text>
+    </g>
+    <g class="container-content" id="coordinator-content" data-masthead-h="131.4" transform="translate(0, 131.4)">
+      <g class="cell" data-cell="D-CO-1">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-CO-1</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">What is the Coordinator's job?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">COORDINATOR'S MANDATE · FLOW CONTROL, NO PRODUCT CALLS</text>
+    <text class="dsc-answer-big" x="450" y="58" text-anchor="middle"><tspan x="450" dy="0">Sequence the build. Build the dependency graph,</tspan><tspan x="450" dy="30">dispatch sections in waves as their inputs come</tspan><tspan x="450" dy="30">ready, and watch for completion. The Coordinator</tspan><tspan x="450" dy="30">makes no architectural or product decisions.</tspan></text>
+    <text class="dsc-srcnote" x="450" y="190" text-anchor="middle">FROM ROLE_CHARTERS.MD · COORDINATOR CHARTER</text></g>
+  </g><g class="cell" data-cell="D-CO-2">
+    <g class="cell-title">
+    <rect class="title-hl" x="14" y="2" width="872" height="74"/>
+    <rect class="title-accent" x="14" y="2" width="4" height="74"/>
+    <text class="dsc-stamp" x="28" y="24">D-CO-2</text>
+    <line x1="28" y1="33" x2="100" y2="33" stroke="#c83a3a" stroke-width="1"/>
+    <text class="dsc-question" x="450" y="62" text-anchor="middle">What order does the build run in?</text>
+  </g>
+    <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">WAVE PLAN · 5 SECTIONS SEQUENCED BY DEPENDENCY</text><g>
+      <rect class="tile-accent-red" x="30" y="40" width="4" height="42"/>
+      <rect class="chk-bg" x="34" y="40" width="836" height="42"/>
+      <rect class="chk-border" x="34" y="40" width="836" height="42"/>
+      <text class="wave-num" x="52" y="66">WAVE 1</text>
+      <text class="wave-sections" x="150" y="59">S1 · Location acquisition</text>
+      <text class="wave-note" x="150" y="75">No dependencies — dispatched first</text>
+    </g><g>
+      <rect class="tile-accent-orange" x="30" y="92" width="4" height="42"/>
+      <rect class="chk-bg" x="34" y="92" width="836" height="42"/>
+      <rect class="chk-border" x="34" y="92" width="836" height="42"/>
+      <text class="wave-num" x="52" y="118">WAVE 2</text>
+      <text class="wave-sections" x="150" y="111">S2 · Liquor-store data lookup</text>
+      <text class="wave-note" x="150" y="127">Waits for S1</text>
+    </g><g>
+      <rect class="tile-accent-yellow" x="30" y="144" width="4" height="42"/>
+      <rect class="chk-bg" x="34" y="144" width="836" height="42"/>
+      <rect class="chk-border" x="34" y="144" width="836" height="42"/>
+      <text class="wave-num" x="52" y="170">WAVE 3</text>
+      <text class="wave-sections" x="150" y="163">S3 · Closest-store selection and…</text>
+      <text class="wave-note" x="150" y="179">Waits for S1 + S2</text>
+    </g><g>
+      <rect class="tile-accent-blue" x="30" y="196" width="4" height="42"/>
+      <rect class="chk-bg" x="34" y="196" width="836" height="42"/>
+      <rect class="chk-border" x="34" y="196" width="836" height="42"/>
+      <text class="wave-num" x="52" y="222">WAVE 4</text>
+      <text class="wave-sections" x="150" y="215">S4 · App shell, flow, and launch</text>
+      <text class="wave-note" x="150" y="231">Waits for S1 + S2 + S3</text>
+    </g><g>
+      <rect class="tile-accent-red" x="30" y="248" width="4" height="42"/>
+      <rect class="chk-bg" x="34" y="248" width="836" height="42"/>
+      <rect class="chk-border" x="34" y="248" width="836" height="42"/>
+      <text class="wave-num" x="52" y="274">WAVE 5</text>
+      <text class="wave-sections" x="150" y="267">S5 · Edge-case testing</text>
+      <text class="wave-note" x="150" y="283">Runs after the Integrator assembles the earlier sections</text>
+    </g><text class="dsc-srcnote" x="450" y="314" text-anchor="middle">DERIVED · SECTIONS DEPENDS_ON DAG</text></g>
+  </g>
+    </g>
   </g>
 <g id="blk-sections" class="block sections-block">
     <g class="sec-layer sec-tbd">
@@ -462,13 +652,48 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
     <text class="slot-tbd-hint" x="84" y="86">Materializes when D-TD-3 resolves.</text>
   </g>
     <g class="sec-layer sec-real">
-    <rect class="container-bg" x="0" y="0" width="900" height="84"/>
-    <rect class="container-border" x="0" y="0" width="900" height="84"/>
-    <rect class="sec-real-accent" x="0" y="0" width="6" height="84"/>
+    <rect class="container-bg" x="0" y="0" width="900" height="384"/>
+    <rect class="container-border" x="0" y="0" width="900" height="384"/>
+    <rect class="sec-real-accent" x="0" y="0" width="6" height="384"/>
     <text class="sec-real-kicker" x="32" y="30">MATERIALIZED · PHASE 3 BUILD</text>
-    <text class="sec-real-title" x="32" y="56">0 Parallel Workstreams</text>
+    <text class="sec-real-title" x="32" y="56">5 Parallel Workstreams</text>
     <line x1="32" y1="64" x2="868" y2="64" stroke="#c8c0aa" stroke-width="1"/>
-    
+    <g class="sec-card" data-seccard="S1">
+      <rect class="tile-accent-red" x="26" y="70" width="5" height="48"/>
+      <rect class="sec-card-bg" x="31" y="70" width="838" height="48"/>
+      <rect class="sec-card-border" x="31" y="70" width="838" height="48"/>
+      <text class="tile-id" x="48" y="99">S1</text>
+      <text class="tile-text" x="104" y="99" font-size="15">Location acquisition</text>
+      <text class="tile-badge tile-badge-low" x="856" y="99" text-anchor="end">1 BUILDER · NO DEPENDENCIES</text>
+    </g><g class="sec-card" data-seccard="S2">
+      <rect class="tile-accent-orange" x="26" y="130" width="5" height="48"/>
+      <rect class="sec-card-bg" x="31" y="130" width="838" height="48"/>
+      <rect class="sec-card-border" x="31" y="130" width="838" height="48"/>
+      <text class="tile-id" x="48" y="159">S2</text>
+      <text class="tile-text" x="104" y="159" font-size="15">Liquor-store data lookup</text>
+      <text class="tile-badge tile-badge-low" x="856" y="159" text-anchor="end">1 BUILDER · NEEDS S1</text>
+    </g><g class="sec-card" data-seccard="S3">
+      <rect class="tile-accent-yellow" x="26" y="190" width="5" height="48"/>
+      <rect class="sec-card-bg" x="31" y="190" width="838" height="48"/>
+      <rect class="sec-card-border" x="31" y="190" width="838" height="48"/>
+      <text class="tile-id" x="48" y="219">S3</text>
+      <text class="tile-text" x="104" y="219" font-size="15">Closest-store selection and presentation</text>
+      <text class="tile-badge tile-badge-low" x="856" y="219" text-anchor="end">1 BUILDER · NEEDS S1 + S2</text>
+    </g><g class="sec-card" data-seccard="S4">
+      <rect class="tile-accent-blue" x="26" y="250" width="5" height="48"/>
+      <rect class="sec-card-bg" x="31" y="250" width="838" height="48"/>
+      <rect class="sec-card-border" x="31" y="250" width="838" height="48"/>
+      <text class="tile-id" x="48" y="279">S4</text>
+      <text class="tile-text" x="104" y="279" font-size="15">App shell, flow, and launch</text>
+      <text class="tile-badge tile-badge-low" x="856" y="279" text-anchor="end">1 BUILDER · NEEDS S1 + S2 + S3</text>
+    </g><g class="sec-card" data-seccard="S5">
+      <rect class="tile-accent-red" x="26" y="310" width="5" height="48"/>
+      <rect class="sec-card-bg" x="31" y="310" width="838" height="48"/>
+      <rect class="sec-card-border" x="31" y="310" width="838" height="48"/>
+      <text class="tile-id" x="48" y="339">S5</text>
+      <text class="tile-text" x="104" y="339" font-size="15">Edge-case testing</text>
+      <text class="tile-badge tile-badge-low" x="856" y="339" text-anchor="end">1 BUILDER · AFTER INTEGRATION</text>
+    </g>
   </g>
   </g>
 <g id="blk-band4" class="block">
@@ -536,16 +761,16 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 (function(){
   const PROMPT_TEXT = "Build me an app that points me to the closest liquor store";
   const DSC_IDS = ["D-DSC-1","D-DSC-2","D-DSC-3","D-DSC-4"];
-  const TD_IDS = [];
+  const TD_IDS = ["D-TD-1","D-TD-2","D-TD-3","D-TD-4"];
   const ED_IDS = [];
-  const CO_IDS = [];
+  const CO_IDS = ["D-CO-1","D-CO-2"];
   const IN_IDS = [];
   const CR_IDS = [];
   const CV_IDS = [];
-  const CELL_RATIFIES = {};
-  const CELL_MATERIALIZES = {};
-  const SEC_COUNT = 0;
-  const SEC_FULL_H = 84;  // materialized sections-block height
+  const CELL_RATIFIES = {"D-TD-2":["IP1","IP2","IP3"]};
+  const CELL_MATERIALIZES = {"D-TD-3":"sections"};
+  const SEC_COUNT = 5;
+  const SEC_FULL_H = 384;  // materialized sections-block height
   const BASE_TYPE_MS = 17;
   const TITLE_H = 84;
   let speedMul = 1.0;
@@ -565,7 +790,7 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
   // Ordered list of blocks. Each block is an SVG <g id="blk-*">.
   // visible=false blocks are skipped by relayout (height 0, hidden).
   const BLOCK_ORDER = ['up1','orc1','band1','discovery','band2']
-    .concat([])
+    .concat(['td'])
     .concat(['editor','band3','coordinator','sections','band4','integrator','critic','cv','helpers']);
   const GAP = 26;
   const blocks = {};

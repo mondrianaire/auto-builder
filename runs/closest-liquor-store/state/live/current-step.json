@@ -1,16 +1,8 @@
 {
-  "updated_at": "2026-05-22T00:00:00Z",
-  "current_phase": "initial-discovery",
-  "active_roles": [
-    {
-      "role": "Discovery",
-      "instance_id": "discovery-initial",
-      "section": null,
-      "started_at": "2026-05-22T00:00:00Z",
-      "escalation_id": null
-    }
-  ],
-  "last_completed_report": null,
+  "updated_at": "2026-05-22T11:10:00Z",
+  "current_phase": "complete",
+  "active_roles": [],
+  "last_completed_report": "state/reports/cv-v1.json",
   "open_escalations": [],
-  "build_complete": false
+  "build_complete": true
 }
