@@ -2,7 +2,7 @@
   "version": 1,
   "slug": "closest-liquor-store",
   "generator": "walkthrough-labels-derive/v1",
-  "generated_at": "2026-05-22T11:05:56.269Z",
+  "generated_at": "2026-05-22T18:01:06.184Z",
   "note": "Mechanically derived from raw build substrate by walkthrough-labels-derive.mjs. This is a fallback for hand-authored labels; blurbs are clipped from full-sentence substrate and are necessarily crude. Superseded once roles emit their own Completion Reports (the v1.11/v1.12 substrate amendment).",
   "prompt": "Build me an app that points me to the closest liquor store",
   "phases": {
@@ -34,37 +34,43 @@
             "id": "A1",
             "label": "The artifact is a single-user app with no accounts",
             "prompt_impact": "high",
-            "tech_impact": "high"
+            "tech_impact": "high",
+            "breaks_if_wrong": "If the user expected saved favorites or trip history"
           },
           {
             "id": "A2",
             "label": "'Closest' means closest by geographic proximity to…",
             "prompt_impact": "high",
-            "tech_impact": "high"
+            "tech_impact": "high",
+            "breaks_if_wrong": "If the user wanted shortest drive time"
           },
           {
             "id": "A3",
             "label": "The app must determine the user's current location at…",
             "prompt_impact": "med",
-            "tech_impact": "med"
+            "tech_impact": "med",
+            "breaks_if_wrong": "If location detection is unavailable or denied"
           },
           {
             "id": "A4",
             "label": "'Liquor store' means a retail business that sells…",
             "prompt_impact": "high",
-            "tech_impact": "high"
+            "tech_impact": "high",
+            "breaks_if_wrong": "Edge regions where 'liquor store' maps to a different store type"
           },
           {
             "id": "A5",
             "label": "'Points me to' means the app shows the user where the…",
             "prompt_impact": "med",
-            "tech_impact": "med"
+            "tech_impact": "med",
+            "breaks_if_wrong": "If the user expected live navigation"
           },
           {
             "id": "A6",
             "label": "The app runs on the user's machine/browser as a…",
             "prompt_impact": "med",
-            "tech_impact": "med"
+            "tech_impact": "med",
+            "breaks_if_wrong": "If a backend is needed to broker data access"
           }
         ],
         "answer_source": "6 assumptions · derived from ledger-v1.json"

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>closest-liquor-store · Walkthrough · v2.22</title>
+<title>closest-liquor-store · Walkthrough · v2.23</title>
 <style>
 :root {
   --paper-light:#f5efe2; --paper-warm:#ede4ca; --paper-cream:#f7f1e3; --paper-deep:#ece4cb;
@@ -132,6 +132,7 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 .tile-text{font-family:var(--type-ui);font-size:13.5px;fill:var(--ink-body);}
 .tile-badge{font-family:var(--type-data);font-size:8px;font-weight:700;fill:var(--ink-dim);letter-spacing:0.16em;text-transform:uppercase;}
 .tile-badge-high{fill:var(--accent-red);}.tile-badge-med{fill:var(--accent-orange);}.tile-badge-low{fill:var(--ink-dim);}
+.tile-breaks{font-family:var(--type-data);font-size:9px;fill:var(--accent-orange);letter-spacing:0.05em;}
 .bg-row-text{font-family:var(--type-ui);font-size:12px;fill:var(--ink-body);}
 .bg-row-id{font-family:var(--type-data);font-size:10px;font-weight:700;fill:var(--ink-navy);letter-spacing:0.14em;}
 .ip-question{font-family:var(--type-ui);font-size:15px;font-weight:700;fill:var(--ink-navy);}
@@ -234,7 +235,7 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
 </div>
 <div id="toolbar">
   <span class="wordmark">OttoBLD</span>
-  <span class="doc-class">WALKTHROUGH · v2.22 · 2026-05-22 11:05</span>
+  <span class="doc-class">WALKTHROUGH · v2.23 · 2026-05-22 18:01</span>
   <span class="meta-strip">
     <span><span class="key">SLUG · </span><span class="val">closest-liquor-store</span></span>
     <span><span class="key">DECISION · </span><span class="val" id="cur-decision">D-UP-1</span></span>
@@ -321,42 +322,45 @@ svg#canvas{display:block;width:100%;height:calc(100vh - 62px);user-select:none;}
     <text class="dsc-question" x="450" y="62" text-anchor="middle">What does the build need to assume?</text>
   </g>
     <g class="cell-body" transform="translate(0,84)"><text class="dsc-shortdesc" x="450" y="12" text-anchor="middle">LOGGED 6 ASSUMPTIONS · RATED BY CONFIDENCE</text><text class="dsc2-key-label" x="30" y="44">KEY DECISIONS — high impact on at least one axis</text><line x1="30" y1="54" x2="870" y2="54" stroke="#c83a3a" stroke-width="1.5"/><g>
-      <rect class="tile-accent-red" x="30" y="66" width="4" height="60"/>
-      <rect class="tile-bg" x="34" y="66" width="404" height="60"/>
-      <rect class="tile-border" x="34" y="66" width="404" height="60"/>
+      <rect class="tile-accent-red" x="30" y="66" width="4" height="80"/>
+      <rect class="tile-bg" x="34" y="66" width="404" height="80"/>
+      <rect class="tile-border" x="34" y="66" width="404" height="80"/>
       <text class="tile-id" x="46" y="85">A1</text>
       <text class="tile-badge tile-badge-high" x="430" y="85" text-anchor="end">PROMPT • HIGH  TECH • HIGH</text>
       <text class="tile-text" x="46" y="111" font-size="15">The artifact is a single-user app with no accounts</text>
+      <text class="tile-breaks" x="46" y="132">⚠ IF WRONG · If the user expected saved favorites or trip history</text>
     </g><g>
-      <rect class="tile-accent-red" x="462" y="66" width="4" height="60"/>
-      <rect class="tile-bg" x="466" y="66" width="404" height="60"/>
-      <rect class="tile-border" x="466" y="66" width="404" height="60"/>
+      <rect class="tile-accent-red" x="462" y="66" width="4" height="80"/>
+      <rect class="tile-bg" x="466" y="66" width="404" height="80"/>
+      <rect class="tile-border" x="466" y="66" width="404" height="80"/>
       <text class="tile-id" x="478" y="85">A2</text>
       <text class="tile-badge tile-badge-high" x="862" y="85" text-anchor="end">PROMPT • HIGH  TECH • HIGH</text>
       <text class="tile-text" x="478" y="111" font-size="15">'Closest' means closest by geographic proximity to…</text>
+      <text class="tile-breaks" x="478" y="132">⚠ IF WRONG · If the user wanted shortest drive time</text>
     </g><g>
-      <rect class="tile-accent-red" x="30" y="138" width="4" height="60"/>
-      <rect class="tile-bg" x="34" y="138" width="404" height="60"/>
-      <rect class="tile-border" x="34" y="138" width="404" height="60"/>
-      <text class="tile-id" x="46" y="157">A4</text>
-      <text class="tile-badge tile-badge-high" x="430" y="157" text-anchor="end">PROMPT • HIGH  TECH • HIGH</text>
-      <text class="tile-text" x="46" y="183" font-size="15">'Liquor store' means a retail business that sells…</text>
-    </g><text class="dsc2-bg-label" x="30" y="234">BACKGROUND ASSUMPTIONS — lower impact</text><line x1="30" y1="244" x2="870" y2="244" stroke="#c8c0aa" stroke-width="1" stroke-dasharray="3,3"/><g>
-      <rect class="tile-accent-yellow" x="30" y="246" width="3" height="26"/>
-      <text class="bg-row-id" x="48" y="264">A3</text>
-      <text class="bg-row-text" x="92" y="264">The app must determine the user's current location at…</text>
-      <text class="tile-badge tile-badge-low" x="870" y="264" text-anchor="end">PROMPT • MED  TECH • MED</text>
+      <rect class="tile-accent-red" x="30" y="158" width="4" height="80"/>
+      <rect class="tile-bg" x="34" y="158" width="404" height="80"/>
+      <rect class="tile-border" x="34" y="158" width="404" height="80"/>
+      <text class="tile-id" x="46" y="177">A4</text>
+      <text class="tile-badge tile-badge-high" x="430" y="177" text-anchor="end">PROMPT • HIGH  TECH • HIGH</text>
+      <text class="tile-text" x="46" y="203" font-size="15">'Liquor store' means a retail business that sells…</text>
+      <text class="tile-breaks" x="46" y="224">⚠ IF WRONG · Edge regions where 'liquor store' maps to a different store type</text>
+    </g><text class="dsc2-bg-label" x="30" y="274">BACKGROUND ASSUMPTIONS — lower impact</text><line x1="30" y1="284" x2="870" y2="284" stroke="#c8c0aa" stroke-width="1" stroke-dasharray="3,3"/><g>
+      <rect class="tile-accent-yellow" x="30" y="286" width="3" height="26"/>
+      <text class="bg-row-id" x="48" y="304">A3</text>
+      <text class="bg-row-text" x="92" y="304">The app must determine the user's current location at…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="304" text-anchor="end">PROMPT • MED  TECH • MED</text>
     </g><g>
-      <rect class="tile-accent-yellow" x="30" y="278" width="3" height="26"/>
-      <text class="bg-row-id" x="48" y="296">A5</text>
-      <text class="bg-row-text" x="92" y="296">'Points me to' means the app shows the user where the…</text>
-      <text class="tile-badge tile-badge-low" x="870" y="296" text-anchor="end">PROMPT • MED  TECH • MED</text>
+      <rect class="tile-accent-yellow" x="30" y="318" width="3" height="26"/>
+      <text class="bg-row-id" x="48" y="336">A5</text>
+      <text class="bg-row-text" x="92" y="336">'Points me to' means the app shows the user where the…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="336" text-anchor="end">PROMPT • MED  TECH • MED</text>
     </g><g>
-      <rect class="tile-accent-yellow" x="30" y="310" width="3" height="26"/>
-      <text class="bg-row-id" x="48" y="328">A6</text>
-      <text class="bg-row-text" x="92" y="328">The app runs on the user's machine/browser as a…</text>
-      <text class="tile-badge tile-badge-low" x="870" y="328" text-anchor="end">PROMPT • MED  TECH • MED</text>
-    </g><text class="dsc-srcnote" x="450" y="366" text-anchor="middle">6 ASSUMPTIONS · DERIVED FROM LEDGER-V1.JSON</text></g>
+      <rect class="tile-accent-yellow" x="30" y="350" width="3" height="26"/>
+      <text class="bg-row-id" x="48" y="368">A6</text>
+      <text class="bg-row-text" x="92" y="368">The app runs on the user's machine/browser as a…</text>
+      <text class="tile-badge tile-badge-low" x="870" y="368" text-anchor="end">PROMPT • MED  TECH • MED</text>
+    </g><text class="dsc-srcnote" x="450" y="406" text-anchor="middle">6 ASSUMPTIONS · DERIVED FROM LEDGER-V1.JSON</text></g>
   </g><g class="cell" data-cell="D-DSC-3">
     <g class="cell-title">
     <rect class="title-hl" x="14" y="2" width="872" height="74"/>

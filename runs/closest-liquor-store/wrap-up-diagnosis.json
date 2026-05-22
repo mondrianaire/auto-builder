@@ -1,0 +1,52 @@
+{
+  "schema_version": "0.1",
+  "slug": "closest-liquor-store",
+  "generated_at": "2026-05-22T00:00:00Z",
+  "generated_by": "interactive wrap-up — v1 conversational walk, conducted manually as the first dogfood of architecture/interactive-wrapup-spec.md",
+  "outcome_lane": "B",
+  "outcome_lane_label": "works, but not what I asked for (Discovery misalignment)",
+  "verdict_cross_check": {
+    "user_answer": "B",
+    "recorded_verdict": "unknown",
+    "reading": "Orthogonal. A build can pass verification and still miss intent; Lane B is Discovery misalignment by definition, so the recorded verdict does not contradict the user's answer."
+  },
+  "divergence": {
+    "delivered": "The app returns the closest wine shop.",
+    "intended": "The closest liquor store.",
+    "user_detail": "It shows a wine shop; I wanted a liquor store."
+  },
+  "culprit": {
+    "id": "A4",
+    "role": "Discovery",
+    "task": "assumption ledger (D-DSC-2)",
+    "cell_id": "D-DSC-2",
+    "layer": "assumption",
+    "confidence_logged": "high",
+    "decision_text": "'Liquor store' means a retail business that sells packaged alcoholic beverages (a category, not a specific named chain).",
+    "explanation": "A4 flattened a jurisdiction-defined legal category into one universal definition. What legally counts as a 'liquor store', and what such a store may sell, is set by local alcohol law and varies by jurisdiction. TD faithfully implemented A4 — IP1's resolution to OpenStreetMap shop=alcohol is precisely A4's definition — so the implementation is not the bug; the assumption is."
+  },
+  "compounding_factor": {
+    "id": "IP1",
+    "role": "Technical Discovery",
+    "cell_id": "D-TD-2",
+    "decision_text": "Use the OpenStreetMap Overpass API for shop=alcohol features near the user.",
+    "note": "shop=alcohol is a single global, jurisdiction-agnostic tag. It cannot represent local legal store categories, so even a corrected A4 could not be honored by this data source without a different approach."
+  },
+  "called_shot": {
+    "predicted": true,
+    "predicting_field": "A4.what_breaks_if_wrong",
+    "note": "A4's own what_breaks_if_wrong read: 'Edge regions where liquor store maps to a different store type (e.g., grocery with alcohol) could surface unexpected results.' The architecture flagged this exact failure mode — at high confidence — and proceeded on the assumption anyway."
+  },
+  "corrected_intent": "'Liquor store' is a jurisdiction-defined legal category. The build needed to resolve the user's locale and its alcohol laws — or surface the jurisdiction-dependence as an inflection point — rather than logging a universal high-confidence assumption.",
+  "amendment_candidate": "When a prompt uses a term whose meaning is set by local law or jurisdiction (liquor store, pharmacy, notary, ...), Discovery must not log a single universal high-confidence assumption for it. It must surface the jurisdiction-dependence as an inflection point grounded in the user's locale; and TD must verify the chosen data source can represent the jurisdiction-specific distinction.",
+  "ab_rerun_input": {
+    "kind": "confirmatory",
+    "note": "Re-run with the corrected assumption pinned ('liquor store' resolved per the user's jurisdiction) to confirm A4 is the real culprit — or re-run the verbatim prompt after the amendment lands, as the clean A/B."
+  },
+  "lifecycle": {
+    "phase1_documented_gap": true,
+    "triggers_phase2": false,
+    "first_delivery_outcome_changed": false,
+    "note": "Discovery misalignment is a Phase-1 documented gap, not a Phase 2 trigger (build-lifecycle.md). first_delivery_outcome is untouched."
+  }
+}
