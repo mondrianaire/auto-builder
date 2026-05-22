@@ -53,6 +53,7 @@
     "deliverable_kind": "web_app",
     "deliverable_can_run_in_browser": true,
     "deliverable_index": "index.html",
+    "deliverable_output_subdir": "final",
     "deliverable_manifest": null,
     "showcase_assets": null,
     "live_url": "https://mondrianaire.github.io/gto-poker-trainer/",
