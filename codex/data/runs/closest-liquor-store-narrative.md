@@ -1,9 +1,9 @@
 # closest-liquor-store — Codex narrative
 
-**First-delivery outcome:** Unverified (no first-delivery signal found) _(source: default)_
-**Composite (architectural):** unknown
-**Verdict (build pipeline):** unknown
-**Date:** —  ·  **Architecture:** —
+**First-delivery outcome:** Succeeded with concerns _(source: uncertainty_manifest)_
+**Composite (architectural):** shipped_with_concerns
+**Verdict (build pipeline):** pass_with_concerns
+**Date:** 2026-05-22  ·  **Architecture:** v1.10.1
 
 > Give the user a way to find the nearest store selling liquor relative to where they currently are.
 

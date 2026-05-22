@@ -1,8 +1,9 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-22T11:01:29.899Z",
+  "generated_at": "2026-05-22T12:27:29.483Z",
   "codex_version": "0.16",
   "architecture_versions_seen": [
+    "v1.10.1",
     "v1.3",
     "v1.4 (initial run); v1.5 (recovery)",
     "v1.7",
@@ -11,6 +12,85 @@
   ],
   "run_count": 12,
   "runs": [
+    {
+      "slug": "closest-liquor-store",
+      "prompt": "Build me an app that points me to the closest liquor store",
+      "date": "2026-05-22",
+      "architecture_version": "v1.10.1",
+      "dispatch_mode": "inline",
+      "verdict": "pass_with_concerns",
+      "raw_verdict": "`pass_with_concerns` (CV) — upgraded in practice by an Orchestrator-led live verification (see below)",
+      "final_artifact": null,
+      "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
+      "rating": {
+        "telos_fidelity": "strong",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "verified"
+        },
+        "cost": {
+          "minutes": null,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 12,
+        "overseer_dispatches": 4,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": null,
+        "sections": 5,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 0,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 1,
+        "events_total": 0,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/closest-liquor-store/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "first_delivery_outcome_source": "uncertainty_manifest",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "completion_ratified_at": null,
+      "ratified_by": null,
+      "ratification_notes": null,
+      "ratification_writer_version": null,
+      "verification_passed": true,
+      "promoted_to": null,
+      "promoted_at": null,
+      "ab_pair": null,
+      "links": {
+        "run_report": "runs/closest-liquor-store/run-report.md",
+        "verification": "runs/closest-liquor-store/output/verification/report.json",
+        "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
+        "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/closest-liquor-store/output/final/",
+        "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
+      },
+      "decision_flowchart_path": null
+    },
     {
       "slug": "github-profile-card",
       "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
@@ -792,85 +872,6 @@
       "decision_flowchart_path": "runs/tic-tac-toe/decision-flowchart-auto.html"
     },
     {
-      "slug": "closest-liquor-store",
-      "prompt": null,
-      "date": null,
-      "architecture_version": null,
-      "dispatch_mode": null,
-      "verdict": "unknown",
-      "raw_verdict": null,
-      "final_artifact": null,
-      "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
-      "rating": {
-        "telos_fidelity": "strong",
-        "deliverability": {
-          "tier1_pnv": "not_run",
-          "tier2_first_contact": "not_run",
-          "tier3_subgoal": "verified"
-        },
-        "cost": {
-          "minutes": null,
-          "escalations_high": 0,
-          "critic_high": 0
-        },
-        "learning_yield": {
-          "amendment_candidates": 0,
-          "principle_violations_caught_structurally": 0,
-          "principle_violations_escaped": 0
-        },
-        "composite": "unknown"
-      },
-      "counts": {
-        "dispatches": 12,
-        "overseer_dispatches": 4,
-        "builder_dispatches": 0,
-        "researcher_dispatches": 0,
-        "wall_clock_minutes": null,
-        "sections": 5,
-        "edge_cases_total": null,
-        "edge_cases_passing": null,
-        "critic_findings_high": 0,
-        "critic_findings_medium": 0,
-        "critic_findings_low": 0,
-        "sev0_fixes": 0,
-        "escalations_open": 0,
-        "demotions": 0,
-        "editor_iterations": 1,
-        "events_total": 0,
-        "revision_count": 1,
-        "additional_step_count": 0
-      },
-      "deliverable_kind": "other",
-      "deliverable_can_run_in_browser": false,
-      "deliverable_index": null,
-      "deliverable_manifest": null,
-      "showcase_assets": null,
-      "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/closest-liquor-store.html",
-      "live_url_kind": "showcase",
-      "first_delivery_outcome": "unverified",
-      "first_delivery_outcome_source": "default",
-      "re_audit_present": false,
-      "re_audit_reclassified_verdict": null,
-      "rca_present": false,
-      "completion_ratified_at": null,
-      "ratified_by": null,
-      "ratification_notes": null,
-      "ratification_writer_version": null,
-      "verification_passed": true,
-      "promoted_to": null,
-      "promoted_at": null,
-      "ab_pair": null,
-      "links": {
-        "run_report": "runs/closest-liquor-store/run-report.md",
-        "verification": "runs/closest-liquor-store/output/verification/report.json",
-        "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
-        "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
-        "final_dir": "runs/closest-liquor-store/output/final/",
-        "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
-      },
-      "decision_flowchart_path": null
-    },
-    {
       "slug": "gto-poker-trainer",
       "prompt": "Perform a deep dive into GTO poker theory and create a training application with multiple modes one of which highlights a curated selection of hands to walk through that identify edge cases of GTO play for training. Another mode should be a fully functional 9 person table that tracks stats over sessions and features a sampling of 'classic' poker player archetypes.",
       "date": null,
@@ -1328,10 +1329,10 @@
   },
   "first_delivery_outcome_distribution": {
     "succeeded": 3,
-    "succeeded_with_concerns": 4,
+    "succeeded_with_concerns": 5,
     "failed_user_reprompted": 3,
     "failed_unrecoverable": 0,
-    "unverified": 2
+    "unverified": 1
   },
   "maintenance_handoffs": [
     {

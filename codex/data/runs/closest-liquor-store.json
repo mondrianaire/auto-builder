@@ -3,18 +3,18 @@
   "slug": "closest-liquor-store",
   "summary": {
     "slug": "closest-liquor-store",
-    "prompt": null,
-    "date": null,
-    "architecture_version": null,
-    "dispatch_mode": null,
-    "verdict": "unknown",
-    "raw_verdict": null,
+    "prompt": "Build me an app that points me to the closest liquor store",
+    "date": "2026-05-22",
+    "architecture_version": "v1.10.1",
+    "dispatch_mode": "inline",
+    "verdict": "pass_with_concerns",
+    "raw_verdict": "`pass_with_concerns` (CV) — upgraded in practice by an Orchestrator-led live verification (see below)",
     "final_artifact": null,
     "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
     "rating": {
       "telos_fidelity": "strong",
       "deliverability": {
-        "tier1_pnv": "not_run",
+        "tier1_pnv": "verified",
         "tier2_first_contact": "not_run",
         "tier3_subgoal": "verified"
       },
@@ -28,7 +28,7 @@
         "principle_violations_caught_structurally": 0,
         "principle_violations_escaped": 0
       },
-      "composite": "unknown"
+      "composite": "shipped_with_concerns"
     },
     "counts": {
       "dispatches": 12,
@@ -50,15 +50,15 @@
       "revision_count": 1,
       "additional_step_count": 0
     },
-    "deliverable_kind": "other",
-    "deliverable_can_run_in_browser": false,
-    "deliverable_index": null,
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
     "deliverable_manifest": null,
     "showcase_assets": null,
-    "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/closest-liquor-store.html",
-    "live_url_kind": "showcase",
-    "first_delivery_outcome": "unverified",
-    "first_delivery_outcome_source": "default",
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/closest-liquor-store/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "succeeded_with_concerns",
+    "first_delivery_outcome_source": "uncertainty_manifest",
     "re_audit_present": false,
     "re_audit_reclassified_verdict": null,
     "rca_present": false,
@@ -209,7 +209,7 @@
   "build_shape": {
     "schema": "v0.15",
     "slug": "closest-liquor-store",
-    "deliverable_kind": "other",
+    "deliverable_kind": "web_app",
     "deliverable_label": "closest-liquor-store",
     "inflection_points": [
       {
@@ -307,7 +307,7 @@
     "editor_final_verdict": "pass",
     "demotion_count": 0,
     "cv_verdict": "pass_with_concerns",
-    "cv_tier1_pnv": "not_run",
+    "cv_tier1_pnv": "verified",
     "cv_tier2_first_contact": "not_run",
     "cv_tier3_subgoal": "verified",
     "lifecycle_phase": "ready_to_ratify",
@@ -506,29 +506,44 @@
       }
     ],
     "current_step": {
-      "updated_at": "2026-05-22T00:00:00Z",
-      "current_phase": "initial-discovery",
-      "active_roles": [
-        {
-          "role": "Discovery",
-          "instance_id": "discovery-initial",
-          "section": null,
-          "started_at": "2026-05-22T00:00:00Z",
-          "escalation_id": null
-        }
-      ],
-      "last_completed_report": null,
+      "updated_at": "2026-05-22T11:10:00Z",
+      "current_phase": "complete",
+      "active_roles": [],
+      "last_completed_report": "state/reports/cv-v1.json",
       "open_escalations": [],
-      "build_complete": false
+      "build_complete": true
     }
   },
   "history": {
-    "entry_count": 13,
+    "entry_count": 14,
     "earliest": "2026-05-22T00:00:00Z",
-    "latest": "2026-05-22T00:00:00Z"
+    "latest": "2026-05-22T11:10:00Z"
   },
-  "run_report_excerpts": null,
-  "uncertainty_manifest": [],
+  "run_report_excerpts": {
+    "what_worked": [
+      "Discovery's honest IP framing. — Discovery did not paper over the hard part. It logged \"where store-location data comes from\" as a high-importance inflection point with a documented best-effort default (live real data) rather than silently…",
+      "TD's research probe earned its keep. — IP1 failed the quick-reasoning rubric (introduces an external dependency, not trivially reversible) and TD correctly routed it to research instead of guessing. The probe produced 6 re-fetchable citati…",
+      "Editor gate passed cleanly first try. — No iteration. All five structural checks held: empty `proper_nouns[]` confirmed correct against the literal prompt, both high-importance IPs had concrete action, no `td_plan`-sourced assertion target…",
+      "Inline mode held at 5 sections. — Linear dependency chain (location → lookup → presentation → shell → integrator → edge-case-testing), no escalations originating in the build phase. The Coordinator produced real working code, not stubs.",
+      "Critic final-sweep clean. — 0 flags across all 9 checks; all 13 machine-checkable assertions verified against the integrated artifact.",
+      "Graceful degradation is real, not decorative. — Every failure path the spec named — geolocation denied, Overpass timeout/HTTP-error/offline, empty nearby results — was exercised (11/11 edge-case assertions) and produces a clear message. Th…"
+    ],
+    "what_broke": [
+      "A **GET**-form request to `overpass-api.de/api/interpreter?data=…` returns **HTTP 406** — from the *real* browser too, not just the sandbox. Overpass's Apache layer rejects the GET shape.",
+      "A **POST** with the raw query body returns **200** (27 stores for the Chicago test point).",
+      "A **POST** with `data=`-form encoding — *which is exactly what the app sends* — returns **200** on ~2 of 3 attempts and **504 Gateway Timeout** on the rest. The 504 is the free public `overpass-api.de` instance being transiently overloaded…",
+      "What architecture should learn — CV's production-fidelity exercise has no path to the user's *actual* browser when the verification sandbox can't reach a required endpoint — so it modeled the component and inherited an upstream role's inco…",
+      "What architecture should learn — the dispatch model assumes uniform sub-agent-spawning capability at every depth. In practice the capability is not guaranteed past the first level. Either the architecture documents \"in-role conduct with fu…"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [
+    "Live data over a bundled dataset (IP1). — The app needs network at use time. If the user is offline or `overpass-api.de` is down, the app cannot answer — it says so clearly rather than failing silently. This was the honest reading of \"the …",
+    "\"Closest\" = straight-line distance (A2). — Great-circle distance, not drive time. In a dense road network the straight-line-nearest store may not be the fastest to reach. The directions hand-off (which opens a real maps service) covers the…",
+    "\"Points me to\" = identify-and-show + hand-off (A5/IP4). — The app names the store, its address, distance, and gives external directions links. It does not do in-app turn-by-turn — that was an explicit out-of-scope choice.",
+    "Single closest store, not a ranked list (IP3). — The prompt said \"the closest\" (singular). A nearby-list is a reasonable enhancement but was not asked for.",
+    "Transient 504s from the public Overpass instance. — Live verification measured ~1-in-3 calls returning a transient 504 at the test time. The app handles each gracefully (\"the service may be busy — please try again\") but does **not** auto-r…"
+  ],
   "editor": {
     "iterations": 1,
     "verdicts": [
@@ -542,9 +557,9 @@
       "id": "rev-0",
       "kind": "primary_run",
       "ref": null,
-      "ts": null,
+      "ts": "2026-05-22",
       "summary": "Initial Auto Builder run",
-      "verdict": "unknown",
+      "verdict": "pass_with_concerns",
       "rationale": null,
       "diff_summary": null,
       "triggered_by_event": null,
@@ -552,18 +567,14 @@
       "sources": [
         "synthesized"
       ],
-      "first_delivery_outcome": "unverified"
+      "first_delivery_outcome": "succeeded_with_concerns"
     }
   ],
-  "file_tree": {
-    "tree": [],
-    "node_count": 0,
-    "truncated": false
-  },
+  "file_tree": null,
   "role_attribution_totals": {},
   "first_delivery": {
-    "outcome": "unverified",
-    "source": "default"
+    "outcome": "succeeded_with_concerns",
+    "source": "uncertainty_manifest"
   },
   "re_audit": null,
   "links": {

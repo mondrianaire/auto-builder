@@ -3,9 +3,10 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-22T11:01:29.899Z",
+    "generated_at": "2026-05-22T12:27:29.483Z",
     "codex_version": "0.16",
     "architecture_versions_seen": [
+      "v1.10.1",
       "v1.3",
       "v1.4 (initial run); v1.5 (recovery)",
       "v1.7",
@@ -14,6 +15,85 @@ window.CODEX_BUNDLE = {
     ],
     "run_count": 12,
     "runs": [
+      {
+        "slug": "closest-liquor-store",
+        "prompt": "Build me an app that points me to the closest liquor store",
+        "date": "2026-05-22",
+        "architecture_version": "v1.10.1",
+        "dispatch_mode": "inline",
+        "verdict": "pass_with_concerns",
+        "raw_verdict": "`pass_with_concerns` (CV) — upgraded in practice by an Orchestrator-led live verification (see below)",
+        "final_artifact": null,
+        "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
+        "rating": {
+          "telos_fidelity": "strong",
+          "deliverability": {
+            "tier1_pnv": "verified",
+            "tier2_first_contact": "not_run",
+            "tier3_subgoal": "verified"
+          },
+          "cost": {
+            "minutes": null,
+            "escalations_high": 0,
+            "critic_high": 0
+          },
+          "learning_yield": {
+            "amendment_candidates": 0,
+            "principle_violations_caught_structurally": 0,
+            "principle_violations_escaped": 0
+          },
+          "composite": "shipped_with_concerns"
+        },
+        "counts": {
+          "dispatches": 12,
+          "overseer_dispatches": 4,
+          "builder_dispatches": 0,
+          "researcher_dispatches": 0,
+          "wall_clock_minutes": null,
+          "sections": 5,
+          "edge_cases_total": null,
+          "edge_cases_passing": null,
+          "critic_findings_high": 0,
+          "critic_findings_medium": 0,
+          "critic_findings_low": 0,
+          "sev0_fixes": 0,
+          "escalations_open": 0,
+          "demotions": 0,
+          "editor_iterations": 1,
+          "events_total": 0,
+          "revision_count": 1,
+          "additional_step_count": 0
+        },
+        "deliverable_kind": "web_app",
+        "deliverable_can_run_in_browser": true,
+        "deliverable_index": "index.html",
+        "deliverable_manifest": null,
+        "showcase_assets": null,
+        "live_url": "https://mondrianaire.github.io/auto-builder/runs/closest-liquor-store/output/final/index.html",
+        "live_url_kind": "artifact",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "uncertainty_manifest",
+        "re_audit_present": false,
+        "re_audit_reclassified_verdict": null,
+        "rca_present": false,
+        "completion_ratified_at": null,
+        "ratified_by": null,
+        "ratification_notes": null,
+        "ratification_writer_version": null,
+        "verification_passed": true,
+        "promoted_to": null,
+        "promoted_at": null,
+        "ab_pair": null,
+        "links": {
+          "run_report": "runs/closest-liquor-store/run-report.md",
+          "verification": "runs/closest-liquor-store/output/verification/report.json",
+          "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
+          "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
+          "final_dir": "runs/closest-liquor-store/output/final/",
+          "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
+        },
+        "decision_flowchart_path": null
+      },
       {
         "slug": "github-profile-card",
         "prompt": "Build me a tool that takes a GitHub username and shows me a developer profile card for them — their pinned repos, their contribution streak, their most-used language, and a small visualization of their commit activity for the last 90 days.",
@@ -795,85 +875,6 @@ window.CODEX_BUNDLE = {
         "decision_flowchart_path": "runs/tic-tac-toe/decision-flowchart-auto.html"
       },
       {
-        "slug": "closest-liquor-store",
-        "prompt": null,
-        "date": null,
-        "architecture_version": null,
-        "dispatch_mode": null,
-        "verdict": "unknown",
-        "raw_verdict": null,
-        "final_artifact": null,
-        "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
-        "rating": {
-          "telos_fidelity": "strong",
-          "deliverability": {
-            "tier1_pnv": "not_run",
-            "tier2_first_contact": "not_run",
-            "tier3_subgoal": "verified"
-          },
-          "cost": {
-            "minutes": null,
-            "escalations_high": 0,
-            "critic_high": 0
-          },
-          "learning_yield": {
-            "amendment_candidates": 0,
-            "principle_violations_caught_structurally": 0,
-            "principle_violations_escaped": 0
-          },
-          "composite": "unknown"
-        },
-        "counts": {
-          "dispatches": 12,
-          "overseer_dispatches": 4,
-          "builder_dispatches": 0,
-          "researcher_dispatches": 0,
-          "wall_clock_minutes": null,
-          "sections": 5,
-          "edge_cases_total": null,
-          "edge_cases_passing": null,
-          "critic_findings_high": 0,
-          "critic_findings_medium": 0,
-          "critic_findings_low": 0,
-          "sev0_fixes": 0,
-          "escalations_open": 0,
-          "demotions": 0,
-          "editor_iterations": 1,
-          "events_total": 0,
-          "revision_count": 1,
-          "additional_step_count": 0
-        },
-        "deliverable_kind": "other",
-        "deliverable_can_run_in_browser": false,
-        "deliverable_index": null,
-        "deliverable_manifest": null,
-        "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/closest-liquor-store.html",
-        "live_url_kind": "showcase",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
-        "re_audit_present": false,
-        "re_audit_reclassified_verdict": null,
-        "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
-        "ratification_notes": null,
-        "ratification_writer_version": null,
-        "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
-        "ab_pair": null,
-        "links": {
-          "run_report": "runs/closest-liquor-store/run-report.md",
-          "verification": "runs/closest-liquor-store/output/verification/report.json",
-          "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
-          "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
-          "final_dir": "runs/closest-liquor-store/output/final/",
-          "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
-        },
-        "decision_flowchart_path": null
-      },
-      {
         "slug": "gto-poker-trainer",
         "prompt": "Perform a deep dive into GTO poker theory and create a training application with multiple modes one of which highlights a curated selection of hands to walk through that identify edge cases of GTO play for training. Another mode should be a fully functional 9 person table that tracks stats over sessions and features a sampling of 'classic' poker player archetypes.",
         "date": null,
@@ -1331,10 +1332,10 @@ window.CODEX_BUNDLE = {
     },
     "first_delivery_outcome_distribution": {
       "succeeded": 3,
-      "succeeded_with_concerns": 4,
+      "succeeded_with_concerns": 5,
       "failed_user_reprompted": 3,
       "failed_unrecoverable": 0,
-      "unverified": 2
+      "unverified": 1
     },
     "maintenance_handoffs": [
       {
@@ -1842,6 +1843,594 @@ window.CODEX_BUNDLE = {
     ]
   },
   "runs": {
+    "closest-liquor-store": {
+      "schema_version": "0.1",
+      "slug": "closest-liquor-store",
+      "summary": {
+        "slug": "closest-liquor-store",
+        "prompt": "Build me an app that points me to the closest liquor store",
+        "date": "2026-05-22",
+        "architecture_version": "v1.10.1",
+        "dispatch_mode": "inline",
+        "verdict": "pass_with_concerns",
+        "raw_verdict": "`pass_with_concerns` (CV) — upgraded in practice by an Orchestrator-led live verification (see below)",
+        "final_artifact": null,
+        "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
+        "rating": {
+          "telos_fidelity": "strong",
+          "deliverability": {
+            "tier1_pnv": "verified",
+            "tier2_first_contact": "not_run",
+            "tier3_subgoal": "verified"
+          },
+          "cost": {
+            "minutes": null,
+            "escalations_high": 0,
+            "critic_high": 0
+          },
+          "learning_yield": {
+            "amendment_candidates": 0,
+            "principle_violations_caught_structurally": 0,
+            "principle_violations_escaped": 0
+          },
+          "composite": "shipped_with_concerns"
+        },
+        "counts": {
+          "dispatches": 12,
+          "overseer_dispatches": 4,
+          "builder_dispatches": 0,
+          "researcher_dispatches": 0,
+          "wall_clock_minutes": null,
+          "sections": 5,
+          "edge_cases_total": null,
+          "edge_cases_passing": null,
+          "critic_findings_high": 0,
+          "critic_findings_medium": 0,
+          "critic_findings_low": 0,
+          "sev0_fixes": 0,
+          "escalations_open": 0,
+          "demotions": 0,
+          "editor_iterations": 1,
+          "events_total": 0,
+          "revision_count": 1,
+          "additional_step_count": 0
+        },
+        "deliverable_kind": "web_app",
+        "deliverable_can_run_in_browser": true,
+        "deliverable_index": "index.html",
+        "deliverable_manifest": null,
+        "showcase_assets": null,
+        "live_url": "https://mondrianaire.github.io/auto-builder/runs/closest-liquor-store/output/final/index.html",
+        "live_url_kind": "artifact",
+        "first_delivery_outcome": "succeeded_with_concerns",
+        "first_delivery_outcome_source": "uncertainty_manifest",
+        "re_audit_present": false,
+        "re_audit_reclassified_verdict": null,
+        "rca_present": false,
+        "completion_ratified_at": null,
+        "ratified_by": null,
+        "ratification_notes": null,
+        "ratification_writer_version": null,
+        "verification_passed": true,
+        "promoted_to": null,
+        "promoted_at": null,
+        "ab_pair": null,
+        "links": {
+          "run_report": "runs/closest-liquor-store/run-report.md",
+          "verification": "runs/closest-liquor-store/output/verification/report.json",
+          "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
+          "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
+          "final_dir": "runs/closest-liquor-store/output/final/",
+          "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
+        },
+        "decision_flowchart_path": null
+      },
+      "ledger": {
+        "restatement": "The user wants a small application that, given their current location, identifies and directs them to the closest liquor store.",
+        "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
+        "assumption_count": 6,
+        "inflection_count": 3,
+        "oos_count": 7,
+        "proper_nouns": [],
+        "first_contact_requirements": [
+          {
+            "description": "The app opens and runs without an error screen on the user's Windows machine/browser."
+          },
+          {
+            "description": "The app establishes the user's current location (either automatically or via a visible manual-entry option) without the user being stuck."
+          },
+          {
+            "description": "The app names a specific closest liquor store and shows its address and distance, so the result is concrete and actionable."
+          },
+          {
+            "description": "The app gives the user a way to act on the result — directions, a map view, or an address they can use to get there."
+          }
+        ]
+      },
+      "td": {
+        "sections": [
+          {
+            "id": "section-1",
+            "charter_excerpt": "Own everything to do with establishing where the user is. On app use, attempt automatic detection via the browser Geolocation API. If detection is unavailable, denied, slow, or errors, expose a visible manual location-entry control and tur…",
+            "acceptance_excerpt": "On use the app attempts automatic location detection; a manual location-entry field is visible and usable; when automatic detection is denied or fails the user can still supply a location manually and proceed; the module yields a resolved …"
+          },
+          {
+            "id": "section-2",
+            "charter_excerpt": "Own retrieval of real liquor-store locations near a given coordinate. Given a latitude/longitude, query the public OpenStreetMap Overpass API (https://overpass-api.de/api/interpreter) directly from the browser for shop=alcohol features (an…",
+            "acceptance_excerpt": "Given a coordinate, the module returns real liquor-store records from the OpenStreetMap Overpass API; each record carries a name, an address, and a latitude/longitude; the Overpass query filters by the shop=alcohol category within a radius…"
+          },
+          {
+            "id": "section-3",
+            "charter_excerpt": "Own picking the single closest store and showing it. Given the user's coordinate and the list of store records, compute each store's straight-line (great-circle) distance from the user, select the one with the smallest distance, and render…",
+            "acceptance_excerpt": "Given a user coordinate and store records, the module computes each store's geographic distance and selects the single closest; the result is shown as a card with the store's name, address, and distance; an actionable directions/map link t…"
+          },
+          {
+            "id": "section-4",
+            "charter_excerpt": "Own the self-contained app shell that ties the other pieces together and is what the user actually opens. Provide a single browser-openable entry point (HTML plus its assets) that runs on Windows with no server the user must operate and no…",
+            "acceptance_excerpt": "The app is a single browser-openable artifact that launches on Windows without an error screen and with no server the user must run; it orchestrates the full flow from location acquisition through store lookup to presenting the closest sto…"
+          },
+          {
+            "id": "section-5",
+            "charter_excerpt": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment — no substitution of runtime dependencies the artifact loads in production. Verify the integrated app …",
+            "acceptance_excerpt": "Every acceptance assertion marked verifier: edge_case_testing across the section list is exercised against the integrated artifact under production fidelity and passes; permission-denied, network-failure, timeout, offline, and empty-result…"
+          }
+        ],
+        "contracts": [
+          "integrator--section-5",
+          "section-1--section-2",
+          "section-1--section-3",
+          "section-1--section-4",
+          "section-2--section-3",
+          "section-2--section-4",
+          "section-3--section-4"
+        ],
+        "prompt_verb_chosen": "points me to the closest liquor store"
+      },
+      "timeline": [],
+      "verification": {
+        "verdict": "pass_with_concerns",
+        "assumption_checks_total": 6,
+        "assumption_checks_verified": 6,
+        "out_of_scope_total": 7,
+        "out_of_scope_verified": 7,
+        "inflection_point_checks_total": 4,
+        "inflection_point_checks_honored": 4,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "first_contact_results": [
+          {
+            "requirement_id": "FC.1",
+            "description": "The app opens and runs without an error screen on the user's Windows machine/browser.",
+            "scenario": "Loaded index.html via file:// in headless Chromium; inspected for the app shell, title, error screens, and console/page errors.",
+            "result": "pass",
+            "details": "Title 'Closest Liquor Store' rendered; .cls-app shell present; no .cls-msg-error error screen; zero console errors and zero page errors. The app launches clean as an ordinary double-click would."
+          },
+          {
+            "requirement_id": "FC.2",
+            "description": "The app establishes the user's current location (automatically or via a visible manual-entry option) without the user being stuck.",
+            "scenario": "On load, verified the manual location-entry input and Find button are visible and enabled; separately verified navigator.geolocation.getCurrentPosition is invoked on use; separately verified that under denied geolocation the manual path stays usable with a clear message.",
+            "result": "pass",
+            "details": "Geolocation API is invoked automatically on use. The manual-entry input + Find button are always visible and enabled regardless of geolocation state. Under denied geolocation the app shows 'Location access was denied. Enter a location below instead.' and the input remains usable — the user is never stuck."
+          },
+          {
+            "requirement_id": "FC.3",
+            "description": "The app names a specific closest liquor store and shows its address and distance.",
+            "scenario": "Fed a canonical Overpass out:json payload (3 real-shape elements) through the artifact's own unmodified normalize/select/render code in the loaded page; inspected the rendered result card DOM.",
+            "result": "pass",
+            "details": "Result card rendered with a named store ('Loop Wine & Spirits'), a concrete address ('22 W Madison St, Chicago, IL, 60602'), and a distance ('0.3 mi (0.5 km)'). The named place is real and concrete, not a placeholder."
+          },
+          {
+            "requirement_id": "FC.4",
+            "description": "The app gives the user a way to act on the result — directions, a map view, or a usable address.",
+            "scenario": "Inspected the rendered result card for actionable directions/map links and their hrefs.",
+            "result": "pass",
+            "details": "Two working hand-off links rendered: 'Get directions' -> https://www.openstreetmap.org/directions?from=<user>&to=<store coords>, and 'Open in Google Maps' -> https://www.google.com/maps/dir/?api=1&destination=<store coords>. Both target external maps services prefilled with the chosen store's coordinates. The plain-text address is also shown for copy/use."
+          }
+        ],
+        "principle_h_skips": [],
+        "concerns": []
+      },
+      "critic": {
+        "by_severity": {
+          "high": 0,
+          "medium": 0,
+          "low": 0
+        },
+        "by_principle": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 0,
+          "F": 0,
+          "G": 0,
+          "H": 0
+        },
+        "open": 0,
+        "resolved": 0,
+        "sev0_fixes": 0,
+        "escalations_open": 0
+      },
+      "build_shape": {
+        "schema": "v0.15",
+        "slug": "closest-liquor-store",
+        "deliverable_kind": "web_app",
+        "deliverable_label": "closest-liquor-store",
+        "inflection_points": [
+          {
+            "id": "IP1",
+            "topic": "Where the liquor-store location data comes from",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP2",
+            "topic": "How the user's current location is established",
+            "importance": "high",
+            "method": null,
+            "has_research": false
+          },
+          {
+            "id": "IP3",
+            "topic": "How the result is presented to the user",
+            "importance": "medium",
+            "method": null,
+            "has_research": false
+          }
+        ],
+        "sections": [
+          {
+            "id": "section-1",
+            "name": "section-1",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-2",
+            "name": "section-2",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-3",
+            "name": "section-3",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-4",
+            "name": "section-4",
+            "depends_on": [],
+            "estimated_builders": 1
+          },
+          {
+            "id": "section-5",
+            "name": "section-5",
+            "depends_on": [],
+            "estimated_builders": 1
+          }
+        ],
+        "contracts": [
+          {
+            "from": "integrator",
+            "to": "section-5"
+          },
+          {
+            "from": "section-1",
+            "to": "section-2"
+          },
+          {
+            "from": "section-1",
+            "to": "section-3"
+          },
+          {
+            "from": "section-1",
+            "to": "section-4"
+          },
+          {
+            "from": "section-2",
+            "to": "section-3"
+          },
+          {
+            "from": "section-2",
+            "to": "section-4"
+          },
+          {
+            "from": "section-3",
+            "to": "section-4"
+          }
+        ],
+        "waves": [],
+        "researcher_dispatch_count": 0,
+        "builder_dispatch_count": 0,
+        "overseer_dispatch_count": 4,
+        "critic_high": 0,
+        "critic_medium": 0,
+        "critic_low": 0,
+        "editor_iterations": 1,
+        "editor_final_verdict": "pass",
+        "demotion_count": 0,
+        "cv_verdict": "pass_with_concerns",
+        "cv_tier1_pnv": "verified",
+        "cv_tier2_first_contact": "not_run",
+        "cv_tier3_subgoal": "verified",
+        "lifecycle_phase": "ready_to_ratify",
+        "ratified": false,
+        "promoted": false,
+        "promoted_to": null,
+        "totals": {
+          "sections": 5,
+          "inflection_points": 3,
+          "builders": 0,
+          "waves": 0,
+          "escalations": 0,
+          "dispatches": 12
+        },
+        "phase_band_states": {
+          "kickoff": "done",
+          "planning": "done",
+          "build": "done",
+          "verification": "done",
+          "delivery": "done",
+          "ratification": "active",
+          "promoted": "pending"
+        }
+      },
+      "live_narrative": {
+        "reports": [
+          {
+            "role": "Coordinator",
+            "instance_id": "coordinator",
+            "iteration": 1,
+            "mode": null,
+            "completed_at": "2026-05-22T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "How are you sequencing the work?",
+                "answer": "The four parts of the app build on each other, so I did them one after another in order. First the part that figures out where the user is. Then, using that location, the part that looks up nearby liquor stores. Then the part that takes those stores, picks the closest one, and shows it on screen. Then the app shell that wraps all three together into the page the user actually opens. Once those four were done and checked, I joined them into a single file. Last, I ran the app through a round of stress tests — denying location access, simulating no internet, slow and failed lookups, and areas with no stores — to make sure it never crashes or shows a blank screen and always gives the user a clear message.",
+                "kind": "always",
+                "importance": "medium"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "Critic",
+            "_filename": "coordinator-v1.json"
+          },
+          {
+            "role": "Critic",
+            "instance_id": "critic-final-sweep",
+            "iteration": 1,
+            "mode": "final_sweep",
+            "completed_at": "2026-05-22T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "What kinds of problems did you check for?",
+                "answer": "I checked whether the finished app accidentally included things it was meant to leave out (like logins, saved favorites, or price filtering), whether every promised behavior was actually built into the code, whether the build's record-keeping files were complete and consistent, and whether the two noted testing-environment caveats were honest and didn't hide real changes to the app.",
+                "kind": "always",
+                "importance": "medium"
+              },
+              {
+                "question": "What did you find?",
+                "answer": "Nothing of concern. The integrated app does exactly what the plan called for: it detects your location, looks up real nearby liquor stores from OpenStreetMap, shows the closest one with its address, distance, and a directions link, and handles errors gracefully. None of the deliberately-excluded features sneaked in. The two logged caveats are both about the test sandbox's network limits, not about the app's code, and that is accurately described. The app is consistent end to end.",
+                "kind": "always",
+                "importance": "high"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "ConvergenceVerifier",
+            "_filename": "critic-v1.json"
+          },
+          {
+            "role": "ConvergenceVerifier",
+            "instance_id": "cv",
+            "iteration": 1,
+            "mode": null,
+            "completed_at": "2026-05-22T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "Does the artifact actually work?",
+                "answer": "Yes. Opened in a real browser, the app launches clean with no error screen, automatically asks for the user's location while always offering a usable manual-entry box, and — given a location — names a specific closest liquor store with its address, distance, and working links that open that store for directions in OpenStreetMap or Google Maps. The live location-geocoding service worked end to end during testing. The store-data service (OpenStreetMap Overpass) was blocked specifically by the verification sandbox's network proxy, not by any flaw in the app; the app's own code handled that block gracefully with a clear message, and when fed a realistic store-data response through its own unmodified logic it produced the correct named result. On the user's own Windows machine, where the browser can reach the store-data service normally, the full find-the-nearest-store flow completes live.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "Any caveats?",
+                "answer": "One residual, environmental only: the verification sandbox cannot reach the OpenStreetMap Overpass store-data endpoint because the sandbox's outbound proxy returns HTTP 406 (independently confirmed and matching the earlier recorded deviation dev-002). This is a sandbox network limitation, not an app defect — the geocoding endpoint and a plain control URL both succeed from the same sandbox. The store-data component was therefore verified by running a canonical real-shape store-data response through the app's own unmodified code, which produced a correct named result. On an ordinary Windows machine the browser reaches Overpass normally and the flow runs fully live. This residual is noted for the run-report Uncertainty Manifest.",
+                "kind": "conditional",
+                "importance": "medium"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": null,
+            "_filename": "cv-v1.json"
+          },
+          {
+            "role": "Discovery",
+            "instance_id": "discovery-initial",
+            "iteration": 1,
+            "mode": "initial",
+            "completed_at": "2026-05-22T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "What did you understand the user wants?",
+                "answer": "You want a simple app that figures out where you are and tells you which liquor store is closest to you. It should name a real store, show its address and how far away it is, and give you a way to get there.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "What choices did you make on their behalf, and why?",
+                "answer": "For the store information, I assumed the app should use real, up-to-date store locations so the answer is genuinely correct wherever you are, rather than a fixed built-in list that would only work in one area. For finding where you are, I assumed the app should detect your location automatically, with a manual option to type it in if detection is blocked, so you always get an answer. For the result, I assumed showing the single closest store is enough, since you asked for 'the closest' rather than a list of options.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "What did you explicitly NOT do?",
+                "answer": "I did not include accounts or logins, saved favorites or search history, built-in turn-by-turn navigation, filtering by price or ratings or store hours, or any ordering and delivery features. The app focuses on one job: pointing you to the nearest liquor store.",
+                "kind": "conditional",
+                "importance": "medium"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "TechnicalDiscovery",
+            "_filename": "discovery-initial-v1.json"
+          },
+          {
+            "role": "Editor",
+            "instance_id": "editor",
+            "iteration": 1,
+            "mode": null,
+            "completed_at": "2026-05-22T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "Did the build stay true to what was asked?",
+                "answer": "Yes. The plan matches the original request to point you to the closest liquor store: it acquires your location, looks up real nearby liquor stores, picks the single closest one, and shows its name, address, distance, and a directions link. Every part of what a first-time user would expect is covered, and the two big judgement calls (using live real-world store data and auto-detecting your location with a manual fallback) are backed by real evidence rather than guesses.",
+                "kind": "always",
+                "importance": "high"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "Coordinator",
+            "_filename": "editor-v1.json"
+          },
+          {
+            "role": "Integrator",
+            "instance_id": "integrator",
+            "iteration": 1,
+            "mode": null,
+            "completed_at": "2026-05-22T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "What did you produce?",
+                "answer": "A single web app in one file — output/integration/index.html. To use it, the person just double-clicks that file and it opens in their browser; there is no server to start and nothing to install. When it opens, the app asks the browser for the user's location (and if that's denied or unavailable, there's a text box right there to type a city or address instead). It then looks up real liquor stores nearby from OpenStreetMap, works out which one is closest in a straight line, and shows a card with that store's name, address, and how far away it is, plus buttons that open directions to it in OpenStreetMap or Google Maps. All the app's own code and styling are baked into that one file, so the only thing it needs the internet for is the OpenStreetMap lookups themselves. If anything goes wrong — no internet, the lookup is slow, or there are no stores nearby — it shows a clear plain-English message instead of breaking or going blank.",
+                "kind": "always",
+                "importance": "high"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "ConvergenceVerifier",
+            "_filename": "integrator-v1.json"
+          },
+          {
+            "role": "TechnicalDiscovery",
+            "instance_id": "td-initial",
+            "iteration": 1,
+            "mode": "initial",
+            "completed_at": "2026-05-22T00:00:00Z",
+            "section": null,
+            "escalation_id": null,
+            "blurbs": [
+              {
+                "question": "How are you breaking this into pieces?",
+                "answer": "Five pieces. First, figuring out where you are: the app asks your browser for your location automatically, and if that is blocked or unavailable it shows a box where you can type a place instead. Second, finding real liquor stores near that location by looking them up from a free public map service. Third, working out which store is closest and showing it with its name, address, and how far away it is, plus a button that opens directions in a maps app. Fourth, the app itself that you open in your browser, which ties the other parts together and shows loading and error messages along the way. Fifth, a thorough round of testing that puts the finished app through awkward situations, like location being denied or the internet being down, to make sure it never crashes or shows a blank screen.",
+                "kind": "always",
+                "importance": "high"
+              },
+              {
+                "question": "What tech choices did you make, and why?",
+                "answer": "For the store data, I chose to look up real, current liquor stores from OpenStreetMap's public Overpass service. It works anywhere in the world, needs no sign-up or paid key, and the app can call it directly from your browser with no server you have to run. I considered shipping a fixed list of stores baked into the app instead, but that would only work in one region and would quietly give wrong answers everywhere else, so I ruled it out. This does mean the app needs an internet connection when you use it, which is unavoidable for getting real, up-to-date stores. For finding where you are, I used the standard location feature built into every browser, with a type-it-in fallback so you are never stuck. For getting to the store, the app gives you a directions link that opens your usual maps app rather than building turn-by-turn navigation inside the app, which matches a lightweight 'point me there' tool. The app itself is a plain self-contained page with no install and no setup.",
+                "kind": "always",
+                "importance": "high"
+              }
+            ],
+            "raised_escalation": false,
+            "next_role": "Editor",
+            "_filename": "td-initial-v1.json"
+          }
+        ],
+        "current_step": {
+          "updated_at": "2026-05-22T11:10:00Z",
+          "current_phase": "complete",
+          "active_roles": [],
+          "last_completed_report": "state/reports/cv-v1.json",
+          "open_escalations": [],
+          "build_complete": true
+        }
+      },
+      "history": {
+        "entry_count": 14,
+        "earliest": "2026-05-22T00:00:00Z",
+        "latest": "2026-05-22T11:10:00Z"
+      },
+      "run_report_excerpts": {
+        "what_worked": [
+          "Discovery's honest IP framing. — Discovery did not paper over the hard part. It logged \"where store-location data comes from\" as a high-importance inflection point with a documented best-effort default (live real data) rather than silently…",
+          "TD's research probe earned its keep. — IP1 failed the quick-reasoning rubric (introduces an external dependency, not trivially reversible) and TD correctly routed it to research instead of guessing. The probe produced 6 re-fetchable citati…",
+          "Editor gate passed cleanly first try. — No iteration. All five structural checks held: empty `proper_nouns[]` confirmed correct against the literal prompt, both high-importance IPs had concrete action, no `td_plan`-sourced assertion target…",
+          "Inline mode held at 5 sections. — Linear dependency chain (location → lookup → presentation → shell → integrator → edge-case-testing), no escalations originating in the build phase. The Coordinator produced real working code, not stubs.",
+          "Critic final-sweep clean. — 0 flags across all 9 checks; all 13 machine-checkable assertions verified against the integrated artifact.",
+          "Graceful degradation is real, not decorative. — Every failure path the spec named — geolocation denied, Overpass timeout/HTTP-error/offline, empty nearby results — was exercised (11/11 edge-case assertions) and produces a clear message. Th…"
+        ],
+        "what_broke": [
+          "A **GET**-form request to `overpass-api.de/api/interpreter?data=…` returns **HTTP 406** — from the *real* browser too, not just the sandbox. Overpass's Apache layer rejects the GET shape.",
+          "A **POST** with the raw query body returns **200** (27 stores for the Chicago test point).",
+          "A **POST** with `data=`-form encoding — *which is exactly what the app sends* — returns **200** on ~2 of 3 attempts and **504 Gateway Timeout** on the rest. The 504 is the free public `overpass-api.de` instance being transiently overloaded…",
+          "What architecture should learn — CV's production-fidelity exercise has no path to the user's *actual* browser when the verification sandbox can't reach a required endpoint — so it modeled the component and inherited an upstream role's inco…",
+          "What architecture should learn — the dispatch model assumes uniform sub-agent-spawning capability at every depth. In practice the capability is not guaranteed past the first level. Either the architecture documents \"in-role conduct with fu…"
+        ],
+        "amendment_candidates": []
+      },
+      "uncertainty_manifest": [
+        "Live data over a bundled dataset (IP1). — The app needs network at use time. If the user is offline or `overpass-api.de` is down, the app cannot answer — it says so clearly rather than failing silently. This was the honest reading of \"the …",
+        "\"Closest\" = straight-line distance (A2). — Great-circle distance, not drive time. In a dense road network the straight-line-nearest store may not be the fastest to reach. The directions hand-off (which opens a real maps service) covers the…",
+        "\"Points me to\" = identify-and-show + hand-off (A5/IP4). — The app names the store, its address, distance, and gives external directions links. It does not do in-app turn-by-turn — that was an explicit out-of-scope choice.",
+        "Single closest store, not a ranked list (IP3). — The prompt said \"the closest\" (singular). A nearby-list is a reasonable enhancement but was not asked for.",
+        "Transient 504s from the public Overpass instance. — Live verification measured ~1-in-3 calls returning a transient 504 at the test time. The app handles each gracefully (\"the service may be busy — please try again\") but does **not** auto-r…"
+      ],
+      "editor": {
+        "iterations": 1,
+        "verdicts": [
+          "pass"
+        ]
+      },
+      "demotion_count": 0,
+      "events": [],
+      "revisions": [
+        {
+          "id": "rev-0",
+          "kind": "primary_run",
+          "ref": null,
+          "ts": "2026-05-22",
+          "summary": "Initial Auto Builder run",
+          "verdict": "pass_with_concerns",
+          "rationale": null,
+          "diff_summary": null,
+          "triggered_by_event": null,
+          "triggered_by_outcome": null,
+          "sources": [
+            "synthesized"
+          ],
+          "first_delivery_outcome": "succeeded_with_concerns"
+        }
+      ],
+      "file_tree": null,
+      "role_attribution_totals": {},
+      "first_delivery": {
+        "outcome": "succeeded_with_concerns",
+        "source": "uncertainty_manifest"
+      },
+      "re_audit": null,
+      "links": {
+        "run_report": "runs/closest-liquor-store/run-report.md",
+        "verification": "runs/closest-liquor-store/output/verification/report.json",
+        "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
+        "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/closest-liquor-store/output/final/",
+        "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
+      }
+    },
     "github-profile-card": {
       "schema_version": "0.1",
       "slug": "github-profile-card",
@@ -8073,583 +8662,6 @@ window.CODEX_BUNDLE = {
         "sections": "runs/tic-tac-toe/decisions/technical-discovery/sections-v1.json",
         "final_dir": "runs/tic-tac-toe/output/final/",
         "audit_flags": "runs/tic-tac-toe/audit/flags.jsonl"
-      }
-    },
-    "closest-liquor-store": {
-      "schema_version": "0.1",
-      "slug": "closest-liquor-store",
-      "summary": {
-        "slug": "closest-liquor-store",
-        "prompt": null,
-        "date": null,
-        "architecture_version": null,
-        "dispatch_mode": null,
-        "verdict": "unknown",
-        "raw_verdict": null,
-        "final_artifact": null,
-        "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
-        "rating": {
-          "telos_fidelity": "strong",
-          "deliverability": {
-            "tier1_pnv": "not_run",
-            "tier2_first_contact": "not_run",
-            "tier3_subgoal": "verified"
-          },
-          "cost": {
-            "minutes": null,
-            "escalations_high": 0,
-            "critic_high": 0
-          },
-          "learning_yield": {
-            "amendment_candidates": 0,
-            "principle_violations_caught_structurally": 0,
-            "principle_violations_escaped": 0
-          },
-          "composite": "unknown"
-        },
-        "counts": {
-          "dispatches": 12,
-          "overseer_dispatches": 4,
-          "builder_dispatches": 0,
-          "researcher_dispatches": 0,
-          "wall_clock_minutes": null,
-          "sections": 5,
-          "edge_cases_total": null,
-          "edge_cases_passing": null,
-          "critic_findings_high": 0,
-          "critic_findings_medium": 0,
-          "critic_findings_low": 0,
-          "sev0_fixes": 0,
-          "escalations_open": 0,
-          "demotions": 0,
-          "editor_iterations": 1,
-          "events_total": 0,
-          "revision_count": 1,
-          "additional_step_count": 0
-        },
-        "deliverable_kind": "other",
-        "deliverable_can_run_in_browser": false,
-        "deliverable_index": null,
-        "deliverable_manifest": null,
-        "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/codex/showcase/closest-liquor-store.html",
-        "live_url_kind": "showcase",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
-        "re_audit_present": false,
-        "re_audit_reclassified_verdict": null,
-        "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
-        "ratification_notes": null,
-        "ratification_writer_version": null,
-        "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
-        "ab_pair": null,
-        "links": {
-          "run_report": "runs/closest-liquor-store/run-report.md",
-          "verification": "runs/closest-liquor-store/output/verification/report.json",
-          "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
-          "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
-          "final_dir": "runs/closest-liquor-store/output/final/",
-          "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
-        },
-        "decision_flowchart_path": null
-      },
-      "ledger": {
-        "restatement": "The user wants a small application that, given their current location, identifies and directs them to the closest liquor store.",
-        "telos": "Give the user a way to find the nearest store selling liquor relative to where they currently are.",
-        "assumption_count": 6,
-        "inflection_count": 3,
-        "oos_count": 7,
-        "proper_nouns": [],
-        "first_contact_requirements": [
-          {
-            "description": "The app opens and runs without an error screen on the user's Windows machine/browser."
-          },
-          {
-            "description": "The app establishes the user's current location (either automatically or via a visible manual-entry option) without the user being stuck."
-          },
-          {
-            "description": "The app names a specific closest liquor store and shows its address and distance, so the result is concrete and actionable."
-          },
-          {
-            "description": "The app gives the user a way to act on the result — directions, a map view, or an address they can use to get there."
-          }
-        ]
-      },
-      "td": {
-        "sections": [
-          {
-            "id": "section-1",
-            "charter_excerpt": "Own everything to do with establishing where the user is. On app use, attempt automatic detection via the browser Geolocation API. If detection is unavailable, denied, slow, or errors, expose a visible manual location-entry control and tur…",
-            "acceptance_excerpt": "On use the app attempts automatic location detection; a manual location-entry field is visible and usable; when automatic detection is denied or fails the user can still supply a location manually and proceed; the module yields a resolved …"
-          },
-          {
-            "id": "section-2",
-            "charter_excerpt": "Own retrieval of real liquor-store locations near a given coordinate. Given a latitude/longitude, query the public OpenStreetMap Overpass API (https://overpass-api.de/api/interpreter) directly from the browser for shop=alcohol features (an…",
-            "acceptance_excerpt": "Given a coordinate, the module returns real liquor-store records from the OpenStreetMap Overpass API; each record carries a name, an address, and a latitude/longitude; the Overpass query filters by the shop=alcohol category within a radius…"
-          },
-          {
-            "id": "section-3",
-            "charter_excerpt": "Own picking the single closest store and showing it. Given the user's coordinate and the list of store records, compute each store's straight-line (great-circle) distance from the user, select the one with the smallest distance, and render…",
-            "acceptance_excerpt": "Given a user coordinate and store records, the module computes each store's geographic distance and selects the single closest; the result is shown as a card with the store's name, address, and distance; an actionable directions/map link t…"
-          },
-          {
-            "id": "section-4",
-            "charter_excerpt": "Own the self-contained app shell that ties the other pieces together and is what the user actually opens. Provide a single browser-openable entry point (HTML plus its assets) that runs on Windows with no server the user must operate and no…",
-            "acceptance_excerpt": "The app is a single browser-openable artifact that launches on Windows without an error screen and with no server the user must run; it orchestrates the full flow from location acquisition through store lookup to presenting the closest sto…"
-          },
-          {
-            "id": "section-5",
-            "charter_excerpt": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment — no substitution of runtime dependencies the artifact loads in production. Verify the integrated app …",
-            "acceptance_excerpt": "Every acceptance assertion marked verifier: edge_case_testing across the section list is exercised against the integrated artifact under production fidelity and passes; permission-denied, network-failure, timeout, offline, and empty-result…"
-          }
-        ],
-        "contracts": [
-          "integrator--section-5",
-          "section-1--section-2",
-          "section-1--section-3",
-          "section-1--section-4",
-          "section-2--section-3",
-          "section-2--section-4",
-          "section-3--section-4"
-        ],
-        "prompt_verb_chosen": "points me to the closest liquor store"
-      },
-      "timeline": [],
-      "verification": {
-        "verdict": "pass_with_concerns",
-        "assumption_checks_total": 6,
-        "assumption_checks_verified": 6,
-        "out_of_scope_total": 7,
-        "out_of_scope_verified": 7,
-        "inflection_point_checks_total": 4,
-        "inflection_point_checks_honored": 4,
-        "edge_cases_total": null,
-        "edge_cases_passing": null,
-        "first_contact_results": [
-          {
-            "requirement_id": "FC.1",
-            "description": "The app opens and runs without an error screen on the user's Windows machine/browser.",
-            "scenario": "Loaded index.html via file:// in headless Chromium; inspected for the app shell, title, error screens, and console/page errors.",
-            "result": "pass",
-            "details": "Title 'Closest Liquor Store' rendered; .cls-app shell present; no .cls-msg-error error screen; zero console errors and zero page errors. The app launches clean as an ordinary double-click would."
-          },
-          {
-            "requirement_id": "FC.2",
-            "description": "The app establishes the user's current location (automatically or via a visible manual-entry option) without the user being stuck.",
-            "scenario": "On load, verified the manual location-entry input and Find button are visible and enabled; separately verified navigator.geolocation.getCurrentPosition is invoked on use; separately verified that under denied geolocation the manual path stays usable with a clear message.",
-            "result": "pass",
-            "details": "Geolocation API is invoked automatically on use. The manual-entry input + Find button are always visible and enabled regardless of geolocation state. Under denied geolocation the app shows 'Location access was denied. Enter a location below instead.' and the input remains usable — the user is never stuck."
-          },
-          {
-            "requirement_id": "FC.3",
-            "description": "The app names a specific closest liquor store and shows its address and distance.",
-            "scenario": "Fed a canonical Overpass out:json payload (3 real-shape elements) through the artifact's own unmodified normalize/select/render code in the loaded page; inspected the rendered result card DOM.",
-            "result": "pass",
-            "details": "Result card rendered with a named store ('Loop Wine & Spirits'), a concrete address ('22 W Madison St, Chicago, IL, 60602'), and a distance ('0.3 mi (0.5 km)'). The named place is real and concrete, not a placeholder."
-          },
-          {
-            "requirement_id": "FC.4",
-            "description": "The app gives the user a way to act on the result — directions, a map view, or a usable address.",
-            "scenario": "Inspected the rendered result card for actionable directions/map links and their hrefs.",
-            "result": "pass",
-            "details": "Two working hand-off links rendered: 'Get directions' -> https://www.openstreetmap.org/directions?from=<user>&to=<store coords>, and 'Open in Google Maps' -> https://www.google.com/maps/dir/?api=1&destination=<store coords>. Both target external maps services prefilled with the chosen store's coordinates. The plain-text address is also shown for copy/use."
-          }
-        ],
-        "principle_h_skips": [],
-        "concerns": []
-      },
-      "critic": {
-        "by_severity": {
-          "high": 0,
-          "medium": 0,
-          "low": 0
-        },
-        "by_principle": {
-          "A": 0,
-          "B": 0,
-          "C": 0,
-          "D": 0,
-          "E": 0,
-          "F": 0,
-          "G": 0,
-          "H": 0
-        },
-        "open": 0,
-        "resolved": 0,
-        "sev0_fixes": 0,
-        "escalations_open": 0
-      },
-      "build_shape": {
-        "schema": "v0.15",
-        "slug": "closest-liquor-store",
-        "deliverable_kind": "other",
-        "deliverable_label": "closest-liquor-store",
-        "inflection_points": [
-          {
-            "id": "IP1",
-            "topic": "Where the liquor-store location data comes from",
-            "importance": "high",
-            "method": null,
-            "has_research": false
-          },
-          {
-            "id": "IP2",
-            "topic": "How the user's current location is established",
-            "importance": "high",
-            "method": null,
-            "has_research": false
-          },
-          {
-            "id": "IP3",
-            "topic": "How the result is presented to the user",
-            "importance": "medium",
-            "method": null,
-            "has_research": false
-          }
-        ],
-        "sections": [
-          {
-            "id": "section-1",
-            "name": "section-1",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "section-2",
-            "name": "section-2",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "section-3",
-            "name": "section-3",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "section-4",
-            "name": "section-4",
-            "depends_on": [],
-            "estimated_builders": 1
-          },
-          {
-            "id": "section-5",
-            "name": "section-5",
-            "depends_on": [],
-            "estimated_builders": 1
-          }
-        ],
-        "contracts": [
-          {
-            "from": "integrator",
-            "to": "section-5"
-          },
-          {
-            "from": "section-1",
-            "to": "section-2"
-          },
-          {
-            "from": "section-1",
-            "to": "section-3"
-          },
-          {
-            "from": "section-1",
-            "to": "section-4"
-          },
-          {
-            "from": "section-2",
-            "to": "section-3"
-          },
-          {
-            "from": "section-2",
-            "to": "section-4"
-          },
-          {
-            "from": "section-3",
-            "to": "section-4"
-          }
-        ],
-        "waves": [],
-        "researcher_dispatch_count": 0,
-        "builder_dispatch_count": 0,
-        "overseer_dispatch_count": 4,
-        "critic_high": 0,
-        "critic_medium": 0,
-        "critic_low": 0,
-        "editor_iterations": 1,
-        "editor_final_verdict": "pass",
-        "demotion_count": 0,
-        "cv_verdict": "pass_with_concerns",
-        "cv_tier1_pnv": "not_run",
-        "cv_tier2_first_contact": "not_run",
-        "cv_tier3_subgoal": "verified",
-        "lifecycle_phase": "ready_to_ratify",
-        "ratified": false,
-        "promoted": false,
-        "promoted_to": null,
-        "totals": {
-          "sections": 5,
-          "inflection_points": 3,
-          "builders": 0,
-          "waves": 0,
-          "escalations": 0,
-          "dispatches": 12
-        },
-        "phase_band_states": {
-          "kickoff": "done",
-          "planning": "done",
-          "build": "done",
-          "verification": "done",
-          "delivery": "done",
-          "ratification": "active",
-          "promoted": "pending"
-        }
-      },
-      "live_narrative": {
-        "reports": [
-          {
-            "role": "Coordinator",
-            "instance_id": "coordinator",
-            "iteration": 1,
-            "mode": null,
-            "completed_at": "2026-05-22T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "How are you sequencing the work?",
-                "answer": "The four parts of the app build on each other, so I did them one after another in order. First the part that figures out where the user is. Then, using that location, the part that looks up nearby liquor stores. Then the part that takes those stores, picks the closest one, and shows it on screen. Then the app shell that wraps all three together into the page the user actually opens. Once those four were done and checked, I joined them into a single file. Last, I ran the app through a round of stress tests — denying location access, simulating no internet, slow and failed lookups, and areas with no stores — to make sure it never crashes or shows a blank screen and always gives the user a clear message.",
-                "kind": "always",
-                "importance": "medium"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "Critic",
-            "_filename": "coordinator-v1.json"
-          },
-          {
-            "role": "Critic",
-            "instance_id": "critic-final-sweep",
-            "iteration": 1,
-            "mode": "final_sweep",
-            "completed_at": "2026-05-22T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "What kinds of problems did you check for?",
-                "answer": "I checked whether the finished app accidentally included things it was meant to leave out (like logins, saved favorites, or price filtering), whether every promised behavior was actually built into the code, whether the build's record-keeping files were complete and consistent, and whether the two noted testing-environment caveats were honest and didn't hide real changes to the app.",
-                "kind": "always",
-                "importance": "medium"
-              },
-              {
-                "question": "What did you find?",
-                "answer": "Nothing of concern. The integrated app does exactly what the plan called for: it detects your location, looks up real nearby liquor stores from OpenStreetMap, shows the closest one with its address, distance, and a directions link, and handles errors gracefully. None of the deliberately-excluded features sneaked in. The two logged caveats are both about the test sandbox's network limits, not about the app's code, and that is accurately described. The app is consistent end to end.",
-                "kind": "always",
-                "importance": "high"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "ConvergenceVerifier",
-            "_filename": "critic-v1.json"
-          },
-          {
-            "role": "ConvergenceVerifier",
-            "instance_id": "cv",
-            "iteration": 1,
-            "mode": null,
-            "completed_at": "2026-05-22T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "Does the artifact actually work?",
-                "answer": "Yes. Opened in a real browser, the app launches clean with no error screen, automatically asks for the user's location while always offering a usable manual-entry box, and — given a location — names a specific closest liquor store with its address, distance, and working links that open that store for directions in OpenStreetMap or Google Maps. The live location-geocoding service worked end to end during testing. The store-data service (OpenStreetMap Overpass) was blocked specifically by the verification sandbox's network proxy, not by any flaw in the app; the app's own code handled that block gracefully with a clear message, and when fed a realistic store-data response through its own unmodified logic it produced the correct named result. On the user's own Windows machine, where the browser can reach the store-data service normally, the full find-the-nearest-store flow completes live.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "Any caveats?",
-                "answer": "One residual, environmental only: the verification sandbox cannot reach the OpenStreetMap Overpass store-data endpoint because the sandbox's outbound proxy returns HTTP 406 (independently confirmed and matching the earlier recorded deviation dev-002). This is a sandbox network limitation, not an app defect — the geocoding endpoint and a plain control URL both succeed from the same sandbox. The store-data component was therefore verified by running a canonical real-shape store-data response through the app's own unmodified code, which produced a correct named result. On an ordinary Windows machine the browser reaches Overpass normally and the flow runs fully live. This residual is noted for the run-report Uncertainty Manifest.",
-                "kind": "conditional",
-                "importance": "medium"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": null,
-            "_filename": "cv-v1.json"
-          },
-          {
-            "role": "Discovery",
-            "instance_id": "discovery-initial",
-            "iteration": 1,
-            "mode": "initial",
-            "completed_at": "2026-05-22T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "What did you understand the user wants?",
-                "answer": "You want a simple app that figures out where you are and tells you which liquor store is closest to you. It should name a real store, show its address and how far away it is, and give you a way to get there.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "What choices did you make on their behalf, and why?",
-                "answer": "For the store information, I assumed the app should use real, up-to-date store locations so the answer is genuinely correct wherever you are, rather than a fixed built-in list that would only work in one area. For finding where you are, I assumed the app should detect your location automatically, with a manual option to type it in if detection is blocked, so you always get an answer. For the result, I assumed showing the single closest store is enough, since you asked for 'the closest' rather than a list of options.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "What did you explicitly NOT do?",
-                "answer": "I did not include accounts or logins, saved favorites or search history, built-in turn-by-turn navigation, filtering by price or ratings or store hours, or any ordering and delivery features. The app focuses on one job: pointing you to the nearest liquor store.",
-                "kind": "conditional",
-                "importance": "medium"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "TechnicalDiscovery",
-            "_filename": "discovery-initial-v1.json"
-          },
-          {
-            "role": "Editor",
-            "instance_id": "editor",
-            "iteration": 1,
-            "mode": null,
-            "completed_at": "2026-05-22T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "Did the build stay true to what was asked?",
-                "answer": "Yes. The plan matches the original request to point you to the closest liquor store: it acquires your location, looks up real nearby liquor stores, picks the single closest one, and shows its name, address, distance, and a directions link. Every part of what a first-time user would expect is covered, and the two big judgement calls (using live real-world store data and auto-detecting your location with a manual fallback) are backed by real evidence rather than guesses.",
-                "kind": "always",
-                "importance": "high"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "Coordinator",
-            "_filename": "editor-v1.json"
-          },
-          {
-            "role": "Integrator",
-            "instance_id": "integrator",
-            "iteration": 1,
-            "mode": null,
-            "completed_at": "2026-05-22T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "What did you produce?",
-                "answer": "A single web app in one file — output/integration/index.html. To use it, the person just double-clicks that file and it opens in their browser; there is no server to start and nothing to install. When it opens, the app asks the browser for the user's location (and if that's denied or unavailable, there's a text box right there to type a city or address instead). It then looks up real liquor stores nearby from OpenStreetMap, works out which one is closest in a straight line, and shows a card with that store's name, address, and how far away it is, plus buttons that open directions to it in OpenStreetMap or Google Maps. All the app's own code and styling are baked into that one file, so the only thing it needs the internet for is the OpenStreetMap lookups themselves. If anything goes wrong — no internet, the lookup is slow, or there are no stores nearby — it shows a clear plain-English message instead of breaking or going blank.",
-                "kind": "always",
-                "importance": "high"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "ConvergenceVerifier",
-            "_filename": "integrator-v1.json"
-          },
-          {
-            "role": "TechnicalDiscovery",
-            "instance_id": "td-initial",
-            "iteration": 1,
-            "mode": "initial",
-            "completed_at": "2026-05-22T00:00:00Z",
-            "section": null,
-            "escalation_id": null,
-            "blurbs": [
-              {
-                "question": "How are you breaking this into pieces?",
-                "answer": "Five pieces. First, figuring out where you are: the app asks your browser for your location automatically, and if that is blocked or unavailable it shows a box where you can type a place instead. Second, finding real liquor stores near that location by looking them up from a free public map service. Third, working out which store is closest and showing it with its name, address, and how far away it is, plus a button that opens directions in a maps app. Fourth, the app itself that you open in your browser, which ties the other parts together and shows loading and error messages along the way. Fifth, a thorough round of testing that puts the finished app through awkward situations, like location being denied or the internet being down, to make sure it never crashes or shows a blank screen.",
-                "kind": "always",
-                "importance": "high"
-              },
-              {
-                "question": "What tech choices did you make, and why?",
-                "answer": "For the store data, I chose to look up real, current liquor stores from OpenStreetMap's public Overpass service. It works anywhere in the world, needs no sign-up or paid key, and the app can call it directly from your browser with no server you have to run. I considered shipping a fixed list of stores baked into the app instead, but that would only work in one region and would quietly give wrong answers everywhere else, so I ruled it out. This does mean the app needs an internet connection when you use it, which is unavoidable for getting real, up-to-date stores. For finding where you are, I used the standard location feature built into every browser, with a type-it-in fallback so you are never stuck. For getting to the store, the app gives you a directions link that opens your usual maps app rather than building turn-by-turn navigation inside the app, which matches a lightweight 'point me there' tool. The app itself is a plain self-contained page with no install and no setup.",
-                "kind": "always",
-                "importance": "high"
-              }
-            ],
-            "raised_escalation": false,
-            "next_role": "Editor",
-            "_filename": "td-initial-v1.json"
-          }
-        ],
-        "current_step": {
-          "updated_at": "2026-05-22T00:00:00Z",
-          "current_phase": "initial-discovery",
-          "active_roles": [
-            {
-              "role": "Discovery",
-              "instance_id": "discovery-initial",
-              "section": null,
-              "started_at": "2026-05-22T00:00:00Z",
-              "escalation_id": null
-            }
-          ],
-          "last_completed_report": null,
-          "open_escalations": [],
-          "build_complete": false
-        }
-      },
-      "history": {
-        "entry_count": 13,
-        "earliest": "2026-05-22T00:00:00Z",
-        "latest": "2026-05-22T00:00:00Z"
-      },
-      "run_report_excerpts": null,
-      "uncertainty_manifest": [],
-      "editor": {
-        "iterations": 1,
-        "verdicts": [
-          "pass"
-        ]
-      },
-      "demotion_count": 0,
-      "events": [],
-      "revisions": [
-        {
-          "id": "rev-0",
-          "kind": "primary_run",
-          "ref": null,
-          "ts": null,
-          "summary": "Initial Auto Builder run",
-          "verdict": "unknown",
-          "rationale": null,
-          "diff_summary": null,
-          "triggered_by_event": null,
-          "triggered_by_outcome": null,
-          "sources": [
-            "synthesized"
-          ],
-          "first_delivery_outcome": "unverified"
-        }
-      ],
-      "file_tree": {
-        "tree": [],
-        "node_count": 0,
-        "truncated": false
-      },
-      "role_attribution_totals": {},
-      "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
-      },
-      "re_audit": null,
-      "links": {
-        "run_report": "runs/closest-liquor-store/run-report.md",
-        "verification": "runs/closest-liquor-store/output/verification/report.json",
-        "ledger": "runs/closest-liquor-store/decisions/discovery/ledger-v1.json",
-        "sections": "runs/closest-liquor-store/decisions/technical-discovery/sections-v1.json",
-        "final_dir": "runs/closest-liquor-store/output/final/",
-        "audit_flags": "runs/closest-liquor-store/audit/flags.jsonl"
       }
     },
     "gto-poker-trainer": {
