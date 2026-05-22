@@ -693,7 +693,7 @@ function renderSvg(graph) {
 
 // Bump this on every change set so the top-left toolbar string lets the
 // user confirm they're viewing the freshly-generated HTML, not a cached one.
-const WALKTHROUGH_VERSION = '2.21';
+const WALKTHROUGH_VERSION = '2.22';
 
 function render(graph) {
   // date + time so every regeneration produces a distinct stamp
@@ -2011,7 +2011,15 @@ if (process.argv[1] && __thisFile.endsWith(path.basename(process.argv[1]))) {
   // import.meta.dirname is a clean filesystem path on Windows + Linux (Node 20.11+)
   const repoRoot = path.resolve(import.meta.dirname, '..', '..');
   const runDir = path.join(repoRoot, 'runs', slug);
-  const result = generate(slug, runDir);
+  let result;
+  try {
+    result = generate(slug, runDir);
+  } catch (e) {
+    // Build hasn't produced substrate yet (or it's malformed) — exit with a
+    // clean one-line message rather than a Node stack trace.
+    console.error(`[walkthrough-flowchart] cannot render "${slug}": ${e.message}`);
+    process.exit(1);
+  }
   console.log(`[walkthrough-flowchart] wrote ${result.outPath}`);
   console.log(`[walkthrough-flowchart] decisions rendered: ${result.decisionCount}`);
 }
