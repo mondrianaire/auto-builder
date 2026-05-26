@@ -15,7 +15,7 @@ export const FIREBASE_CONFIG = {
 };
 
 // Pinned Firebase SDK version. The browser loads modules from gstatic CDN
-// at this version. README documents adding mondrianaire.github.io to the
+// at this version. README documents adding mondrianaire.github.io to the 
 // Firebase OAuth authorized domains (DCA.A23).
 export const FIREBASE_SDK_VERSION = "11.0.2";
 
@@ -36,7 +36,7 @@ export const ADMIN_UID = "REPLACE_WITH_PROJECT_OWNER_GOOGLE_UID";
 //
 // Default for first-contact: "client-dealer". Flip to "cloud-functions" after
 // you deploy the included functions/ source.
-export const SERVER_ENGINE_MODE = "client-dealer";
+export const SERVER_ENGINE_MODE = "cloud-functions";  // was "client-dealer"
 
 // Per-preset action-clock seconds — derived from src/tournament/presets.js but
 // exported here for the action-clock UI to look up without importing the full
