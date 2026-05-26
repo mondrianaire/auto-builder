@@ -1,0 +1,10 @@
+{
+  "section_id": "section-7",
+  "section_name": "results-leaderboards",
+  "completed_at": "2026-05-26T02:30:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-7a", "task": "src/leaderboards.js — Weekly/Monthly/All-Time tabs + Firestore onSnapshot per scale", "output_files": ["src/leaderboards.js"] },
+    { "builder_id": "builder-7b", "task": "Client-mode recompute mirror (in src/admin.js recomputeLeaderboardsInProcess)", "output_files": ["src/admin.js (recomputeLeaderboardsInProcess function)"] }
+  ]
+}

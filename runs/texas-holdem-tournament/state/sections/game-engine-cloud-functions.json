@@ -1,0 +1,20 @@
+{
+  "section_id": "section-4",
+  "section_name": "game-engine-cloud-functions",
+  "status": "verified",
+  "owner": "overseer-game-engine (coordinator-inline)",
+  "started_at": "2026-05-26T02:17:00Z",
+  "verified_at": "2026-05-26T02:25:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-4",
+  "active_contracts": ["contracts/original/section-3--section-4.json", "contracts/original/section-4--section-5.json", "contracts/original/section-4--section-6.json", "contracts/original/section-4--section-7.json", "contracts/original/section-4--section-8.json"],
+  "sub_goals": [
+    { "id": "4a", "description": "functions/src/shuffle.js (crypto.randomBytes Fisher-Yates) + functions/src/dealHand.js (server-authoritative deal + 2-7o detection)", "status": "verified", "builder_id": "builder-4a", "output_path": "output/builders/section-4/builder-4a/" },
+    { "id": "4b", "description": "functions/src/handEngine.js (resolveActionOrder, betting state machine) + functions/src/submitAction.js (action validation)", "status": "verified", "builder_id": "builder-4b", "output_path": "output/builders/section-4/builder-4b/" },
+    { "id": "4c", "description": "functions/src/resolveHand.js (5-of-7 evaluator + side-pot distribution)", "status": "verified", "builder_id": "builder-4c", "output_path": "output/builders/section-4/builder-4c/" },
+    { "id": "4d", "description": "functions/src/scoring.js (PWCS) + functions/src/recomputeLeaderboards.js + functions/src/advanceBlindLevel.js + functions/src/lobbyTimers.js + functions/src/index.js (exports)", "status": "verified", "builder_id": "builder-4d", "output_path": "output/builders/section-4/builder-4d/" },
+    { "id": "4e", "description": "src/game-engine-client.js (client-dealer fallback per dev-001) — runs same logic in browser using window.crypto.getRandomValues", "status": "verified", "builder_id": "builder-4e", "output_path": "output/builders/section-4/builder-4e/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_summary": "S4.A1-A7 verified. shuffle.js uses crypto.randomBytes (no Math.random); submitAction validates turn/stack/min-raise; distributePots produces correct main+side pots for 100/300/500 all-in case; resolveActionOrder produces TDA-correct heads-up button-acts-first-preflop; advanceBlindLevel rolls level on duration boundary; dealHand sets easter_egg.triggered=true + action_clock.is_paused=true on 2-7o; recomputeLeaderboards aggregates PWCS scores per player. dev-001 dual-path (client-dealer + Cloud Functions) reflected in metadata."
+}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "from_section": "section-7",
+  "to_section": "section-8",
+  "interface": {
+    "leaderboardDocumentShape": {
+      "reference": "section-4--section-7.json#leaderboardDocument",
+      "notes": "section-8's admin dashboard reads the same /leaderboards/{scale} documents that section-7 reads. The admin view may add 'hidden tournament' rollups or per-tournament drill-down, but the underlying shape is the one defined in section-4--section-7.json."
+    }
+  },
+  "notes": "Minimal contract: section-8's reads piggyback on section-7's source of truth. Writes go through section-4 Cloud Functions per section-4--section-8.json."
+}

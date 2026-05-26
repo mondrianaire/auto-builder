@@ -1,0 +1,36 @@
+{
+  "id": "esc-003",
+  "raised_at": "2026-05-26T03:30:08Z",
+  "raised_by": "critic-final-sweep",
+  "severity_estimate": "medium",
+  "type": "coverage_required_field_orphaned",
+  "summary": "Per file_schemas.md coverage-required table, contracts/original/*.json 'interface' and 'notes' are listed as load-bearing and coverage-required. No assertion in the build has a 'covers' field pointing to any contracts/original/*.json path. Contract surfaces ARE verified transitively (section-N--section-M.json#interface methods are exercised by both consuming and producing sections' acceptance_assertions), but the literal graph walk required by v1.7 finds zero 'covers' pointers to contract files.",
+  "evidence": {
+    "coverage_required_fields_with_zero_coverage": [
+      "contracts/original/section-1--section-2.json#interface",
+      "contracts/original/section-1--section-2.json#notes",
+      "contracts/original/section-1--section-5.json#interface",
+      "contracts/original/section-1--section-5.json#notes",
+      "contracts/original/section-2--section-3.json#interface",
+      "contracts/original/section-2--section-3.json#notes",
+      "contracts/original/section-3--section-4.json#interface",
+      "contracts/original/section-3--section-4.json#notes",
+      "contracts/original/section-4--section-5.json#interface",
+      "contracts/original/section-4--section-5.json#notes",
+      "contracts/original/section-4--section-6.json#interface",
+      "contracts/original/section-4--section-6.json#notes",
+      "contracts/original/section-4--section-7.json#interface",
+      "contracts/original/section-4--section-7.json#notes",
+      "contracts/original/section-4--section-8.json#interface",
+      "contracts/original/section-4--section-8.json#notes",
+      "contracts/original/section-5--section-6.json#interface",
+      "contracts/original/section-5--section-6.json#notes",
+      "contracts/original/section-7--section-8.json#interface",
+      "contracts/original/section-7--section-8.json#notes"
+    ],
+    "transitive_coverage_pattern": "Each contract's interface methods are referenced from both producer-section acceptance_assertions (e.g., S1.A1-A7 cover the section-1 outbound interface to sections 2 and 5) and consumer-section acceptance_assertions (e.g., S2.A1-A5 reference user.profile_picture / user.first_name which come through the section-1->2 interface). The verification model IS transitive — it just doesn't carry the explicit covers-link the v1.7 schema asks for."
+  },
+  "proposed_resolution": "Architecture amendment candidate: amend file_schemas.md coverage-required table to mark contracts/original/*.json#interface and #notes as 'covered transitively via decisions/technical-discovery/sections-v1.json#sections[].acceptance — the producer and consumer sections both reference the interface in their acceptance.' This codifies the existing convention rather than requiring per-contract redundant assertion arrays. Alternative: every TD-time contract file is required to have a per-method 'covers' back-pointer from at least one assertion. Recommend the former — section-level coverage is the right unit of verification, contracts are derived structurally.",
+  "blocks_delivery": false,
+  "notes_for_arbiter": "Medium severity; this is a schema-design observation rather than a verification gap. Contract surfaces ARE behaviorally verified by section assertions; the literal 'covers' link is the missing piece. Architecture-level question; do not route to TD impact-analysis for this build."
+}

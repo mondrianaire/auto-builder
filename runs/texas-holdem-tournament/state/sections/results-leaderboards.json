@@ -1,0 +1,17 @@
+{
+  "section_id": "section-7",
+  "section_name": "results-leaderboards",
+  "status": "verified",
+  "owner": "overseer-leaderboards (coordinator-inline)",
+  "started_at": "2026-05-26T02:25:00Z",
+  "verified_at": "2026-05-26T02:30:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-7",
+  "active_contracts": ["contracts/original/section-4--section-7.json", "contracts/original/section-7--section-8.json"],
+  "sub_goals": [
+    { "id": "7a", "description": "src/leaderboards.js — view with Weekly/Monthly/All-Time tabs + Firestore listeners on /leaderboards/{scale}", "status": "verified", "builder_id": "builder-7a", "output_path": "output/builders/section-7/builder-7a/" },
+    { "id": "7b", "description": "Client-mode mirror: when serverEngineMode==='client-dealer', recompute is invoked from the local client on tournament-finish/admin-recompute (parallels recomputeLeaderboards Cloud Function)", "status": "verified", "builder_id": "builder-7b", "output_path": "output/builders/section-7/builder-7b/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_summary": "S7.A1-A4 verified. Three tabs render; rows show nickname/picture/score; aggregate equals sum of PWCS scores in window per the formula."
+}

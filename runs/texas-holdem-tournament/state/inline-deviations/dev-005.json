@@ -1,0 +1,18 @@
+{
+  "id": "dev-005",
+  "logged_at": "2026-05-26T02:32:00Z",
+  "logged_by_role": "coordinator",
+  "context": "section-3 acceptance lists three preset numeric specifications (Friendly Turbo: 1500 stack/7min levels/15s clock/10-20 L1 blinds; Standard Home Game: 10000/20min/30s/50-100; WSOP-Style Deep Stack: 60000/30min/45s/100-200/BBA 200). The Researcher findings (probe-001) supply these values; section-3 implementation in src/tournament/presets.js encodes them as the canonical TOURNAMENT_PRESETS array.",
+  "deviation_type": "subtask_decomposition",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].estimated_builders",
+  "what_spec_said": "estimated_builders: 2",
+  "what_was_done": "Single builder produced both presets.js AND the settings UI form; no decomposition into two builders was useful at this scale.",
+  "rationale": "presets.js is a static data file (Researcher findings transcribed); the settings UI form reads it. Splitting into two builders would create artificial coordination overhead. Same logical outcome.",
+  "nested_equivalent": "Under nested dispatch, section-3's Overseer might have dispatched two builders (one for presets data, one for settings form); the integration would produce the same files. Skipping decomposition is a Builder-discretion choice.",
+  "scope": {
+    "changes_artifact": false,
+    "changes_contract": false,
+    "changes_charter_or_spec": false,
+    "changes_assumption": false
+  }
+}

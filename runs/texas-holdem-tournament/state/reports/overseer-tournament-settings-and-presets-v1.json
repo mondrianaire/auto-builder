@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-tournament-settings-and-presets",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:17:00Z",
+  "section": "tournament-settings-and-presets",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece lets the person setting up a tournament pick from three ready-made structures — a fast Friendly Turbo, a balanced Standard Home Game, and a slow WSOP-style Deep Stack — and then edit any individual value if they want something custom.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. The three preset choices populate the form correctly, and the form switches to a Custom label as soon as you change anything.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

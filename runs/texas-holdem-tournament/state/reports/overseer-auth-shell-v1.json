@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-auth-shell",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:11:00Z",
+  "section": "auth-shell",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the front door. When you arrive at the live page, it shows a Sign in with Google button. After you sign in, it puts your profile picture and first name in a small card at the top right, and that card opens a panel where you can pick a nickname, turn notifications on or off, and switch the deck to a 4-color view.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. Sign-in opens Google's consent screen against the existing Firebase project, lands you back signed in, and the user card responds to clicks immediately. The nickname you set sticks across page reloads.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

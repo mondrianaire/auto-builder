@@ -1,0 +1,13 @@
+{
+  "section_id": "section-3",
+  "section_name": "tournament-settings-and-presets",
+  "completed_at": "2026-05-26T02:17:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-3a", "task": "src/tournament/presets.js + src/tournament/settings-form.js (decomposition collapsed per dev-005)", "output_files": ["src/tournament/presets.js", "src/tournament/settings-form.js"], "exposes": [
+      { "symbol": "TOURNAMENT_PRESETS", "type": "constant array", "matches_contract": "contracts/original/section-3--section-4.json", "required_ids_present": ["preset-friendly-turbo", "preset-standard-home-game", "preset-wsop-deep-stack"] },
+      { "symbol": "getPresetById", "type": "function" },
+      { "symbol": "renderSettingsForm", "type": "function" }
+    ] }
+  ]
+}

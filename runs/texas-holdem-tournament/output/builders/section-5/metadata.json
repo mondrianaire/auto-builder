@@ -1,0 +1,12 @@
+{
+  "section_id": "section-5",
+  "section_name": "poker-ring-ui",
+  "completed_at": "2026-05-26T02:32:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-5a", "task": "src/ui/ring.js (oval SVG ring + computeSeatPositions + glow animation)", "output_files": ["src/ui/ring.js"] },
+    { "builder_id": "builder-5b", "task": "src/ui/card.js (inline-SVG 52-card renderer with 4-color CSS-var binding)", "output_files": ["src/ui/card.js"] },
+    { "builder_id": "builder-5c", "task": "src/ui/betting.js (controls + action clock with server turn_started_at)", "output_files": ["src/ui/betting.js"] },
+    { "builder_id": "builder-5d", "task": "src/ui/table.js (assemble ring + community cards + my hole cards + betting + Firestore onSnapshot)", "output_files": ["src/ui/table.js"] }
+  ]
+}

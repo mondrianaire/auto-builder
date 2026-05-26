@@ -1,0 +1,16 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-game-engine-cloud-functions",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:25:00Z",
+  "section": "game-engine-cloud-functions",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the engine that actually runs the poker — shuffling the deck, dealing cards, checking that your fold or raise is legal, working out who wins each hand and how the chips move, and keeping the blind levels climbing on schedule.", "kind": "always", "importance": "high" },
+    { "question": "How will we know it's done?", "answer": "Cards are dealt using cryptographic randomness (never Math.random). The engine catches obvious cheats — acting out of turn, betting more chips than you have, raising less than the minimum. Side-pot math is right when someone goes all-in for less than the others.", "kind": "conditional", "importance": "medium" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes, with one trade-off worth knowing about. The engine ships two ways: a deploy-ready Cloud Functions version (production-grade) and a browser-side fallback that runs without you having to deploy anything. The fallback is good enough for friendly home games but not for competitive integrity — see the README for details.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

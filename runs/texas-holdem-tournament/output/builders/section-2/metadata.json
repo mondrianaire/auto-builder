@@ -1,0 +1,10 @@
+{
+  "section_id": "section-2",
+  "section_name": "lobby",
+  "completed_at": "2026-05-26T02:15:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-2a", "task": "Lobby view with awaiting-players list + Join + Start tournament controls", "output_files": ["src/lobby.js"] },
+    { "builder_id": "builder-2b", "task": "Lobby Firestore state + auto-start setTimeout (client-dealer) + Cloud Function (cloud-functions mode)", "output_files": ["src/lobby.js (auto-start path)", "functions/src/lobbyTimers.js (cloud-functions mirror)"] }
+  ]
+}

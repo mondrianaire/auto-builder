@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "created_at": "2026-05-26T01:25:00Z",
+  "based_on": {
+    "prompt": "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\texas-holdem-tournament\\prompt.txt",
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections": "decisions/technical-discovery/sections-v1.json",
+    "research_findings": "research/probes/probe-001-tournament-presets-and-scoring/findings.json"
+  },
+  "iteration": 1,
+  "verdict": "route_to_td",
+  "findings": [
+    {
+      "id": "F.1",
+      "check_id": "proper_noun_citation",
+      "severity": "high",
+      "description": "PN.1 'TEXAS HOLDEM' is role: target_defining with verification_status: pending and no citations[] / verification_evidence. Per the v1.9 Editor charter this is a structural failure: target-defining proper nouns must reach verified (with non-empty verbatim_excerpt citation) or unreachable (with a demotion record). The substantive content — canonical Texas Hold'em hand sequence, heads-up rule, BBA format — IS covered downstream by the IP1 Researcher probe's rules_corpus and citations C.3/C.4 and by the behavioral assertion DCA.PN1, so this is repairable purely by re-pointing PN.1 to the existing research artifacts rather than by dispatching a fresh probe. But the ledger entry as written leaves the architecture's flagship target-defining anchor unresolved, which is exactly the Law B failure-class the Editor role exists to defend against.",
+      "evidence": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1].verification_status",
+      "recommended_route": "td_impact_analysis",
+      "recommended_action": "td_amends_ledger_pointer_to_existing_research_or_dispatches_focused_probe",
+      "suggested_resolution": "TD in impact-analysis mode either (a) writes a Discovery Amendment Mode handoff that flips PN.1 to verification_status: verified with verification_evidence citing research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.rules_corpus and the behavioral assertion DCA.PN1, OR (b) dispatches a fresh probe for the canonical Texas Hold'em rule corpus (Robert's Rules of Poker, WSOP Tournament Rules) to produce a dedicated citation with verbatim_excerpt covering the hand structure (2 hole + 4 betting rounds + 5 community)."
+    },
+    {
+      "id": "F.2",
+      "check_id": "proper_noun_citation",
+      "severity": "medium",
+      "description": "PN.2 (Google SSO), PN.3 (Firebase Firestore), PN.4 (GitHub Pages), and PN.5 (2-7o) are marked verification_status: verified but the verification record is a prose paragraph in verification_evidence rather than the structured citations[] array with verbatim_excerpt that Principle F and the charter call for. For PN.2/PN.3/PN.4 the substrate is the briefing's execution_context — which is acceptable canonical evidence — but the structural form omits the verbatim_excerpt the charter expects ('confirm the entry has a citations[] array with non-empty verbatim_excerpt per Principle F'). For PN.5 the verification rests on Discovery's own self-evident reasoning + a name-drop of Sklansky-Chubukov rankings without a fetched citation. None of these are substantively wrong — Firestore really is on gto-poker-qui, Google sign-in really is the canonical provider, GitHub Pages really is the documented deploy target, and 2-7o really is canonical poker shorthand — but the structural omission means a future Editor pass against the same ledger would re-flag the same items.",
+      "evidence": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.2,PN.3,PN.4,PN.5].verification_evidence (prose) vs charter-required citations[] with verbatim_excerpt",
+      "recommended_route": "td_impact_analysis",
+      "recommended_action": "td_amends_ledger_to_add_structured_citations_for_PN2_PN3_PN4_PN5",
+      "suggested_resolution": "TD writes a Discovery Amendment Mode handoff converting each prose verification_evidence into a citations[] array. PN.2 can cite firebase.google.com/docs/auth/web/google-signin with the verbatim excerpt about the GoogleAuthProvider class. PN.3 can cite firebase.google.com/docs/firestore/query-data/listen with the verbatim excerpt about onSnapshot. PN.4 can cite docs.github.com/pages with the verbatim about static hosting. PN.5 can cite a published Texas Hold'em starting-hand ranking (e.g., a 169-hand starting-hand chart) with the verbatim labeling 2-7o as the worst starting hand."
+    },
+    {
+      "id": "F.3",
+      "check_id": "td_ip_source",
+      "severity": "low",
+      "description": "TD-IP-B 'Server-authoritative game engine' resolves with chosen_branch claiming 'Cloud Functions (Node) for: shuffle/deal, betting-action validation, pot calculation, side-pot allocation, winner determination, blind-level progression, lobby auto-start timer, leaderboard recompute.' The accompanying assertion TD-IP-B.A1 is source: td_plan, which is structurally OK because the assertion checks the artifact's own exports (functions/src/index.js exports include the named functions) rather than making an external claim about Cloud Functions properties. However, the chosen_branch itself rests on the implicit external claim that 'Firebase Cloud Functions are the correct primitive for server-authoritative game state.' That external claim IS sourced elsewhere (TD-IP-C cites nodejs.org/api/crypto for the RNG primitive; TD-IP-F cites firebase.google.com/docs/web/learn-more for the modular ESM pattern; IP3.rationale cites firebase.google.com/docs/firestore/query-data/listen for the listener model) but TD-IP-B itself does not carry its own canonical_evidence citation_pointer. A more defensible form would add canonical_evidence sourcing for the 'Cloud Functions are the correct primitive' claim — e.g., firebase.google.com/docs/functions/callable.",
+      "evidence": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-B]",
+      "recommended_route": "pass_with_recommendation",
+      "recommended_action": "add_canonical_evidence_citation_to_TD_IP_B_chosen_branch",
+      "suggested_resolution": "TD adds a citations_pointer on TD-IP-B's chosen_branch (or on a new lightweight assertion TD-IP-B.A2) referencing https://firebase.google.com/docs/functions/callable so the 'Cloud Functions for server-authoritative compute' framing is externally sourced rather than self-referential. Non-blocking — Critic post-build can verify the architecture works regardless."
+    }
+  ],
+  "passes": [
+    {
+      "check_id": "discovery_high_importance_action",
+      "status": "pass",
+      "evidence": "All importance: high IPs (IP1, IP2, IP3, IP5, IP7, IP10) carry non-n/a importance_action: IP1 researcher_dispatched (probe-001), IP2 best_effort_default (Principle E/F rationale), IP3 evidence_backed (Firebase listener docs), IP5 researcher_dispatched (probe-001 returned PWCS), IP7 best_effort_default (4-6s bound from prompt language), IP10 best_effort_default (TDA C.3 anchors heads-up rule). Each importance_action_evidence is non-empty."
+    },
+    {
+      "check_id": "first_contact_coverage",
+      "status": "pass",
+      "evidence": "All 10 ledger first_contact_requirements (FC.1-FC.10) have at least one corresponding acceptance_assertion in sections-v1.json. Cross-reference table: FC.1 -> DCA.FC1 + S1.A1; FC.2 -> DCA.FC2 + S1.A2 + S1.A3; FC.3 -> DCA.FC3 + S2.A1 + S2.A2 + S1.A3; FC.4 -> DCA.FC4 + S1.A4 + S1.A5; FC.5 -> DCA.FC5 + S5.A1 + S2.A5; FC.6 -> DCA.FC6 + S4.A4 + IP10.A1 + IP10.A2 + IP1.A4; FC.7 -> DCA.FC7 + S6.A1 + S6.A2 + S6.A3 + S4.A6; FC.8 -> DCA.FC8 + S3.A1 + S3.A2 + S3.A3; FC.9 -> DCA.FC9 + S7.A1 + S7.A2 + S7.A3; FC.10 -> DCA.FC10 + S8.A1 + S8.A2 + S8.A3."
+    },
+    {
+      "check_id": "telos_coherence",
+      "status": "pass",
+      "evidence": "Telos verbs (join, play, track) are each exercised by at least one assertion. 'Play' is the load-bearing verb chosen by prompt_verb_analysis and is exercised end-to-end by PNV.1 under production_fidelity_required: true (two real browser windows, Google OAuth against gto-poker-qui, lobby join, tournament start, at least one hand to resolution with server-side dealing verified). 'Join' is exercised by S2.A2/A3 and FC.3. 'Track' is exercised by S7.A1-A4 and DCA.A10. DCA.TELOS provides an explicit telos-level user_flow assertion. All 10 sections trace to the telos with no extraneous sections."
+    },
+    {
+      "check_id": "acceptance_assertion_coverage",
+      "status": "pass",
+      "evidence": "Every section 1-10 has acceptance_assertions[] whose from_acceptance_phrase covers each load-bearing phrase in the section's acceptance prose. Spot-checked sections 1, 4, 5, 6 in full. Section-6 (easter-egg-2-7o) covers all five user-facing constraints from the prompt: dramatic/wacky breaking-of-design (S6.A4), all-users visibility (S6.A1), bounded duration (S6.A2), no hole-card reveal (S6.A3), action-clock pause (S6.A5)."
+    },
+    {
+      "check_id": "research_quality",
+      "status": "pass",
+      "evidence": "research/probes/probe-001-tournament-presets-and-scoring/findings.json carries 8 citations (C.1-C.8) each with non-empty verbatim_excerpt and a real url_or_path, satisfying Principle F. Load-bearing TD assertions cite back via citations_pointer: IP1.A2 -> C.1, IP1.A4 -> C.3, IP5.A1-A3 -> opt-A.scoring_formula, IP10.A2 -> C.3, IP11.A1 -> opt-A.presets, S3.A1/A2/A4/A5 -> citations, S4.A4/A7 -> citations, DCA.FC6/FC8/IP5.default/IP11.default -> citations. The Researcher dispatch happened inline (per td-initial-v1.json#researcher_dispatches) but produced canonical-class evidence. No fabricated URLs detected in spot-check."
+    },
+    {
+      "check_id": "specific_watch_item__firebase_reuse",
+      "status": "pass_with_soft_concern",
+      "evidence": "PN.3 Firebase Firestore is target_defining, verification_status: verified, and the verification_evidence explicitly cites project gto-poker-qui by name plus the firestore.rules file from runs/gto-poker-async-duel/output/final/firestore.rules as the rules-pattern reference. A22 reinforces no new Firebase project will be provisioned. DCA.A22 verifies FIREBASE_CONFIG.projectId == 'gto-poker-qui' as a constant_value check. Soft concern rolled into F.2 (citations[] form)."
+    },
+    {
+      "check_id": "specific_watch_item__easter_egg_section_6",
+      "status": "pass",
+      "evidence": "Section-6 (easter-egg-2-7o) exists with depends_on [section-4, section-5], 2 estimated_builders, and 5 acceptance_assertions. Charter explicitly covers dramatic, wacky, unmissable, bounded duration (4-6s), non-revealing of hole cards. Server-side trigger via dealHand (S4.A6) plus client overlay rendering separated cleanly. PN.5 trigger condition behaviorally tested by DCA.PN5."
+    },
+    {
+      "check_id": "specific_watch_item__server_authoritative_engine",
+      "status": "pass_with_recommendation",
+      "evidence": "IP2 chosen_branch is server-authoritative via Cloud Functions; assertions IP2.A1/A2/A3 verify the boundary structurally (presence of dealHand function, absence of client RNG, Firestore rules deny direct hand-state writes). Concern about TD-IP-B's external-claim sourcing rolled into F.3 (low severity, recommendation rather than route)."
+    },
+    {
+      "check_id": "specific_watch_item__pnv_play_scenario",
+      "status": "pass",
+      "evidence": "PNV.1 scenario literally exercises: two separate desktop Chrome browser sessions, real Google OAuth against gto-poker-qui, lobby join from both windows, tournament start, blind posting, action through preflop/flop/turn/river or until fold, hand resolution, chip movement, button rotation. production_fidelity_required: true is explicit. expected_result calls out 'all card dealing performed server-side by the dealHand Cloud Function (verified by observing Firestore writes from a service account, not a client)' which addresses the Law B failure mode directly."
+    }
+  ],
+  "routed_to": [
+    {
+      "role": "technical-discovery",
+      "mode": "impact-analysis",
+      "trigger_findings": ["F.1", "F.2"],
+      "instruction": "Process findings F.1 and F.2 as a single impact-analysis pass. F.1 requires resolving PN.1 to verified status by pointing at the existing IP1 Researcher findings (rules_corpus + C.3 + C.4) plus the behavioral DCA.PN1, OR by writing a focused supplementary Researcher probe for the canonical Texas Hold'em hand structure. F.2 requires converting PN.2/PN.3/PN.4/PN.5 verification_evidence prose into structured citations[] arrays with non-empty verbatim_excerpt fields per Principle F. F.3 is a recommendation only — TD MAY add a TD-IP-B citation pointer in the same pass; not a blocker. After amendments are written, Discovery emits a ledger-v2.json (or amendment record under decisions/discovery/amendments/) and TD emits an updated sections-v2.json if TD-IP-B is touched; Editor will re-run as review-v2.json."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "R.1",
+      "from_finding": "F.3",
+      "description": "Add canonical_evidence citation_pointer to TD-IP-B chosen_branch (e.g., https://firebase.google.com/docs/functions/callable) so the 'Cloud Functions are the right primitive' framing is externally sourced. Non-blocking — Critic post-build can verify Cloud Functions actually run.",
+      "carry_to": "critic_post_build_verification"
+    },
+    {
+      "id": "R.2",
+      "from_finding": "general",
+      "description": "Discovery's ledger uses a prose verification_evidence field on verified proper nouns; the v1.9 file_schemas spec calls for a citations[] array. Future Discovery runs should emit citations[] directly to avoid the F.2 rework loop. Candidate for a discovery_charter.md clarification noting the form precisely.",
+      "carry_to": "maintenance_followup"
+    }
+  ],
+  "iteration_cap_note": "This is pass 1 of the 3-pass Editor loop. If F.1 and F.2 are not addressed by pass 3, the architecture commits to the current best-effort plan and the unresolved findings are carried into the run-report's Uncertainty Manifest per the always-deliver contract. The build never halts to ask the user."
+}

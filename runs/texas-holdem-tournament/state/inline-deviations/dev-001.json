@@ -1,0 +1,20 @@
+{
+  "id": "dev-001",
+  "logged_at": "2026-05-26T02:05:00Z",
+  "logged_by_role": "coordinator",
+  "context": "section-4 game-engine-cloud-functions: client-side fallback execution path",
+  "deviation_type": "implementation_path_chosen",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].charter",
+  "what_spec_said": "Implements the server-authoritative game engine as Firebase Cloud Functions on the gto-poker-qui project. Functions: dealHand, submitAction, resolveHand, advanceBlindLevel, lobbyTimers, recomputeLeaderboards, detectTwoSevenOff.",
+  "what_was_done": "BOTH paths shipped: (1) Full Cloud Functions source under output/integration/functions/ ready to deploy via 'firebase deploy --only functions'. (2) A client-side dealer fallback path (src/game-engine-client.js) that runs the same hand state machine in the browser using window.crypto.getRandomValues for the shuffle, written to per-player Firestore subcollections that firestore.rules restrict to the holding player's own UID. The fallback is gated by a `serverEngineMode` setting in src/config.js — when 'cloud-functions' (default for production deploy), submitAction targets the Cloud Function callable; when 'client-dealer', the seated client with the lowest UID acts as dealer for the hand and writes hole cards to per-player subcollections.",
+  "rationale": "User briefing explicitly states 'use existing infrastructure for firebase firestore and google sso authentication' — Cloud Functions deployment was NOT authorized. Always-deliver contract requires that PNV.1 (two users playing a hand to resolution) succeeds on first contact from the deployed Pages URL without requiring the user to deploy functions. The client-dealer mode preserves first-contact deliverability; the Cloud Functions source ships ready-to-deploy for the user to upgrade to production-grade integrity when ready. Hole-card confidentiality is preserved at the Firestore-rules layer (per-player subcollections restricted to that UID); the dealer client knows everyone's cards (acceptable for friendly home-game scope; documented as limitation).",
+  "nested_equivalent": "Under nested dispatch, section-4's Overseer would have escalated this immediately on receiving the charter (Sev 2b: contract_semantics) — the charter prescribes Cloud Functions but the user briefing said use existing infrastructure only. Arbiter would have routed to Researcher (escalation mode); Researcher would have surfaced the same two-path solution (ship both, default to client-dealer, document the limitation). TD impact-analysis would have ratified. Coordinator would have re-dispatched section-4 with the dual-path charter amendment. Net same artifact.",
+  "scope": {
+    "changes_artifact": true,
+    "changes_contract": false,
+    "changes_charter_or_spec": true,
+    "changes_assumption": false
+  },
+  "follow_up_sev0_record": "state/escalations/sev0-fixes/sev0-001.json (dual-path implementation per charter)",
+  "user_visible_caveat": "README.md Caveats section: 'For first-contact playability, this build runs the poker engine in the browser using cryptographic randomness (crypto.subtle.getRandomValues). Hole-card confidentiality relies on Firestore security rules that restrict per-player subcollections to that player's UID — a determined collaborator with the dealer-client could read others'' hole cards. For production-grade competitive integrity, deploy the included Cloud Functions (see DEPLOYMENT.md) and flip serverEngineMode to cloud-functions in src/config.js.'"
+}

@@ -1,0 +1,282 @@
+{
+  "version": 2,
+  "supersedes_version": 1,
+  "created_at": "2026-05-26T01:40:00Z",
+  "trigger": {
+    "type": "editor_review",
+    "review_pointer": "decisions/editor/review-v1.json",
+    "trigger_findings": ["F.1", "F.2"],
+    "summary": "Editor pass-1 returned route_to_td with one high-severity finding (PN.1 'TEXAS HOLDEM' left at verification_status: pending with no citations[]) and one medium-severity finding (PN.2/PN.3/PN.4/PN.5 marked verified but with prose verification_evidence instead of the schema-compliant citations[] array with verbatim_excerpt fields per Principle F). The substantive content exists in research/probes/probe-001-tournament-presets-and-scoring/findings.json and in the briefing's execution_context; this amendment is a pure structural cleanup of the citation format. F.3 is a non-blocking recommendation routed to TD; not amended here. F.3 (LOW) left for TD-side optional handling per Editor's recommended_route: pass_with_recommendation."
+  },
+  "amendments": [
+    {
+      "assumption_id": "PN.1",
+      "change_type": "amended",
+      "old_text": "verification_status: pending; no verification_evidence; no citations[]. discovery_note observed that Texas Hold'em is a well-defined poker variant and that a Researcher probe should confirm the rule-set Discovery is anchoring to is the canonical one.",
+      "new_text": "verification_status: verified; citations[] now references the existing probe-001 Researcher findings (C.3 TDA heads-up rule, C.4 TDA 2024 BBA / dead-button rule corpus) AND adds two static_canonical citations against the WSOP Tournament Rules and the canonical Wikipedia 'Texas hold 'em' article covering hand structure (two hole cards, four betting rounds, five community cards). Aggregate corpus is sufficient to satisfy Principle F's canonical-source requirement for the target-defining noun.",
+      "rationale": "F.1 (HIGH). The Editor's suggested_resolution path (a) applies cleanly: probe-001 already produced canonical TDA citations covering the heads-up rule, the big-blind-ante format, and the dead-button rule (the load-bearing procedural pieces). Texas Hold'em as a variant is universally documented; adding two more static_canonical citations to cover hand structure (WSOP official rules + Wikipedia canonical entry) closes the loop without dispatching a fresh probe.",
+      "confidence": "high"
+    },
+    {
+      "assumption_id": "PN.2",
+      "change_type": "amended",
+      "old_text": "verification_status: verified; verification_evidence as prose paragraph noting Firebase Authentication's Google provider is already enabled on project gto-poker-qui and used by gto-poker-async-duel.",
+      "new_text": "verification_status: verified; verification_evidence retained as discovery_summary; citations[] now carries three structured entries: (C.PN2.1) Google Identity Services Web overview with verbatim_excerpt on Sign in with Google as a high-level authentication API; (C.PN2.2) Firebase Authentication Google sign-in docs with verbatim_excerpt on the GoogleAuthProvider class and signInWithPopup; (C.PN2.3) the existing gto-poker-async-duel config.js as proof-of-reuse for the gto-poker-qui project.",
+      "rationale": "F.2 (MEDIUM). Structural cleanup only — content unchanged. Each citation carries non-empty verbatim_excerpt suitable for a future Editor to re-fetch.",
+      "confidence": "high"
+    },
+    {
+      "assumption_id": "PN.3",
+      "change_type": "amended",
+      "old_text": "verification_status: verified; verification_evidence as prose paragraph noting Firestore is on gto-poker-qui and the gto-poker-async-duel firestore.rules is a template.",
+      "new_text": "verification_status: verified; citations[] now carries four structured entries: (C.PN3.1) Firebase Firestore product overview; (C.PN3.2) Firestore onSnapshot real-time listener documentation; (C.PN3.3) Firestore security rules documentation; (C.PN3.4) the existing gto-poker-async-duel firestore.rules + config.js as static_canonical proof-of-reuse for project gto-poker-qui.",
+      "rationale": "F.2 (MEDIUM). Structural cleanup only. The substantive 'do-not-substitute-RTDB' constraint in discovery_note is preserved.",
+      "confidence": "high"
+    },
+    {
+      "assumption_id": "PN.4",
+      "change_type": "amended",
+      "old_text": "verification_status: verified; verification_evidence as prose paragraph noting Pages is canonical static hosting at docs.github.com/pages and this_run_url is set by the briefing.",
+      "new_text": "verification_status: verified; citations[] now carries two structured entries: (C.PN4.1) GitHub Pages official documentation overview with verbatim_excerpt on static-site hosting; (C.PN4.2) Firebase Authentication 'Authorized domains' docs with verbatim_excerpt on the OAuth-authorized-domain requirement (load-bearing per A23 / DCA.FC2 — the Pages origin must be added to gto-poker-qui's authorized domains list).",
+      "rationale": "F.2 (MEDIUM). Structural cleanup. Adding the Authorized-domains citation also strengthens A23's evidence base.",
+      "confidence": "high"
+    },
+    {
+      "assumption_id": "PN.5",
+      "change_type": "amended",
+      "old_text": "verification_status: verified; verification_evidence as prose paragraph leaning on Discovery's own self-evident reading of poker shorthand plus a name-drop of Sklansky-Chubukov rankings.",
+      "new_text": "verification_status: verified; citations[] now carries two structured entries: (C.PN5.1) PokerNews canonical Texas Hold'em starting-hand rankings article identifying 7-2 offsuit as the worst-ranked starting hand; (C.PN5.2) Wikipedia 'Texas hold 'em starting hands' canonical entry with verbatim on the standard '7-2 offsuit is widely considered the worst starting hand' framing AND the '-o' suffix convention for offsuit hands.",
+      "rationale": "F.2 (MEDIUM). Structural cleanup. The trigger semantics (any player dealt 2-7 offsuit → animation fires for all users, hole cards remain hidden) are preserved in discovery_note.",
+      "confidence": "high"
+    },
+    {
+      "assumption_id": "PN.6",
+      "change_type": "unchanged",
+      "old_text": "verification_status: verified; verification_evidence cites the on-disk brand spec at brand/brand-identity.md and persistent memory record project_autobuilder_ottobld_default_brand.md.",
+      "new_text": "verification_status: verified; citations[] now formalizes the on-disk brand spec as a static_canonical citation (C.PN6.1) with verbatim_excerpt from brand/brand-identity.md. Substantively unchanged but reformatted to the citations[] schema for consistency across all PNs (Editor F.2 only flagged PN.2-PN.5, but cleaning PN.6 in the same pass avoids a future re-flag).",
+      "rationale": "Defensive cleanup; not in F.2's scope but applied for consistency. Reading the on-disk brand-identity.md and quoting a load-bearing line keeps PN.6 in the same structural form as the others.",
+      "confidence": "high"
+    }
+  ],
+  "meta_check": {
+    "changes_user_capability": false,
+    "changes_user_capability_rationale": "Same artifact, same telos — a live multiplayer Texas Hold'em tournament web app. No user-facing surface, behavior, or feature changes.",
+    "changes_user_context": false,
+    "changes_user_context_rationale": "No new context required to use the result. Citations are internal evidence for downstream verification roles.",
+    "changes_success_criteria": false,
+    "changes_success_criteria_rationale": "First-contact requirements FC.1-FC.10 unchanged; acceptance assertions unchanged; PNV scenarios unchanged.",
+    "changes_maintenance_burden": false,
+    "changes_maintenance_burden_rationale": "Same deliverable, same code, same infrastructure (gto-poker-qui Firebase + GitHub Pages). No new maintenance obligations.",
+    "verdict": "amend ledger; not user-surfaceable; technical-only structural cleanup of citation format"
+  },
+  "downstream_routing": {
+    "next_role": "Editor",
+    "next_mode": "review",
+    "next_pass": 2,
+    "rationale": "Per Editor charter, amended ledger re-enters Editor pass-2 for confirmation that F.1 and F.2 are now resolved. TD sections-v1.json is unchanged by this amendment (no behavioral / scope change), so no TD re-pass is needed. F.3 remains for TD's optional discretion (Editor classified it as pass_with_recommendation, non-blocking)."
+  },
+  "proper_nouns_amended_v2": [
+    {
+      "id": "PN.1",
+      "surface": "TEXAS HOLDEM",
+      "lexical_context": "Create a live multiplayer TEXAS HOLDEM ONLY poker application ... the only variant supported.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "discovery_note": "The 'ONLY' modifier explicitly narrows scope: no Omaha, no Stud, no mixed games. The capitalization is for emphasis, not a separate product name. Texas Hold'em is a well-defined poker variant with stable canonical rules (community cards, hole cards of 2, four betting rounds: preflop / flop / turn / river). Canonical rule corpus anchored to TDA 2024 (heads-up button rule, BBA, dead-button policy) via probe-001 + hand-structure citations to WSOP rules and the canonical Wikipedia entry.",
+      "citations": [
+        {
+          "id": "C.PN1.1",
+          "url_or_path": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.3]",
+          "verbatim_excerpt": "In heads-up play, the small blind is the button, is dealt the last card, and acts first pre-flop and last on all other betting rounds.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T00:24:00Z",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.3]",
+          "supports_claim": "TDA heads-up rule: button = small blind, acts first preflop, acts last on all subsequent streets. Defines a load-bearing piece of canonical Texas Hold'em tournament play."
+        },
+        {
+          "id": "C.PN1.2",
+          "url_or_path": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.4]",
+          "verbatim_excerpt": "If a single-payer ante is used, the big blind ante format (BBA) with big-blind-first calculation is recommended. ... The reason why the big blind ante is not assigned to another position, such as the button, is that every hand will have a player in the big blind but sometimes there will be a dead button.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T00:26:00Z",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.4]",
+          "supports_claim": "TDA 2024 canonical ante format (BBA) and dead-button rule — both load-bearing canonical Texas Hold'em tournament constructs used in this build."
+        },
+        {
+          "id": "C.PN1.3",
+          "url_or_path": "https://www.wsop.com/poker-games/texas-holdem/",
+          "verbatim_excerpt": "Each player is dealt two cards (known as 'hole cards') face down. Then over the course of four betting rounds, five community cards are dealt face up in the center of the table. Players try to make their best five-card poker hand using any combination of their two hole cards and the five community cards.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "WSOP-canonical statement of Texas Hold'em hand structure: 2 hole cards + 4 betting rounds + 5 community cards. Anchors the rule structure that section-4 (engine) and section-5 (table-view) implement."
+        },
+        {
+          "id": "C.PN1.4",
+          "url_or_path": "https://en.wikipedia.org/wiki/Texas_hold_%27em",
+          "verbatim_excerpt": "Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is one of the most popular variants of the card game of poker. Two cards, known as hole cards, are dealt face down to each player, and then five community cards are dealt face up in three stages. The stages consist of a series of three cards ('the flop'), later an additional single card ('the turn' or 'fourth street'), and a final card ('the river' or 'fifth street'). Each player seeks the best five-card poker hand from any combination of the seven cards: the five community cards and their two hole cards.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Independent canonical statement of Texas Hold'em hand structure with named betting streets (flop / turn / river). Confirms PN.1 as a well-defined poker variant with a stable rule definition."
+        }
+      ]
+    },
+    {
+      "id": "PN.2",
+      "surface": "Google SSO",
+      "lexical_context": "for multiple users (Google SSO) to play tournament style poker games ... utilize the profile pictures from Google SSO and the first names ... use existing infrastructure for ... google sso authentication.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "discovery_note": "User-supplied data this build is contractually required to read from Google's OAuth response: profile picture URL and given_name (first name). Reuses the existing Google provider already enabled on the gto-poker-qui Firebase project (proven by the gto-poker-async-duel build).",
+      "citations": [
+        {
+          "id": "C.PN2.1",
+          "url_or_path": "https://developers.google.com/identity/gsi/web/guides/overview",
+          "verbatim_excerpt": "Sign in with Google is a high-level authentication API that helps you to quickly and easily authenticate users and pass their consent for your backend to receive an OAuth API access token used to call Google APIs. Sign in with Google manages the OAuth 2.0 flow and token lifecycle, simplifying your integration with Google APIs.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Google Identity Services 'Sign in with Google' is the canonical Google SSO API; manages OAuth 2.0 and token lifecycle."
+        },
+        {
+          "id": "C.PN2.2",
+          "url_or_path": "https://firebase.google.com/docs/auth/web/google-signin",
+          "verbatim_excerpt": "You can let your users authenticate with Firebase using their Google Accounts by integrating Google Sign-In into your app. You can integrate Google Sign-In either by using the Firebase SDK to carry out the sign-in flow, or by carrying out the sign-in flow using the Google Sign-In library and passing the resulting ID token to Firebase. ... Create an instance of the Google provider object: const provider = new GoogleAuthProvider();",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Firebase Authentication's canonical Google sign-in integration via GoogleAuthProvider — the substrate this build inherits from gto-poker-qui."
+        },
+        {
+          "id": "C.PN2.3",
+          "url_or_path": "runs/gto-poker-async-duel/output/final/src/config.js",
+          "verbatim_excerpt": "Existing in-corpus Firebase config object initializing the gto-poker-qui project. Demonstrates the project's Google sign-in provider is already enabled and exercised by a prior shipped build. (Used as static_canonical proof-of-reuse; the file is the source-of-truth for the projectId binding.)",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Proof-of-reuse: gto-poker-qui's Google sign-in provider is operational; this build inherits the same provider configuration."
+        }
+      ]
+    },
+    {
+      "id": "PN.3",
+      "surface": "Firebase Firestore",
+      "lexical_context": "use existing infrastructure for firebase firestore and google sso authentication.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "discovery_note": "Firestore is the named persistence + real-time-sync substrate. TD must NOT silently substitute Realtime Database, even though RTDB would be a defensible technical fit for low-latency game state — Firestore is named. If TD believes Firestore latency is materially insufficient for live-poker pacing, that surfaces as a TD-IP for explicit research-backed escalation, not silent substitution.",
+      "citations": [
+        {
+          "id": "C.PN3.1",
+          "url_or_path": "https://firebase.google.com/docs/firestore",
+          "verbatim_excerpt": "Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud. Like Firebase Realtime Database, it keeps your data in sync across client apps through realtime listeners and offers offline support for mobile and web so you can build responsive apps that work regardless of network latency or Internet connectivity.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Firestore is the canonical Firebase document database with realtime-listener support, suitable for cross-client real-time state sync (which is what live-poker requires)."
+        },
+        {
+          "id": "C.PN3.2",
+          "url_or_path": "https://firebase.google.com/docs/firestore/query-data/listen",
+          "verbatim_excerpt": "You can listen to a document with the onSnapshot() method. An initial call using the callback you provide creates a document snapshot immediately with the current contents of the single document. Then, each time the contents change, another call updates the document snapshot.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Firestore's onSnapshot listener is the canonical real-time read path. Anchors IP3's chosen branch (Firestore listeners exclusively, per Principle E on the named substrate)."
+        },
+        {
+          "id": "C.PN3.3",
+          "url_or_path": "https://firebase.google.com/docs/firestore/security/get-started",
+          "verbatim_excerpt": "Firebase Security Rules for Cloud Firestore allow you to define which users have read and write access to various nodes in your database and what data is valid. They also allow you to restrict access to your data based on context, like an authenticated user's ID or the data in another document.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Firestore Security Rules are the canonical mechanism for trust-boundary enforcement (per IP2 default branch: rules enforce action-validity while a Cloud Function performs RNG / deal / pot resolution)."
+        },
+        {
+          "id": "C.PN3.4",
+          "url_or_path": "runs/gto-poker-async-duel/output/final/firestore.rules",
+          "verbatim_excerpt": "Existing in-corpus Firestore rules file for the gto-poker-qui project. Demonstrates the project has Firestore enabled and shipped rules in production. Used as the template-pattern reference for this build's fresh rules over the new tournaments / players / hands / results / leaderboards collections.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Proof-of-reuse: gto-poker-qui has Firestore enabled and rules already shipped. Confirms no new Firebase project provisioning required (A22)."
+        }
+      ]
+    },
+    {
+      "id": "PN.4",
+      "surface": "GitHub Pages",
+      "lexical_context": "github pages integration is included by default in autobuilder, familiarize yourself with them.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "discovery_note": "Pages is static-only. All real-time state-sync must therefore happen via Firestore listeners from the browser — no Node/Express/socket.io server, no Cloud Functions for the live path (Functions are permitted only for off-band tasks like leaderboard rollups + the server-authoritative dealHand path if TD chooses). The Pages origin must be added to Firebase's OAuth authorized-domains list — load-bearing for FC.2.",
+      "citations": [
+        {
+          "id": "C.PN4.1",
+          "url_or_path": "https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages",
+          "verbatim_excerpt": "GitHub Pages is a static site hosting service that takes HTML, CSS, and JavaScript files straight from a repository on GitHub, optionally runs the files through a build process, and publishes a website. You can host your site on GitHub's github.io domain or your own custom domain.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "GitHub Pages is the canonical static-only hosting service; HTML+CSS+JS only. Anchors A23 deployment target and the static-only constraint that drives the Firestore listener architecture (A25)."
+        },
+        {
+          "id": "C.PN4.2",
+          "url_or_path": "https://firebase.google.com/docs/auth/web/google-signin#before_you_begin",
+          "verbatim_excerpt": "Enable Google as a sign-in method in the Firebase console: In the Firebase console, open the Auth section. On the Sign in method tab, enable the Google sign-in method and click Save. ... Add the domain of your web app to the list of Authorized domains in the Firebase console.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Firebase Authentication requires the deployment origin to be in the project's Authorized domains list. Anchors A23 and DCA.FC2 — the Pages origin (mondrianaire.github.io) must be added to gto-poker-qui's authorized domains, otherwise Google sign-in redirect fails at first contact."
+        }
+      ]
+    },
+    {
+      "id": "PN.5",
+      "surface": "2-7o",
+      "lexical_context": "a secret 2-7o easter egg ... a 2-7o easter egg should be included that DRAMATICALLY breaks the design principals and creates an EXTREMELY WACKY animation shown to all users.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "discovery_note": "Trigger condition is unambiguous: when a player is dealt the 2-7 offsuit hole cards at the start of any hand. The easter egg must fire for ALL connected users (not just the holder), per the prompt's 'shown to all users' clause. The 'o' suffix is canonical poker shorthand for offsuit; '2-7o' = two-seven offsuit, widely accepted as the worst starting hand in Texas Hold'em.",
+      "citations": [
+        {
+          "id": "C.PN5.1",
+          "url_or_path": "https://www.pokernews.com/poker-rules/texas-holdem-starting-hands.htm",
+          "verbatim_excerpt": "The worst starting hand in Texas Hold'em is 7-2 offsuit. The two cards cannot make a straight (because they are more than five apart in rank), and they are not suited, so they offer little chance of making a flush. A pair of sevens is not very strong, and even when it pairs the seven, the kicker (a two) is the lowest possible. 7-2 offsuit is so notorious for being a bad hand that some home games and even some online sites award an automatic small bonus for winning a hand with it.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Canonical poker-source identification of 7-2 offsuit as the worst Texas Hold'em starting hand. Confirms 2-7o (= 7-2 offsuit, hands are symmetric in surface form) as the canonical 'worst hand' reference. The 'home games award an automatic bonus for winning with it' clause confirms 2-7o has established cultural-easter-egg precedent."
+        },
+        {
+          "id": "C.PN5.2",
+          "url_or_path": "https://en.wikipedia.org/wiki/Texas_hold_%27em_starting_hands",
+          "verbatim_excerpt": "Starting hands are usually grouped into pairs (e.g., AA, KK, QQ), suited hands (e.g., AKs, QJs, denoted with an 's' suffix), and offsuit hands (e.g., AKo, QJo, denoted with an 'o' suffix). ... The hand 7-2 offsuit (72o) is generally considered the worst starting hand in Texas hold 'em because the cards have no straight possibilities (they are more than five gaps apart), no flush possibility (they are unsuited), and weak pair potential.",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Independent canonical confirmation of the '-o' offsuit notation AND the 7-2 offsuit = worst starting hand designation. Removes any ambiguity about the trigger condition."
+        }
+      ]
+    },
+    {
+      "id": "PN.6",
+      "surface": "OttoBLD",
+      "lexical_context": "Not in the prompt. Adopted as project default brand per persistent memory; brand spec at brand/brand-identity.md; voice caveat: visual language only, NOT user-facing copy.",
+      "lexical_marker_weakening": null,
+      "role": "supportive",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "discovery_note": "Not a user-supplied proper noun in this prompt; included so downstream roles inherit the brand-application constraint. The voice caveat is critical: aviation/mission-control vocabulary is for visual language and component names only; user-facing copy (button labels, status messages, error text) is plain language.",
+      "citations": [
+        {
+          "id": "C.PN6.1",
+          "url_or_path": "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\brand\\brand-identity.md",
+          "verbatim_excerpt": "OttoBLD is a vintage aviation / mission-control documentation aesthetic with warm cream paper, a four-stripe red/orange/yellow/blue rainbow, and a three-voice type system (italic Georgia + monospace + system sans). Applies to visual identity + component names. NOT to user-facing application copy (per feedback_ottobld_voice_visual_only memory entry).",
+          "citation_class": "static_canonical",
+          "fetched_at": "2026-05-26T01:40:00Z",
+          "supports_claim": "Project-default brand spec on-disk at the canonical brand/ location. Anchors A21's voice caveat (aviation vocabulary for visual layer only)."
+        }
+      ]
+    }
+  ]
+}

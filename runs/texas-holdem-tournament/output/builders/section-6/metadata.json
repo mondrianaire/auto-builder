@@ -1,0 +1,14 @@
+{
+  "section_id": "section-6",
+  "section_name": "easter-egg-2-7o",
+  "completed_at": "2026-05-26T02:35:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-6a", "task": "src/easterEgg/twoSevenOff.js (overlay + Firestore listener + ANIMATION_TOTAL_MS=5000)", "output_files": ["src/easterEgg/twoSevenOff.js"], "exposes": [
+      { "symbol": "ANIMATION_TOTAL_MS", "type": "constant", "value": 5000, "in_range": [4000, 6000] },
+      { "symbol": "initEasterEggListener", "type": "function" }
+    ] },
+    { "builder_id": "builder-6b", "task": "styles/animations.css (keyframes: ee-burst, ee-card-spin, ee-shout-bounce, ee-confetto-fall, screen-shake) + ring-glow", "output_files": ["styles/animations.css"] }
+  ],
+  "notes": "Overlay DOM contains NO holder identity references (S6.A3, IP7.A3) — verified by grep for player_id|nickname|seat_index|holder in twoSevenOff.js."
+}

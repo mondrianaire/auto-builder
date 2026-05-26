@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "from_section": "section-5",
+  "to_section": "section-6",
+  "interface": {
+    "actionClockPauseBehavior": {
+      "type": "behavioral contract",
+      "description": "When section-6's easter-egg overlay is visible (mounted), section-5's action-clock visual must reflect is_paused=true. Section-5 reads handDocument.action_clock.is_paused (written by section-4 in concert with the easter_egg field) and renders the paused state. Section-6 does NOT directly mutate section-5's clock — both react to the same server signal."
+    },
+    "overlayZIndex": {
+      "type": "structural contract",
+      "section-6_easter_egg_overlay_z_index": "9999",
+      "section-5_max_z_index": "1000",
+      "notes": "section-5's UI uses z-index <= 1000; section-6's overlay uses z-index 9999 to guarantee it sits above everything in section-5. Any future section-5 z-index increase must coordinate with section-6 (Sev 2a)."
+    }
+  },
+  "notes": "This is the only direct section-5-to-section-6 coordination needed; everything else flows through the server-written handDocument."
+}

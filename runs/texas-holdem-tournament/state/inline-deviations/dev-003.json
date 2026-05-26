@@ -1,0 +1,18 @@
+{
+  "id": "dev-003",
+  "logged_at": "2026-05-26T02:09:00Z",
+  "logged_by_role": "coordinator",
+  "context": "section-4 IP4.A2 / S2.A5 acceptance: auto-start-after-5-minutes is described as a Cloud Function/scheduled task. In client-dealer mode (no Cloud Functions deployed), the equivalent is run by the first-joined-client on a setTimeout when serverEngineMode === 'client-dealer'.",
+  "deviation_type": "implementation_path_chosen",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].machine_checkable_assertions[id=IP4.A2]",
+  "what_spec_said": "A Cloud Function or scheduled task transitions the tournament to 'in_progress' 5 minutes after first-join if minimum threshold is met.",
+  "what_was_done": "Both: functions/src/lobbyTimers.js implements the Cloud Function (deploy-when-ready). Additionally, src/lobby.js sets up a client-side setTimeout on first-join when serverEngineMode==='client-dealer' that writes the same state transition. Both paths target the same Firestore field (/tournaments/{tid}.status).",
+  "rationale": "Mirror of dev-001's overall pattern. The IP4.A2 assertion uses target_module 'functions/src/lobbyTimers.js' which IS present (Cloud Function ships ready); the client-side mirror is documented but not the verification target.",
+  "nested_equivalent": "Under nested dispatch, this would have been described in section-2's Overseer notes alongside the dual-path architecture.",
+  "scope": {
+    "changes_artifact": false,
+    "changes_contract": false,
+    "changes_charter_or_spec": false,
+    "changes_assumption": false
+  }
+}

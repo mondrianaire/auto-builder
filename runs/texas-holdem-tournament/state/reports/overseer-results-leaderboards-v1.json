@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-results-leaderboards",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:30:00Z",
+  "section": "results-leaderboards",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the scoreboard. Three tabs (Weekly, Monthly, All-Time) each show a ranked list of every player with their score. The score uses a formula that gives full credit for finished tournaments and partial credit for tournaments that ended early, so quitters don't get the same points as winners.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. Tabs switch instantly, rows show profile picture plus nickname plus score, and the math behind the scoring matches the formula recommended by the research probe.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

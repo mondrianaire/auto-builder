@@ -1,0 +1,23 @@
+{
+  "id": "esc-002",
+  "raised_at": "2026-05-26T03:30:06Z",
+  "raised_by": "critic-final-sweep",
+  "severity_estimate": "medium",
+  "type": "sev0_form_substance_mismatch",
+  "summary": "sev0-001's scope_check predicates mostly FAIL (5 of 6 false), but the record itself is the required audit-trail companion to dev-001 (which has changes_artifact:true). v1.3 Sev 0 rule (must be trivial) collides with v1.4 inline-deviation rule (artifact-modifying deviation requires Sev 0 companion).",
+  "evidence": {
+    "sev0_path": "state/escalations/sev0-fixes/sev0-001.json",
+    "scope_check": {
+      "single_file": false,
+      "single_section": true,
+      "lines_changed_under_5": false,
+      "fixes_acceptance_violation": false,
+      "no_new_functionality": false,
+      "no_interface_changes": false
+    },
+    "self_disclosure": "note_on_scope_check field: 'This is NOT a true Sev 0 trivial fix — it's recorded here as the audit-trail companion to dev-001.'"
+  },
+  "proposed_resolution": "Architecture amendment candidate for v1.13: clarify the v1.4 + v1.3 interaction. Option (i): require an escalation packet (Sev 2b) instead of a Sev 0 companion for substantive artifact-changing inline deviations. Option (ii): introduce a new sev0-fixes/{nnn}.json subtype 'audit_companion' that is exempt from the trivial-fix predicates and is purely a back-pointer to the inline-deviation record. Recommend (ii) — preserves the audit-trail discoverability that v1.4 was designed for, distinguishes substantive artifact changes from trivial fixes, and makes Critic's future Sev 0 audit predicates well-defined.",
+  "blocks_delivery": false,
+  "notes_for_arbiter": "Medium severity — honest disclosure rules out sneak-intent misuse; the record itself names dev-001 as the canonical artifact-modification source. Architecture-level question routed for amendment evaluation post-delivery; should not block this build."
+}

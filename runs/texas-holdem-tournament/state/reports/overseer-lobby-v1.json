@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-lobby",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:15:00Z",
+  "section": "lobby",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the waiting room. You see profile pictures of everyone already there, click Join to add yourself, and press Start when at least two players are seated. If nobody presses Start within five minutes of the first join, the tournament starts on its own.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. The Start button is grayed out until there are two players, then becomes pressable. The five-minute auto-start works whether you have Cloud Functions deployed or not — the in-browser version runs a timer on the player who joined first.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

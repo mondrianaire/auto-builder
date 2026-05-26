@@ -1,0 +1,17 @@
+{
+  "section_id": "section-8",
+  "section_name": "admin-dashboard",
+  "status": "verified",
+  "owner": "overseer-admin (coordinator-inline)",
+  "started_at": "2026-05-26T02:32:00Z",
+  "verified_at": "2026-05-26T02:35:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-8",
+  "active_contracts": ["contracts/original/section-4--section-8.json", "contracts/original/section-7--section-8.json"],
+  "sub_goals": [
+    { "id": "8a", "description": "src/admin.js — /admin route, access gate on ADMIN_UID, tournament list grouped by status, drill-down panel, force-end + recompute + hide actions", "status": "verified", "builder_id": "builder-8a", "output_path": "output/builders/section-8/builder-8a/" },
+    { "id": "8b", "description": "Admin-action callables: forceEnd, recomputeLeaderboards (wired to either Cloud Function or client-dealer in-process equivalent)", "status": "verified", "builder_id": "builder-8b", "output_path": "output/builders/section-8/builder-8b/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_summary": "S8.A1-A5 verified. /admin gates on ADMIN_UID (config-defined); non-admin sees access-denied; status-grouped tournament list renders; force-end flips status to unfinished; recompute triggers recomputeLeaderboards (Cloud Function callable when deployed, in-process otherwise); rules deny non-admin writes to /leaderboards."
+}

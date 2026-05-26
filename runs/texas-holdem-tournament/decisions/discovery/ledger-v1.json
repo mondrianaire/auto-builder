@@ -1,0 +1,527 @@
+{
+  "version": 1,
+  "created_at": "2026-05-26T00:00:00Z",
+  "project_name": "texas-holdem-tournament",
+  "telos": "A live multiplayer Texas Hold'em tournament web application where up to nine Google-authenticated users can join a single tournament, play in real time around a visually animated poker ring under standard tournament rules, and have their results tracked across weekly, monthly, and all-time leaderboards.",
+  "restatement": "The user wants a single live, real-time multiplayer Texas Hold'em ONLY tournament web app. Players sign in with Google SSO, land in a lobby that is just a 'Join' control showing the profile pictures of currently-waiting members, and play a single tournament (no concurrent tournaments at launch). The table must support up to 9 simultaneous seated players and must also deliver a fully-fledged heads-up (2-player) experience; the heads-up experience is explicitly called out as load-bearing. The application must abide by standard tournament regulations in mechanics AND in visual design (the poker 'ring' is to be visually animated). Tournaments are governed by a basic settings panel that includes starting stacks, blind timings (level duration), break timing, and blind amounts; multiple research-driven preset structures must be seeded into the application as selectable options. Results are tracked on weekly, monthly, and all-time bases; a lightweight maintenance dashboard exists for database upkeep. The system must anticipate that some tournaments will not finish and apply a weighted scoring formula that values unfinished tournaments differently from finished ones. Users display via their Google profile picture and first name, with the ability to set a personal nickname; the user account card in the top-right also exposes notification toggles (for the current game and for new tournaments). Card identity (standard suits and ranks, clearly recognizable) is sacrosanct EXCEPT for two carve-outs: a user-selectable 4-color deck option in settings, and a secret 2-7o easter egg that dramatically breaks the visual language with a wacky, unmissable, all-users-visible animation that is nonetheless bounded in duration. Infrastructure: reuse the existing Firebase (project gto-poker-qui) and Google SSO already proven in the gto-poker-async-duel build; deploy to GitHub Pages via the default AutoBuilder pipeline; apply OttoBLD as the visual brand by default (visual language only — not user-facing copy).",
+  "execution_context_observed": {
+    "platform_hints": ["windows", "autobuilder-corpus"],
+    "path_evidence": [
+      "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\texas-holdem-tournament\\",
+      "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\gto-poker-async-duel\\output\\final\\src\\config.js",
+      "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\gto-poker-async-duel\\output\\final\\firestore.rules",
+      "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\codex\\docs\\maintenance-initiated\\available-build-resources-registry-proposal.md",
+      "C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\brand\\brand-identity.md"
+    ],
+    "evidence_used": [
+      "Windows path separators throughout context_pointers — host OS is Windows; any local-tooling assumptions must target Windows.",
+      "infrastructure_available.firebase.project_id == 'gto-poker-qui' with shared scope per the v1.12 registry decision — no new Firebase project is to be provisioned.",
+      "infrastructure_available.github_pages.this_run_url binds the deployable artifact to https://mondrianaire.github.io/auto-builder/runs/texas-holdem-tournament/output/final/ — this origin must be in the Firebase OAuth authorized domains.",
+      "infrastructure_available.brand_default.voice_caveat clarifies OttoBLD applies to visual identity and component names only, NOT to user-facing copy."
+    ]
+  },
+  "proper_nouns": [
+    {
+      "id": "PN.1",
+      "surface": "TEXAS HOLDEM",
+      "lexical_context": "Create a live multiplayer TEXAS HOLDEM ONLY poker application ... the only variant supported.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "discovery_note": "The 'ONLY' modifier explicitly narrows scope: no Omaha, no Stud, no mixed games. The capitalization is for emphasis, not a separate product name. Texas Hold'em is a well-defined poker variant with stable canonical rules (community cards, hole cards of 2, four betting rounds: preflop / flop / turn / river); a Researcher probe should confirm that the rule-set Discovery is anchoring to is the canonical one and not a casual house variant."
+    },
+    {
+      "id": "PN.2",
+      "surface": "Google SSO",
+      "lexical_context": "for multiple users (Google SSO) to play tournament style poker games ... utilize the profile pictures from Google SSO and the first names ... use existing infrastructure for ... google sso authentication.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "verification_evidence": "Briefing's execution_context.infrastructure_available.firebase confirms an existing Google provider is already enabled on project 'gto-poker-qui' and the gto-poker-async-duel build successfully uses it. Firebase Authentication's Google sign-in provider is canonical (firebase.google.com/docs/auth/web/google-signin). No further probe needed.",
+      "discovery_note": "User-supplied data this build is contractually required to read from Google's OAuth response: profile picture URL and given_name (first name)."
+    },
+    {
+      "id": "PN.3",
+      "surface": "Firebase Firestore",
+      "lexical_context": "use existing infrastructure for firebase firestore and google sso authentication.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "verification_evidence": "Briefing's execution_context.infrastructure_available.firebase enumerates Firestore as an available service on project 'gto-poker-qui'. firestore.rules from the gto-poker-async-duel build at runs/gto-poker-async-duel/output/final/firestore.rules is a template for the rules pattern. Canonical product docs at firebase.google.com/docs/firestore.",
+      "discovery_note": "Firestore is the named persistence + real-time-sync substrate. TD must NOT silently substitute Realtime Database, even though RTDB would be a defensible technical fit for low-latency game state — Firestore is named. If TD believes Firestore latency is materially insufficient for live-poker pacing, that surfaces as a TD-IP for explicit research-backed escalation, not silent substitution."
+    },
+    {
+      "id": "PN.4",
+      "surface": "GitHub Pages",
+      "lexical_context": "github pages integration is included by default in autobuilder, familiarize yourself with them.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "verification_evidence": "Briefing's execution_context.infrastructure_available.github_pages confirms the deployed_path pattern and that this_run_url is https://mondrianaire.github.io/auto-builder/runs/texas-holdem-tournament/output/final/. Standard static-hosting service from GitHub; canonical docs at docs.github.com/pages.",
+      "discovery_note": "Pages is static-only. All real-time state-sync must therefore happen via Firestore listeners from the browser — no Node/Express/socket.io server, no Cloud Functions for the live path (Functions are permitted only for off-band tasks like leaderboard rollups if TD chooses)."
+    },
+    {
+      "id": "PN.5",
+      "surface": "2-7o",
+      "lexical_context": "a secret 2-7o easter egg ... a 2-7o easter egg should be included that DRAMATICALLY breaks the design principals and creates an EXTREMELY WACKY animation shown to all users.",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "verification_evidence": "Canonical poker shorthand: '2-7o' = the hand 'two-seven off-suit', widely regarded as the statistically worst starting hand in Texas Hold'em (lowest two cards that cannot make a straight together and are not suited). 'o' suffix = offsuit; 's' suffix = suited. Self-evident from the surrounding context (the user is specifying a hand-based trigger). Cross-referenceable in any standard Texas Hold'em starting-hand ranking (e.g., Sklansky-Chubukov rankings).",
+      "discovery_note": "Trigger condition is unambiguous: when a player is dealt the 2-7 offsuit hole cards at the start of any hand. The easter egg must fire for ALL connected users (not just the holder), per the prompt's 'shown to all users' clause."
+    },
+    {
+      "id": "PN.6",
+      "surface": "OttoBLD",
+      "lexical_context": "Not in the prompt. Adopted as project default brand per persistent memory; brand spec at brand/brand-identity.md; voice caveat: visual language only, NOT user-facing copy.",
+      "lexical_marker_weakening": null,
+      "role": "supportive",
+      "canonical_source_required": true,
+      "verification_status": "verified",
+      "verification_evidence": "Brand spec is on-disk at C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\brand\\brand-identity.md; adoption recorded in persistent memory (project_autobuilder_ottobld_default_brand.md).",
+      "discovery_note": "Not a user-supplied proper noun in this prompt; included so downstream roles inherit the brand-application constraint. The voice caveat is critical: aviation/mission-control vocabulary is for visual language and component names only; user-facing copy (button labels, status messages, error text) is plain language."
+    }
+  ],
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "Single game variant: No-Limit Texas Hold'em ONLY. No Omaha, no Stud, no mixed games, no Limit / Pot-Limit variants at launch.",
+      "confidence": "high",
+      "rationale": "Prompt is explicit and emphatic ('TEXAS HOLDEM ONLY'). No-Limit is the dominant tournament format and the default interpretation absent further specification; the Researcher dispatch on tournament regulations should confirm No-Limit is the right default.",
+      "what_breaks_if_wrong": "If the user wanted Limit or Pot-Limit, betting controls (slider for any-amount raise) and pot-odds presentation would need to change; this is a TD-detectable choice."
+    },
+    {
+      "id": "A2",
+      "assumption": "Live, real-time multiplayer. All players in a tournament are connected simultaneously; turns proceed in real time with a per-action timer; this is NOT a turn-based asynchronous game (unlike the prior gto-poker-async-duel build).",
+      "confidence": "high",
+      "rationale": "Prompt: 'live multiplayer ... support up to 9 simultaneous connections from all signed in players'. The word 'live' and 'simultaneous connections' together rule out async play.",
+      "what_breaks_if_wrong": "Architecture (Firestore listener model, action-timer enforcement, presence/heartbeat tracking) all assume live; an async-poker build would be structurally different."
+    },
+    {
+      "id": "A3",
+      "assumption": "Tournament format only. No cash games. Buy-in is conceptual (or absent — users do not exchange money); chips reset per tournament.",
+      "confidence": "high",
+      "rationale": "Prompt: 'tournament style poker games'. Cash-game framing is absent. Real money is not mentioned and out-of-scope (see out_of_scope).",
+      "what_breaks_if_wrong": "If a cash-game mode is desired, sit-down/stand-up flow, rebuy mechanics, table-stakes accounting would all need to exist. None of that is in scope."
+    },
+    {
+      "id": "A4",
+      "assumption": "Single concurrent tournament at launch. The lobby is one room; players either join the next pending tournament or wait for the current one to finish.",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'Multiple tournaments do not need to be supported at the start and the lobby can simply be a join with the current awaiting members profile pictures inside.'",
+      "what_breaks_if_wrong": "Adding a tournament-browser UI would be substantial post-launch work but is explicitly deferred."
+    },
+    {
+      "id": "A5",
+      "assumption": "Maximum 9 seats per tournament (standard full-ring); minimum 2 (heads-up). Heads-up experience is explicitly load-bearing: button position, blind posting, and visual layout must adapt cleanly when only 2 players remain (or start).",
+      "confidence": "high",
+      "rationale": "Prompt: 'maximum of 9 players must be supported' AND 'it is imperative that the heads up (and up) experience is fully fledged'. Both endpoints of the seat range are called out explicitly.",
+      "what_breaks_if_wrong": "If heads-up is treated as a degraded fallback (e.g., just shrink-the-table), the user has explicitly flagged that as insufficient. TD must produce a heads-up-specific layout treatment AND correct heads-up blind/button mechanics (in heads-up, the button posts the small blind and acts first preflop)."
+    },
+    {
+      "id": "A6",
+      "assumption": "Tournament start triggers when player count reaches a configurable threshold (defaulting to 2 — heads-up minimum). The lobby join control becomes a 'start tournament' control once threshold is reachable, OR the tournament auto-starts after threshold + a brief grace window.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on the exact start trigger; simplest-within-reason picks an obvious threshold-based mechanism. The threshold is itself an IP (IP4).",
+      "what_breaks_if_wrong": "If users expect explicit 'organizer-presses-start' vs auto-start, the UX flow at lobby differs. Manual start by first joiner is a simple alternative."
+    },
+    {
+      "id": "A7",
+      "assumption": "Configurable basic settings at tournament-creation time: starting stacks (in chips), blind level duration (minutes), break timing (when and how long), and the blind level schedule itself (small/big blind amounts per level, with optional antes per level).",
+      "confidence": "high",
+      "rationale": "Prompt enumerates these four exactly: 'Basic settings must include starting stacks, blind timings, break timing and blind amounts.'",
+      "what_breaks_if_wrong": "Missing any of the four is a direct prompt violation."
+    },
+    {
+      "id": "A8",
+      "assumption": "Multiple research-driven preset structures are seeded into the application as selectable options at tournament creation, covering common tournament shapes (e.g., turbo / regular / deep-stack / WSOP-style). The Researcher dispatch (IP1) produces these presets with provenance.",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'Perform a deep dive research into popular starting values and seed multiple options into the application.' The 'multiple options' clause is a hard requirement.",
+      "what_breaks_if_wrong": "Shipping with only one preset (or just the configurable form) violates the explicit 'seed multiple options' instruction."
+    },
+    {
+      "id": "A9",
+      "assumption": "Tournament regulations apply to both gameplay mechanics (blind progression, button rotation, all-in protection, dead-button handling on eliminations, hand-for-hand at bubble — to the extent applicable) AND visual design (the table is presented as a poker 'ring' that is visually animated). The Researcher dispatch (IP1) covers which canonical regulation source to anchor to.",
+      "confidence": "high",
+      "rationale": "Prompt: 'the poker infrastructure must abide by all tournament regulations (in design as well such as the poker ring visually animated)'. The parenthetical explicitly extends regulations into visual design, not just mechanics.",
+      "what_breaks_if_wrong": "A casual / house-rules implementation that ignores e.g. button-on-the-dead rules, or that uses a 'rectangle' table instead of a ring, would fail this assumption."
+    },
+    {
+      "id": "A10",
+      "assumption": "Results tracking exists at three time scales: weekly, monthly, and all-time. Each scale ranks players by some aggregate score (see A11 for unfinished-tournament weighting). Leaderboards are visible to all signed-in users.",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'Tournament results will be tracked on a weekly, monthly and all time basis'. The visibility scope (all users vs admin-only) is silent; defaulting to all-users since leaderboards are conventionally social.",
+      "what_breaks_if_wrong": "If the user wanted admin-only leaderboards, a settings/permission flip is straightforward post-launch."
+    },
+    {
+      "id": "A11",
+      "assumption": "A weighted scoring system reconciles finished and unfinished tournaments into one leaderboard score, applying a discount factor to unfinished tournaments based on tournament progress at termination (e.g., levels completed, percentage of starting field eliminated). The exact weighting formula is an IP requiring research (IP5).",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'a weighted system will need to be implemented to determine the value of unfinished tournaments vs finished ones.' This is mandatory, not optional.",
+      "what_breaks_if_wrong": "If unfinished tournaments are scored at full weight, players who quit early are over-rewarded; if they are scored at zero, players have no incentive to start tournaments they suspect won't complete. The formula is a real design decision."
+    },
+    {
+      "id": "A12",
+      "assumption": "A light maintenance dashboard exists for database upkeep: viewing tournaments, players, hands; deleting or resetting tournaments; correcting leaderboard entries. Access is restricted to one or more administrator accounts (initially the project owner's Google identity).",
+      "confidence": "medium",
+      "rationale": "Prompt: 'a light database dashboard will need creating for maintenance'. The phrase 'light' bounds the scope (read + light edits, not a full admin console). Access scope is silent — defaulting to single-admin since multi-admin role management would not be 'light'.",
+      "what_breaks_if_wrong": "If the user wanted all signed-in users to access the dashboard, that's a permission flip; if multi-admin role management was wanted, that's additional scope."
+    },
+    {
+      "id": "A13",
+      "assumption": "User identity in-game: profile picture from Google + first name (Google given_name) by default. Each user can override the displayed name with a personal nickname via the top-right user account card. Nickname applies to all in-game and leaderboard displays.",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'utilize the profile pictures from Google SSO and the first names but provide users the ability to create a nickname by clicking their user account card in the top right'.",
+      "what_breaks_if_wrong": "If nicknames were intended to be per-tournament rather than per-user, the UI flow would differ; the prompt strongly implies per-user (set once, used everywhere)."
+    },
+    {
+      "id": "A14",
+      "assumption": "Top-right user account card exposes at minimum: nickname editor, notification toggle for current game events, notification toggle for new tournaments, and the 4-color deck toggle (which is logically a settings item).",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'clicking their user account card in the top right that also includes other options such as enabling notifications for both the current game and new tournaments'. The 4-color toggle is the natural home for the only other explicit per-user setting.",
+      "what_breaks_if_wrong": "If 4-color belongs elsewhere (e.g., a hand-action panel toggle), that's a minor UX relocation. The prompt's 'such as' construction permits Discovery to add other plausible items (sign-out, sound on/off) but does not require additions."
+    },
+    {
+      "id": "A15",
+      "assumption": "Notifications are delivered via the browser's Notifications API (Notification.requestPermission + new Notification(...)) for in-window state, with a soft-fallback to in-app banner when permission is denied. Push notifications when the tab is closed are a stretch goal handled at TD's discretion (would require Firebase Cloud Messaging + Service Worker).",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on delivery mechanism. Simplest-within-reason picks the browser-native API for an in-window experience; closed-tab delivery is materially more complex and the prompt's 'notifications' language does not clearly require it.",
+      "what_breaks_if_wrong": "If closed-tab push is desired (likely for 'new tournament' notifications when the user is not actively in the app), FCM is needed. This surfaces as IP9."
+    },
+    {
+      "id": "A16",
+      "assumption": "Card identity is preserved: standard 52-card deck, recognizable suits (spade / heart / diamond / club glyphs), recognizable rank labels (A K Q J 10 9 8 7 6 5 4 3 2). No decorative fonts, no whimsical card backs that obscure identity, no abstract visual treatment of card faces.",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'Card identity must not be sacrificed for design'. This is a hard constraint on the OttoBLD brand application — OttoBLD's aviation/mission-control aesthetic must not bleed into card faces.",
+      "what_breaks_if_wrong": "If the design pass produces stylized card faces (e.g., aviation-themed suit replacements), it fails this assumption directly."
+    },
+    {
+      "id": "A17",
+      "assumption": "Exception #1 to A16: a user-toggleable 4-color deck option in settings. Standard convention: spades=black, hearts=red, diamonds=blue, clubs=green. The toggle defaults to OFF (traditional 2-color: spades/clubs black, hearts/diamonds red).",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'incorporate a 4 color option setting'. The blue-diamond / green-club convention is the established 4-color convention used by major poker software (PokerStars, GG Poker, etc.).",
+      "what_breaks_if_wrong": "If the user wanted a different 4-color palette, the colors are a parameter that can be swapped post-launch."
+    },
+    {
+      "id": "A18",
+      "assumption": "Exception #2 to A16: the 2-7o easter egg moment. When ANY player is dealt the 2-7 offsuit hole cards, ALL connected users see a dramatic, wacky, unmissable animation that intentionally breaks the OttoBLD visual language. Total duration bounded between 4 and 6 seconds (the prompt's 'not TOO MUCH time' qualifier as a soft cap).",
+      "confidence": "high",
+      "rationale": "Prompt is emphatic (capitalization three times) and explicit on every requirement: triggers on the worst hand (2-7o), affects all users, dramatically breaks design principles, extremely wacky, unmissable, but bounded in time. The 4-6 second range is Discovery's bounded interpretation of 'not TOO MUCH time' — long enough to register as a deliberate moment, short enough not to disrupt tournament pacing materially.",
+      "what_breaks_if_wrong": "Easter-egg duration is the most fragile assumption. If the user wanted a longer event (e.g., 'play through the hand with chaos persisting'), this would feel curtailed; if shorter (e.g., 1-2 seconds), too long. The 4-6 second band is a deliberate IP candidate (IP7); the explicit 'not TOO MUCH time' clause is the textual anchor."
+    },
+    {
+      "id": "A19",
+      "assumption": "Easter-egg mechanics: gameplay PAUSES (action clock freezes, no betting input accepted) for the duration of the animation. Cards already dealt remain face-down to opponents; the animation does not reveal hole cards. After the animation completes, gameplay resumes from the same point.",
+      "confidence": "medium",
+      "rationale": "Prompt silent on whether gameplay continues during the animation. Tournament-integrity argument: revealing hole cards (even of the easter-egg holder) compromises strategic information; allowing gameplay during a deliberately disruptive animation undermines the action-clock contract. Simplest tournament-respecting interpretation is brief pause with no information leakage.",
+      "what_breaks_if_wrong": "If the user intended the easter-egg to be purely visual chrome (gameplay continues underneath), the pause-mechanic is overkill — but the visual layer would still need to be non-obscuring. IP candidate (IP7's sub-question)."
+    },
+    {
+      "id": "A20",
+      "assumption": "Visual layout: the poker table is rendered as a 'ring' (oval / circular) — not a rectangle. Seat positions arrange around the ring. The ring is visually animated (subtle motion / breathing / glow / felt-texture shimmer), not static.",
+      "confidence": "high",
+      "rationale": "Prompt explicit: 'the poker ring visually animated'. The word 'ring' is the user's chosen vocabulary; downstream design must use a ring shape.",
+      "what_breaks_if_wrong": "A rectangular table fails the explicit constraint. The 'animated' clause excludes static SVG."
+    },
+    {
+      "id": "A21",
+      "assumption": "Brand application: OttoBLD applies to UI chrome (headers, panels, badges, status indicators, component names in code, button styles, color palette outside card faces, typography for non-card text). It does NOT apply to card faces (per A16) and does NOT apply to user-facing copy semantics (per the brand voice caveat: aviation/mission-control vocabulary is for visual language and component names only — user-facing copy stays plain).",
+      "confidence": "high",
+      "rationale": "Brand spec is on-disk at brand/brand-identity.md; the voice caveat is recorded in persistent memory (feedback_ottobld_voice_visual_only.md). The card-identity constraint (A16) is explicit prompt content.",
+      "what_breaks_if_wrong": "If user-facing copy adopts aviation jargon ('FLIGHT DECK' instead of 'Lobby'), it fails the voice caveat; if card faces adopt aviation iconography, it fails A16."
+    },
+    {
+      "id": "A22",
+      "assumption": "Infrastructure reuse: Firebase project 'gto-poker-qui' (existing, shared scope per the v1.12 registry decision) is the persistence + auth backend. No new Firebase project is provisioned. Firestore rules are written fresh for new collections (tournaments, players, hands, results, leaderboards) but follow the pattern from runs/gto-poker-async-duel/output/final/firestore.rules.",
+      "confidence": "high",
+      "rationale": "Briefing's execution_context.infrastructure_available.firebase is explicit, AND the prompt is explicit ('use existing infrastructure for firebase firestore and google sso authentication').",
+      "what_breaks_if_wrong": "Provisioning a new Firebase project would violate the explicit prompt instruction and the registry decision."
+    },
+    {
+      "id": "A23",
+      "assumption": "Deployment target: GitHub Pages at https://mondrianaire.github.io/auto-builder/runs/texas-holdem-tournament/output/final/ via commit-build.bat. The Pages origin must be added to Firebase's OAuth authorized domains for Google sign-in redirect to succeed.",
+      "confidence": "high",
+      "rationale": "Briefing's execution_context.infrastructure_available.github_pages is explicit and matches the default AutoBuilder Pages binding. The OAuth-authorized-domain requirement is canonical Firebase Auth behavior.",
+      "what_breaks_if_wrong": "If the Pages origin is not in Firebase OAuth's authorized domains, Google sign-in will fail at first contact. This is a deliverability-critical pre-launch check."
+    },
+    {
+      "id": "A24",
+      "assumption": "Server-authoritative game engine. Card dealing, shuffle randomness, pot calculations, winner determination, and chip movements are computed in a trust-boundary environment (Firestore security rules + Cloud Function for the dealing/resolution step), NOT in the client. Clients send actions (fold / check / call / bet / raise amount); the server validates and applies.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on this. Simplest-within-reason for a static-Pages app would be client-trust, but for any game involving competitive play, client-trust is structurally unsafe (any user can edit local state, deal themselves aces, etc.). Even at this build's stake level (no money), competitive integrity matters because results feed leaderboards. This is an IP candidate (IP2) requiring TD's explicit ruling, including whether Cloud Functions are in scope or whether Firestore-rules-only enforcement is sufficient.",
+      "what_breaks_if_wrong": "A client-trust model would deliver a working artifact that any technically-inclined user could exploit — leaderboards would be meaningless. This is a Principle G Tier-3 risk: sub-goal 'fair tournament' fails at user-access level."
+    },
+    {
+      "id": "A25",
+      "assumption": "Real-time state-sync is achieved via Firestore document listeners (onSnapshot). The game state is stored as a tournament document with sub-collections for hands and player states; clients subscribe to the relevant documents and re-render on change. Action-clock countdown is computed client-side from a server-set 'turn_started_at' timestamp.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on sync mechanism; Firestore listeners are the canonical real-time read path for a Firestore + static-host architecture. Realtime Database (RTDB) is an alternative with lower per-message latency but is not what was named. Per A22, Firestore is the named substrate. This is an IP (IP3).",
+      "what_breaks_if_wrong": "Firestore's per-write latency can be perceptibly high (~500ms typical, occasionally higher). For action-clock-based poker, this is generally acceptable but could feel sluggish during fast multiway action. If experience suffers materially, RTDB is a backup but is not the named substrate."
+    },
+    {
+      "id": "A26",
+      "assumption": "Presence and disconnect handling: a player who disconnects mid-hand has their hand auto-folded after a grace period (default: their action-clock budget plus a brief reconnect window). Disconnected players are flagged 'sitting out' on the ring until they return. Repeated disconnects do not auto-eliminate from the tournament unless the player is also out of chips.",
+      "confidence": "medium",
+      "rationale": "Prompt is silent on disconnect semantics. The auto-fold-on-timeout pattern is the canonical poker-room behavior; tournament integrity requires that a disconnected player cannot stall the action indefinitely.",
+      "what_breaks_if_wrong": "If the user wanted disconnects to auto-eliminate (tournament pace argument) or to pause the game (consideration argument), behavior differs. The auto-fold-on-timeout is the safest tournament-respecting default."
+    },
+    {
+      "id": "A27",
+      "assumption": "Tournament termination = either (a) one player remains with all chips (finished, ranked 1st), or (b) all remaining players agree to end / time-out / abandonment (unfinished, ranked by chip count at termination time). The unfinished-tournament case feeds the weighted scoring (A11).",
+      "confidence": "high",
+      "rationale": "Standard tournament termination is canonical. The 'unfinished' branch is the prompt's explicit motivator for the weighted scoring system; the simplest unfinished-termination definition is 'no further hands played for a configurable timeout, OR an explicit end-tournament admin action.'",
+      "what_breaks_if_wrong": "If unfinished is defined more narrowly (e.g., only admin-terminated counts), abandoned tournaments accumulate as 'in-progress'. Simplest interpretation is broad."
+    },
+    {
+      "id": "A28",
+      "assumption": "First-contact path: user visits the Pages URL → page loads → sign-in-with-Google button is visible → after sign-in, user lands at the lobby → if there are awaiting members, their profile pictures are visible inside the join control; if not, the join control is empty with a 'be the first' affordance → joining adds the user's profile picture to the lobby → when threshold reached, tournament begins and the animated poker ring is rendered with the user seated.",
+      "confidence": "high",
+      "rationale": "Prompt explicit on lobby behavior ('join with the current awaiting members profile pictures inside'). The first-contact sequence is implied by the artifact type (web app on Pages with Google sign-in).",
+      "what_breaks_if_wrong": "Any step failing at first-contact (Pages URL 404, OAuth redirect fail, no sign-in button, blank lobby, lobby doesn't show waiting members) violates a Tier-2 deliverability requirement (Principle G)."
+    },
+    {
+      "id": "A29",
+      "assumption": "Spectator mode: a signed-in user who is NOT seated in the current tournament can view the ring and watch the action (hole cards hidden for active players, revealed at showdown only per standard rules). Spectators see the easter egg animations when triggered.",
+      "confidence": "low",
+      "rationale": "Prompt is silent on spectatorship. Simplest interpretation given single-tournament-at-a-time + 'shown to all users' easter-egg clause: signed-in users not yet seated can see the table view (since the easter-egg must reach ALL users, even non-seated ones). Spectators do NOT see hole cards of seated players. IP candidate (IP8).",
+      "what_breaks_if_wrong": "If the user wanted strict 'only seated players see the table', the easter-egg 'shown to all users' clause is harder to honor (only seated users would see it). Spectator mode is the natural reconciliation."
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Tournament blind structures + 'all tournament regulations' canonical ruleset",
+      "choices": [
+        "TDA (Tournament Directors Association) rules + WSOP-style blind structures",
+        "WSOP regulations specifically",
+        "PokerStars-style online structures",
+        "Casual home-game / Robert's Rules of Poker"
+      ],
+      "default_branch": "TDA rules as the procedural canon (button rotation, all-in handling, dead-button policy, hand-for-hand on bubble, time-bank semantics) + a curated set of multiple research-driven blind-structure presets covering Turbo, Regular, and Deep-Stack archetypes; cover at minimum: starting stacks (chips), level duration (minutes), break cadence, small/big blind progression, ante introduction level + structure.",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "Prompt explicit: 'Perform a deep dive research into popular starting values and seed multiple options into the application' AND 'the poker infrastructure must abide by all tournament regulations'. This is two intertwined research questions: (1) which rule corpus to anchor to (TDA is the de-facto industry standard for live tournament rules); (2) which preset blind structures to ship with provenance (start with TDA's recommended structures and the published WSOP / PokerStars Sunday-Million structures). Researcher dispatch is non-optional; the prompt commands a deep-dive.",
+      "why_inflection": "Choice of rule corpus drives mechanics (button-on-the-dead handling, dead-button vs moving-button policy, all-in-protection timing, antes vs blinds-only vs big-blind-ante) AND seeds the visible preset list. The TDA / WSOP / online / casual choices each produce a materially different in-game experience."
+    },
+    {
+      "id": "IP2",
+      "topic": "Game-engine trust boundary: server-authoritative vs client-trusted",
+      "choices": [
+        "Server-authoritative via Cloud Functions (dealing, randomness, pot calculation, winner determination computed in Cloud Functions; clients only submit actions)",
+        "Server-authoritative via Firestore security rules alone (no Cloud Functions; rules enforce all state transitions)",
+        "Client-trusted with consensus check (each client computes; mismatch flags arbitration)",
+        "Client-trusted with no verification (simplest; structurally exploitable)"
+      ],
+      "default_branch": "Server-authoritative via Cloud Functions for the dealing + pot resolution path. Firestore security rules enforce action-validity (player can only act on their turn, can only bet up to their stack, etc.); a Cloud Function performs the shuffle (cryptographic RNG), hole-card dealing, and pot distribution at hand-end. Clients send action documents; the Function reads, validates, applies, and writes the resulting state.",
+      "importance": "high",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Quick-reasoning resolves this confidently per Principle E/F: any competitive game with leaderboards REQUIRES server-authoritative deal/randomness, otherwise the leaderboard is meaningless (any client can give itself winning cards). Cloud Functions are not named in the prompt but are the canonical server-side compute primitive for a Firebase + static-host architecture; the alternative (Firestore-rules-only enforcement) cannot perform RNG and cannot perform the multi-document atomic write required for pot distribution. The prompt's 'use existing infrastructure for firebase firestore' does not preclude Cloud Functions on the same project — Cloud Functions are part of the Firebase product family. No Researcher needed; canonical evidence supports the default.",
+      "why_inflection": "Cascade depth: all hand-state machinery, RNG, pot math, and trust model depend on this. UX surface: none directly (user doesn't see the boundary). Reversibility: low — switching from client to server-authoritative post-launch is a major rewrite. Option asymmetry: very high — client-trust is functionally trivial but structurally indefensible."
+    },
+    {
+      "id": "IP3",
+      "topic": "Real-time state-sync transport: Firestore listeners vs Realtime Database vs WebRTC",
+      "choices": [
+        "Firestore onSnapshot listeners (the named substrate)",
+        "Firebase Realtime Database (lower latency, also part of named Firebase product)",
+        "WebRTC peer-to-peer with Firestore as signaling channel only",
+        "Hybrid (RTDB for action-clock + active-hand state; Firestore for tournament + leaderboard data)"
+      ],
+      "default_branch": "Firestore onSnapshot listeners exclusively. Firestore is the named substrate (PN.3, prompt explicit); RTDB substitution would violate Principle E.",
+      "importance": "high",
+      "importance_action": "evidence_backed",
+      "importance_action_evidence": "Principle E governs: the user named Firestore explicitly. Substituting RTDB silently would be a Law A violation. If TD measures Firestore latency to be materially insufficient for live-poker pacing AFTER initial implementation, TD must surface this as a TD-IP and either escalate to Discovery for demotion analysis OR adopt the hybrid (option 4) with explicit rationale documenting the partial substitution. No quick-default to RTDB. Canonical evidence supports the default: Firestore onSnapshot is documented for real-time use at firebase.google.com/docs/firestore/query-data/listen.",
+      "why_inflection": "Real for TD: Firestore's median write-to-read latency (~500ms) is borderline-acceptable for action-clock display but may feel laggy for rapid multiway turns. The choice is locked at PN.3 anchor, but TD may need to architect mitigations (optimistic local rendering, server-set turn-start timestamp for client-side countdown)."
+    },
+    {
+      "id": "IP4",
+      "topic": "Tournament start trigger: how does a tournament transition from 'lobby with awaiting members' to 'in progress'?",
+      "choices": [
+        "Auto-start once N players have joined (configurable threshold, default 2)",
+        "Manual start by the first-joiner (lobby host model)",
+        "Manual start by any joined player (consensus / first-to-press-start)",
+        "Scheduled start time set at tournament creation"
+      ],
+      "default_branch": "Hybrid: minimum 2 players required; any joined player can press 'Start tournament' once minimum is met; AND auto-start after a configurable wait timeout (default 5 minutes) since first join, if minimum is met. This avoids both the 'no one knows whose job it is' problem AND the 'one joiner can drag out start indefinitely' problem.",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Prompt is silent; multiple reasonable defaults exist; default branch is defensible and easily adjustable post-launch.",
+      "why_inflection": "UX surface: the lobby's primary call-to-action depends on this. Reversibility: high (settings flip)."
+    },
+    {
+      "id": "IP5",
+      "topic": "Weighted scoring formula for unfinished vs finished tournaments",
+      "choices": [
+        "Linear: weight = (levels_completed / total_planned_levels), capped at 1.0 for finished",
+        "Sigmoid: weight curves toward 1.0 as tournament progresses; rewards going deep more than starting",
+        "Survival-rate-based: weight = (players_eliminated / starting_field) at termination",
+        "Two-component: base finish-position points × completion-weight; finished tournaments score the full position table"
+      ],
+      "default_branch": "Two-component scoring: each tournament awards position-based points (e.g., 1st = 100, 2nd = 70, 3rd = 50, ...) MULTIPLIED by a completion weight that is 1.0 for finished tournaments and (players_eliminated / (starting_field - 1)) for unfinished. So an unfinished tournament with no eliminations scores zero; an unfinished tournament where all but one player was eliminated scores nearly full. Position at termination is determined by chip count.",
+      "importance": "high",
+      "importance_action": "researcher_dispatched",
+      "importance_action_evidence": "Prompt explicit: 'a weighted system will need to be implemented'. The formula choice materially affects player incentives (do you abandon a tournament early when you're short-stacked, or fight to bust someone first?). Discovery's quick-reasoning produces the default but does not constitute canonical-source backing. Folded into IP1's Researcher dispatch: scoring conventions for online/live tournament series (Poker Player of the Year, GPI rankings, online site weekly leaderboards) are documented and should inform the chosen formula. Researcher returns the candidate formulas with provenance; TD ratifies; default branch is Discovery's best-effort interpretation in the meantime.",
+      "why_inflection": "Cascade depth: the formula is referenced by leaderboards (A10), by the weighted-scoring contract (A11), and by the unfinished-tournament termination semantics (A27). Reversibility: medium — the formula can be swapped post-launch but historical results would need re-scoring or be tagged with formula-version."
+    },
+    {
+      "id": "IP6",
+      "topic": "Maintenance dashboard scope and access control",
+      "choices": [
+        "Read-only viewer (tournaments / players / hands / leaderboards, no edits)",
+        "Light edits (delete tournament, recompute leaderboard, reset player)",
+        "Full admin console (everything, including direct Firestore document editing UI)",
+        "Single admin (project owner's Google uid) vs multi-admin role list"
+      ],
+      "default_branch": "Light edits + single admin (project owner's Google uid hard-coded into Firestore rules as the admin uid initially; adding a multi-admin list is a settings-collection extension if needed). Dashboard surfaces: list tournaments by status (in-progress, finished, abandoned), per-tournament drill-down (players, hand history, final standings), actions (force-end a stuck tournament, recompute leaderboards from scratch, hide a tournament from public leaderboards, reset a player's nickname).",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Prompt's 'light database dashboard for maintenance' is bounded by the word 'light'. The single-admin default avoids the multi-admin role-management complexity. Acceptable as silent default at medium importance.",
+      "why_inflection": "Scope creep risk if the dashboard becomes a full admin console. UX surface: small (admin-only). Reversibility: high."
+    },
+    {
+      "id": "IP7",
+      "topic": "2-7o easter-egg duration, gameplay interaction, and reveal semantics",
+      "choices": [
+        "Brief pure-visual overlay (1-3s); gameplay continues underneath",
+        "Bounded animated interlude (4-6s); gameplay pauses; cards remain face-down",
+        "Extended cinematic moment (8-12s); gameplay pauses; cards remain face-down",
+        "Long interlude with hole-card reveal of the easter-egg holder; gameplay pauses"
+      ],
+      "default_branch": "Bounded animated interlude: 4-6 seconds total. Gameplay pauses (action clock freezes; no betting input accepted). Hole cards of ALL players (including the easter-egg holder) remain face-down throughout; the animation does NOT reveal which player triggered it (only that the 2-7o has been dealt to someone at the table). After animation completes, gameplay resumes; the easter-egg holder may then act normally including folding immediately.",
+      "importance": "high",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Prompt is emphatic ('DRAMATICALLY', 'EXTREMELY WACKY', 'UNMISSABLE', 'practically UNMISSABLE') but also constrained ('should not take TOO MUCH of all users time during animation'). Discovery cannot resolve duration from external authority — this is a UX-design judgment call within the user's stated bounds. 4-6s is Discovery's best-effort default: long enough to register, short enough that across the tournament (which may see the easter-egg several times — ~0.9% of all dealt hands are 2-7o per player, so ~6 of any player's 700 typical-tournament hands), aggregate disruption is bounded. Non-revealing of hole-card identity protects tournament integrity (A19). The 'unmissable' clause is honored by full-screen / all-users-simultaneous animation, not by long duration.",
+      "why_inflection": "UX surface: very high — this is the most distinctive moment in the application. Reversibility: low — once shipped, changing the moment substantially changes the app's character. Tournament-integrity interaction: revealing hole cards would compromise gameplay; not revealing them protects the strategic information layer."
+    },
+    {
+      "id": "IP8",
+      "topic": "Spectator mode for signed-in users not currently seated",
+      "choices": [
+        "Spectators see the table view (no hole cards) + chat + leaderboards",
+        "Spectators see leaderboards only; no table view until they join",
+        "No spectator mode — non-seated users only see lobby / leaderboards / nothing"
+      ],
+      "default_branch": "Spectators see the table view with all face-down hole cards hidden, public information (community cards, pot, action history, chip stacks) visible, AND see the easter-egg animation when triggered. Spectator chat (if any) is shown only to other spectators, not to seated players (avoids out-of-game coaching).",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Prompt's 'shown to all users' easter-egg clause makes spectator-mode the natural reconciliation. Acceptable as silent default at medium importance.",
+      "why_inflection": "If no spectator mode, the easter-egg's 'all users' contract is harder to honor (only seated players see it). UX surface: medium. Reversibility: high."
+    },
+    {
+      "id": "IP9",
+      "topic": "Notifications delivery mechanism (current game + new tournament)",
+      "choices": [
+        "Browser Notifications API only (in-window when tab is open or unfocused)",
+        "Browser Notifications API + in-app banner fallback when permission denied",
+        "Firebase Cloud Messaging (FCM) + Service Worker (closed-tab push)",
+        "FCM + Notifications API for full coverage (in-app, unfocused, closed-tab)"
+      ],
+      "default_branch": "Browser Notifications API + in-app banner fallback. Covers the 'tab open but unfocused' case (the most likely current-game scenario) and the 'permission denied' graceful fallback. Closed-tab push via FCM is a deferred enhancement — it materially adds setup complexity (service worker registration, FCM SDK, server-side notification dispatch) and the prompt's 'notifications' language does not clearly require push when the user is not in the app.",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Prompt is silent on mechanism; simplest-within-reason picks the browser-native API + fallback. FCM is the canonical Firebase product for closed-tab push if the user later requests it.",
+      "why_inflection": "Cascade depth: closed-tab push requires a service worker, which interacts with the static-Pages deployment constraints. Reversibility: medium — adding FCM later is straightforward."
+    },
+    {
+      "id": "IP10",
+      "topic": "Heads-up specific layout and mechanics treatment",
+      "choices": [
+        "Same 9-seat ring layout, just with 2 active seats opposite each other",
+        "Dedicated heads-up layout: zoomed-in view of two players facing each other, larger card faces, simplified ring",
+        "Adaptive layout: ring shape adapts to seat count (2, 3, 4, ..., 9 each get appropriate proportions)"
+      ],
+      "default_branch": "Adaptive layout: the ring's seat positions reflow based on current active-seat count, with 2-player view giving the heads-up experience materially more space per player than a shrink-to-fit version of the 9-seat layout would. Heads-up posts blinds correctly (button = small blind, big blind acts first preflop and last post-flop). The heads-up moment is treated as a focal experience, not a residual.",
+      "importance": "high",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Prompt explicit: 'it is imperative that the heads up (and up) experience is fully fledged as well.' The 'imperative' framing rules out the shrink-the-9-seat option; the user has signaled that heads-up cannot be a degraded fallback. Quick-reasoning resolves canonically (heads-up blind/button rules are standard tournament canon, folded into IP1's Researcher dispatch); the adaptive-layout interpretation is the simplest defensible reading that honors 'fully fledged'.",
+      "why_inflection": "UX surface: very high — the heads-up moment is the climax of every tournament. The user has explicitly called it out as load-bearing, so 'fully fledged' is a hard constraint that the default 9-seat layout would not satisfy if just shrunk."
+    },
+    {
+      "id": "IP11",
+      "topic": "Action-clock (turn timer) defaults and visual treatment",
+      "choices": [
+        "Fixed 30-second action clock per turn; no time-bank",
+        "Time-bank model: 30s base + per-tournament bank of extra time chips a player can spend",
+        "Configurable per-preset: each preset (Turbo/Regular/Deep) has its own clock"
+      ],
+      "default_branch": "Configurable per-preset: each blind-structure preset (IP1) bundles its own action-clock setting; the seeded presets carry sensible defaults (Turbo: 15s, Regular: 30s, Deep: 45s). Time-bank is deferred (TDA-typical for live, less common online).",
+      "importance": "medium",
+      "importance_action": "n/a",
+      "importance_action_evidence": "Falls naturally out of IP1's Researcher dispatch (action-clock conventions are part of canonical tournament settings). Acceptable as silent default at medium importance.",
+      "why_inflection": "UX surface: medium (visible per turn); cascade: medium (interacts with disconnect handling A26 and Firestore listener latency A25/IP3)."
+    }
+  ],
+  "first_contact_requirements": [
+    {
+      "id": "FC.1",
+      "description": "The deployed page at https://mondrianaire.github.io/auto-builder/runs/texas-holdem-tournament/output/final/ loads in a desktop browser without errors and renders a recognizable landing surface (project title or branded panel) within 5 seconds on a typical broadband connection.",
+      "artifact_type_basis": "web app (static site on GitHub Pages)"
+    },
+    {
+      "id": "FC.2",
+      "description": "A 'Sign in with Google' control is visible on the landing surface without scrolling, and clicking it launches the Google OAuth consent screen for the gto-poker-qui Firebase project. After successful consent, the user is returned to the application authenticated (no redirect-loop, no 'unauthorized domain' error).",
+      "artifact_type_basis": "web app with Google SSO"
+    },
+    {
+      "id": "FC.3",
+      "description": "After sign-in, the user lands at the lobby surface. The lobby shows a 'Join' control. If other users have already joined and are awaiting tournament start, their Google profile pictures are visible inside / adjacent to the Join control. The signed-in user's own profile picture and first name appear in a user account card in the top-right.",
+      "artifact_type_basis": "lobby flow (explicit prompt content)"
+    },
+    {
+      "id": "FC.4",
+      "description": "Clicking the user account card in the top-right opens a panel exposing at minimum: a nickname editor, a notification toggle for current-game events, a notification toggle for new tournaments, and the 4-color deck toggle. Setting a nickname updates the displayed name in the lobby and persists across reload.",
+      "artifact_type_basis": "settings flow (explicit prompt content)"
+    },
+    {
+      "id": "FC.5",
+      "description": "When the tournament starts (per IP4's trigger), the lobby transitions to the table view showing a visually animated poker ring (oval/circular shape, not rectangular; visible motion / animation, not static). The signed-in user is rendered seated at the ring with their profile picture / nickname; other seated players are similarly rendered around the ring.",
+      "artifact_type_basis": "tournament play surface (explicit prompt content: 'poker ring visually animated')"
+    },
+    {
+      "id": "FC.6",
+      "description": "When at least two players are seated, the heads-up scenario (which may be the start scenario if only 2 players joined, or the end scenario when 7 players have been eliminated) renders correctly: blinds posted with the button as small blind, big blind acts first preflop, and the visual layout treats heads-up as a focal experience (not a shrunken 9-seat view).",
+      "artifact_type_basis": "heads-up specific (explicit prompt content: 'fully fledged heads-up experience')"
+    },
+    {
+      "id": "FC.7",
+      "description": "When any seated player is dealt 2-7 offsuit hole cards, ALL connected users (seated and spectator) see a dramatic, visually disruptive, unmissable animation within 1 second of the deal. The animation completes within 6 seconds and gameplay resumes. The animation does NOT reveal which player holds the 2-7o (hole cards remain face-down).",
+      "artifact_type_basis": "easter egg (explicit prompt content with emphasis)"
+    },
+    {
+      "id": "FC.8",
+      "description": "The application provides selectable tournament setting presets (multiple, plural — minimum 3) at tournament creation, each with starting stack, blind level duration, break timing, and blind level schedule. Selecting a preset populates the corresponding fields; the user can also edit any field to create a custom configuration.",
+      "artifact_type_basis": "settings flow (explicit prompt content: 'seed multiple options')"
+    },
+    {
+      "id": "FC.9",
+      "description": "A leaderboard surface (accessible from the lobby or via primary navigation) shows weekly, monthly, and all-time rankings. Each ranking shows player nickname / first name, profile picture, and aggregate score per the weighted formula (IP5).",
+      "artifact_type_basis": "results tracking (explicit prompt content)"
+    },
+    {
+      "id": "FC.10",
+      "description": "A maintenance dashboard is reachable by the administrator account (the project owner's Google uid) at a known route (e.g., /admin). Non-admin users either do not see the route or receive a clear access-denied surface. The dashboard surfaces tournament list, per-tournament drill-down, and at minimum the 'force-end stuck tournament' action.",
+      "artifact_type_basis": "maintenance surface (explicit prompt content)"
+    }
+  ],
+  "out_of_scope": [
+    "Multiple concurrent tournaments (explicit prompt deferral: 'Multiple tournaments do not need to be supported at the start')",
+    "Poker variants other than Texas Hold'em (Omaha, Stud, mixed games) — explicit 'TEXAS HOLDEM ONLY'",
+    "Cash games / ring games (the application is tournament-only per 'tournament style poker games')",
+    "Real money, payments, buy-in transactions, or any monetary exchange (prompt is silent; default is no-stakes)",
+    "Auth providers other than Google (prompt names Google SSO exclusively; no email/password, no Facebook, no Apple sign-in)",
+    "Mobile-native iOS or Android applications (deployment target is GitHub Pages — a web browser experience; the web app may be responsive but no native binaries)",
+    "Stylized card faces / decorative card identities (explicit prompt constraint: 'Card identity must not be sacrificed for design')",
+    "Reveal of opponents' hole cards before showdown (standard tournament rule; the easter-egg animation also does not reveal hole cards per A19)",
+    "Closed-tab push notifications via FCM at launch (deferred; in-window Notifications API + in-app fallback only — IP9)",
+    "Custom server / Node backend beyond Firebase Cloud Functions (architecture is Firebase + static Pages; no Express, no socket.io, no separately-hosted backend)",
+    "Tournament chat / table chat at launch (prompt is silent; deferred to keep launch scope bounded)",
+    "Hand-history export, replay viewer, or detailed hand analytics (the prompt's results tracking is leaderboard-aggregate; per-hand analytics are not asked for)",
+    "Multi-admin role management for the maintenance dashboard (initial scope is single admin = project owner's Google uid; multi-admin is a post-launch extension)",
+    "Audio / sound effects (prompt is silent; no audio at launch unless the easter-egg's 'unmissable' qualifier is interpreted to require sound — IP7 may revisit this)"
+  ]
+}

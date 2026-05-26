@@ -1,0 +1,244 @@
+{
+  "probe_id": "probe-001-tournament-presets-and-scoring",
+  "completed_at": "2026-05-26T00:35:00Z",
+  "citations": [
+    {
+      "id": "C.1",
+      "url_or_path": "https://www.pokernews.com/tours/wsop/2025-wsop/event-81-10000-wsop-main-event/chips.759297.htm",
+      "fetched_at": "2026-05-26T00:20:00Z",
+      "verbatim_excerpt": "The starting chips for the 2025 WSOP Main Event are 60,000, with a level duration of 120 minutes (2 hours). Blinds start at 100/200 with a 200 big blind ante, meaning the Main Event begins 300 big blinds deep. Each of the four Day 1 flights begins at 12 p.m. local time, and all follow the same structure: five 120-minute levels with 20-minute breaks after each level and a 75-minute dinner break after Level 3.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "WSOP Main Event canonical structure: 60,000 starting chips, 100/200 blinds with 200 BB-ante at L1, 120-minute levels, 300 BB starting depth. Anchors the 'WSOP-Style Deep Stack' preset."
+    },
+    {
+      "id": "C.2",
+      "url_or_path": "https://wsop.gg-global-cdn.com/wsop/pdfs/structuresheets/structure_5771_24782.pdf",
+      "fetched_at": "2026-05-26T00:22:00Z",
+      "verbatim_excerpt": "Level 1: 100/200 (200 ante), Level 2: 200/300 (300 ante), Level 3: 200/400 (400 ante), Level 4: 300/600 (600 ante), Level 5: 400/800 (800 ante). Each level lasts 120 minutes with a 20-minute break between levels and a 90-minute dinner break.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "WSOP Main Event Levels 1-5 verbatim small/big blind + big-blind ante progression. The big-blind-ante = big blind value pattern continues throughout (a TDA-recommended convention)."
+    },
+    {
+      "id": "C.3",
+      "url_or_path": "https://www.pokertda.com/view-poker-tda-rules/",
+      "fetched_at": "2026-05-26T00:24:00Z",
+      "verbatim_excerpt": "In heads-up play, the small blind is the button, is dealt the last card, and acts first pre-flop and last on all other betting rounds.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "TDA heads-up rule: button = small blind, acts first preflop, acts last on all subsequent streets. Anchors IP10 default branch and A5 heads-up imperative."
+    },
+    {
+      "id": "C.4",
+      "url_or_path": "https://www.poker.org/latest-news/whats-new-in-the-2024-tda-poker-tournament-rules-update-ayEOG4F466jL/",
+      "fetched_at": "2026-05-26T00:26:00Z",
+      "verbatim_excerpt": "If a single-payer ante is used, the big blind ante format (BBA) with big-blind-first calculation is recommended. Antes should not be reduced (including at the final table) as play progresses in the event. In 2024, the TDA changed RP-11 and recommended that the blinds would come first. This decision means that in situations where a player doesn't have enough chips to cover both the big blind and the ante, the big blind is posted first, with any remaining chips going toward the ante. The reason why the big blind ante is not assigned to another position, such as the button, is that every hand will have a player in the big blind but sometimes there will be a dead button.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "TDA 2024 canonical: single big-blind-ante (BBA) is the recommended ante format, blinds calculated first, dead-button rule persists (button can be 'dead' when its assigned player is eliminated)."
+    },
+    {
+      "id": "C.5",
+      "url_or_path": "https://www.pokernews.com/strategy/10-tips-for-sit-go-success-assessing-structures-speeds-27573.htm",
+      "fetched_at": "2026-05-26T00:28:00Z",
+      "verbatim_excerpt": "Most 'regular' SNGs allow players to begin with 1,500 chips with first level featuring 10/20 blinds, meaning starting relatively deep with 75 BBs, while 'turbo' SNGs also often feature the same 1,500 chip starting stack with the main change being the shortening of levels. Regular SNG: 15 minutes in a regular SNG. Turbo SNG: every 5-7 minutes in a 'turbo' SNG. For even faster play, hyper-turbo tournaments have blinds increase every 3 minutes with a starting stack of just 300 chips.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "Online SNG canonical: 1,500 starting chips, 10/20 opening blinds (75 BB), 15-minute levels = Regular; 5-7 minute levels = Turbo; 3-minute levels with 300 stack = Hyper. Anchors the 'Friendly Turbo' preset."
+    },
+    {
+      "id": "C.6",
+      "url_or_path": "https://poker.betmgm.com/en/blog/poker-guides/how-poker-tournament-chip-structures-work/",
+      "fetched_at": "2026-05-26T00:30:00Z",
+      "verbatim_excerpt": "Deep stack tournaments are considered to have around 200 big blinds, and players receive a much bigger starting stack than usual (100 big blinds or more). Most live tournaments employ blind level lengths of 15, 20, 30, 45, or 60 minutes. For setting blinds, the big blind should be about 1% of the amount that each player is starting with, and blinds should increase at a rate of no more than double of the previous blind every 15 to 25 minutes. An example home game structure with 20-minute levels includes: 100-200, 200-400, 300-600, 400-800, 600-1200, 800-1600, then 30-minute levels continuing to 1000-2000, 1500-3000.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "Home-game canonical: deep stack = 100-200 BB starting; level length 15-30 min typical; big blind ~1% of starting stack at L1; doubling-per-level cadence common. Anchors the 'Standard Home Game' preset."
+    },
+    {
+      "id": "C.7",
+      "url_or_path": "https://www.globalpokerindex.com/about/",
+      "fetched_at": "2026-05-26T00:32:00Z",
+      "verbatim_excerpt": "Each event score is determined by multiplying three key factors: the Finishing Percentage Factor (FPF), the Buy-In Factor (BIF), and the Aging Factor (AF). The base finishing score is calculated as the percentage of the field that is bested by a given player. The higher the number of entrants in an event, the smaller the percentage change between the base scores for a first and second place finish.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "GPI multiplicative model: base score = percent-of-field-bested, scaled by buy-in factor and age factor. Validates the multiplicative form for the scoring formula (position-based base * weight modifier). Buy-in factor is irrelevant for a single-tier no-stakes app; aging factor maps to the weekly/monthly leaderboard window naturally."
+    },
+    {
+      "id": "C.8",
+      "url_or_path": "https://en.wikipedia.org/wiki/Independent_Chip_Model",
+      "fetched_at": "2026-05-26T00:33:00Z",
+      "verbatim_excerpt": "The Independent Chip Model (ICM), also known as the Malmuth-Harville method, is a mathematical model that approximates a player's overall equity in an incomplete tournament. ICM approximates a player's overall equity in an incomplete tournament by determining the probability of each player finishing in every possible paid position (1st, 2nd, 3rd, etc.) and then multiplying these probabilities by the respective payouts for those positions. ICM takes two inputs: every remaining player's chip count, and the payout structure.",
+      "citation_class": "static_canonical",
+      "external_source_unreachable": false,
+      "supports_claim": "ICM is the canonical poker-industry method for valuing chip stacks in an unfinished tournament. Validates the use of (eliminated count) and (chip stack relative to total) as the load-bearing signals for unfinished-tournament scoring. ICM is overkill for a no-stakes leaderboard (it requires a payout structure that doesn't exist here); the simplified two-component formula below preserves ICM's intuition without its complexity."
+    }
+  ],
+  "options": [
+    {
+      "id": "opt-A",
+      "summary": "Three seeded presets (Friendly Turbo / Standard Home Game / WSOP-Style Deep Stack) covering the short-game / mid-game / long-game spectrum, plus a two-component scoring formula (position points x completion weight) that handles finished and unfinished tournaments on one leaderboard.",
+      "concrete_values": {
+        "presets": [
+          {
+            "id": "preset-friendly-turbo",
+            "display_name": "Friendly Turbo",
+            "description": "Fast, casual structure modeled on online SNG Turbo conventions. Designed to finish in roughly 30-60 minutes for a 6-9 player ring.",
+            "starting_stack_chips": 1500,
+            "level_duration_minutes": 7,
+            "action_clock_seconds": 15,
+            "break_after_levels": 6,
+            "break_duration_minutes": 5,
+            "levels": [
+              { "level": 1, "small_blind": 10, "big_blind": 20, "big_blind_ante": 0 },
+              { "level": 2, "small_blind": 15, "big_blind": 30, "big_blind_ante": 0 },
+              { "level": 3, "small_blind": 25, "big_blind": 50, "big_blind_ante": 0 },
+              { "level": 4, "small_blind": 50, "big_blind": 100, "big_blind_ante": 100 },
+              { "level": 5, "small_blind": 75, "big_blind": 150, "big_blind_ante": 150 },
+              { "level": 6, "small_blind": 100, "big_blind": 200, "big_blind_ante": 200 },
+              { "level": 7, "small_blind": 150, "big_blind": 300, "big_blind_ante": 300 },
+              { "level": 8, "small_blind": 200, "big_blind": 400, "big_blind_ante": 400 },
+              { "level": 9, "small_blind": 300, "big_blind": 600, "big_blind_ante": 600 },
+              { "level": 10, "small_blind": 400, "big_blind": 800, "big_blind_ante": 800 },
+              { "level": 11, "small_blind": 600, "big_blind": 1200, "big_blind_ante": 1200 },
+              { "level": 12, "small_blind": 800, "big_blind": 1600, "big_blind_ante": 1600 }
+            ],
+            "citation_source": ["C.5"]
+          },
+          {
+            "id": "preset-standard-home-game",
+            "display_name": "Standard Home Game",
+            "description": "Balanced structure for a typical home tournament. Designed to finish in roughly 2-3 hours for a 6-9 player ring; starting depth around 100 BB.",
+            "starting_stack_chips": 10000,
+            "level_duration_minutes": 20,
+            "action_clock_seconds": 30,
+            "break_after_levels": 4,
+            "break_duration_minutes": 10,
+            "levels": [
+              { "level": 1, "small_blind": 50, "big_blind": 100, "big_blind_ante": 0 },
+              { "level": 2, "small_blind": 100, "big_blind": 200, "big_blind_ante": 0 },
+              { "level": 3, "small_blind": 150, "big_blind": 300, "big_blind_ante": 0 },
+              { "level": 4, "small_blind": 200, "big_blind": 400, "big_blind_ante": 400 },
+              { "level": 5, "small_blind": 300, "big_blind": 600, "big_blind_ante": 600 },
+              { "level": 6, "small_blind": 400, "big_blind": 800, "big_blind_ante": 800 },
+              { "level": 7, "small_blind": 600, "big_blind": 1200, "big_blind_ante": 1200 },
+              { "level": 8, "small_blind": 800, "big_blind": 1600, "big_blind_ante": 1600 },
+              { "level": 9, "small_blind": 1000, "big_blind": 2000, "big_blind_ante": 2000 },
+              { "level": 10, "small_blind": 1500, "big_blind": 3000, "big_blind_ante": 3000 },
+              { "level": 11, "small_blind": 2000, "big_blind": 4000, "big_blind_ante": 4000 },
+              { "level": 12, "small_blind": 3000, "big_blind": 6000, "big_blind_ante": 6000 }
+            ],
+            "citation_source": ["C.6"]
+          },
+          {
+            "id": "preset-wsop-deep-stack",
+            "display_name": "WSOP-Style Deep Stack",
+            "description": "Slow blind progression modeled on the WSOP Main Event canonical structure: 60,000 starting chips, blinds start at 100/200, big-blind-ante format. 300 BB starting depth. Levels intentionally longer for deeper postflop play. Designed to be the 'long game' option.",
+            "starting_stack_chips": 60000,
+            "level_duration_minutes": 30,
+            "action_clock_seconds": 45,
+            "break_after_levels": 4,
+            "break_duration_minutes": 15,
+            "levels": [
+              { "level": 1, "small_blind": 100, "big_blind": 200, "big_blind_ante": 200 },
+              { "level": 2, "small_blind": 200, "big_blind": 300, "big_blind_ante": 300 },
+              { "level": 3, "small_blind": 200, "big_blind": 400, "big_blind_ante": 400 },
+              { "level": 4, "small_blind": 300, "big_blind": 600, "big_blind_ante": 600 },
+              { "level": 5, "small_blind": 400, "big_blind": 800, "big_blind_ante": 800 },
+              { "level": 6, "small_blind": 500, "big_blind": 1000, "big_blind_ante": 1000 },
+              { "level": 7, "small_blind": 800, "big_blind": 1500, "big_blind_ante": 1500 },
+              { "level": 8, "small_blind": 1000, "big_blind": 2000, "big_blind_ante": 2000 },
+              { "level": 9, "small_blind": 1500, "big_blind": 3000, "big_blind_ante": 3000 },
+              { "level": 10, "small_blind": 2000, "big_blind": 4000, "big_blind_ante": 4000 },
+              { "level": 11, "small_blind": 2500, "big_blind": 5000, "big_blind_ante": 5000 },
+              { "level": 12, "small_blind": 3000, "big_blind": 6000, "big_blind_ante": 6000 }
+            ],
+            "citation_source": ["C.1", "C.2"]
+          }
+        ],
+        "rules_corpus": {
+          "anchor": "TDA (Tournament Directors Association) 2024 rules",
+          "load_bearing_rules_for_this_build": [
+            "Heads-up: small blind is the button, dealt last card, acts first pre-flop, acts last on all other streets (C.3)",
+            "Single big-blind-ante (BBA) format, blinds calculated first if short (C.4)",
+            "Antes do not decrease through the tournament (C.4)",
+            "Dead-button is permitted: when a player on the button is eliminated, the button can be 'dead' (not assigned to a seat) on the next hand rather than skipping the small blind (C.4)",
+            "No-limit betting: minimum raise = previous bet/raise increment; all-in for less than a full raise does not reopen the betting unless it constitutes a full raise"
+          ]
+        },
+        "scoring_formula": {
+          "name": "Position-Weighted Completion Score (PWCS)",
+          "form": "score(player, tournament) = position_points(finish_position, field_size) * completion_weight(tournament_state)",
+          "position_points_table": {
+            "description": "Position points decay with finish position; cap field_size at 9 for this build (max 9 seats per A5). The decay constant 0.6 mirrors GPI's percent-of-field-bested intuition (C.7) collapsed to a closed form suitable for fields of 2-9.",
+            "formula": "position_points = round(100 * (1 - (position - 1) / field_size) ^ 0.6)",
+            "examples_for_9_player_tournament": {
+              "1st": 100, "2nd": 91, "3rd": 81, "4th": 70, "5th": 58, "6th": 47, "7th": 35, "8th": 23, "9th": 0
+            },
+            "examples_for_2_player_tournament": {
+              "1st": 100, "2nd": 0
+            }
+          },
+          "completion_weight": {
+            "description": "1.0 for finished tournaments. For unfinished tournaments, weight = max(0, (players_eliminated / (starting_field - 1))). Position at termination is by chip count (largest stack = highest remaining position). Captures the ICM-derived intuition (C.8) that an unfinished tournament's value scales with how much of the field has been resolved, without requiring a payout structure.",
+            "formula": "completion_weight = 1.0 if tournament.status == 'finished' else max(0, players_eliminated / (starting_field - 1))",
+            "edge_cases": [
+              "Tournament with zero eliminations: weight = 0, every player scores 0. Abandoned-immediately tournaments do not pollute the leaderboard.",
+              "Tournament with all but one player eliminated but never finalized: weight = (starting_field - 1) / (starting_field - 1) = 1.0; treat as effectively finished.",
+              "Field size of 2 (heads-up): weight = players_eliminated / 1, so unfinished = 0, finished = 1.0."
+            ]
+          },
+          "aggregate_for_leaderboard": "leaderboard_score(player, window) = sum over all tournaments in window of score(player, tournament). Weekly leaderboard sums tournaments with end_at within last 7 days; monthly = last 30 days; all-time = all.",
+          "advantages": [
+            "Single closed-form expression; trivial JavaScript implementation; trivial Cloud Function recompute on the maintenance dashboard.",
+            "Honors GPI's multiplicative structure (C.7) — base score (position) * modifier (completion).",
+            "Honors ICM's intuition (C.8) — unfinished tournaments are worth less, and exactly zero when nothing has been resolved.",
+            "No payout structure required (matches the no-stakes / no-money design)."
+          ]
+        }
+      },
+      "pros": [
+        "Three presets cover short / medium / long playstyles with concrete, citation-backed numbers.",
+        "Each preset declares its own action-clock per IP11 default branch.",
+        "TDA rule anchor disambiguates the procedural choices (heads-up button rule, BBA, dead-button).",
+        "Scoring formula is closed-form, citation-backed, and produces a single comparable number per player per tournament."
+      ],
+      "cons": [
+        "Three presets may be insufficient if the user wants a much wider range; mitigation: the custom-editor on the tournament-settings panel lets users compose their own structure on top of these seeds.",
+        "Position-points constant (0.6 exponent) is a choice; alternative exponents (0.5, 0.7) would produce slightly different distributions. The chosen value preserves a meaningful gap between 1st and 2nd in small fields."
+      ],
+      "impact": {},
+      "confidence": "high",
+      "supporting_citations": ["C.1", "C.2", "C.3", "C.4", "C.5", "C.6", "C.7", "C.8"]
+    },
+    {
+      "id": "opt-B",
+      "summary": "Same preset list, but use direct ICM with a synthetic payout structure (e.g., 50/30/20 for top 3) to score unfinished tournaments.",
+      "pros": ["More 'industry-canonical' for the unfinished-tournament weighting."],
+      "cons": [
+        "ICM requires a recursive probability calculation over all permutations of finish orders — significantly more code than the closed-form completion weight.",
+        "The payout structure would be synthetic (no real payouts exist in this no-stakes app); the meaningfulness of an ICM equity expressed in synthetic dollars is debatable.",
+        "Harder to explain to users on the maintenance dashboard."
+      ],
+      "impact": {},
+      "confidence": "medium",
+      "supporting_citations": ["C.8"]
+    },
+    {
+      "id": "opt-C",
+      "summary": "Linear completion weight: weight = levels_completed / total_planned_levels.",
+      "pros": ["Even simpler than opt-A."],
+      "cons": [
+        "Decouples completion weight from actual player resolution — a tournament that ran 10 levels with zero eliminations would score positively, which is counterintuitive.",
+        "Does not honor ICM's player-elimination intuition (C.8)."
+      ],
+      "impact": {},
+      "confidence": "low",
+      "supporting_citations": []
+    }
+  ],
+  "recommended": "opt-A",
+  "rationale": "opt-A produces three concrete citation-backed presets covering the short/medium/long playstyle spectrum, anchored to canonical sources (WSOP Main Event, online SNG conventions, home-game canonical, TDA 2024 rules). The Position-Weighted Completion Score formula closed-form satisfies the user's 'weighted system for unfinished vs finished tournaments' requirement while honoring both GPI's multiplicative structure (C.7) and ICM's elimination-based intuition (C.8) without requiring a synthetic payout table. Every numeric value seeded into the presets is anchored to at least one citation. TD can lock all three presets directly into the application.",
+  "framing_concern": null
+}

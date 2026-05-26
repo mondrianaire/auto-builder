@@ -1,0 +1,15 @@
+{
+  "role": "Critic",
+  "instance_id": "critic-scheduled",
+  "iteration": 1,
+  "mode": "scheduled",
+  "completed_at": "2026-05-26T02:51:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What kinds of problems did you check for?", "answer": "Checked that every planned piece was actually built and verified, that the pieces talk to each other through the agreed-on interfaces, that nothing snuck in that the user said they didn't want (no other poker variants, no real money, no chat, no FCM), and that the few judgment calls made during the build are recorded honestly.", "kind": "always", "importance": "medium" },
+    { "question": "What did you find?", "answer": "Nothing of concern. The five inline-mode judgment calls are all small and well-documented; the one that actually changes the artifact (the dual-path engine — browser fallback plus deployable Cloud Functions) carries a clear caveat in the README so the project owner knows the trade-off. No structural drift from the plan.", "kind": "always", "importance": "high" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Critic"
+}

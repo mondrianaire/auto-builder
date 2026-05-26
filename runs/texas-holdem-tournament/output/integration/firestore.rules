@@ -1,0 +1,78 @@
+// firestore.rules — Texas Hold'em Tournament
+//
+// Paste these rules into the Firebase Console for project gto-poker-qui:
+//   Firestore Database > Rules > Publish.
+// Or deploy via the Firebase CLI:
+//   firebase deploy --only firestore:rules --project gto-poker-qui
+//
+// Pattern follows runs/gto-poker-async-duel/output/final/firestore.rules
+// with adjustments for: per-player hole-card subcollection confidentiality
+// (used by the client-dealer fallback per inline-deviation dev-001),
+// non-admin write denial to /leaderboards/* (IP6.A2), and Cloud-Function-only
+// writes to hand-result fields (IP2.A3).
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The single hardcoded admin uid. Edit src/config.js + redeploy + update
+    // this rule together if rotating administrators.
+    function isAdmin() {
+      return request.auth != null &&
+             request.auth.uid == "REPLACE_WITH_PROJECT_OWNER_GOOGLE_UID";
+    }
+
+    // /players/{uid} — each player owns their own profile doc.
+    match /players/{uid} {
+      allow read:  if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // /tournaments/{tid} — single concurrent tournament at launch (id "active").
+    match /tournaments/{tid} {
+      allow read: if request.auth != null;
+      // Authenticated clients may update config + seated_players + status transitions
+      // (Join, Leave, Start). Server-authoritative hand-state lives in subcollections
+      // and is denied to clients below.
+      allow create, update: if request.auth != null;
+      allow delete: if isAdmin();
+
+      // /tournaments/{tid}/hands/{hid} — server-authoritative hand state.
+      // In client-dealer mode (dev-001), the dealer client also writes here; the
+      // rule permits authenticated writes but the application logic ensures only
+      // the lowest-uid seated player acts as dealer for each hand. For production
+      // Cloud-Functions mode, rotate to a service-account-only rule.
+      match /hands/{hid} {
+        allow read:  if request.auth != null;
+        allow write: if request.auth != null;
+
+        // /tournaments/{tid}/hands/{hid}/player_hole_cards/{uid} —
+        // RESTRICTED to that player's own UID. This is the confidentiality
+        // boundary in client-dealer mode: only the player whose UID matches
+        // the document id can read their own hole cards. The dealer client
+        // (which writes them) cannot read other players' subdocs as a client —
+        // the rules apply uniformly.
+        match /player_hole_cards/{playerUid} {
+          allow read:  if request.auth != null && request.auth.uid == playerUid;
+          allow write: if request.auth != null;
+        }
+
+        // /tournaments/{tid}/hands/{hid}/pending_actions/{aid} —
+        // Action submissions from non-dealer clients. Public-write so the dealer
+        // can read & apply them.
+        match /pending_actions/{aid} {
+          allow read:  if request.auth != null;
+          allow create: if request.auth != null;
+          allow update, delete: if false;
+        }
+      }
+    }
+
+    // /leaderboards/{scale} — read by everyone, written only by admin (or
+    // by the Cloud Function recomputeLeaderboards in production mode).
+    match /leaderboards/{scale} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+  }
+}

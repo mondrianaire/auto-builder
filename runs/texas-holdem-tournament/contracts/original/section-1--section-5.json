@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-5",
+  "interface": {
+    "getCurrentUser()": {
+      "params": {},
+      "returns": "see section-1--section-2.json#getCurrentUser",
+      "notes": "section-5 needs the local user's uid to determine which seat is 'me' (and therefore which seat shows the betting controls)."
+    },
+    "fourColorDeckPreference()": {
+      "params": {},
+      "returns": "bool (true = 4-color, false = 2-color)",
+      "notes": "Persisted in /players/{uid}.preferences.four_color_deck (section-1 writes; section-5 reads). Section-5's card render uses this to select the suit-color CSS variable values."
+    },
+    "subscribeToPreferenceChanges(callback)": {
+      "params": { "callback": "({four_color_deck:bool}) => void" },
+      "returns": "{ unsubscribe: () => void }"
+    }
+  },
+  "notes": "Decoupled: section-5 doesn't reach into Firebase Auth directly. The user preferences live under /players/{uid} which section-1 owns."
+}

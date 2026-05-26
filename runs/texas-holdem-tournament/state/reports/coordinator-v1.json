@@ -1,0 +1,16 @@
+{
+  "role": "Coordinator",
+  "instance_id": "coordinator",
+  "iteration": 1,
+  "mode": "inline",
+  "completed_at": "2026-05-26T02:51:30Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "How are you sequencing the work?", "answer": "Building the foundation first — sign-in shell and the database rules — in parallel. Then layering on the lobby, then tournament settings, then the poker engine itself. Once the engine works, the table view and the leaderboards build in parallel; then the easter-egg overlay and the admin dashboard finish things off. Finally an assembly pass and one full sweep of self-checks before handing back to the verifier.", "kind": "always", "importance": "medium" },
+    { "question": "What's running in parallel?", "answer": "Two parallel waves: sign-in and the database rules ran together at the start; later the table view and the leaderboards ran together, then the easter egg and the admin dashboard ran together.", "kind": "conditional", "importance": "low" },
+    { "question": "What dispatch mode and why?", "answer": "Going to handle the smaller pieces directly without spinning up separate workers — the build has 10 pieces but they share a lot of context (the poker engine is referenced by five other pieces), so one coordinator with the whole picture in mind keeps everything coherent.", "kind": "conditional", "importance": "low" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Critic"
+}

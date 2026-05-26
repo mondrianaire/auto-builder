@@ -1,0 +1,18 @@
+{
+  "section_id": "section-1",
+  "section_name": "auth-shell",
+  "completed_at": "2026-05-26T02:11:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-1a", "task": "Firebase init + Google SSO + onAuthStateChange wrapper", "output_files": ["src/firebase.js", "src/auth.js"], "exposes": [
+      { "symbol": "getCurrentUser",     "type": "function", "matches_contract": "contracts/original/section-1--section-2.json" },
+      { "symbol": "onAuthStateChange",  "type": "function", "matches_contract": "contracts/original/section-1--section-2.json" },
+      { "symbol": "displayName",        "type": "function", "matches_contract": "contracts/original/section-1--section-2.json" },
+      { "symbol": "signInWithGoogle",   "type": "function" },
+      { "symbol": "applyFourColorDeck", "type": "function", "matches_contract": "contracts/original/section-1--section-5.json" }
+    ] },
+    { "builder_id": "builder-1b", "task": "Top-right user account card + nickname editor + notification toggles + 4-color toggle", "output_files": ["src/ui/user-card.js", "src/notifications.js"] },
+    { "builder_id": "builder-1c", "task": "Landing surface + sign-in button + OttoBLD-themed shell", "output_files": ["src/ui/landing.js", "src/app.js", "index.html", "styles/main.css", "styles/animations.css", "icons/favicon.svg", "manifest.json"] }
+  ],
+  "notes": "Inline-mode build. Per dev-001/sev0-001 the auth shell exposes applyFourColorDeck to section-5 via the shared CSS-var swap pattern."
+}

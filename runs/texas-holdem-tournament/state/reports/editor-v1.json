@@ -1,0 +1,37 @@
+{
+  "role": "Editor",
+  "instance_id": "editor-v1",
+  "iteration": 1,
+  "mode": "review",
+  "completed_at": "2026-05-26T01:25:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "Did the build stay true to what was asked?",
+      "answer": "Mostly — the plan reads the prompt accurately, the heads-up experience is treated as load-bearing, the 2-7o easter egg has its own section with all five constraints (dramatic, wacky, unmissable, time-bounded, non-revealing), and 'play' is exercised end-to-end by two real browser windows under production fidelity. But the foundational target-defining noun — 'TEXAS HOLDEM' itself — was left at verification_status: pending. The downstream research probe DID cover the rules corpus (TDA 2024, heads-up button rule, BBA format) and there's a behavioral assertion checking the canonical hand sequence, so this is repairable by re-pointing the ledger entry rather than by dispatching a fresh research pass. Sending it back to Technical Discovery for that re-pointing plus a citation-form cleanup on the other proper nouns.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "Anything the user should know about?",
+      "answer": "Two small things worth flagging even after the re-pointing pass: (1) the Firebase project reuse is sound (gto-poker-qui, no new project), but the Pages origin has to be added to that project's OAuth authorized domains as a deploy-time step — Technical Discovery already noted this in the README assertion, and Critic will verify post-build. (2) Firestore's per-write latency around 500ms is borderline for very fast multiway action; the action clock derives from a server-set timestamp to mitigate, but if pacing feels sluggish in real play it surfaces as a TD impact-mode escalation rather than a silent substitution to Realtime Database — that contract is structurally guaranteed by the PN.3 lock and TD-IP-A.A1.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "outputs": [
+    "decisions/editor/review-v1.json"
+  ],
+  "verdict": "route_to_td",
+  "findings_summary": {
+    "total": 3,
+    "by_severity": { "high": 1, "medium": 1, "low": 1 },
+    "passing_checks": 5,
+    "passing_with_recommendation_checks": 2,
+    "failing_checks": 1
+  },
+  "next_active_role": "TechnicalDiscovery",
+  "next_active_phase": "impact-analysis"
+}

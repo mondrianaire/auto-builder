@@ -1,0 +1,64 @@
+{
+  "role": "Discovery",
+  "instance_id": "discovery-amendment-v1",
+  "iteration": 1,
+  "mode": "amendment",
+  "completed_at": "2026-05-26T01:40:00Z",
+  "section": null,
+  "escalation_id": "editor-v1-routed",
+  "blurbs": [
+    {
+      "question": "What changed in the plan, and why?",
+      "answer": "Nothing in the plan changed — same app, same features, same scope. The structural cleanup was on how the supporting evidence is filed: the five named pieces (Texas Hold'em itself, Google sign-in, Firestore, GitHub Pages, and the 2-7o easter-egg hand) now each carry a list of canonical sources with exact quoted passages, rather than a paragraph of prose explanation. Texas Hold'em moved from 'still being checked' to 'verified' by pointing it at the existing research findings on tournament rules plus two more canonical sources for the hand structure itself. No user-facing change.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What stays the same?",
+      "answer": "Everything you'd actually notice: the live tournament, the heads-up experience, the 2-7o easter egg, the lobby flow with Google sign-in, the leaderboards on weekly/monthly/all-time, the maintenance dashboard, the OttoBLD visual language, and the deployment to the standard GitHub Pages URL on the existing Firebase project. The build plan that Technical Discovery already produced is unchanged.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "outputs": [
+    "decisions/discovery/ledger-diff-v2.json"
+  ],
+  "amendment_summary": {
+    "trigger": "editor_review",
+    "trigger_findings": ["F.1", "F.2"],
+    "amendments_count": 6,
+    "amendments_by_change_type": {
+      "amended": 5,
+      "unchanged_reformatted": 1
+    },
+    "citations_added_total": 17,
+    "citations_added_by_pn": {
+      "PN.1": 4,
+      "PN.2": 3,
+      "PN.3": 4,
+      "PN.4": 2,
+      "PN.5": 2,
+      "PN.6": 1,
+      "note": "PN.1 amendment includes two new fetched citations (C.PN1.3 WSOP rules, C.PN1.4 Wikipedia Texas hold 'em) plus two citations_pointer-references to existing probe-001 entries (C.3 and C.4). Total 17 covers all citation entries in the rolled-up proper_nouns_amended_v2 view, including PN.6 (defensive cleanup outside F.2 scope)."
+    },
+    "verification_status_transitions": {
+      "PN.1": "pending -> verified",
+      "PN.2": "verified (unchanged) - reformatted to citations[]",
+      "PN.3": "verified (unchanged) - reformatted to citations[]",
+      "PN.4": "verified (unchanged) - reformatted to citations[]",
+      "PN.5": "verified (unchanged) - reformatted to citations[]",
+      "PN.6": "verified (unchanged) - reformatted to citations[] for consistency"
+    },
+    "meta_check_verdict": "amend ledger; not user-surfaceable; technical-only",
+    "meta_check_all_four_no": true,
+    "scope_unchanged": true,
+    "behavior_unchanged": true,
+    "td_sections_re_pass_required": false,
+    "f3_handled": false,
+    "f3_status": "left for TD optional handling per Editor's pass_with_recommendation classification"
+  },
+  "next_role": "Editor",
+  "next_active_phase": "editor-review",
+  "next_pass": 2
+}
