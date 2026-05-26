@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "from_section": "section-2",
+  "to_section": "section-3",
+  "interface": {
+    "openTournamentSettings(opts)": {
+      "params": {
+        "opts": {
+          "mode": "'create'|'edit'",
+          "current_tournament_id": "string|null (null when mode==='create'; the id of the awaiting-start tournament when mode==='edit')"
+        }
+      },
+      "returns": "Promise<{ tournament_id: string, config: TournamentConfig }>",
+      "notes": "Lobby opens settings when no awaiting tournament exists (creates one) or when the user wants to edit an existing awaiting tournament. Returns the tournament_id and the persisted config."
+    },
+    "TournamentConfig": {
+      "shape": {
+        "preset_id": "string (one of TOURNAMENT_PRESETS[].id, OR 'custom')",
+        "starting_stack_chips": "int",
+        "level_duration_minutes": "int",
+        "action_clock_seconds": "int",
+        "break_after_levels": "int",
+        "break_duration_minutes": "int",
+        "levels": "Array<{ level:int, small_blind:int, big_blind:int, big_blind_ante:int }>"
+      },
+      "notes": "Written to /tournaments/{tid}.config by section-3. Section-4 reads this same shape for level progression and dealing. Section-5 reads action_clock_seconds for the action-clock UI initial value."
+    }
+  },
+  "notes": "section-3 also writes /tournaments/{tid}.status = 'awaiting_start' alongside the config write. Lobby then surfaces the join control."
+}

@@ -1,0 +1,2101 @@
+{
+  "version": 1,
+  "created_at": "2026-05-26T00:45:00Z",
+  "based_on_ledger": "decisions/discovery/ledger-v1.json",
+  "based_on_research": [
+    "research/probes/probe-001-tournament-presets-and-scoring/findings.json"
+  ],
+
+  "prompt_verb_analysis": {
+    "candidate_verbs": ["play", "create", "track"],
+    "chosen_verb": "play",
+    "rationale": "The user wrote 'Create a live multiplayer TEXAS HOLDEM ONLY poker application that allows for multiple users ... to play tournament style poker games.' 'Create' is the meta-verb addressed to the builder (it names the deliverable's existence, not its function). 'Track' is auxiliary (results tracking is downstream of play). The load-bearing verb against which the integrated artifact is judged is 'play' — when two signed-in users actually sit down at the deployed Pages URL and play a tournament-style poker game in real time, the prompt's named goal is met. The PNV scenario literally exercises this end-to-end."
+  },
+
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "source": "discovery",
+      "resolved_via": "research",
+      "research_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json",
+      "chosen_branch": "TDA 2024 rules as procedural canon + three seeded presets (Friendly Turbo / Standard Home Game / WSOP-Style Deep Stack) with per-level numeric blinds, big-blind-ante, level duration, action clock, and break cadence from the Researcher findings.",
+      "rationale": "Researcher confirmed TDA is the de-facto live tournament rule corpus (C.3, C.4). The three presets cover the short/medium/long playstyle spectrum and each numeric value is citation-backed (C.1, C.2 for WSOP Deep; C.5 for Friendly Turbo; C.6 for Standard Home Game). Locking the Researcher's recommendation directly.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.A1",
+          "statement": "The presets module exports an array of exactly three preset objects with display names 'Friendly Turbo', 'Standard Home Game', and 'WSOP-Style Deep Stack'.",
+          "check_type": "constant_value",
+          "target_module": "src/tournament/presets.js",
+          "target_symbol": "TOURNAMENT_PRESETS",
+          "expected_value": ["Friendly Turbo", "Standard Home Game", "WSOP-Style Deep Stack"],
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.presets",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch"
+        },
+        {
+          "id": "IP1.A2",
+          "statement": "The 'WSOP-Style Deep Stack' preset starting_stack_chips = 60000 and Level 1 blinds = 100/200 with big-blind-ante = 200.",
+          "check_type": "constant_value",
+          "target_module": "src/tournament/presets.js",
+          "target_symbol": "TOURNAMENT_PRESETS[id=preset-wsop-deep-stack]",
+          "expected_value": { "starting_stack_chips": 60000, "level_1": { "small_blind": 100, "big_blind": 200, "big_blind_ante": 200 } },
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.1]",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch"
+        },
+        {
+          "id": "IP1.A3",
+          "statement": "Each preset declares at least 10 levels of blind progression.",
+          "check_type": "structural",
+          "target_module": "src/tournament/presets.js",
+          "target_symbol": "TOURNAMENT_PRESETS[*].levels",
+          "expected_result": "Every preset's levels array has length >= 10.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch"
+        },
+        {
+          "id": "IP1.A4",
+          "statement": "Heads-up rule: in a 2-player hand, the button posts the small blind and acts first preflop; big blind acts last preflop and first post-flop.",
+          "check_type": "behavior",
+          "target_module": "functions/src/handEngine.js",
+          "target_symbol": "resolveActionOrder(playerCount, street)",
+          "scenario": "Call resolveActionOrder(2, 'preflop'); verify the first seat returned is the small-blind/button seat. Call resolveActionOrder(2, 'flop'); verify the first seat returned is the big-blind seat.",
+          "expected_result": "Preflop first-to-act = button (small blind). Post-flop first-to-act = big blind.",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.3]",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP1].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP2",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Server-authoritative via Firebase Cloud Functions for all RNG / dealing / pot-resolution paths. Clients submit action documents (fold/check/call/bet/raise + amount); a Cloud Function reads, validates, applies, and writes the resulting state. Firestore security rules additionally enforce action-validity (can only act on own turn, can only bet up to stack).",
+      "rationale": "Quick-reasoning rubric passes: canonical answer (any leaderboard-bearing card game requires server-authoritative deal), no new external dependency (Cloud Functions are part of the named Firebase product family on the existing gto-poker-qui project), well-known choice, reversibility is low BUT the alternative (client-trust) is structurally indefensible per Principle G Tier-3 (the sub-goal 'fair tournament' fails at user-access level).",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.A1",
+          "statement": "A Cloud Function named 'dealHand' is exported from functions/src/index.js.",
+          "check_type": "presence",
+          "target_module": "functions/src/index.js",
+          "target_symbol": "exports.dealHand",
+          "expected_result": "Symbol is defined and is a Firebase HTTPS or callable function.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch"
+        },
+        {
+          "id": "IP2.A2",
+          "statement": "The client never imports or calls a local-RNG dealing routine; all card dealing happens via a Cloud Function call.",
+          "check_type": "absence",
+          "target_module": "src/**/*.js",
+          "target_symbol": "Math.random|crypto.randomBytes used to deal cards",
+          "expected_result": "No client-side code computes hole-card identity. Grep src/ for 'shuffle', 'dealHole', 'randomBytes' — only occurrences in test/mocking files or in cosmetic shuffles for the 2-7o easter egg.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch"
+        },
+        {
+          "id": "IP2.A3",
+          "statement": "Firestore security rules deny any direct client write to hand-result fields (winner, distributed_pots, revealed_hole_cards).",
+          "check_type": "structural",
+          "target_module": "firestore.rules",
+          "target_symbol": "match /tournaments/{tid}/hands/{hid}",
+          "expected_result": "Rules contain explicit deny-or-omit on write of winner/distributed_pots/revealed_hole_cards from clients; only the Cloud Function's service-account identity can update those fields.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP3",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Firestore onSnapshot listeners exclusively. The active hand document, the tournament document, and the current player's own seat document each have a dedicated client-side listener. Action-clock countdown is computed client-side from a server-set turn_started_at timestamp (clock skew is bounded to one render frame).",
+      "rationale": "Principle E governs (PN.3 names Firestore). Canonical Firebase docs support onSnapshot for real-time use (https://firebase.google.com/docs/firestore/query-data/listen). Quick-reasoning rubric passes.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.A1",
+          "statement": "src/state.js (or equivalent) subscribes to the current tournament document via onSnapshot.",
+          "check_type": "structural",
+          "target_module": "src/state.js",
+          "target_symbol": "onSnapshot",
+          "expected_result": "At least one onSnapshot call exists targeting the tournaments/{tid} path or its sub-document.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].chosen_branch"
+        },
+        {
+          "id": "IP3.A2",
+          "statement": "The action-clock display reads a server-set turn_started_at timestamp from the hand document, not a client-local Date.now() set at action-time.",
+          "check_type": "structural",
+          "target_module": "src/ui/actionClock.js",
+          "target_symbol": "turn_started_at",
+          "expected_result": "Action-clock countdown derives from hand.current_turn.started_at (server timestamp) minus Date.now(), not from a clock started when the local client received the change event.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP3].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP4",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Hybrid: minimum 2 players required; any joined player can press 'Start tournament' once minimum is met; AND auto-start after 5 minutes since first join if minimum is met.",
+      "rationale": "Discovery's default branch is defensible and easily adjustable. Quick-reasoning rubric passes.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.A1",
+          "statement": "The 'Start tournament' control becomes enabled when seated_players.length >= 2.",
+          "check_type": "behavior",
+          "target_module": "src/ui/lobby.js",
+          "target_symbol": "startTournamentControl.disabled",
+          "scenario": "Lobby with 1 player: control disabled. Lobby with 2+ players: control enabled.",
+          "expected_result": "Disabled when count < 2; enabled when count >= 2.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch"
+        },
+        {
+          "id": "IP4.A2",
+          "statement": "A Cloud Function or scheduled task transitions the tournament to 'in_progress' 5 minutes after first-join if minimum threshold is met.",
+          "check_type": "presence",
+          "target_module": "functions/src/lobbyTimers.js",
+          "target_symbol": "autoStartTimer",
+          "expected_result": "Function or schedule exists; reads lobby.first_join_at and lobby.seated_players.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP4].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP5",
+      "source": "discovery",
+      "resolved_via": "research",
+      "research_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json",
+      "chosen_branch": "Position-Weighted Completion Score (PWCS): score = position_points(finish_position, field_size) * completion_weight(tournament_state). Position points = round(100 * (1 - (position-1)/field_size) ^ 0.6). Completion weight = 1.0 if finished, else max(0, players_eliminated / (starting_field - 1)). Position at termination is by chip count.",
+      "rationale": "Researcher's opt-A recommendation. Closed-form, citation-backed (C.7 GPI multiplicative structure, C.8 ICM elimination intuition), simple to implement in JavaScript, no synthetic payout structure required.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP5.A1",
+          "statement": "scoreTournament({finish_position: 1, field_size: 9, status: 'finished', starting_field: 9, players_eliminated: 8}) returns 100.",
+          "check_type": "behavior",
+          "target_module": "functions/src/scoring.js",
+          "target_symbol": "scoreTournament",
+          "scenario": "Call with finished 9-player 1st place input.",
+          "expected_result": "100",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.scoring_formula",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].chosen_branch"
+        },
+        {
+          "id": "IP5.A2",
+          "statement": "scoreTournament for an unfinished 9-player tournament with zero eliminations returns 0 for every player.",
+          "check_type": "behavior",
+          "target_module": "functions/src/scoring.js",
+          "target_symbol": "scoreTournament",
+          "scenario": "Call with status='unfinished', starting_field=9, players_eliminated=0 for any finish_position.",
+          "expected_result": "0",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.scoring_formula.completion_weight",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].chosen_branch"
+        },
+        {
+          "id": "IP5.A3",
+          "statement": "scoreTournament for an unfinished 9-player tournament with 8 eliminations and 1st-place chip leader returns 100 (effectively-finished case).",
+          "check_type": "behavior",
+          "target_module": "functions/src/scoring.js",
+          "target_symbol": "scoreTournament",
+          "scenario": "Call with status='unfinished', starting_field=9, players_eliminated=8, finish_position=1.",
+          "expected_result": "100",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.scoring_formula.completion_weight.edge_cases",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP5].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP6",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Light edits + single admin (project owner Google uid hardcoded into Firestore rules as the admin uid; multi-admin defer). Dashboard surfaces: list tournaments by status, per-tournament drill-down (players, hand history summary, final standings), actions (force-end stuck tournament, recompute leaderboards from scratch, hide a tournament from public leaderboards, reset a player's nickname).",
+      "rationale": "Discovery's default branch + Researcher's TDA-grounded mechanics inform what 'recompute' means. Quick-reasoning passes.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP6.A1",
+          "statement": "The admin route (/admin or equivalent) requires auth.uid == ADMIN_UID; non-admin signed-in users see an access-denied surface.",
+          "check_type": "behavior",
+          "target_module": "src/ui/admin.js",
+          "target_symbol": "AdminRoute",
+          "scenario": "Load /admin as non-admin signed-in user.",
+          "expected_result": "Access-denied surface rendered; no admin actions reachable.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP6].chosen_branch"
+        },
+        {
+          "id": "IP6.A2",
+          "statement": "Firestore security rules deny non-admin writes to the leaderboards collection.",
+          "check_type": "structural",
+          "target_module": "firestore.rules",
+          "target_symbol": "match /leaderboards",
+          "expected_result": "Rules require request.auth.uid == ADMIN_UID for writes to the leaderboards collection (only admin can force a recompute).",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP6].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP7",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Bounded animated interlude: 4-6 seconds total (target 5s). Gameplay pauses (action clock freezes; no betting input accepted). Hole cards of ALL players remain face-down throughout; the animation does not reveal which player triggered it. After animation completes, gameplay resumes and the easter-egg holder may act normally.",
+      "rationale": "Discovery's best-effort default; honors the prompt's emphatic-but-time-bounded language; preserves tournament integrity.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP7.A1",
+          "statement": "The easter-egg animation total duration is between 4000 and 6000 milliseconds.",
+          "check_type": "constant_value",
+          "target_module": "src/easterEgg/twoSevenOff.js",
+          "target_symbol": "ANIMATION_TOTAL_MS",
+          "expected_value": { "min": 4000, "max": 6000 },
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP7].chosen_branch"
+        },
+        {
+          "id": "IP7.A2",
+          "statement": "When the easter egg fires, the action-clock document field is_paused is set to true; when it ends, is_paused is restored to false.",
+          "check_type": "behavior",
+          "target_module": "functions/src/easterEggDispatch.js",
+          "target_symbol": "fireEasterEgg",
+          "scenario": "Trigger the easter egg via the dealHand function; observe hand.action_clock.is_paused before, during, after.",
+          "expected_result": "is_paused: false before, true during the 4-6s window, false after.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP7].chosen_branch"
+        },
+        {
+          "id": "IP7.A3",
+          "statement": "The easter-egg animation does NOT include any DOM/SVG element revealing the holder's identity (player_id, nickname, seat index).",
+          "check_type": "absence",
+          "target_module": "src/easterEgg/twoSevenOff.js",
+          "target_symbol": "holder identity in DOM",
+          "expected_result": "Animation HTML/SVG does not reference holder_id, holder_name, or holder_seat. Only the 2-7o cards themselves are shown (as cards, not as 'X's hand').",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP7].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP8",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Spectators (signed-in users not currently seated) see the table view with hole cards hidden, public information (community cards, pot, action history, chip stacks) visible, AND see the easter-egg animation when triggered.",
+      "rationale": "Discovery's default; required to honor the easter-egg 'shown to all users' clause.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP8.A1",
+          "statement": "A signed-in non-seated user can reach the table view and see public hand information.",
+          "check_type": "behavior",
+          "target_module": "src/ui/table.js",
+          "target_symbol": "renderTableView",
+          "scenario": "Sign in as a user not seated in the current tournament. Navigate to the table view.",
+          "expected_result": "Table view renders; community cards, pot, chip stacks of seated players visible; hole cards face-down.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP8].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP9",
+      "source": "discovery",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Browser Notifications API (Notification.requestPermission + new Notification(...)) + in-app banner fallback when permission denied. Closed-tab push via FCM deferred.",
+      "rationale": "Discovery's default; simplest path. FCM is a deferred enhancement (named in OOS).",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP9.A1",
+          "statement": "Notification.requestPermission is called once after the user toggles a notification option ON in the user account card.",
+          "check_type": "behavior",
+          "target_module": "src/notifications.js",
+          "target_symbol": "ensureNotificationPermission",
+          "scenario": "User opens account card, toggles 'Notify me about new tournaments' ON.",
+          "expected_result": "Notification.requestPermission is invoked; the toggle visual state reflects the resulting permission.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP9].chosen_branch"
+        },
+        {
+          "id": "IP9.A2",
+          "statement": "When Notification permission is 'denied', the application falls back to an in-app banner instead of attempting to fire a system notification.",
+          "check_type": "behavior",
+          "target_module": "src/notifications.js",
+          "target_symbol": "notify",
+          "scenario": "Permission denied; call notify('new tournament started').",
+          "expected_result": "No Notification() constructor call; an in-app banner DOM node is appended.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP9].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP10",
+      "source": "discovery",
+      "resolved_via": "research",
+      "research_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json",
+      "chosen_branch": "Adaptive ring layout: seat positions reflow based on current active-seat count. The 2-player (heads-up) layout treats the two players as a focal experience with materially more space per player than a shrink-to-fit 9-seat view. Heads-up button posts the small blind and acts first preflop (TDA C.3).",
+      "rationale": "Heads-up rule confirmed via Researcher (C.3 TDA). Adaptive-layout reading of 'fully fledged' is the simplest defensible interpretation.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP10.A1",
+          "statement": "Rendering the table with 2 active seats produces a layout where the two seats are positioned at opposite poles of the ring (top and bottom, or left and right), not adjacent.",
+          "check_type": "behavior",
+          "target_module": "src/ui/ringLayout.js",
+          "target_symbol": "computeSeatPositions",
+          "scenario": "Call computeSeatPositions(2, ringRadius).",
+          "expected_result": "Two seat positions returned, separated by 180 degrees on the ring.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP10].chosen_branch"
+        },
+        {
+          "id": "IP10.A2",
+          "statement": "In heads-up, the button-icon and small-blind indicator are placed on the same player.",
+          "check_type": "behavior",
+          "target_module": "src/ui/ringRender.js",
+          "target_symbol": "renderButtonAndBlindIndicators",
+          "scenario": "Render a 2-player active state.",
+          "expected_result": "Button indicator and SB chip are co-located on the same seat; the other seat has the BB chip only.",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.3]",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP10].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "IP11",
+      "source": "discovery",
+      "resolved_via": "research",
+      "research_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json",
+      "chosen_branch": "Per-preset action clock: Friendly Turbo = 15s, Standard Home Game = 30s, WSOP-Style Deep Stack = 45s. Time-bank deferred.",
+      "rationale": "Researcher's recommended values are bundled into the seeded presets. Quick-reasoning passes once IP1 is locked.",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP11.A1",
+          "statement": "Each preset's action_clock_seconds field matches the documented values.",
+          "check_type": "constant_value",
+          "target_module": "src/tournament/presets.js",
+          "target_symbol": "TOURNAMENT_PRESETS[*].action_clock_seconds",
+          "expected_value": { "preset-friendly-turbo": 15, "preset-standard-home-game": 30, "preset-wsop-deep-stack": 45 },
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.presets",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP11].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "TD-IP-A",
+      "source": "td",
+      "topic": "Real-time sync mechanism — Firestore onSnapshot vs Realtime Database vs Cloud Functions polling",
+      "td_introduction_rationale": "Discovery surfaced this as IP3 (which TD locked above) but TD wants to explicitly record that no alternative transport (RTDB, polling, WebRTC) is used anywhere in the artifact. This guards against silent partial substitution during build.",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Firestore onSnapshot exclusively (no RTDB, no polling, no WebRTC).",
+      "rationale": "Reinforces IP3 lock. Firestore is the named substrate (PN.3).",
+      "machine_checkable_assertions": [
+        {
+          "id": "TD-IP-A.A1",
+          "statement": "No client-side code imports firebase/database (the RTDB SDK module).",
+          "check_type": "absence",
+          "target_module": "src/**/*.js",
+          "target_symbol": "firebase/database import",
+          "expected_result": "Grep src/ for 'firebase/database' returns zero matches.",
+          "source": "canonical_evidence",
+          "citations_pointer": "https://firebase.google.com/docs/firestore/query-data/listen",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-A].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "TD-IP-B",
+      "source": "td",
+      "topic": "Server-authoritative game engine",
+      "td_introduction_rationale": "Reinforcement of IP2 lock at the architectural level — Cloud Functions are the explicit compute primitive for hand state machine, deal, blind progression.",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Cloud Functions (Node) for: shuffle/deal, betting-action validation, pot calculation, side-pot allocation, winner determination, blind-level progression, lobby auto-start timer, leaderboard recompute.",
+      "rationale": "Reinforces IP2.",
+      "machine_checkable_assertions": [
+        {
+          "id": "TD-IP-B.A1",
+          "statement": "functions/src/index.js exports at least: dealHand, submitAction, advanceBlindLevel, recomputeLeaderboards.",
+          "check_type": "presence",
+          "target_module": "functions/src/index.js",
+          "target_symbol": "exports",
+          "expected_result": "Named exports include all four functions.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-B].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "TD-IP-C",
+      "source": "td",
+      "topic": "Dealing RNG source",
+      "td_introduction_rationale": "Card dealing must use a cryptographic RNG, not Math.random. Discovery did not surface this explicitly.",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Node native crypto.randomBytes inside the dealHand Cloud Function. Fisher-Yates shuffle of the 52-card deck seeded from crypto.randomBytes.",
+      "rationale": "Canonical CSPRNG. Math.random is structurally weak and predictable; crypto.randomBytes is the recommended Node primitive.",
+      "machine_checkable_assertions": [
+        {
+          "id": "TD-IP-C.A1",
+          "statement": "functions/src/shuffle.js imports crypto.randomBytes (or randomInt) and does NOT use Math.random for the shuffle.",
+          "check_type": "structural",
+          "target_module": "functions/src/shuffle.js",
+          "target_symbol": "shuffleDeck",
+          "expected_result": "File imports 'crypto'; the shuffle implementation calls crypto.randomBytes or crypto.randomInt; no Math.random in this file.",
+          "source": "canonical_evidence",
+          "citations_pointer": "https://nodejs.org/api/crypto.html#cryptorandombytessize-callback",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-C].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "TD-IP-D",
+      "source": "td",
+      "topic": "Card rendering primitive — inline SVG vs canvas vs styled HTML/CSS",
+      "td_introduction_rationale": "Card identity (A16) is sacrosanct. Resolution-independence and easy color-swap for the 4-color deck (A17) matter; SVG is the natural fit.",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Inline SVG for card faces. Each rank/suit combination is a static <svg> with structured glyphs. 4-color toggle swaps the suit-color CSS variable (--suit-diamond, --suit-club).",
+      "rationale": "SVG preserves card identity at any zoom level; CSS variable swap is the simplest implementation of the 4-color toggle.",
+      "machine_checkable_assertions": [
+        {
+          "id": "TD-IP-D.A1",
+          "statement": "Card face DOM nodes are <svg> elements (not <img> or <canvas>).",
+          "check_type": "structural",
+          "target_module": "src/ui/card.js",
+          "target_symbol": "renderCard",
+          "expected_result": "renderCard returns an <svg> element.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-D].chosen_branch"
+        },
+        {
+          "id": "TD-IP-D.A2",
+          "statement": "4-color toggle changes the CSS custom property --suit-diamond from red to blue, and --suit-club from black to green.",
+          "check_type": "behavior",
+          "target_module": "src/ui/settings.js",
+          "target_symbol": "toggleFourColorDeck",
+          "scenario": "Toggle on; inspect documentElement.style.getPropertyValue('--suit-diamond') and '--suit-club'.",
+          "expected_result": "--suit-diamond is a blue value (e.g. #2057D6); --suit-club is a green value (e.g. #1B8A3A).",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-D].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "TD-IP-E",
+      "source": "td",
+      "topic": "Easter-egg animation engine",
+      "td_introduction_rationale": "Implementation primitive for the 2-7o moment. Discovery's A18/IP7 set the bounds; TD picks the implementation primitive.",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "CSS keyframe animations for the overlay surface (full-viewport overlay with rotating/exploding card SVGs, color bursts, sound-effect-free) + Web Animations API for finer per-element timing where needed. Bounded by IP7.A1 (4000-6000ms).",
+      "rationale": "CSS keyframes are the simplest declarative animation primitive; WAAPI offers programmatic timing if needed. Both are first-class browser APIs.",
+      "machine_checkable_assertions": [
+        {
+          "id": "TD-IP-E.A1",
+          "statement": "The easter-egg overlay is a full-viewport DOM element (covers 100vw x 100vh) that is z-indexed above all other UI.",
+          "check_type": "structural",
+          "target_module": "src/easterEgg/twoSevenOff.css",
+          "target_symbol": ".easter-egg-overlay",
+          "expected_result": "CSS rule for .easter-egg-overlay includes position: fixed, inset: 0 (or top/left/right/bottom: 0), z-index >= 9999.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-E].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "TD-IP-F",
+      "source": "td",
+      "topic": "Firebase SDK bundling — vendored vs CDN",
+      "td_introduction_rationale": "v1.6 production-fidelity-at-design-time prefers vendored. Firebase SDK is large; gstatic CDN with modular ESM imports is Firebase's recommended pattern and is what production-fidelity verification will exercise (the deployed Pages page must reach gstatic at runtime).",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Use modular ESM imports from gstatic CDN (https://www.gstatic.com/firebasejs/{version}/firebase-{module}.js). Pin to a specific Firebase SDK version (11.x) so the deployment is deterministic. README documents the gstatic dependency as a production-fidelity requirement.",
+      "rationale": "Firebase's own documented pattern for browser apps; modular imports keep bundle size minimal; CDN reachability is part of production fidelity (covered by PNV).",
+      "machine_checkable_assertions": [
+        {
+          "id": "TD-IP-F.A1",
+          "statement": "src/firebase.js imports Firebase modules from https://www.gstatic.com/firebasejs/{pinned-version}/ paths.",
+          "check_type": "structural",
+          "target_module": "src/firebase.js",
+          "target_symbol": "imports",
+          "expected_result": "ESM import statements reference https://www.gstatic.com/firebasejs/ URLs with a pinned version segment.",
+          "source": "canonical_evidence",
+          "citations_pointer": "https://firebase.google.com/docs/web/learn-more#modular-version",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-F].chosen_branch"
+        }
+      ]
+    },
+
+    {
+      "ip_id": "TD-IP-G",
+      "source": "td",
+      "topic": "Notifications — Notifications API vs FCM",
+      "td_introduction_rationale": "Discovery's IP9 default; TD records the explicit choice not to integrate FCM at launch.",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Browser Notifications API only (matches IP9 lock). FCM and service worker explicitly out of scope.",
+      "rationale": "Reinforces IP9.",
+      "machine_checkable_assertions": [
+        {
+          "id": "TD-IP-G.A1",
+          "statement": "The artifact does not register a service worker, and does not import firebase/messaging.",
+          "check_type": "absence",
+          "target_module": "src/**/*.js",
+          "target_symbol": "serviceWorker.register|firebase/messaging",
+          "expected_result": "Grep returns zero matches.",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-G].chosen_branch"
+        }
+      ]
+    }
+  ],
+
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.1",
+      "covers": "decisions/discovery/ledger-v1.json#restatement",
+      "statement": "Restatement claim: single live real-time multiplayer Texas Hold'em ONLY tournament web app with Google SSO, lobby with awaiting members, up to 9 seats with full heads-up experience, tournament regulations in mechanics and visual design, weekly/monthly/all-time leaderboards with weighted scoring, light maintenance dashboard, OttoBLD visual brand.",
+      "check_type": "user_flow",
+      "scenario": "Open the deployed Pages URL. Confirm: (1) the page loads; (2) only Texas Hold'em is offered (no variant selector for Omaha/Stud); (3) Google sign-in is the only auth provider; (4) signing in lands at a lobby with profile pictures of waiting members; (5) starting a tournament with 2+ players triggers an animated poker ring; (6) leaderboard surface is reachable and shows weekly/monthly/all-time tabs; (7) /admin route exists and gates on admin uid.",
+      "expected_result": "All seven sub-checks pass.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A1",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A1].assumption",
+      "statement": "A1: Single variant No-Limit Texas Hold'em ONLY.",
+      "check_type": "absence",
+      "scenario": "Grep src/ and functions/src/ for 'omaha', 'stud', 'razz', 'limit hold', 'pot-limit', 'mixed game'. Inspect UI for variant selector.",
+      "expected_result": "Zero matches; no variant selector UI.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A2",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A2].assumption",
+      "statement": "A2: Live real-time multiplayer with per-action timer, not async.",
+      "check_type": "user_flow",
+      "scenario": "Open two browser windows as two signed-in users; have both join the lobby; start a tournament; confirm both clients see the same hand state at the same time within Firestore-listener latency.",
+      "expected_result": "Both clients observe the same hand state; an action by one player propagates to the other within ~1 second.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A3",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A3].assumption",
+      "statement": "A3: Tournament format only, no cash games, no monetary exchange.",
+      "check_type": "absence",
+      "scenario": "Grep for 'buy in', 'rebuy', 'cashier', 'deposit', 'withdraw', 'stripe', 'paypal', '$', '€', '£', '¥', currency symbols other than chip count display.",
+      "expected_result": "Zero matches outside chip-stack rendering and the optional 'buy-in placeholder' conceptual label.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A4",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A4].assumption",
+      "statement": "A4: Single concurrent tournament at launch.",
+      "check_type": "absence",
+      "scenario": "Inspect the lobby UI: no tournament-browser / tournament-list-of-multiple. Inspect Firestore schema: at most one tournament with status 'in_progress' or 'awaiting_start' at any time.",
+      "expected_result": "Lobby is a single-tournament view; no list-of-tournaments UI element.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A5",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A5].assumption",
+      "statement": "A5: Max 9 seats, min 2, heads-up is load-bearing focal experience.",
+      "check_type": "user_flow",
+      "scenario": "Start a tournament with exactly 2 players. Observe the ring layout, button placement, and blind posting.",
+      "expected_result": "Two seats positioned at opposite poles, button = small blind, big blind on the other player, button acts first preflop.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A6",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A6].assumption",
+      "statement": "A6: Tournament start threshold (default 2); IP4 chose hybrid auto+manual.",
+      "check_type": "presence",
+      "scenario": "Inspect the lobby UI for a 'Start tournament' button enabled when >=2 players, and verify a 5-minute auto-start timer in Cloud Functions.",
+      "expected_result": "Both mechanisms present.",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A7",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7].assumption",
+      "statement": "A7: Tournament settings panel exposes starting stack, blind level duration, break timing, blind level schedule.",
+      "check_type": "presence",
+      "scenario": "Open the tournament settings panel. Confirm form controls for all four parameters.",
+      "expected_result": "All four parameter editors visible (starting_stack, level_duration_minutes, break configuration, blind level schedule).",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A8",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8].assumption",
+      "statement": "A8: Multiple research-driven preset structures seeded; at minimum 3.",
+      "check_type": "constant_value",
+      "scenario": "Read TOURNAMENT_PRESETS array length from src/tournament/presets.js.",
+      "expected_result": "Array length >= 3; presets include 'Friendly Turbo', 'Standard Home Game', 'WSOP-Style Deep Stack'.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A]"
+    },
+    {
+      "id": "DCA.A9",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A9].assumption",
+      "statement": "A9: Tournament regulations apply to mechanics AND visual design (ring shape, animated).",
+      "check_type": "structural",
+      "scenario": "Inspect the table-rendering DOM/SVG. Confirm the table is rendered as a ring/oval shape (not rectangular) and has a visible animation (CSS @keyframes or WAAPI driving motion).",
+      "expected_result": "Ring/oval SVG path; at least one animated property on the table element.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A10",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A10].assumption",
+      "statement": "A10: Leaderboards at weekly / monthly / all-time scales, visible to all signed-in users.",
+      "check_type": "user_flow",
+      "scenario": "Sign in as any user, navigate to leaderboards, switch among the three tabs.",
+      "expected_result": "All three tabs render; each shows player nickname/picture and score.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A11",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A11].assumption",
+      "statement": "A11: Weighted scoring system reconciles finished and unfinished tournaments on one leaderboard.",
+      "check_type": "behavior",
+      "scenario": "Call scoreTournament with one finished and one unfinished input; verify both produce valid numeric scores that aggregate sensibly.",
+      "expected_result": "Both produce numbers; unfinished score < finished score for matching positions when players_eliminated < starting_field - 1.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.scoring_formula"
+    },
+    {
+      "id": "DCA.A12",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A12].assumption",
+      "statement": "A12: Light maintenance dashboard for database upkeep; single admin.",
+      "check_type": "presence",
+      "scenario": "Navigate to /admin while signed in as the admin uid; verify dashboard surfaces tournament list and at minimum the 'force-end stuck tournament' action.",
+      "expected_result": "Dashboard renders; force-end action available.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A13",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A13].assumption",
+      "statement": "A13: Player identity = Google profile picture + first name with optional nickname override.",
+      "check_type": "behavior",
+      "scenario": "Sign in; open the user account card; set a nickname; confirm the nickname displays in the lobby and on the table; reload and confirm persistence.",
+      "expected_result": "Nickname displays everywhere; persists across reload.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A14",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A14].assumption",
+      "statement": "A14: Top-right user account card exposes nickname editor + notification toggles (current game + new tournaments) + 4-color deck toggle.",
+      "check_type": "presence",
+      "scenario": "Click the top-right user card; verify all four controls.",
+      "expected_result": "Nickname editor, current-game notification toggle, new-tournament notification toggle, 4-color deck toggle all present.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A15",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A15].assumption",
+      "statement": "A15: Notifications via browser Notifications API + in-app banner fallback.",
+      "check_type": "presence",
+      "scenario": "Inspect src/notifications.js for Notification.requestPermission and the in-app banner fallback path.",
+      "expected_result": "Both paths exist; no FCM/messaging import.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A16",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A16].assumption",
+      "statement": "A16: Card identity preserved — standard 52-card deck, recognizable suits and ranks, no decorative substitution.",
+      "check_type": "structural",
+      "scenario": "Inspect card SVG glyphs in src/ui/card.js. Confirm spade/heart/diamond/club glyphs are present and rank labels are A,K,Q,J,10,9,8,7,6,5,4,3,2.",
+      "expected_result": "All 4 standard suits and all 13 ranks present and recognizable; no aviation iconography on card faces.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A17",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A17].assumption",
+      "statement": "A17: 4-color deck toggle defaults OFF; ON state uses blue diamonds + green clubs.",
+      "check_type": "behavior",
+      "scenario": "Default render: confirm diamonds are red. Toggle 4-color ON: confirm diamonds become blue and clubs become green.",
+      "expected_result": "Defaults match; toggle behavior matches.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A18",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A18].assumption",
+      "statement": "A18: Easter egg on 2-7o; ALL connected users see it; bounded 4-6 seconds.",
+      "check_type": "user_flow",
+      "scenario": "Force the Cloud Function to deal 2-7 offsuit to one seated player; observe two browser windows (the holder and a spectator).",
+      "expected_result": "Both windows show the full-screen animation within 1 second of the deal; animation completes within 6 seconds.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A19",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A19].assumption",
+      "statement": "A19: Easter-egg mechanics — gameplay pauses; cards remain face-down.",
+      "check_type": "absence",
+      "scenario": "During the easter-egg animation, no action input is accepted (buttons disabled); no hole-card identity is revealed in the DOM.",
+      "expected_result": "Action controls disabled during animation; no holder-id leak.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A20",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A20].assumption",
+      "statement": "A20: Visual layout — table is a ring (oval/circular), visually animated.",
+      "check_type": "structural",
+      "scenario": "Inspect the table SVG; confirm an ellipse or path approximating an oval, and at least one animated CSS property.",
+      "expected_result": "Ring shape + animation both present.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A21",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A21].assumption",
+      "statement": "A21: OttoBLD applies to UI chrome only; not to card faces; not to user-facing copy semantics.",
+      "check_type": "absence",
+      "scenario": "Grep user-facing button labels and status messages for aviation jargon ('flight deck', 'cockpit', 'altitude', 'callsign', 'roger', 'wilco', 'bandit', 'mission control'). Inspect card SVGs for aviation iconography.",
+      "expected_result": "Zero aviation jargon in user-facing copy; zero aviation iconography on card faces.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A22",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A22].assumption",
+      "statement": "A22: Reuse Firebase project gto-poker-qui; no new project provisioned; Firestore rules pattern follows gto-poker-async-duel reference.",
+      "check_type": "constant_value",
+      "scenario": "Read src/config.js FIREBASE_CONFIG.projectId.",
+      "expected_result": "'gto-poker-qui'",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A23",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A23].assumption",
+      "statement": "A23: Deployment target = GitHub Pages at the documented URL; Pages origin added to Firebase OAuth authorized domains is a deploy-time README requirement.",
+      "check_type": "presence",
+      "scenario": "Inspect README.md for the explicit instruction to add https://mondrianaire.github.io to the Firebase OAuth authorized domains.",
+      "expected_result": "README contains the instruction with the explicit URL.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A24",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A24].assumption",
+      "statement": "A24: Server-authoritative game engine; clients send actions only.",
+      "check_type": "absence",
+      "scenario": "Covered by IP2.A1/A2/A3.",
+      "expected_result": "Pass via IP2 assertions.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A25",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A25].assumption",
+      "statement": "A25: Real-time state-sync via Firestore onSnapshot; action-clock computed from server-set turn_started_at.",
+      "check_type": "structural",
+      "scenario": "Covered by IP3.A1/A2.",
+      "expected_result": "Pass via IP3 assertions.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A26",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A26].assumption",
+      "statement": "A26: Disconnect = auto-fold after timeout + sitting-out flag; no auto-eliminate from tournament unless out of chips.",
+      "check_type": "behavior",
+      "scenario": "In the running tournament, close one player's browser tab during their turn; observe the next state transition after action-clock expiry.",
+      "expected_result": "Player's hand is folded; they are flagged 'sitting out' on the ring; their chip stack remains; reopen tab and they rejoin.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A27",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A27].assumption",
+      "statement": "A27: Tournament termination — finished (one chip leader) or unfinished (timeout / abandonment / admin-end).",
+      "check_type": "behavior",
+      "scenario": "Drive a tournament to one player remaining; verify status transitions to 'finished'. In a separate run, leave a tournament idle past timeout; verify status transitions to 'unfinished'.",
+      "expected_result": "Both terminal states reachable; both feed leaderboard correctly via scoreTournament.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A28",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A28].assumption",
+      "statement": "A28: First-contact path: Pages URL loads → Google sign-in visible → lobby renders → join control behaves → tournament starts → ring renders with user seated.",
+      "check_type": "user_flow",
+      "scenario": "PNV scenario covers this end-to-end.",
+      "expected_result": "All sub-steps pass.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A29",
+      "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[id=A29].assumption",
+      "statement": "A29: Spectator mode for signed-in non-seated users; sees public table + easter egg.",
+      "check_type": "user_flow",
+      "scenario": "Covered by IP8.A1.",
+      "expected_result": "Pass via IP8.A1.",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+
+    {
+      "id": "DCA.PN1",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.1].surface",
+      "statement": "PN.1 TEXAS HOLDEM: variant is canonical Texas Hold'em (2 hole cards, 5 community cards, 4 betting rounds preflop/flop/turn/river).",
+      "check_type": "behavior",
+      "scenario": "Run a hand to showdown; verify the hand sequence: deal-2-hole, preflop-betting, deal-3-flop, flop-betting, deal-1-turn, turn-betting, deal-1-river, river-betting, showdown.",
+      "expected_result": "Exact sequence observed.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.PN2",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.2].surface",
+      "statement": "PN.2 Google SSO: Firebase Auth Google provider is the sole sign-in mechanism.",
+      "check_type": "absence",
+      "scenario": "Grep src/ for 'EmailAuthProvider', 'FacebookAuthProvider', 'AppleAuthProvider', 'PhoneAuthProvider'.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.PN3",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.3].surface",
+      "statement": "PN.3 Firebase Firestore: Firestore is the persistence + real-time sync substrate; RTDB not used.",
+      "check_type": "absence",
+      "scenario": "Covered by TD-IP-A.A1.",
+      "expected_result": "Pass via TD-IP-A.A1.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.PN4",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.4].surface",
+      "statement": "PN.4 GitHub Pages: artifact is deployable to the documented GitHub Pages URL.",
+      "check_type": "presence",
+      "scenario": "Verify the built artifact is a static-only site (no server-side rendering); confirm commit-build.bat compatibility.",
+      "expected_result": "All output/final/ files are static (HTML/CSS/JS/SVG); deployment requires no Node server.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.PN5",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.5].surface",
+      "statement": "PN.5 2-7o: trigger condition is the hand 2-7 offsuit (two-of-X-suit + seven-of-Y-suit where X != Y).",
+      "check_type": "behavior",
+      "target_module": "functions/src/easterEggDispatch.js",
+      "target_symbol": "isTwoSevenOff",
+      "scenario": "Call isTwoSevenOff with hole cards {2H,7C}, {2S,7D}, {2D,7H}, {2C,7S}; then with offsuit-but-not-2-7 like {3H,8C}; then with suited 2-7 like {2H,7H}.",
+      "expected_result": "true, true, true, true, false, false.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.PN6",
+      "covers": "decisions/discovery/ledger-v1.json#proper_nouns[id=PN.6].surface",
+      "statement": "PN.6 OttoBLD: visual language present in chrome (header, panels, badges); voice caveat honored (no aviation jargon in user-facing copy).",
+      "check_type": "presence",
+      "scenario": "Inspect index.html and key panels for OttoBLD color palette / typography. Cross-check copy strings for plain language.",
+      "expected_result": "OttoBLD visual style present in chrome; no aviation jargon in copy.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+
+    {
+      "id": "DCA.IP1",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP1].topic",
+      "statement": "IP1 topic 'Tournament blind structures + all tournament regulations canonical ruleset' was addressed with concrete resolution.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP1].",
+      "expected_result": "chosen_branch non-null; machine_checkable_assertions[] non-empty; research_pointer set.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP1.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP1].default_branch",
+      "statement": "IP1 default branch (TDA + Turbo/Regular/Deep presets) honored.",
+      "check_type": "presence",
+      "scenario": "Confirm TOURNAMENT_PRESETS includes the three named archetypes and rules anchor is TDA.",
+      "expected_result": "All three archetypes present; TDA cited in README.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.rules_corpus"
+    },
+    {
+      "id": "DCA.IP2",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP2].topic",
+      "statement": "IP2 topic 'Game-engine trust boundary' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP2].",
+      "expected_result": "chosen_branch = server-authoritative via Cloud Functions; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP2.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP2].default_branch",
+      "statement": "IP2 default branch (Cloud Functions server-authoritative) honored.",
+      "check_type": "presence",
+      "scenario": "Covered by IP2.A1/A2/A3.",
+      "expected_result": "Pass via IP2 assertions.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP3",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP3].topic",
+      "statement": "IP3 topic 'Real-time state-sync transport' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP3].",
+      "expected_result": "chosen_branch = Firestore onSnapshot exclusively; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP3.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP3].default_branch",
+      "statement": "IP3 default branch (Firestore onSnapshot only) honored.",
+      "check_type": "presence",
+      "scenario": "Covered by IP3.A1 and TD-IP-A.A1.",
+      "expected_result": "Pass via those assertions.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP4",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP4].topic",
+      "statement": "IP4 topic 'Tournament start trigger' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP4].",
+      "expected_result": "chosen_branch non-null; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP4.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP4].default_branch",
+      "statement": "IP4 default branch (hybrid manual+auto-start) honored.",
+      "check_type": "behavior",
+      "scenario": "Covered by IP4.A1/A2.",
+      "expected_result": "Pass via those assertions.",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP5",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5].topic",
+      "statement": "IP5 topic 'Weighted scoring formula' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP5].",
+      "expected_result": "chosen_branch = PWCS formula; assertions non-empty; research_pointer set.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP5.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP5].default_branch",
+      "statement": "IP5 default branch (two-component position points * completion weight) honored.",
+      "check_type": "behavior",
+      "scenario": "Covered by IP5.A1/A2/A3.",
+      "expected_result": "Pass via those assertions.",
+      "verifier": "edge_case_testing",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.scoring_formula"
+    },
+    {
+      "id": "DCA.IP6",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP6].topic",
+      "statement": "IP6 topic 'Maintenance dashboard scope and access' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP6].",
+      "expected_result": "chosen_branch = light edits + single admin; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP6.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP6].default_branch",
+      "statement": "IP6 default branch (light edits + single admin) honored.",
+      "check_type": "behavior",
+      "scenario": "Covered by IP6.A1/A2.",
+      "expected_result": "Pass via those assertions.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP7",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP7].topic",
+      "statement": "IP7 topic '2-7o easter-egg duration, interaction, reveal semantics' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP7].",
+      "expected_result": "chosen_branch = bounded 4-6s interlude with pause and no reveal; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP7.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP7].default_branch",
+      "statement": "IP7 default branch (4-6s, paused gameplay, no hole-card reveal) honored.",
+      "check_type": "behavior",
+      "scenario": "Covered by IP7.A1/A2/A3.",
+      "expected_result": "Pass via those assertions.",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP8",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP8].topic",
+      "statement": "IP8 topic 'Spectator mode' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP8].",
+      "expected_result": "chosen_branch = spectator sees public table + easter egg; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP8.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP8].default_branch",
+      "statement": "IP8 default branch (spectators see public table view) honored.",
+      "check_type": "behavior",
+      "scenario": "Covered by IP8.A1.",
+      "expected_result": "Pass via IP8.A1.",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP9",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP9].topic",
+      "statement": "IP9 topic 'Notifications delivery mechanism' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP9].",
+      "expected_result": "chosen_branch = Notifications API + in-app banner fallback; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP9.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP9].default_branch",
+      "statement": "IP9 default branch (Notifications API + in-app fallback) honored.",
+      "check_type": "behavior",
+      "scenario": "Covered by IP9.A1/A2 and TD-IP-G.A1.",
+      "expected_result": "Pass via those assertions.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP10",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP10].topic",
+      "statement": "IP10 topic 'Heads-up layout and mechanics' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP10].",
+      "expected_result": "chosen_branch = adaptive layout with TDA heads-up rule; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP10.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP10].default_branch",
+      "statement": "IP10 default branch (adaptive layout) honored.",
+      "check_type": "behavior",
+      "scenario": "Covered by IP10.A1/A2.",
+      "expected_result": "Pass via those assertions.",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP11",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP11].topic",
+      "statement": "IP11 topic 'Action-clock defaults' was addressed.",
+      "check_type": "presence",
+      "scenario": "Inspect inflection_resolutions[ip_id=IP11].",
+      "expected_result": "chosen_branch = per-preset action clock; assertions non-empty.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP11.default",
+      "covers": "decisions/discovery/ledger-v1.json#inflection_points[id=IP11].default_branch",
+      "statement": "IP11 default branch (configurable per-preset action clock) honored.",
+      "check_type": "constant_value",
+      "scenario": "Covered by IP11.A1.",
+      "expected_result": "Pass via IP11.A1.",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.presets"
+    },
+
+    {
+      "id": "DCA.FC1",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.1]",
+      "statement": "FC.1: deployed Pages URL loads within 5s and renders a recognizable landing surface.",
+      "check_type": "user_flow",
+      "scenario": "Cold-load the deployed URL in a fresh browser session; measure first contentful paint and confirm a branded landing surface is rendered.",
+      "expected_result": "Landing surface visible within 5s on broadband; project title or branded panel present.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC2",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.2]",
+      "statement": "FC.2: 'Sign in with Google' control visible without scrolling; click launches Google OAuth for gto-poker-qui; returns authenticated.",
+      "check_type": "user_flow",
+      "scenario": "Load page; verify the sign-in button is above the fold; click it; complete OAuth; confirm return-to-app authenticated.",
+      "expected_result": "All sub-steps pass; no unauthorized-domain error.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC3",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.3]",
+      "statement": "FC.3: post sign-in, lobby surface shows Join control + awaiting member pictures + top-right user card with own profile.",
+      "check_type": "user_flow",
+      "scenario": "Sign in two users in different browser sessions; one joins first; verify the second sees the first's profile picture in the lobby.",
+      "expected_result": "Profile pictures visible; user card top-right with first name and picture.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC4",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.4]",
+      "statement": "FC.4: account card panel exposes nickname editor + notification toggles + 4-color toggle; nickname persists across reload.",
+      "check_type": "user_flow",
+      "scenario": "Click user card; verify all controls; set nickname; reload page; verify nickname persists in lobby display.",
+      "expected_result": "All sub-steps pass.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC5",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.5]",
+      "statement": "FC.5: tournament starts, lobby transitions to animated poker ring; user seated.",
+      "check_type": "user_flow",
+      "scenario": "Two users join; start tournament; observe transition.",
+      "expected_result": "Ring renders; both users seated with profile pictures; animation visibly playing.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC6",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.6]",
+      "statement": "FC.6: heads-up scenario renders correctly (button = SB acts first preflop; focal layout).",
+      "check_type": "user_flow",
+      "scenario": "Start a 2-player tournament; observe blind posting and action order.",
+      "expected_result": "Button player posts SB and acts first preflop; layout treats heads-up as focal (not shrunken).",
+      "verifier": "cv_artifact_exercise",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.3]"
+    },
+    {
+      "id": "DCA.FC7",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.7]",
+      "statement": "FC.7: 2-7o easter egg fires for ALL connected users within 1s of deal; completes within 6s; hole cards remain face-down.",
+      "check_type": "user_flow",
+      "scenario": "Force-deal 2-7o (test seam in dealHand); observe two windows: holder and spectator.",
+      "expected_result": "Both windows show animation within 1s; animation completes within 6s; no holder identity leaked.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC8",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.8]",
+      "statement": "FC.8: tournament creation surface offers selectable presets (>=3) AND allows custom editing of each field.",
+      "check_type": "user_flow",
+      "scenario": "Open tournament-creation surface; verify preset list >=3; select WSOP preset; verify fields populate; edit a field to confirm custom edit works.",
+      "expected_result": "All sub-steps pass.",
+      "verifier": "cv_artifact_exercise",
+      "source": "canonical_evidence",
+      "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.presets"
+    },
+    {
+      "id": "DCA.FC9",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.9]",
+      "statement": "FC.9: leaderboard surface shows weekly/monthly/all-time with nickname + picture + score.",
+      "check_type": "user_flow",
+      "scenario": "Navigate to leaderboards; verify three tabs; each shows player rows.",
+      "expected_result": "All three tabs render; rows show nickname + picture + score.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC10",
+      "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[id=FC.10]",
+      "statement": "FC.10: maintenance dashboard reachable by admin uid; non-admin gets access-denied; dashboard exposes tournament list + force-end action.",
+      "check_type": "user_flow",
+      "scenario": "Navigate to /admin as admin uid: dashboard visible. Navigate as non-admin: access-denied. As admin, click force-end on a stuck tournament: tournament status transitions to 'unfinished'.",
+      "expected_result": "All sub-steps pass.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+
+    {
+      "id": "DCA.OOS1",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[0]",
+      "statement": "OOS: Multiple concurrent tournaments — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect Firestore schema and UI for tournament-browser / list-of-tournaments. Inspect data shape: only one active tournament document.",
+      "expected_result": "No multi-tournament UI; data model permits at most one in-progress.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS2",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[1]",
+      "statement": "OOS: Variants other than Texas Hold'em — absent.",
+      "check_type": "absence",
+      "scenario": "Covered by DCA.A1.",
+      "expected_result": "Pass via DCA.A1.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS3",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[2]",
+      "statement": "OOS: Cash games — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect UI: no sit-down/stand-up flow, no rebuy mechanics, no table-stakes accounting.",
+      "expected_result": "Confirmed absent.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS4",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[3]",
+      "statement": "OOS: Real money / payments — absent.",
+      "check_type": "absence",
+      "scenario": "Covered by DCA.A3.",
+      "expected_result": "Pass via DCA.A3.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS5",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[4]",
+      "statement": "OOS: Auth providers other than Google — absent.",
+      "check_type": "absence",
+      "scenario": "Covered by DCA.PN2.",
+      "expected_result": "Pass via DCA.PN2.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS6",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[5]",
+      "statement": "OOS: Mobile-native iOS/Android apps — absent (web only).",
+      "check_type": "absence",
+      "scenario": "Inspect for any iOS/Android-native artifact (xcodeproj, gradle, AndroidManifest).",
+      "expected_result": "None present.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS7",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[6]",
+      "statement": "OOS: Stylized card faces — absent.",
+      "check_type": "absence",
+      "scenario": "Covered by DCA.A16.",
+      "expected_result": "Pass via DCA.A16.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS8",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[7]",
+      "statement": "OOS: Reveal of opponents' hole cards before showdown — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect hand-state DOM: hole cards of other players never rendered face-up before showdown phase.",
+      "expected_result": "Confirmed absent.",
+      "verifier": "edge_case_testing",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS9",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[8]",
+      "statement": "OOS: Closed-tab push via FCM at launch — absent.",
+      "check_type": "absence",
+      "scenario": "Covered by TD-IP-G.A1.",
+      "expected_result": "Pass via TD-IP-G.A1.",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS10",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[9]",
+      "statement": "OOS: Custom Node backend beyond Cloud Functions — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect repo for Express, socket.io, separate-hosted backend artifacts.",
+      "expected_result": "None present.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS11",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[10]",
+      "statement": "OOS: Table chat at launch — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect UI for any chat input / message stream.",
+      "expected_result": "None present.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS12",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[11]",
+      "statement": "OOS: Hand-history export / replay viewer / per-hand analytics — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect UI: no export button, no replay viewer, no per-hand analytics surface beyond admin's read-only summary.",
+      "expected_result": "Confirmed absent.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS13",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[12]",
+      "statement": "OOS: Multi-admin role management — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect admin module: ADMIN_UID is a single constant, no role-management UI.",
+      "expected_result": "Confirmed absent.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.OOS14",
+      "covers": "decisions/discovery/ledger-v1.json#out_of_scope[13]",
+      "statement": "OOS: Audio / sound effects — absent.",
+      "check_type": "absence",
+      "scenario": "Inspect repo for <audio>, new Audio(), AudioContext.",
+      "expected_result": "Zero matches.",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+
+    {
+      "id": "DCA.TELOS",
+      "covers": "decisions/discovery/ledger-v1.json#telos",
+      "statement": "Telos: live multiplayer Texas Hold'em tournament web app where up to nine Google-authenticated users can play a tournament in real time on an animated ring under standard regulations, with results tracked on weekly/monthly/all-time leaderboards.",
+      "check_type": "user_flow",
+      "scenario": "PNV scenario exercises the telos end-to-end with two real users sitting down and playing a hand to resolution; the spectator + leaderboard surfaces are exercised as part of DCA.A10/A29 and FC.9.",
+      "expected_result": "Telos satisfied.",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    }
+  ],
+
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "play (tournament style poker games)",
+    "scenario": "Open https://mondrianaire.github.io/auto-builder/runs/texas-holdem-tournament/output/final/ in two separate desktop Chrome browser sessions under PRODUCTION FIDELITY (no SDK substitution, no localhost stubs, no offline simulation). Sign in as User A in window 1 (Google OAuth against the gto-poker-qui project). Sign in as User B in window 2. In window 1, observe the lobby; click Join. In window 2, observe User A's profile picture appear in the lobby; click Join. In window 1, press 'Start tournament' (or wait for auto-start). Observe both windows transition to the animated poker ring with both players seated; observe the WSOP-Style Deep Stack (or whichever preset was selected) blind level 1 of 100/200 displayed (if WSOP preset). On the first hand: window 1 (button) acts first preflop, posts small blind 100; window 2 posts big blind 200; window 1 player calls or raises; window 2 responds; one player checks/calls/folds/raises through preflop, flop, turn, river or until one folds. The hand resolves to a winner; chips move; the next hand begins with the button rotated.",
+    "expected_result": "Both users completed at least one tournament hand to resolution against each other through the deployed artifact, with all card dealing performed server-side by the dealHand Cloud Function (verified by observing Firestore writes from a service account, not a client), all action submission validated server-side, and pot distribution computed server-side. No errors in console. No 'unauthorized domain' OAuth error. No silent fallback to client-side dealing.",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "source": "prompt",
+    "covers": "decisions/technical-discovery/sections-v1.json#prompt_verb_analysis.chosen_verb"
+  },
+
+  "sections": [
+    {
+      "id": "section-1",
+      "name": "auth-shell",
+      "charter": "Builds the application shell: Firebase initialization (modular ESM from gstatic CDN), Google SSO sign-in flow, session resolution, top-right user account card (nickname editor + notification toggles + 4-color deck toggle), profile picture + first name rendering, persistent nickname write to Firestore /players/{uid}. Also owns the landing surface that users encounter before sign-in.",
+      "acceptance": "On a fresh visit to the deployed URL, the landing surface renders within 5s with a visible 'Sign in with Google' button. Click triggers the Firebase Auth Google OAuth flow against gto-poker-qui. After consent, the user returns authenticated and the user account card appears top-right with their Google profile picture and first name. Clicking the card opens a panel exposing nickname editor, current-game notification toggle, new-tournament notification toggle, and 4-color deck toggle. Setting a nickname writes to /players/{uid}.nickname and persists across reload. The 4-color toggle swaps suit colors. Notification toggles call Notification.requestPermission on first ON.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "landing surface renders within 5s with a visible Sign in with Google button",
+          "check_type": "user_flow",
+          "scenario": "Cold-load URL, observe paint and presence of sign-in button above the fold.",
+          "expected_result": "Sign-in button visible within 5s without scrolling.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "Click triggers the Firebase Auth Google OAuth flow against gto-poker-qui",
+          "check_type": "behavior",
+          "scenario": "Click sign-in; capture the OAuth URL.",
+          "expected_result": "URL hostname is accounts.google.com or gto-poker-qui.firebaseapp.com; client_id matches gto-poker-qui project.",
+          "verifier": "cv_artifact_exercise",
+          "source": "canonical_evidence",
+          "citations_pointer": "https://firebase.google.com/docs/auth/web/google-signin",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "user returns authenticated and the user account card appears top-right with their Google profile picture and first name",
+          "check_type": "user_flow",
+          "scenario": "Complete OAuth, observe top-right.",
+          "expected_result": "Picture + first name visible top-right.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "Clicking the card opens a panel exposing nickname editor + current-game notification toggle + new-tournament notification toggle + 4-color deck toggle",
+          "check_type": "presence",
+          "scenario": "Click card; inspect panel contents.",
+          "expected_result": "All four controls present and labeled.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "Setting a nickname writes to /players/{uid}.nickname and persists across reload",
+          "check_type": "user_flow",
+          "scenario": "Set nickname; reload page; verify nickname displayed.",
+          "expected_result": "Nickname persists across reload.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A6",
+          "from_acceptance_phrase": "The 4-color toggle swaps suit colors",
+          "check_type": "behavior",
+          "scenario": "Toggle 4-color ON; inspect --suit-diamond and --suit-club CSS variables.",
+          "expected_result": "--suit-diamond resolves to a blue value; --suit-club to a green value.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        },
+        {
+          "id": "S1.A7",
+          "from_acceptance_phrase": "Notification toggles call Notification.requestPermission on first ON",
+          "check_type": "behavior",
+          "scenario": "Toggle either notification ON in a fresh session.",
+          "expected_result": "Notification.requestPermission invoked exactly once.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-1].acceptance"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 3,
+      "out_of_scope": ["FCM/service worker registration", "auth providers other than Google", "in-app sound preferences (deferred per OOS)"]
+    },
+
+    {
+      "id": "section-2",
+      "name": "lobby",
+      "charter": "Builds the lobby surface that signed-in users land on. Shows a single Join control. If others have joined, their Google profile pictures are visible inside/adjacent to the control. Shows the 'Start tournament' control (enabled when >=2 players seated). Manages lobby state under /tournaments/{tid}/lobby with status 'awaiting_start'; handles the auto-start timer (Cloud Function fires after 5 minutes since first join if threshold met). When tournament starts, lobby transitions to /tournaments/{tid} with status 'in_progress' and the table view section takes over.",
+      "acceptance": "On sign-in landing, the lobby surface shows a Join control. If other users are awaiting, their profile pictures are visible. Clicking Join adds the user to /tournaments/{tid}/lobby.seated_players. The 'Start tournament' control is disabled with 0 or 1 seated players, enabled with >=2. Clicking 'Start' or auto-start-after-5-minutes both transition the tournament to 'in_progress'. The signed-in user's own picture and name appear in the lobby alongside others.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "On sign-in landing, the lobby surface shows a Join control",
+          "check_type": "presence",
+          "scenario": "Sign in; observe primary surface.",
+          "expected_result": "Join control visible.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "If other users are awaiting, their profile pictures are visible",
+          "check_type": "user_flow",
+          "scenario": "User A joins; User B signs in and observes lobby.",
+          "expected_result": "User A's profile picture visible in B's lobby view.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "Clicking Join adds the user to /tournaments/{tid}/lobby.seated_players",
+          "check_type": "behavior",
+          "scenario": "Click Join; inspect Firestore document.",
+          "expected_result": "User uid appended to seated_players.",
+          "verifier": "cv_artifact_exercise",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "Start tournament control is disabled with 0 or 1 seated players, enabled with >=2",
+          "check_type": "behavior",
+          "scenario": "Observe control state across seated count 0, 1, 2, 3.",
+          "expected_result": "Disabled for 0 and 1; enabled for 2 and 3.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        },
+        {
+          "id": "S2.A5",
+          "from_acceptance_phrase": "Clicking Start or auto-start-after-5-minutes both transition the tournament to in_progress",
+          "check_type": "behavior",
+          "scenario": "Two users joined; click Start; OR wait 5 minutes from first join; observe tournament status.",
+          "expected_result": "Status transitions from 'awaiting_start' to 'in_progress'.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-2].acceptance"
+        }
+      ],
+      "depends_on": ["section-1"],
+      "estimated_builders": 2,
+      "out_of_scope": ["multiple concurrent tournaments (per OOS)", "tournament browser (per OOS)"]
+    },
+
+    {
+      "id": "section-3",
+      "name": "tournament-settings-and-presets",
+      "charter": "Builds the tournament-settings surface (used at tournament creation, accessible from the lobby). Exposes preset selector populated from src/tournament/presets.js (TOURNAMENT_PRESETS array — three seeded presets from Researcher findings) plus custom-edit controls for starting stack, level duration, break configuration, and full blind level schedule. Selecting a preset populates the form; editing any field switches to 'Custom' mode. On confirm, writes the selected configuration to /tournaments/{tid}.config.",
+      "acceptance": "The tournament-settings surface offers a preset selector with at least three presets ('Friendly Turbo', 'Standard Home Game', 'WSOP-Style Deep Stack'). Selecting a preset populates the form with that preset's values from src/tournament/presets.js. The user can edit any field (starting stack, level duration, break config, per-level blinds) to create a custom configuration. The seeded preset values match the Researcher findings (WSOP-Style: starting_stack=60000, L1 blinds 100/200 BBA 200, level duration 30min, action clock 45s; Friendly Turbo: starting_stack=1500, L1 blinds 10/20, level 7min, clock 15s; Standard Home Game: starting_stack=10000, L1 blinds 50/100, level 20min, clock 30s).",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "preset selector with at least three presets",
+          "check_type": "constant_value",
+          "target_module": "src/tournament/presets.js",
+          "target_symbol": "TOURNAMENT_PRESETS.length",
+          "expected_value": 3,
+          "verifier": "critic_final_sweep",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.presets",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "Selecting a preset populates the form with that preset's values",
+          "check_type": "user_flow",
+          "scenario": "Open settings; select 'WSOP-Style Deep Stack'; inspect populated form values.",
+          "expected_result": "Starting stack = 60000; L1 blinds = 100/200; BBA = 200; duration 30min; clock 45s.",
+          "verifier": "cv_artifact_exercise",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.1]",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "The user can edit any field to create a custom configuration",
+          "check_type": "user_flow",
+          "scenario": "Select preset; edit starting stack from 60000 to 50000; observe form mode label.",
+          "expected_result": "Form switches to 'Custom' mode label; new value reflected.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "Friendly Turbo preset values match findings",
+          "check_type": "constant_value",
+          "target_module": "src/tournament/presets.js",
+          "target_symbol": "TOURNAMENT_PRESETS[id=preset-friendly-turbo]",
+          "expected_value": { "starting_stack_chips": 1500, "level_duration_minutes": 7, "action_clock_seconds": 15, "level_1": { "small_blind": 10, "big_blind": 20 } },
+          "verifier": "critic_final_sweep",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.5]",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "Standard Home Game preset values match findings",
+          "check_type": "constant_value",
+          "target_module": "src/tournament/presets.js",
+          "target_symbol": "TOURNAMENT_PRESETS[id=preset-standard-home-game]",
+          "expected_value": { "starting_stack_chips": 10000, "level_duration_minutes": 20, "action_clock_seconds": 30, "level_1": { "small_blind": 50, "big_blind": 100 } },
+          "verifier": "critic_final_sweep",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.6]",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-3].acceptance"
+        }
+      ],
+      "depends_on": ["section-2"],
+      "estimated_builders": 2,
+      "out_of_scope": ["tournament-template library beyond the 3 seeded presets", "tournament scheduler (no scheduled-start time at launch)"]
+    },
+
+    {
+      "id": "section-4",
+      "name": "game-engine-cloud-functions",
+      "charter": "Implements the server-authoritative game engine as Firebase Cloud Functions on the gto-poker-qui project. Functions: dealHand (cryptographic shuffle using crypto.randomBytes, hole-card dealing, community-card scheduling); submitAction (validates and applies fold/check/call/bet/raise; advances betting round; triggers community-card reveal or showdown); resolveHand (winner determination including side-pot allocation; chip movement); advanceBlindLevel (timer-driven blind progression based on tournament config); lobbyTimers (auto-start after 5 minutes); recomputeLeaderboards (admin-triggered or scheduled rollup over all completed/unfinished tournaments using the PWCS scoring formula); detectTwoSevenOff (server-side detection in dealHand that flips hand.action_clock.is_paused for 4-6 seconds and writes the easter-egg trigger to the hand document). Heads-up rule: button = small blind, acts first preflop, acts last post-flop (TDA canonical). Big-blind-ante format (TDA 2024).",
+      "acceptance": "All hand dealing happens server-side via crypto.randomBytes Fisher-Yates shuffle. Client cannot deal cards locally. Action validation enforces turn order, stack limits, valid bet sizes (min-raise rule). Pot resolution handles main pot and side pots correctly. Heads-up: button acts first preflop, last on subsequent streets. Blind levels advance per tournament config (level duration). 2-7o trigger is detected in dealHand and writes the easter-egg flag with action_clock.is_paused=true; flag clears after the configured animation duration. Leaderboard recompute walks every tournament in the time window and produces per-player aggregate scores using PWCS.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "All hand dealing happens server-side via crypto.randomBytes",
+          "check_type": "structural",
+          "target_module": "functions/src/shuffle.js",
+          "target_symbol": "shuffleDeck",
+          "expected_result": "Uses crypto.randomBytes or crypto.randomInt; no Math.random.",
+          "verifier": "critic_final_sweep",
+          "source": "canonical_evidence",
+          "citations_pointer": "https://nodejs.org/api/crypto.html#cryptorandombytessize-callback",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "Action validation enforces turn order, stack limits, valid bet sizes",
+          "check_type": "behavior",
+          "target_module": "functions/src/submitAction.js",
+          "target_symbol": "submitAction",
+          "scenario": "Call submitAction with: (a) acting out of turn, (b) bet > stack, (c) raise below min-raise. Each should be rejected with a permission_denied or invalid_argument error.",
+          "expected_result": "All three rejected; valid action accepted.",
+          "verifier": "edge_case_testing",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.rules_corpus",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "Pot resolution handles main pot and side pots correctly",
+          "check_type": "behavior",
+          "target_module": "functions/src/resolveHand.js",
+          "target_symbol": "distributePots",
+          "scenario": "Three-player all-in with stacks 100/300/500. Expect main pot of 300 (100*3) contested by all three, side pot of 400 ((300-100)*2) contested by two, side pot of 200 (500-300) returned to the deepest stack.",
+          "expected_result": "Pots correctly identified and distributed by hand strength.",
+          "verifier": "edge_case_testing",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.rules_corpus",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "Heads-up: button acts first preflop, last on subsequent streets",
+          "check_type": "behavior",
+          "target_module": "functions/src/handEngine.js",
+          "target_symbol": "resolveActionOrder",
+          "scenario": "Covered by IP1.A4.",
+          "expected_result": "Pass via IP1.A4.",
+          "verifier": "edge_case_testing",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.3]",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A5",
+          "from_acceptance_phrase": "Blind levels advance per tournament config",
+          "check_type": "behavior",
+          "target_module": "functions/src/advanceBlindLevel.js",
+          "target_symbol": "advanceBlindLevel",
+          "scenario": "Set tournament.current_level=1 and level_started_at to T-7min for a Friendly Turbo (7-minute levels) tournament; invoke the function.",
+          "expected_result": "current_level transitions to 2; level_started_at updates to now.",
+          "verifier": "edge_case_testing",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.presets",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A6",
+          "from_acceptance_phrase": "2-7o trigger detected in dealHand and writes easter-egg flag",
+          "check_type": "behavior",
+          "target_module": "functions/src/dealHand.js",
+          "target_symbol": "dealHand",
+          "scenario": "Stub the shuffle to deal 2H,7C to one player; invoke dealHand; inspect the hand document.",
+          "expected_result": "hand.easter_egg.triggered=true; hand.action_clock.is_paused=true; both clear after configured duration.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        },
+        {
+          "id": "S4.A7",
+          "from_acceptance_phrase": "Leaderboard recompute walks every tournament and produces per-player aggregate scores using PWCS",
+          "check_type": "behavior",
+          "target_module": "functions/src/recomputeLeaderboards.js",
+          "target_symbol": "recomputeLeaderboards",
+          "scenario": "Seed 3 finished and 2 unfinished tournaments with known results; invoke recomputeLeaderboards.",
+          "expected_result": "/leaderboards/weekly, /monthly, /alltime each rewritten with sum of PWCS scores per player matching hand-computed expected values.",
+          "verifier": "edge_case_testing",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.scoring_formula",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-4].acceptance"
+        }
+      ],
+      "depends_on": ["section-3"],
+      "estimated_builders": 5,
+      "out_of_scope": ["client-side dealing logic", "RTDB-based state sync", "ICM with synthetic payouts (PWCS chosen instead)"]
+    },
+
+    {
+      "id": "section-5",
+      "name": "poker-ring-ui",
+      "charter": "Builds the table view: the animated poker ring (oval/circular SVG with adaptive seat positions based on active-seat count per IP10), community cards display, pot display, action history strip, action clock with server-set turn_started_at, betting controls (fold/check/call/bet/raise slider), card identity rendering (inline SVG with 4-color toggle via CSS variables), button + small-blind + big-blind indicators. Real-time updates via Firestore onSnapshot listeners on /tournaments/{tid} and /tournaments/{tid}/hands/{current_hid}. Handles heads-up adaptive layout (2 seats at opposite poles per IP10.A1).",
+      "acceptance": "The table renders as a visually animated ring/oval SVG (not rectangular). Seat positions adapt to current active-seat count (2 seats opposite each other; 9 seats roughly evenly spaced). Community cards, pot total, and chip stacks are visible to all seated and spectator clients. Action clock counts down from a server-set turn_started_at. Betting controls are visible only when it is the local user's turn. Card faces use inline SVG with recognizable rank/suit; 4-color toggle changes diamond/club colors via CSS variables. Button + SB + BB indicators correctly placed per current hand state, including heads-up (button=SB on same seat).",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "table renders as a visually animated ring/oval SVG",
+          "check_type": "structural",
+          "target_module": "src/ui/ring.svg.js",
+          "target_symbol": "renderRing",
+          "expected_result": "Output contains an <ellipse> or oval <path>; an animated CSS property exists on the ring element.",
+          "verifier": "critic_final_sweep",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "Seat positions adapt to active-seat count",
+          "check_type": "behavior",
+          "scenario": "Render with 2, 3, 6, 9 active seats; inspect computed (x,y) positions.",
+          "expected_result": "2-seat: 180-degree separation. 9-seat: approximately 40-degree spacing. Positions deterministic given seat count.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "Action clock counts down from a server-set turn_started_at",
+          "check_type": "behavior",
+          "scenario": "On a turn change, observe the clock's initial value vs (now - turn_started_at).",
+          "expected_result": "Clock displays preset.action_clock_seconds - (now - turn_started_at), rounded down.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A4",
+          "from_acceptance_phrase": "Betting controls visible only when it is the local user's turn",
+          "check_type": "behavior",
+          "scenario": "Two-player hand; observe controls in both windows during each turn.",
+          "expected_result": "Controls hidden/disabled in the non-acting player's window; visible/enabled in the acting player's window.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A5",
+          "from_acceptance_phrase": "Card faces use inline SVG with recognizable rank/suit",
+          "check_type": "structural",
+          "target_module": "src/ui/card.js",
+          "target_symbol": "renderCard",
+          "expected_result": "Returned DOM is <svg> element; contains rank text or glyph (A-2) and suit glyph (spade/heart/diamond/club). No <img> tags.",
+          "verifier": "critic_final_sweep",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A6",
+          "from_acceptance_phrase": "4-color toggle changes diamond/club colors via CSS variables",
+          "check_type": "behavior",
+          "scenario": "Covered by S1.A6 / TD-IP-D.A2.",
+          "expected_result": "Pass via those assertions.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        },
+        {
+          "id": "S5.A7",
+          "from_acceptance_phrase": "Button + SB + BB indicators correctly placed including heads-up (button=SB on same seat)",
+          "check_type": "behavior",
+          "scenario": "Covered by IP10.A2.",
+          "expected_result": "Pass via IP10.A2.",
+          "verifier": "edge_case_testing",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#citations[id=C.3]",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-5].acceptance"
+        }
+      ],
+      "depends_on": ["section-1", "section-4"],
+      "estimated_builders": 4,
+      "out_of_scope": ["table chat (per OOS)", "audio/sound (per OOS)", "stylized card identities (per A16)", "easter-egg overlay (section-6 owns that)"]
+    },
+
+    {
+      "id": "section-6",
+      "name": "easter-egg-2-7o",
+      "charter": "Builds the dramatic 2-7o easter-egg animation. Triggered by the server via hand.easter_egg.triggered=true (written by dealHand when any player is dealt 2-7 offsuit). Renders a full-viewport overlay (z-index 9999+, position fixed, inset 0) with CSS keyframe animation: rotating/exploding 2 and 7 card SVGs, color bursts that intentionally violate the OttoBLD palette, large 'WORST HAND' text or similar dramatic copy element (plain language, no aviation jargon per A21). Total duration 4000-6000ms (target 5000ms, per IP7). Does NOT reveal the holder's identity (no player_id/name/seat referenced in the overlay DOM). Hooks into the Firestore onSnapshot listener so all connected users (seated and spectator) see the animation within 1 second of the deal.",
+      "acceptance": "When the server writes hand.easter_egg.triggered=true, every connected client renders a full-viewport overlay within 1 second. The overlay animation lasts 4-6 seconds total and is visually dramatic (intentionally breaks OttoBLD). No element in the overlay references the holder's identity. After the duration, the overlay is removed and the underlying table view is unobscured. The action clock visual reflects is_paused=true during the overlay.",
+      "acceptance_assertions": [
+        {
+          "id": "S6.A1",
+          "from_acceptance_phrase": "When server writes triggered=true, every connected client renders overlay within 1 second",
+          "check_type": "user_flow",
+          "scenario": "Two windows (holder + spectator); force-deal 2-7o; observe both windows.",
+          "expected_result": "Both render overlay within 1s of the Firestore write.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        },
+        {
+          "id": "S6.A2",
+          "from_acceptance_phrase": "overlay animation lasts 4-6 seconds total",
+          "check_type": "constant_value",
+          "target_module": "src/easterEgg/twoSevenOff.js",
+          "target_symbol": "ANIMATION_TOTAL_MS",
+          "expected_value": { "min": 4000, "max": 6000 },
+          "verifier": "critic_final_sweep",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        },
+        {
+          "id": "S6.A3",
+          "from_acceptance_phrase": "No element in the overlay references the holder's identity",
+          "check_type": "absence",
+          "scenario": "Inspect overlay DOM during animation.",
+          "expected_result": "No data-holder-id, no nickname text, no seat-index reference in the overlay subtree.",
+          "verifier": "critic_final_sweep",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        },
+        {
+          "id": "S6.A4",
+          "from_acceptance_phrase": "overlay is visually dramatic (intentionally breaks OttoBLD)",
+          "check_type": "presence",
+          "scenario": "Inspect overlay CSS for keyframe animations and color usage outside the OttoBLD palette.",
+          "expected_result": "At least one @keyframes rule applies to overlay elements; at least one color used is outside the documented OttoBLD primary palette.",
+          "verifier": "critic_final_sweep",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        },
+        {
+          "id": "S6.A5",
+          "from_acceptance_phrase": "Action clock visual reflects is_paused=true during the overlay",
+          "check_type": "behavior",
+          "scenario": "During the easter egg, observe the action-clock element.",
+          "expected_result": "Action-clock visual is paused / dimmed / labeled 'paused'.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-6].acceptance"
+        }
+      ],
+      "depends_on": ["section-4", "section-5"],
+      "estimated_builders": 2,
+      "out_of_scope": ["audio (per OOS)", "long-running cinematic >6s (per IP7)", "hole-card reveal (per A19)"]
+    },
+
+    {
+      "id": "section-7",
+      "name": "results-leaderboards",
+      "charter": "Builds the leaderboard surface visible to all signed-in users. Three tabs: Weekly (last 7 days), Monthly (last 30 days), All-Time (all tournaments). Reads from /leaderboards/{scale} documents (written by recomputeLeaderboards Cloud Function in section-4). Each tab shows ranked rows with player nickname or first name, profile picture, and aggregate PWCS score. Score breakdown on hover/click optional (number of tournaments played, finished count, unfinished count).",
+      "acceptance": "Leaderboard surface reachable from the lobby (or via primary navigation). Three tabs render: Weekly, Monthly, All-Time. Each tab shows a list of ranked players with nickname/first-name + profile picture + score. Scores match the recompute output. The aggregate score for a player equals sum of PWCS scores across tournaments in the window per the formula from the Researcher findings.",
+      "acceptance_assertions": [
+        {
+          "id": "S7.A1",
+          "from_acceptance_phrase": "Leaderboard surface reachable from the lobby or via primary navigation",
+          "check_type": "user_flow",
+          "scenario": "From the lobby, find and click the leaderboard control.",
+          "expected_result": "Leaderboard surface renders.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        },
+        {
+          "id": "S7.A2",
+          "from_acceptance_phrase": "Three tabs render: Weekly, Monthly, All-Time",
+          "check_type": "presence",
+          "scenario": "Observe tab labels.",
+          "expected_result": "Three tabs labeled 'Weekly', 'Monthly', 'All-Time' (or near-equivalent) present.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        },
+        {
+          "id": "S7.A3",
+          "from_acceptance_phrase": "Each tab shows a list of ranked players with nickname/first-name + profile picture + score",
+          "check_type": "user_flow",
+          "scenario": "Click each tab; verify row contents.",
+          "expected_result": "Rows include all three fields.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        },
+        {
+          "id": "S7.A4",
+          "from_acceptance_phrase": "Aggregate score equals sum of PWCS scores across tournaments in the window",
+          "check_type": "behavior",
+          "scenario": "Seed two finished tournaments for player X with PWCS scores 70 and 50; load Weekly tab; observe X's row score.",
+          "expected_result": "Score = 120.",
+          "verifier": "edge_case_testing",
+          "source": "canonical_evidence",
+          "citations_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json#options[id=opt-A].concrete_values.scoring_formula.aggregate_for_leaderboard",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-7].acceptance"
+        }
+      ],
+      "depends_on": ["section-4"],
+      "estimated_builders": 2,
+      "out_of_scope": ["per-hand analytics (per OOS)", "hand-history export (per OOS)"]
+    },
+
+    {
+      "id": "section-8",
+      "name": "admin-dashboard",
+      "charter": "Builds the maintenance dashboard at /admin reachable only by the admin uid (hardcoded ADMIN_UID constant; non-admin users see access-denied). Surfaces: list tournaments by status (in-progress, finished, unfinished), per-tournament drill-down (seated players, hand-history summary, final standings), actions (force-end stuck tournament, recompute leaderboards from scratch, hide a tournament from public leaderboards, reset a player's nickname).",
+      "acceptance": "/admin route is reachable. The admin uid sees the dashboard; non-admin users see a clear access-denied surface. The dashboard lists tournaments grouped by status. Clicking a tournament drills into its details. At minimum the 'force-end stuck tournament' action is functional (transitions tournament status to 'unfinished'). 'Recompute leaderboards' triggers the recomputeLeaderboards Cloud Function. Firestore rules deny non-admin writes to /leaderboards and /tournaments-admin-actions.",
+      "acceptance_assertions": [
+        {
+          "id": "S8.A1",
+          "from_acceptance_phrase": "/admin route reachable; admin sees dashboard; non-admin sees access-denied",
+          "check_type": "user_flow",
+          "scenario": "Covered by IP6.A1.",
+          "expected_result": "Pass via IP6.A1.",
+          "verifier": "cv_artifact_exercise",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-8].acceptance"
+        },
+        {
+          "id": "S8.A2",
+          "from_acceptance_phrase": "Dashboard lists tournaments grouped by status",
+          "check_type": "presence",
+          "scenario": "Open /admin as admin; observe sections for in-progress, finished, unfinished.",
+          "expected_result": "Three groups present with at least the structural headings.",
+          "verifier": "cv_artifact_exercise",
+          "source": "prompt",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-8].acceptance"
+        },
+        {
+          "id": "S8.A3",
+          "from_acceptance_phrase": "Force-end stuck tournament action transitions tournament status to unfinished",
+          "check_type": "behavior",
+          "scenario": "Click force-end on an in-progress tournament; inspect tournament document.",
+          "expected_result": "Status flips to 'unfinished'; scoreTournament re-evaluates the participants.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-8].acceptance"
+        },
+        {
+          "id": "S8.A4",
+          "from_acceptance_phrase": "Recompute leaderboards triggers recomputeLeaderboards Cloud Function",
+          "check_type": "behavior",
+          "scenario": "Click 'recompute'; observe a Cloud Function invocation; verify leaderboard documents updated.",
+          "expected_result": "/leaderboards/weekly, /monthly, /alltime are rewritten with updated_at = now.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-8].acceptance"
+        },
+        {
+          "id": "S8.A5",
+          "from_acceptance_phrase": "Firestore rules deny non-admin writes to /leaderboards",
+          "check_type": "structural",
+          "scenario": "Covered by IP6.A2.",
+          "expected_result": "Pass via IP6.A2.",
+          "verifier": "critic_final_sweep",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-8].acceptance"
+        }
+      ],
+      "depends_on": ["section-4", "section-7"],
+      "estimated_builders": 2,
+      "out_of_scope": ["multi-admin role management (per OOS)", "direct Firestore document editor in the UI (per IP6 'light edits' bound)"]
+    },
+
+    {
+      "id": "section-9",
+      "name": "firestore-rules-and-schema",
+      "charter": "Defines the Firestore collection schema (tournaments, hands, players, leaderboards) and writes firestore.rules enforcing: authenticated reads of tournaments / hands / leaderboards (all signed-in users); writes to lobby/seated_players limited to the joining user's own uid; writes to hand-state limited to the Cloud Function's service-account identity (clients submit actions via callable functions, not via direct writes); writes to /leaderboards/* limited to ADMIN_UID; writes to /players/{uid} limited to the matching uid. Pattern follows the gto-poker-async-duel firestore.rules reference. Schema fields documented in this section's output as a JSON schema file under output/builders/section-9/.",
+      "acceptance": "firestore.rules deploys to gto-poker-qui without errors. Anonymous clients cannot read tournaments. Authenticated clients can read tournaments but cannot directly write hand-state fields (winner, distributed_pots, revealed_hole_cards). Non-admin authenticated clients cannot write to /leaderboards/*. The schema covers: /tournaments/{tid} (config, status, seated_players, current_hand_id, etc.); /tournaments/{tid}/hands/{hid} (deck, hole_cards (server-only readable), community_cards, action_history, current_turn, action_clock, easter_egg); /players/{uid} (nickname, notification_prefs); /leaderboards/{scale} (entries[]).",
+      "acceptance_assertions": [
+        {
+          "id": "S9.A1",
+          "from_acceptance_phrase": "firestore.rules deploys to gto-poker-qui without errors",
+          "check_type": "presence",
+          "scenario": "Run firebase deploy --only firestore:rules against gto-poker-qui.",
+          "expected_result": "Deploy succeeds; no syntax errors.",
+          "verifier": "critic_final_sweep",
+          "source": "canonical_evidence",
+          "citations_pointer": "https://firebase.google.com/docs/firestore/security/get-started",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-9].acceptance"
+        },
+        {
+          "id": "S9.A2",
+          "from_acceptance_phrase": "Anonymous clients cannot read tournaments",
+          "check_type": "behavior",
+          "scenario": "Unauthenticated client attempts to read /tournaments/test.",
+          "expected_result": "Permission denied.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-9].acceptance"
+        },
+        {
+          "id": "S9.A3",
+          "from_acceptance_phrase": "Authenticated clients can read tournaments but cannot directly write hand-state fields",
+          "check_type": "behavior",
+          "scenario": "Authenticated client attempts to write to /tournaments/T1/hands/H1.winner.",
+          "expected_result": "Permission denied.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-9].acceptance"
+        },
+        {
+          "id": "S9.A4",
+          "from_acceptance_phrase": "Non-admin authenticated clients cannot write to /leaderboards/*",
+          "check_type": "behavior",
+          "scenario": "Non-admin authenticated client attempts to write to /leaderboards/weekly.",
+          "expected_result": "Permission denied.",
+          "verifier": "edge_case_testing",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-9].acceptance"
+        },
+        {
+          "id": "S9.A5",
+          "from_acceptance_phrase": "Schema covers tournaments / hands / players / leaderboards collections",
+          "check_type": "presence",
+          "scenario": "Inspect output/builders/section-9/schema.json.",
+          "expected_result": "All four collections documented with required fields.",
+          "verifier": "critic_final_sweep",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-9].acceptance"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 2,
+      "out_of_scope": ["RTDB rules (not used)", "Cloud Storage rules (not used at launch)"]
+    },
+
+    {
+      "id": "section-10",
+      "name": "edge-case-testing",
+      "charter": "Covers every acceptance assertion with verifier 'edge_case_testing' from sections 1-9 plus all discovery_coverage_assertions and inflection_resolutions[*].machine_checkable_assertions tagged for edge_case_testing. Runs against the integrated artifact under production-fidelity exercise per CV charter — no substitution of runtime dependencies the artifact loads in production (no localhost Firebase emulator unless explicitly run alongside the real deployed Pages artifact for negative-path testing only; the canonical production-fidelity exercise uses the actually-deployed URL with the real Firestore + real Cloud Functions). Specifically: server-side dealing (S4.A1), action validation (S4.A2), side-pot resolution (S4.A3), heads-up button rule (S4.A4/IP1.A4), blind level advancement (S4.A5), 2-7o trigger (S4.A6), scoring formula correctness (IP5.A1/A2/A3), Firestore rule denials (S9.A2/A3/A4), disconnect/auto-fold behavior (DCA.A26), tournament termination cases (DCA.A27).",
+      "acceptance": "Every acceptance_assertion or discovery_coverage_assertion or machine_checkable_assertion in this sections file with verifier 'edge_case_testing' is exercised and passes against the integrated artifact under production fidelity. Results recorded as a single pass/fail per assertion in output/builders/section-10/test-report.json. Any failure routes to Arbiter as a cross-section escalation.",
+      "acceptance_assertions": [
+        {
+          "id": "S10.A1",
+          "from_acceptance_phrase": "Every assertion in this sections file with verifier edge_case_testing is exercised and passes",
+          "check_type": "structural",
+          "scenario": "Walk sections-v1.json, collect all assertions where verifier == 'edge_case_testing'; cross-reference test-report.json.",
+          "expected_result": "Every collected assertion id appears in test-report.json with result 'pass'.",
+          "verifier": "critic_final_sweep",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-10].acceptance"
+        },
+        {
+          "id": "S10.A2",
+          "from_acceptance_phrase": "Exercise happens against the integrated artifact under production fidelity",
+          "check_type": "presence",
+          "scenario": "Inspect test-report.json metadata.",
+          "expected_result": "metadata.target_url is the deployed Pages URL; metadata.firebase_project = 'gto-poker-qui'; metadata.production_fidelity = true.",
+          "verifier": "critic_final_sweep",
+          "source": "td_plan",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[id=section-10].acceptance"
+        }
+      ],
+      "depends_on": ["integrator"],
+      "estimated_builders": 2,
+      "out_of_scope": ["replacing runtime dependencies with stubs", "skipping any assertion regardless of how 'simple' it seems"]
+    }
+  ]
+}

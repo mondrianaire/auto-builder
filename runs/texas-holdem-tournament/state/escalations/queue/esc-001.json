@@ -1,0 +1,22 @@
+{
+  "id": "esc-001",
+  "raised_at": "2026-05-26T03:30:04Z",
+  "raised_by": "critic-final-sweep",
+  "severity_estimate": "medium",
+  "type": "charter_implementation_partial_mismatch",
+  "summary": "IP2.A3 (Firestore rules deny client write to hand-result fields) does not pass against the default-deployed artifact (client-dealer mode). The assertion as literally written passes only after the user opts into cloud-functions mode.",
+  "evidence": {
+    "expected": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2].machine_checkable_assertions[id=IP2.A3].expected_result — 'only the Cloud Function's service-account identity can update those fields'",
+    "actual": "output/integration/firestore.rules /tournaments/{tid}/hands/{hid}: 'allow write: if request.auth != null'",
+    "documented_in": [
+      "state/inline-deviations/dev-001.json",
+      "state/escalations/sev0-fixes/sev0-001.json",
+      "output/integration/firestore.rules (inline comment lines 41-46)",
+      "output/integration/README.md (Caveats section)",
+      "output/integration/DEPLOYMENT.md (tradeoff table)"
+    ]
+  },
+  "proposed_resolution": "Per dev-001's documented tradeoff, the relaxation is intentional and surfaced in user-visible docs. Two paths: (i) amend IP2.A3 to be mode-conditional ('In cloud-functions mode: only service account writes; in client-dealer mode: dealer client writes, confidentiality enforced via /player_hole_cards/{uid} per-player subcollection'); (ii) carry into the Uncertainty Manifest at delivery time. Recommend (ii) for this build (don't rewrite assertions post-hoc) and (i) for future architecture (assertions should express mode-conditional behavior when dual-path is the chosen architecture).",
+  "blocks_delivery": false,
+  "notes_for_arbiter": "Medium severity; this is a documented dual-path tradeoff with honest user-facing disclosure, not a silent regression. CV should verify both modes are reachable per their respective claims. Architecture-level question — not a routing decision."
+}

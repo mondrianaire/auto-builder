@@ -1,0 +1,18 @@
+{
+  "id": "dev-002",
+  "logged_at": "2026-05-26T02:07:00Z",
+  "logged_by_role": "coordinator",
+  "context": "section-4 charter explicitly says 'cryptographic shuffle using crypto.randomBytes'; client-dealer fallback runs in browser where Node crypto.randomBytes is unavailable. Used window.crypto.getRandomValues (the browser CSPRNG primitive) for the client-side shuffle, and kept Node's crypto.randomBytes for the Cloud Functions path.",
+  "deviation_type": "implementation_path_chosen",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=TD-IP-C].chosen_branch",
+  "what_spec_said": "Node native crypto.randomBytes inside the dealHand Cloud Function.",
+  "what_was_done": "Cloud Functions path uses crypto.randomBytes (Node) — unchanged. Client-dealer fallback uses window.crypto.getRandomValues (browser CSPRNG) — same Web Cryptography API family, canonically documented at https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues.",
+  "rationale": "Same cryptographic class (CSPRNG), platform-appropriate primitive. TD-IP-C's intent was 'not Math.random' — both crypto.randomBytes and window.crypto.getRandomValues satisfy that intent. The S4.A1 assertion 'Uses crypto.randomBytes or crypto.randomInt; no Math.random' is verifiable on the Cloud Functions path (functions/src/shuffle.js); the client path passes a structurally analogous check.",
+  "nested_equivalent": "Under nested dispatch, section-4's Overseer would have noted this in the section's metadata; Critic's final-sweep would have audited and accepted (both primitives are CSPRNGs per their canonical docs).",
+  "scope": {
+    "changes_artifact": false,
+    "changes_contract": false,
+    "changes_charter_or_spec": false,
+    "changes_assumption": false
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "updated_at": "2026-05-26T02:51:30Z",
+  "decisions": [
+    {
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "version": 1,
+      "produced_by": "discovery",
+      "trigger": { "type": "initial", "from_prompt": "Create a live multiplayer TEXAS HOLDEM ONLY poker application..." },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/discovery/ledger-diff-v2.json",
+      "version": 2,
+      "produced_by": "discovery_amendment",
+      "trigger": { "type": "editor_pass_1", "review_pointer": "decisions/editor/review-v1.json", "trigger_findings": ["F.1", "F.2"] },
+      "supersedes": 1,
+      "summary": "Proper-noun citation amendments: PN.1 TEXAS HOLDEM verified canonical; PN.5 2-7o verified as standard poker shorthand."
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery_post_editor_pass_2", "research_pointer": "research/probes/probe-001-tournament-presets-and-scoring/findings.json" },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/editor/review-v1.json",
+      "version": 1,
+      "produced_by": "editor",
+      "trigger": { "type": "td_complete", "verdict": "route_to_discovery", "findings": ["F.1", "F.2", "F.3"] },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/editor/review-v2.json",
+      "version": 2,
+      "produced_by": "editor",
+      "trigger": { "type": "discovery_amendment_complete", "verdict": "pass_with_recommendations", "trigger_findings": ["F.3 carried forward"] },
+      "supersedes": 1
+    },
+    {
+      "artifact": "research/probes/probe-001-tournament-presets-and-scoring/findings.json",
+      "version": 1,
+      "produced_by": "researcher_planning",
+      "trigger": { "type": "td_dispatch", "ip_ids": ["IP1", "IP5", "IP10", "IP11"] },
+      "supersedes": null,
+      "summary": "Returned TDA + 3 seeded preset values + PWCS scoring formula with citations C.1-C.8."
+    },
+    {
+      "artifact": "state/coordinator/dag.json",
+      "version": 1,
+      "produced_by": "coordinator",
+      "trigger": { "type": "coordinator_boot", "dispatch_mode": "inline" },
+      "supersedes": null,
+      "summary": "8-wave DAG built from depends_on edges; integrator pseudo-node + edge-case-testing dependent."
+    },
+    {
+      "artifact": "state/inline-deviations/dev-001.json",
+      "version": 1,
+      "produced_by": "coordinator",
+      "trigger": { "type": "implementation_path_chosen", "category": "user_briefing_did_not_authorize_cloud_functions_deploy" },
+      "supersedes": null,
+      "summary": "Dual-path engine: client-dealer fallback default + Cloud Functions ready-to-deploy."
+    },
+    {
+      "artifact": "state/escalations/sev0-fixes/sev0-001.json",
+      "version": 1,
+      "produced_by": "coordinator",
+      "trigger": { "type": "audit_companion_to_inline_deviation_with_changes_artifact_true", "linked_to": "dev-001" },
+      "supersedes": null
+    },
+    {
+      "artifact": "output/integration/manifest.json.integration-meta.json",
+      "version": 1,
+      "produced_by": "integrator",
+      "trigger": { "type": "all_non_integrator_dependent_sections_verified" },
+      "supersedes": null
+    },
+    {
+      "artifact": "output/builders/section-10/test-report.json",
+      "version": 1,
+      "produced_by": "overseer-edge-case-testing",
+      "trigger": { "type": "integrator_complete" },
+      "supersedes": null,
+      "summary": "24 pass, 0 fail, 11 deferred-to-CV-Playwright."
+    },
+    {
+      "artifact": "state/coordinator/build-complete.json",
+      "version": 1,
+      "produced_by": "coordinator",
+      "trigger": { "type": "edge_case_testing_verified" },
+      "supersedes": null
+    }
+  ]
+}

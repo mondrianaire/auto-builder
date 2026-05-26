@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-edge-case-testing",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:50:00Z",
+  "section": "edge-case-testing",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece runs through every behavior the build promised — scoring math, side-pot splits, the heads-up button rule, the 2-7 detection, the security rules — and records whether each one actually does what was claimed. It's the build's own self-check before delivery.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. The runnable checks all pass. The browser-screen checks are recorded with their source-code proofs and are also exercised in the final verification step when the live page is opened end-to-end.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Critic"
+}

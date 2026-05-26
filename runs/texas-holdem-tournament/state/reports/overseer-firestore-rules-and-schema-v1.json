@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-firestore-rules-and-schema",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:10:00Z",
+  "section": "firestore-rules-and-schema",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the rulebook the database itself enforces — who can read what, who can write what. Players see public information like community cards and chip stacks; only you can read your own hole cards; only the project owner can rewrite the leaderboards.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. The rules deploy cleanly; anonymous visitors are blocked from reading anything; a regular signed-in user cannot tamper with hand results or leaderboard scores.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

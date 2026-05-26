@@ -1,0 +1,10 @@
+{
+  "section_id": "section-8",
+  "section_name": "admin-dashboard",
+  "completed_at": "2026-05-26T02:35:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-8a", "task": "src/admin.js — /admin route, ADMIN_UID gate, tournament list grouped by status, drill-down, actions", "output_files": ["src/admin.js"] },
+    { "builder_id": "builder-8b", "task": "Admin-action callables: force-end (direct Firestore write), recompute (Cloud Function callable or in-process)", "output_files": ["src/admin.js (admin actions)"] }
+  ]
+}

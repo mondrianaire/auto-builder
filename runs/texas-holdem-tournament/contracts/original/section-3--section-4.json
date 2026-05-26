@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "from_section": "section-3",
+  "to_section": "section-4",
+  "interface": {
+    "TOURNAMENT_PRESETS": {
+      "type": "module-exported constant array",
+      "module": "src/tournament/presets.js",
+      "shape": "Array<{ id:string, display_name:string, description:string, starting_stack_chips:int, level_duration_minutes:int, action_clock_seconds:int, break_after_levels:int, break_duration_minutes:int, levels:Array<{level:int, small_blind:int, big_blind:int, big_blind_ante:int}> }>",
+      "required_ids": ["preset-friendly-turbo", "preset-standard-home-game", "preset-wsop-deep-stack"],
+      "notes": "Source of truth for preset numeric values. section-4 Cloud Functions (advanceBlindLevel) reads the active tournament's config.levels to know when to advance; section-4 also imports TOURNAMENT_PRESETS for any seeding or admin-recompute paths that re-derive a preset's structure from id."
+    },
+    "tournamentConfigDocument": {
+      "path": "/tournaments/{tid}.config",
+      "shape": "TournamentConfig (see section-2--section-3.json)",
+      "writer": "section-3 client; section-4 Cloud Functions read-only on the live path",
+      "notes": "The TournamentConfig shape is shared across section-2/3/4 — this is the canonical persisted form."
+    }
+  },
+  "notes": "section-4's advanceBlindLevel Cloud Function reads /tournaments/{tid}.config.levels[current_level - 1] to compute the active blinds; reads .level_duration_minutes for the next-advancement schedule."
+}

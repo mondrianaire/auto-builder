@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "from_section": "section-1",
+  "to_section": "section-2",
+  "interface": {
+    "getCurrentUser()": {
+      "params": {},
+      "returns": {
+        "uid": "string (Firebase Auth uid)",
+        "google_given_name": "string (first name from Google OAuth payload)",
+        "google_photo_url": "string (URL of the Google profile picture)",
+        "nickname": "string|null (from /players/{uid}.nickname; null if unset)",
+        "is_admin": "bool (true iff uid === ADMIN_UID constant)"
+      }
+    },
+    "onAuthStateChange(callback)": {
+      "params": { "callback": "(user|null) => void" },
+      "returns": { "unsubscribe": "() => void" },
+      "notes": "Wraps Firebase Auth onAuthStateChanged; fires immediately with current state and on every sign-in/out."
+    },
+    "displayName(user)": {
+      "params": { "user": "{nickname, google_given_name}" },
+      "returns": "string",
+      "notes": "Returns user.nickname if non-empty, else user.google_given_name. Lobby uses this for the seated-player labels."
+    }
+  },
+  "notes": "section-2 (lobby) consumes the resolved user identity to render seated-player profile pictures and to attribute the local user's Join action. The auth shell owns sign-in/out; the lobby never directly calls Firebase Auth."
+}

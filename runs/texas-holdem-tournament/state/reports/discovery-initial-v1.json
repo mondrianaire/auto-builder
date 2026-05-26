@@ -1,0 +1,31 @@
+{
+  "role": "Discovery",
+  "instance_id": "discovery-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "2026-05-26T00:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "What did you understand the user wants?",
+      "answer": "Reading what you want, it's a live multiplayer Texas Hold'em tournament web app where up to nine people sign in with Google, play in real time around a visually animated poker ring under standard tournament rules, and see their results stack up on weekly, monthly, and all-time leaderboards. Heads-up play matters as much as the full table — you called that out specifically. The app reuses the existing Firebase setup from the prior poker build, deploys to the standard GitHub Pages URL, and runs one tournament at a time (no concurrent rooms at launch). And there's a secret 2-7o easter egg: when anyone is dealt that hand, every connected player sees a brief, dramatic, deliberately wacky animation that breaks the visual style on purpose.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What choices did you make on their behalf, and why?",
+      "answer": "Several things you didn't pin down precisely, so here are the calls I made (each is easy to revisit later):\n- Tournament rules: anchoring to the Tournament Directors Association (TDA) rule set as the canonical procedural standard, since you said 'all tournament regulations' without naming a body. Sending out a research pass to lock this in with sources.\n- Blind structure presets: same research pass will return multiple seeded options (Turbo, Regular, Deep-Stack archetypes) so you'll have several presets out of the box rather than just one.\n- Dealing and pot math live on the server (via Firebase Cloud Functions), not in the browser — otherwise leaderboards would be meaningless since anyone could fake winning cards.\n- Real-time state sync goes through Firestore listeners specifically (since you named Firestore as the substrate), not a swap to Realtime Database.\n- Lobby start trigger: anyone in the lobby can press Start once there are at least 2 players, plus an auto-start after 5 minutes of waiting.\n- Unfinished-tournament scoring: position-based points multiplied by a 'how far did it get' completion factor (no eliminations = zero, almost-done = nearly full). Research pass will confirm the formula shape.\n- Easter egg duration: 4-6 seconds, gameplay pauses, hole cards stay hidden (so it doesn't leak who triggered it). Long enough to register, short enough to respect 'not too much time'.\n- Heads-up gets its own adaptive layout rather than a shrunken 9-seat view — you called it out as imperative.\n- Notifications: browser-native (Notifications API) with an in-app banner fallback. Closed-tab push is deferred since you didn't specifically ask for it.\n- Maintenance dashboard: single admin (your Google account), light edits only — viewer plus 'force-end stuck tournament' and recompute leaderboards.\n- Card faces: standard look (your explicit constraint), with the 4-color toggle as the one allowed deviation (plus the easter egg moment).",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What did you explicitly NOT do?",
+      "answer": "A handful of things were left out on purpose, in case you were expecting them:\n- Multiple tournaments at once (you said one at a time was fine for launch).\n- Cash games, real money, or buy-ins — this is no-stakes tournament play.\n- Poker variants other than Texas Hold'em (your 'ONLY' was explicit).\n- Sign-in providers other than Google.\n- Mobile-native apps (it's a web app on GitHub Pages, responsive but browser-based).\n- Table chat between players at launch.\n- Closed-tab push notifications (browser notifications work when the tab is open or backgrounded; push when the browser is closed would need extra setup).\n- Hand-history replay viewer or detailed per-hand analytics — leaderboard aggregates only.\n- Audio / sound effects — none planned at launch unless the easter egg pulls them in.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "TechnicalDiscovery"
+}

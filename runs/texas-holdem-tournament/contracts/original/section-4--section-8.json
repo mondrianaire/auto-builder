@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "from_section": "section-4",
+  "to_section": "section-8",
+  "interface": {
+    "forceEndTournament(tid)": {
+      "params": { "tid": "string" },
+      "returns": "Promise<{ ok: bool, new_status: 'unfinished' }>",
+      "module": "functions/src/adminActions.js",
+      "notes": "Callable Cloud Function. Requires request.auth.uid === ADMIN_UID. Transitions tournament status to 'unfinished', captures current chip-stack standings as final_standings (by descending chip count), triggers leaderboard recompute."
+    },
+    "recomputeLeaderboards()": {
+      "params": {},
+      "returns": "Promise<{ ok: bool, scales_updated: ['weekly','monthly','alltime'] }>",
+      "module": "functions/src/recomputeLeaderboards.js",
+      "notes": "Admin-only callable. Walks every tournament with status 'finished' or 'unfinished', applies scoreTournament per player per tournament, rewrites /leaderboards/{scale} documents."
+    },
+    "hideTournamentFromPublicLeaderboards(tid)": {
+      "params": { "tid": "string" },
+      "returns": "Promise<{ ok: bool }>",
+      "notes": "Admin-only. Sets /tournaments/{tid}.hidden_from_leaderboards=true. The next recompute will skip this tournament."
+    },
+    "resetPlayerNickname(uid)": {
+      "params": { "uid": "string" },
+      "returns": "Promise<{ ok: bool }>",
+      "notes": "Admin-only. Clears /players/{uid}.nickname so the player displays as their Google given_name on next render."
+    }
+  },
+  "notes": "section-8's admin UI calls these Cloud Functions. Authorization is enforced inside each function (request.auth.uid === ADMIN_UID) AND by Firestore rules on the underlying documents."
+}

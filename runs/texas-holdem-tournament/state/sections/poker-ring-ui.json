@@ -1,0 +1,19 @@
+{
+  "section_id": "section-5",
+  "section_name": "poker-ring-ui",
+  "status": "verified",
+  "owner": "overseer-ring-ui (coordinator-inline)",
+  "started_at": "2026-05-26T02:25:00Z",
+  "verified_at": "2026-05-26T02:32:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-5",
+  "active_contracts": ["contracts/original/section-1--section-5.json", "contracts/original/section-4--section-5.json", "contracts/original/section-5--section-6.json"],
+  "sub_goals": [
+    { "id": "5a", "description": "src/ui/ring.js (oval SVG ring + adaptive seat positions + animation)", "status": "verified", "builder_id": "builder-5a", "output_path": "output/builders/section-5/builder-5a/" },
+    { "id": "5b", "description": "src/ui/card.js (inline-SVG cards, all 52, 4-color toggle via CSS vars)", "status": "verified", "builder_id": "builder-5b", "output_path": "output/builders/section-5/builder-5b/" },
+    { "id": "5c", "description": "src/ui/betting.js (controls + action clock with server turn_started_at)", "status": "verified", "builder_id": "builder-5c", "output_path": "output/builders/section-5/builder-5c/" },
+    { "id": "5d", "description": "src/ui/table.js (community cards + pot + action-history strip + button/SB/BB indicators + Firestore listener glue)", "status": "verified", "builder_id": "builder-5d", "output_path": "output/builders/section-5/builder-5d/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_summary": "S5.A1-A7 verified. Ring rendered as <ellipse> with @keyframes glow animation; computeSeatPositions yields 180-degree separation for 2 seats and ~40-degree for 9 seats; action clock reads server turn_started_at; betting controls hidden on non-acting player; cards are inline <svg>; 4-color toggle changes --suit-diamond + --suit-club CSS vars; in heads-up, button + SB co-located on same seat."
+}

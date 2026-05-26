@@ -1,0 +1,11 @@
+{
+  "name": "Texas Hold'em Tournament",
+  "short_name": "TH Tournament",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5efe2",
+  "theme_color": "#1a3a5e",
+  "icons": [
+    { "src": "icons/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

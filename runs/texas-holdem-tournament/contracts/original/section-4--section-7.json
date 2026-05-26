@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "from_section": "section-4",
+  "to_section": "section-7",
+  "interface": {
+    "leaderboardDocument": {
+      "path": "/leaderboards/{scale}",
+      "scales": ["weekly", "monthly", "alltime"],
+      "shape": {
+        "scale": "'weekly'|'monthly'|'alltime'",
+        "window_start_iso": "ISO-8601|null (null for alltime)",
+        "window_end_iso": "ISO-8601|null (null for alltime)",
+        "updated_at": "ISO-8601 server timestamp",
+        "entries": "Array<{ rank:int, player_uid:string, nickname:string, photo_url:string, aggregate_score:number, tournaments_played:int, tournaments_finished:int, tournaments_unfinished:int }>"
+      },
+      "writer": "section-4 recomputeLeaderboards Cloud Function (admin-triggered via section-8, AND on every tournament status transition to 'finished' or 'unfinished')",
+      "reader": "section-7 client via onSnapshot"
+    },
+    "scoreTournament(player_uid, tournament)": {
+      "params": {
+        "player_uid": "string",
+        "tournament": {
+          "status": "'finished'|'unfinished'",
+          "starting_field": "int",
+          "players_eliminated": "int (only meaningful for 'unfinished')",
+          "final_standings": "Array<{ player_uid:string, finish_position:int }>"
+        }
+      },
+      "returns": "number (PWCS score for this player in this tournament)",
+      "module": "functions/src/scoring.js (also re-exported to src/scoring.js for client-side display previews if needed)",
+      "formula": "position_points = round(100 * (1 - (finish_position - 1) / starting_field) ^ 0.6); completion_weight = 1.0 if finished else max(0, players_eliminated / (starting_field - 1)); score = position_points * completion_weight"
+    }
+  },
+  "notes": "section-7 is read-only against /leaderboards/{scale}. All writes happen via section-4's recompute function (triggered by section-8 admin or by tournament-status changes). The PWCS formula is shared so section-7 can render hover-tooltip score breakdowns consistently."
+}

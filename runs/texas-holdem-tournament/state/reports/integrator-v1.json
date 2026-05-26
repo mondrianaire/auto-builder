@@ -1,0 +1,15 @@
+{
+  "role": "Integrator",
+  "instance_id": "integrator",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:40:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What did you produce?", "answer": "A complete web app you can open at the GitHub Pages URL. Sign in with Google, join the lobby, start a tournament, play hands around an animated ring, watch the worst hand in poker get a wacky celebration. Three leaderboards track everyone's scores over time. A maintenance dashboard lets the project owner keep things tidy.", "kind": "always", "importance": "high" },
+    { "question": "Anything to know before using it?", "answer": "Before the first session, the project owner has to do three one-time setup steps: paste their Google user ID into src/config.js, do the same in firestore.rules and publish those rules, and add mondrianaire.github.io to the Firebase authorized domains list. README and DEPLOYMENT files walk through this. Also: the default in-browser dealer mode is fine for friendly games but isn't designed to stop a determined cheater — deploy the included Cloud Functions for the production-grade version.", "kind": "conditional", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "ConvergenceVerifier"
+}

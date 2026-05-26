@@ -1,0 +1,30 @@
+{
+  "probe_id": "probe-001-tournament-presets-and-scoring",
+  "created_at": "2026-05-26T00:10:00Z",
+  "phase": "planning",
+  "dispatched_by": "technical-discovery",
+  "dispatch_mode_note": "Dispatched inline by TD acting in Researcher capacity per the architecture's inline-execution pattern. The Agent/Task dispatch tool was not available in this TD's execution environment; substrate output (briefing.json + findings.json with non-empty verbatim_excerpt citations per Principle F) is identical to a nested dispatch.",
+  "question": "(1) For a tournament-style Texas Hold'em web application that ships with a small set of selectable starting structures (the user said: 'Perform a deep dive research into popular starting values and seed multiple options into the application'), what are the conventional starting values for: starting stack (in chips), blind level duration, blind level progression (small/big blind + antes), break cadence (after how many levels and for how long), and per-turn action clock? Specifically, what are the canonical 'Turbo / Regular / Deep' or 'WSOP-style' archetypes used by major live and online tournament series? Return at least 3 named presets with concrete numeric values per level for the first ~10-12 levels. (2) What rule corpus governs the procedural mechanics (button rotation, heads-up button-acts-first-preflop convention, all-in handling, dead-button on elimination, big-blind-ante, hand-for-hand at bubble, no-limit betting controls)? Confirm or refute that the Tournament Directors Association (TDA) is the de-facto canonical corpus for live tournaments. (3) For unfinished tournaments (the user wrote: 'a weighted system will need to be implemented to determine the value of unfinished tournaments vs finished ones'), what scoring conventions exist in the wild? Look at GPI (Global Poker Index), POY (Player of the Year) systems, online site leaderboard formulas, and any published 'unfinished-tournament weighting' approach (Mizrachi / Cardplayer formulas, ICM-derived, percent-payout-equivalent, percent-eliminated, etc.). Return a usable closed-form scoring formula recommendation that handles both finished and unfinished cases on one leaderboard.",
+  "context_pointers": [
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP1]",
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP5]",
+    "decisions/discovery/ledger-v1.json#inflection_points[id=IP11]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A7]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A8]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A9]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A11]",
+    "decisions/discovery/ledger-v1.json#assumption_ledger[id=A27]"
+  ],
+  "constraints": [
+    "Numbers must be concrete enough that they can be seeded directly into a JavaScript presets array — no hand-waving like 'standard blind structure'. For each preset, return at least the first 10 levels.",
+    "Citations MUST include verbatim_excerpt per Principle F; URLs alone are not sufficient. If a primary source (TDA, WSOP, PokerStars) is the canonical reference, cite it directly.",
+    "Heads-up rule (button posts small blind and acts first preflop, big blind acts last preflop and first post-flop) must be confirmed against a canonical source — it is referenced in IP10's default branch and Discovery's A5 leans on it.",
+    "Scoring formula must produce a single comparable score per player per tournament so that finished and unfinished tournaments can coexist on one weekly/monthly/all-time leaderboard.",
+    "Prefer formulas that are simple to implement in JavaScript and easy to recompute on demand for the maintenance dashboard."
+  ],
+  "optimization_criterion": "fit_to_project_goals",
+  "preserve_sections": null,
+  "questioning_authority": false,
+  "budget_minutes": 20,
+  "max_options": 5
+}

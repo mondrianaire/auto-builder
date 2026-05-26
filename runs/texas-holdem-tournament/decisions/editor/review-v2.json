@@ -1,0 +1,186 @@
+{
+  "version": 2,
+  "created_at": "2026-05-26T01:55:00Z",
+  "based_on": {
+    "prompt_source": "decisions/discovery/ledger-v1.json#restatement (no separate prompt.txt file exists; the prompt text is captured into Discovery's restatement and proper_nouns[].lexical_context entries)",
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "ledger_diff": "decisions/discovery/ledger-diff-v2.json",
+    "sections": "decisions/technical-discovery/sections-v1.json",
+    "research_findings": "research/probes/probe-001-tournament-presets-and-scoring/findings.json",
+    "prior_editor_review": "decisions/editor/review-v1.json"
+  },
+  "iteration": 2,
+  "verdict": "pass_with_recommendations",
+  "summary": "Pass-2 confirms F.1 (PN.1 'TEXAS HOLDEM' left at verification_status: pending) and F.2 (PN.2-PN.5 verified-but-prose-only) are STRUCTURALLY RESOLVED by ledger-diff-v2.json. All six proper nouns now carry citations[] arrays with non-empty verbatim_excerpt fields per Principle F. PN.1 transitioned pending -> verified with four citations (two via pointer to existing probe-001 findings C.3/C.4 + two newly fetched static_canonical citations for hand structure via WSOP and Wikipedia). PN.6 was reformatted defensively for cross-PN consistency even though Editor pass-1 did not flag it. F.3 (TD-IP-B chosen_branch lacks its own canonical_evidence citation_pointer) is unchanged from pass-1 — it was classified pass_with_recommendation, the amendment explicitly deferred it to TD's optional handling, and no TD re-pass was required. The other four structural checks (discovery_high_importance_action, td_ip_source, first_contact_coverage, telos_coherence, acceptance_assertion_coverage) carry forward as PASS from pass-1; the amendment did not alter sections-v1.json or the assertion graph, so re-verification is by structural inheritance. Build can proceed to Coordinator wave dispatch. Recommendation R.1 (add canonical_evidence to TD-IP-B) carries to Critic post-build verification per the pass_with_recommendations contract; recommendation R.2 (Discovery should emit citations[] from the start in future runs) is a maintenance follow-up unchanged from pass-1.",
+  "findings": [
+    {
+      "id": "F.3",
+      "check_id": "td_ip_source",
+      "severity": "low",
+      "status": "carried_forward_unchanged",
+      "carried_from": "review-v1.json#findings[id=F.3]",
+      "description": "TD-IP-B 'Server-authoritative game engine' chooses Cloud Functions but TD-IP-B's chosen_branch and IP2.A1/A2/A3 assertions do not carry their own canonical_evidence citation_pointer for the 'Cloud Functions are the right primitive for server-authoritative compute' framing. The IP2.A1-A3 assertions are source: td_plan and correctly verify the artifact's own exports (Critic's job structurally OK), but the framing claim itself rests on external Firebase product properties that should be sourced externally (e.g., https://firebase.google.com/docs/functions/callable). Re-confirmed unchanged from pass-1; the discovery amendment did not touch sections-v1.json. Non-blocking — Critic post-build can verify Cloud Functions actually run end-to-end.",
+      "evidence": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[ip_id=IP2] (the original v1.json file is unchanged by ledger-diff-v2)",
+      "recommended_route": "pass_with_recommendation",
+      "recommended_action": "add_canonical_evidence_citation_to_TD_IP_B_chosen_branch",
+      "suggested_resolution": "TD adds a citation_pointer on TD-IP-B's chosen_branch (or on a new lightweight assertion TD-IP-B.A2) referencing https://firebase.google.com/docs/functions/callable so the 'Cloud Functions for server-authoritative compute' framing is externally sourced rather than self-referential. Non-blocking; carried into the Uncertainty Manifest if not addressed pre-Critic; Critic post-build verifies the architecture works regardless."
+    }
+  ],
+  "passes": [
+    {
+      "check_id": "proper_noun_citation",
+      "status": "pass",
+      "evidence": "All 6 proper nouns now carry citations[] arrays with non-empty verbatim_excerpt fields per Principle F, per decisions/discovery/ledger-diff-v2.json#proper_nouns_amended_v2. Structural verification (citation presence and shape, NOT substantive accuracy — substantive accuracy is Researcher's job per the Editor charter Boundaries clause).",
+      "structural_check_table": [
+        {
+          "pn_id": "PN.1",
+          "surface": "TEXAS HOLDEM",
+          "role": "target_defining",
+          "prior_status": "pending",
+          "current_status": "verified",
+          "citations_count": 4,
+          "citation_ids": ["C.PN1.1", "C.PN1.2", "C.PN1.3", "C.PN1.4"],
+          "verbatim_excerpt_check": "all 4 entries carry non-empty verbatim_excerpt (C.PN1.1 cites probe-001 heads-up rule via pointer; C.PN1.2 cites probe-001 BBA rule via pointer; C.PN1.3 cites WSOP official rules with hand-structure excerpt; C.PN1.4 cites Wikipedia Texas hold 'em with hand-structure + named-streets excerpt). Two are static_canonical pointer-references to existing probe-001 entries; two are static_canonical newly-fetched. Structural form valid.",
+          "url_or_path_check": "all 4 carry non-empty url_or_path (two pointer-style into probe-001 findings.json; two URL-style to WSOP and Wikipedia)",
+          "f1_resolution_path": "Editor pass-1 suggested_resolution path (a) was applied — PN.1 re-pointed to existing probe-001 research artifacts (C.3 and C.4) for the procedural rule corpus PLUS two new static_canonical citations for the hand structure. F.1 is resolved structurally.",
+          "verdict": "structurally_compliant"
+        },
+        {
+          "pn_id": "PN.2",
+          "surface": "Google SSO",
+          "role": "target_defining",
+          "prior_status": "verified (prose evidence only)",
+          "current_status": "verified (structured citations[])",
+          "citations_count": 3,
+          "citation_ids": ["C.PN2.1", "C.PN2.2", "C.PN2.3"],
+          "verbatim_excerpt_check": "all 3 entries carry non-empty verbatim_excerpt (C.PN2.1 Google Identity Services overview; C.PN2.2 Firebase Authentication GoogleAuthProvider docs; C.PN2.3 in-corpus gto-poker-async-duel config.js proof-of-reuse). Structural form valid.",
+          "url_or_path_check": "all 3 carry non-empty url_or_path",
+          "verdict": "structurally_compliant"
+        },
+        {
+          "pn_id": "PN.3",
+          "surface": "Firebase Firestore",
+          "role": "target_defining",
+          "prior_status": "verified (prose evidence only)",
+          "current_status": "verified (structured citations[])",
+          "citations_count": 4,
+          "citation_ids": ["C.PN3.1", "C.PN3.2", "C.PN3.3", "C.PN3.4"],
+          "verbatim_excerpt_check": "all 4 entries carry non-empty verbatim_excerpt (C.PN3.1 Firestore product overview; C.PN3.2 onSnapshot listener docs; C.PN3.3 Firestore security rules docs; C.PN3.4 in-corpus gto-poker-async-duel firestore.rules proof-of-reuse). Structural form valid.",
+          "url_or_path_check": "all 4 carry non-empty url_or_path",
+          "verdict": "structurally_compliant"
+        },
+        {
+          "pn_id": "PN.4",
+          "surface": "GitHub Pages",
+          "role": "target_defining",
+          "prior_status": "verified (prose evidence only)",
+          "current_status": "verified (structured citations[])",
+          "citations_count": 2,
+          "citation_ids": ["C.PN4.1", "C.PN4.2"],
+          "verbatim_excerpt_check": "both entries carry non-empty verbatim_excerpt (C.PN4.1 GitHub Pages about-pages docs; C.PN4.2 Firebase Authentication authorized-domains docs — load-bearing for A23 / DCA.FC2 OAuth flow). Structural form valid.",
+          "url_or_path_check": "both carry non-empty url_or_path",
+          "verdict": "structurally_compliant"
+        },
+        {
+          "pn_id": "PN.5",
+          "surface": "2-7o",
+          "role": "target_defining",
+          "prior_status": "verified (prose evidence only)",
+          "current_status": "verified (structured citations[])",
+          "citations_count": 2,
+          "citation_ids": ["C.PN5.1", "C.PN5.2"],
+          "verbatim_excerpt_check": "both entries carry non-empty verbatim_excerpt (C.PN5.1 PokerNews canonical 7-2 offsuit = worst starting hand; C.PN5.2 Wikipedia Texas hold 'em starting hands canonical -o notation + 7-2 offsuit framing). Structural form valid.",
+          "url_or_path_check": "both carry non-empty url_or_path",
+          "verdict": "structurally_compliant"
+        },
+        {
+          "pn_id": "PN.6",
+          "surface": "OttoBLD",
+          "role": "supportive",
+          "prior_status": "verified (prose evidence only — not flagged by Editor pass-1, defensively reformatted)",
+          "current_status": "verified (structured citations[])",
+          "citations_count": 1,
+          "citation_ids": ["C.PN6.1"],
+          "verbatim_excerpt_check": "single entry carries non-empty verbatim_excerpt sourcing the on-disk brand spec at brand/brand-identity.md with the voice-caveat clause. Structural form valid.",
+          "url_or_path_check": "carries non-empty url_or_path (absolute Windows file path)",
+          "verdict": "structurally_compliant",
+          "note": "Editor pass-1 did not flag PN.6 (it was already verified and not in F.2's scope). Discovery applied a defensive reformat in the same amendment for cross-PN consistency; structurally valid either way."
+        }
+      ],
+      "f1_resolution": "RESOLVED. PN.1 transitioned pending -> verified with 4 citations including 2 newly fetched static_canonical entries covering hand structure (WSOP rules + Wikipedia Texas hold 'em).",
+      "f2_resolution": "RESOLVED. PN.2 / PN.3 / PN.4 / PN.5 all reformatted to citations[] arrays with non-empty verbatim_excerpt fields. PN.6 also reformatted defensively even though not in F.2's scope."
+    },
+    {
+      "check_id": "discovery_high_importance_action",
+      "status": "pass",
+      "carried_from": "review-v1.json#passes[check_id=discovery_high_importance_action]",
+      "evidence": "Unchanged from pass-1. All importance: high IPs (IP1, IP2, IP3, IP5, IP7, IP10) carry non-n/a importance_action: IP1 researcher_dispatched (probe-001), IP2 best_effort_default (Principle E/F rationale), IP3 evidence_backed (Firebase listener docs), IP5 researcher_dispatched (probe-001 returned PWCS), IP7 best_effort_default (4-6s bound from prompt language), IP10 best_effort_default (TDA C.3 anchors heads-up rule). Each importance_action_evidence is non-empty. The amendment did not modify the ledger's assumption_ledger[] or inflection_points[] arrays — only proper_nouns[] citation structure — so this check inherits PASS verbatim from pass-1."
+    },
+    {
+      "check_id": "td_ip_source",
+      "status": "pass_with_recommendation",
+      "carried_from": "review-v1.json#findings[id=F.3]",
+      "evidence": "Unchanged from pass-1. F.3 (TD-IP-B framing-claim sourcing gap) is the only finding under this check and was classified pass_with_recommendation in pass-1 (low severity, recommendation rather than route). The amendment did not modify sections-v1.json, so TD-IP source attributions are byte-identical to pass-1. F.3 carries forward as the lone open finding."
+    },
+    {
+      "check_id": "first_contact_coverage",
+      "status": "pass",
+      "carried_from": "review-v1.json#passes[check_id=first_contact_coverage]",
+      "evidence": "Unchanged from pass-1. All 10 ledger first_contact_requirements (FC.1-FC.10) have at least one corresponding acceptance_assertion in sections-v1.json. Cross-reference table: FC.1 -> DCA.FC1 + S1.A1; FC.2 -> DCA.FC2 + S1.A2 + S1.A3; FC.3 -> DCA.FC3 + S2.A1 + S2.A2 + S1.A3; FC.4 -> DCA.FC4 + S1.A4 + S1.A5; FC.5 -> DCA.FC5 + S5.A1 + S2.A5; FC.6 -> DCA.FC6 + S4.A4 + IP10.A1 + IP10.A2 + IP1.A4; FC.7 -> DCA.FC7 + S6.A1 + S6.A2 + S6.A3 + S4.A6; FC.8 -> DCA.FC8 + S3.A1 + S3.A2 + S3.A3; FC.9 -> DCA.FC9 + S7.A1 + S7.A2 + S7.A3; FC.10 -> DCA.FC10 + S8.A1 + S8.A2 + S8.A3. Inherited by structural identity — the amendment did not modify ledger.first_contact_requirements[] or sections.acceptance_assertions[]."
+    },
+    {
+      "check_id": "telos_coherence",
+      "status": "pass",
+      "carried_from": "review-v1.json#passes[check_id=telos_coherence]",
+      "evidence": "Unchanged from pass-1. Telos verbs (join, play, track) are each exercised by at least one assertion. 'Play' is the load-bearing verb chosen by prompt_verb_analysis and is exercised end-to-end by PNV.1 under production_fidelity_required: true (two real browser windows, Google OAuth against gto-poker-qui, lobby join, tournament start, at least one hand to resolution with server-side dealing verified). 'Join' is exercised by S2.A2/A3 and FC.3. 'Track' is exercised by S7.A1-A4 and DCA.A10. DCA.TELOS provides an explicit telos-level user_flow assertion. All 10 sections trace to the telos with no extraneous sections. Inherited by structural identity — the telos and section list are byte-identical to pass-1."
+    },
+    {
+      "check_id": "acceptance_assertion_coverage",
+      "status": "pass",
+      "carried_from": "review-v1.json#passes[check_id=acceptance_assertion_coverage]",
+      "evidence": "Unchanged from pass-1. Every section 1-10 has acceptance_assertions[] whose from_acceptance_phrase covers each load-bearing phrase in the section's acceptance prose. Spot-checked sections 1, 4, 5, 6 in full. Section-6 (easter-egg-2-7o) covers all five user-facing constraints from the prompt: dramatic/wacky breaking-of-design (S6.A4), all-users visibility (S6.A1), bounded duration (S6.A2), no hole-card reveal (S6.A3), action-clock pause (S6.A5). Inherited by structural identity."
+    }
+  ],
+  "watch_items_revisited": [
+    {
+      "watch_id": "firebase_reuse",
+      "status": "pass",
+      "evidence": "PN.3 now carries C.PN3.4 explicitly citing runs/gto-poker-async-duel/output/final/firestore.rules as in-corpus proof-of-reuse for the gto-poker-qui project, which strengthens the watch-item beyond pass-1's soft concern. A22 / DCA.A22 (FIREBASE_CONFIG.projectId == 'gto-poker-qui') remains structurally enforced."
+    },
+    {
+      "watch_id": "easter_egg_section_6",
+      "status": "pass",
+      "evidence": "Unchanged from pass-1. Section-6 exists with depends_on [section-4, section-5], 2 estimated_builders, 5 acceptance_assertions covering dramatic / wacky / unmissable / bounded-duration / non-revealing. PN.5 trigger now carries C.PN5.1 and C.PN5.2 canonical citations for the 2-7 offsuit = worst starting hand designation and the -o notation convention."
+    },
+    {
+      "watch_id": "server_authoritative_engine",
+      "status": "pass_with_recommendation",
+      "evidence": "Unchanged from pass-1. IP2 chosen_branch is server-authoritative via Cloud Functions; assertions IP2.A1/A2/A3 verify the boundary structurally. F.3 carries forward as the only open finding."
+    },
+    {
+      "watch_id": "pnv_play_scenario",
+      "status": "pass",
+      "evidence": "Unchanged from pass-1. PNV.1 scenario literally exercises two separate desktop Chrome browser sessions, real Google OAuth against gto-poker-qui, lobby join from both windows, tournament start, blind posting, action through preflop/flop/turn/river or until fold, hand resolution, chip movement, button rotation. production_fidelity_required: true is explicit. expected_result calls out server-side dealing verified by Firestore writes from a service account, which addresses the Law B failure mode."
+    }
+  ],
+  "routed_to": [],
+  "recommendations": [
+    {
+      "id": "R.1",
+      "from_finding": "F.3",
+      "description": "Add canonical_evidence citation_pointer to TD-IP-B chosen_branch (e.g., https://firebase.google.com/docs/functions/callable) so the 'Cloud Functions are the right primitive' framing is externally sourced rather than self-referential. Non-blocking — Critic post-build can verify Cloud Functions actually run.",
+      "carry_to": "critic_post_build_verification"
+    },
+    {
+      "id": "R.2",
+      "from_finding": "general (from pass-1)",
+      "description": "Discovery's initial ledger emitted prose verification_evidence on verified proper nouns rather than the schema-prescribed citations[] form, causing the F.2 rework loop. Future Discovery runs should emit citations[] with verbatim_excerpt directly from the initial pass. Candidate for a discovery_charter.md clarification noting the citation form precisely.",
+      "carry_to": "maintenance_followup"
+    }
+  ],
+  "convergence_note": "Pass-2 converged to pass_with_recommendations within 2 iterations of the v1.9 3-pass iteration cap. F.1 and F.2 were structurally resolved by a single Discovery Amendment Mode pass that touched only the proper_nouns[] citation form (no behavioral / scope change). TD sections-v1.json was not re-passed because the amendment did not invalidate any of its content. F.3 carries forward as the lone pass_with_recommendation; per the Editor charter, recommendations are recorded for Critic to verify post-build and included in the run-report's Uncertainty Manifest.",
+  "iteration_cap_note": "Pass 2 of 3. Convergence reached; no third pass required. Build proceeds to Coordinator wave dispatch per Orchestrator step 6.",
+  "build_can_proceed": true,
+  "next_active_role": "Orchestrator",
+  "next_active_phase": "coordinator-dispatch-prep (C2 git commit then Coordinator wave dispatch)"
+}

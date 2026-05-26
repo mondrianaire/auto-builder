@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-easter-egg-2-7o",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:35:00Z",
+  "section": "easter-egg-2-7o",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the moment of chaos. When anyone at the table is dealt the worst hand in poker (a 2 and a 7 of different suits), every player and spectator's screen erupts for five seconds with neon bursts, spinning giant cards, confetti, and a 'WORST. HAND. IN. POKER.' headline. Then it stops and play continues normally.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. It fires within a second of the deal, lasts exactly five seconds, and never says which player got the cards — you only know someone at the table did. The action clock pauses while it's running.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

@@ -1,0 +1,67 @@
+{
+  "role": "technical-discovery",
+  "phase": "initial",
+  "iteration": 1,
+  "written_at": "2026-05-26T01:10:00Z",
+  "raised_escalation": false,
+  "outputs": [
+    "decisions/technical-discovery/sections-v1.json",
+    "contracts/original/section-1--section-2.json",
+    "contracts/original/section-1--section-5.json",
+    "contracts/original/section-2--section-3.json",
+    "contracts/original/section-3--section-4.json",
+    "contracts/original/section-4--section-5.json",
+    "contracts/original/section-4--section-6.json",
+    "contracts/original/section-4--section-7.json",
+    "contracts/original/section-4--section-8.json",
+    "contracts/original/section-5--section-6.json",
+    "contracts/original/section-7--section-8.json",
+    "research/probes/probe-001-tournament-presets-and-scoring/briefing.json",
+    "research/probes/probe-001-tournament-presets-and-scoring/findings.json"
+  ],
+  "researcher_dispatches": [
+    {
+      "probe_id": "probe-001-tournament-presets-and-scoring",
+      "phase": "planning",
+      "dispatch_mode": "inline",
+      "covered_ips": ["IP1", "IP5", "IP10", "IP11"],
+      "outcome": "recommended opt-A (three seeded presets + PWCS scoring formula); TD locked recommendation."
+    }
+  ],
+  "blurbs": [
+    {
+      "question": "How are you breaking this into pieces?",
+      "importance": "high",
+      "answer": "Ten pieces. The shell piece handles sign-in with Google and the account card top-right. The lobby piece is the join surface with waiting profile pictures. The settings piece offers three pre-seeded tournament structures (Friendly Turbo, Standard Home Game, WSOP-Style Deep Stack) and a custom editor. The game-engine piece is the server-side brain (it deals cards, validates every action, resolves pots, runs the blind timer, fires the 2-7o easter egg trigger, and recomputes leaderboards). The poker-ring piece is the animated table with adaptive seat positions including a focal heads-up layout. The easter-egg piece is the full-screen wacky 4-6 second animation. The leaderboards piece shows weekly, monthly, and all-time rankings. The admin piece is the small maintenance dashboard for the project owner only. The rules-and-schema piece nails down Firestore security and document shapes. The edge-case-testing piece runs the whole thing end-to-end against the deployed artifact."
+    },
+    {
+      "question": "What tech choices did you make, and why?",
+      "importance": "high",
+      "answer": "Reusing the existing gto-poker-qui Firebase project that the prior async-duel build already uses (the user named Firestore and Google sign-in explicitly). Card dealing runs server-side in Cloud Functions using Node's cryptographic random source rather than Math.random — anything less and the leaderboards would be meaningless because anyone could deal themselves aces. Real-time updates use Firestore's onSnapshot listeners (Firestore was the named substrate). Cards render as inline SVGs so the 4-color toggle is just swapping a CSS color variable, and card identity stays crisp at any zoom. The Firebase SDK loads from Google's gstatic CDN with a pinned version — that's Firebase's recommended pattern for static-hosted sites. Notifications use the browser-native Notifications API; closed-tab push (FCM) is deferred. Tournament presets and the heads-up button rule are anchored to the TDA's 2024 tournament rules and to the WSOP Main Event's published structure — verifiable citations went into the research findings."
+    },
+    {
+      "question": "What handoffs exist between pieces?",
+      "importance": "medium",
+      "answer": "The biggest handoff is the hand document — the game-engine piece writes it; the poker-ring piece and the easter-egg piece both listen to it; neither of those ever writes back. The settings piece persists a tournament configuration that the game-engine piece reads when advancing blind levels. The leaderboards piece is read-only against documents the game-engine piece rewrites whenever a tournament ends. The admin piece talks to the game-engine piece through four small callable functions (force-end, recompute, hide, reset-nickname). The shell piece feeds user identity and the 4-color preference down to the lobby and the table. Ten contract files in total — each handoff is just data, never logic."
+    },
+    {
+      "question": "What did you defer or note as risky?",
+      "importance": "medium",
+      "answer": "Closed-tab push notifications via FCM are deferred (in-window notifications only at launch). Table chat, hand-history export, audio, and multi-admin role management are all explicitly out of scope. Two production-fidelity risks worth naming: (1) the Pages origin must be added to the Firebase project's OAuth authorized domains before sign-in will work — that's a deploy-time configuration step documented in the README; (2) Firestore's per-write latency is typically around 500ms, which is borderline for fast multiway action — the action clock derives from a server-set turn-started-at timestamp to mitigate, but if pacing feels sluggish in practice it surfaces as a TD impact-mode escalation rather than a silent substitution to Realtime Database."
+    }
+  ],
+  "section_count": 10,
+  "contract_count": 11,
+  "ip_resolution_summary": {
+    "discovery_ips_resolved": 11,
+    "td_ips_introduced": 7,
+    "ips_resolved_via_research": 4,
+    "ips_resolved_via_quick_reasoning": 14
+  },
+  "pnv_summary": {
+    "verb_chosen": "play",
+    "rationale": "The user wrote 'allows for multiple users to play tournament style poker games' — 'play' is the load-bearing verb against which the integrated artifact is judged. The PNV scenario literally exercises two signed-in users sitting down at the deployed URL and playing a hand to resolution under production fidelity."
+  },
+  "next_active_role": "Editor",
+  "next_active_phase": "editor-review"
+}

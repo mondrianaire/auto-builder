@@ -1,0 +1,17 @@
+{
+  "section_id": "section-2",
+  "section_name": "lobby",
+  "status": "verified",
+  "owner": "overseer-lobby (coordinator-inline)",
+  "started_at": "2026-05-26T02:11:00Z",
+  "verified_at": "2026-05-26T02:15:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-2",
+  "active_contracts": ["contracts/original/section-1--section-2.json", "contracts/original/section-2--section-3.json"],
+  "sub_goals": [
+    { "id": "2a", "description": "Lobby view with awaiting-players list + Join control + Start tournament control", "status": "verified", "builder_id": "builder-2a", "output_path": "output/builders/section-2/builder-2a/" },
+    { "id": "2b", "description": "Lobby state (Firestore /tournaments/{tid}/lobby) + auto-start hook", "status": "verified", "builder_id": "builder-2b", "output_path": "output/builders/section-2/builder-2b/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_summary": "S2.A1-A5 verified. Join control shows; awaiting players' profile pictures shown; Start button disabled <2 enabled >=2; both manual Start and auto-start-after-5min paths implemented (Cloud Function + client-dealer setTimeout per dev-003)."
+}

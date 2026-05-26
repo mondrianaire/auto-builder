@@ -1,0 +1,14 @@
+{
+  "section_id": "section-4",
+  "section_name": "game-engine-cloud-functions",
+  "completed_at": "2026-05-26T02:25:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-4a", "task": "functions/src/shuffle.js + functions/src/dealHand.js + functions/src/easterEggDispatch.js", "output_files": ["functions/src/shuffle.js", "functions/src/dealHand.js", "functions/src/easterEggDispatch.js"] },
+    { "builder_id": "builder-4b", "task": "functions/src/handEngine.js + functions/src/submitAction.js", "output_files": ["functions/src/handEngine.js", "functions/src/submitAction.js"] },
+    { "builder_id": "builder-4c", "task": "functions/src/resolveHand.js + src/hand-evaluator.js (pure 5-of-7 evaluator)", "output_files": ["functions/src/resolveHand.js", "src/hand-evaluator.js"] },
+    { "builder_id": "builder-4d", "task": "functions/src/scoring.js + functions/src/recomputeLeaderboards.js + functions/src/advanceBlindLevel.js + functions/src/lobbyTimers.js + functions/src/index.js + functions/package.json + functions/test/runTests.js + src/scoring.js + src/rng.js", "output_files": ["functions/src/scoring.js", "functions/src/recomputeLeaderboards.js", "functions/src/advanceBlindLevel.js", "functions/src/lobbyTimers.js", "functions/src/index.js", "functions/package.json", "functions/test/runTests.js", "src/scoring.js", "src/rng.js"] },
+    { "builder_id": "builder-4e", "task": "src/game-engine-client.js + src/game-engine-cloud-shim.js (dev-001 dual path)", "output_files": ["src/game-engine-client.js", "src/game-engine-cloud-shim.js"] }
+  ],
+  "notes": "Sev 0 trivial-fix applied to functions/src/scoring.js to correct a typo in an early draft. dev-001 + sev0-001 record the dual-path architecture (client-dealer fallback + ready-to-deploy Cloud Functions)."
+}

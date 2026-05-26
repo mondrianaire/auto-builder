@@ -1,0 +1,52 @@
+{
+  "updated_at": "2026-05-26T02:00:00Z",
+  "version": 1,
+  "dispatch_mode": "inline",
+  "nodes": [
+    { "id": "section-1", "name": "auth-shell", "status": "pending", "wave": 1, "depends_on": [] },
+    { "id": "section-2", "name": "lobby", "status": "pending", "wave": 2, "depends_on": ["section-1"] },
+    { "id": "section-3", "name": "tournament-settings-and-presets", "status": "pending", "wave": 3, "depends_on": ["section-2"] },
+    { "id": "section-4", "name": "game-engine-cloud-functions", "status": "pending", "wave": 4, "depends_on": ["section-3"] },
+    { "id": "section-5", "name": "poker-ring-ui", "status": "pending", "wave": 5, "depends_on": ["section-1", "section-4"] },
+    { "id": "section-6", "name": "easter-egg-2-7o", "status": "pending", "wave": 6, "depends_on": ["section-4", "section-5"] },
+    { "id": "section-7", "name": "results-leaderboards", "status": "pending", "wave": 5, "depends_on": ["section-4"] },
+    { "id": "section-8", "name": "admin-dashboard", "status": "pending", "wave": 6, "depends_on": ["section-4", "section-7"] },
+    { "id": "section-9", "name": "firestore-rules-and-schema", "status": "pending", "wave": 1, "depends_on": [] },
+    { "id": "integrator", "type": "pseudo-node", "status": "pending", "wave": 7, "is_pseudo": true, "depends_on": ["section-1","section-2","section-3","section-4","section-5","section-6","section-7","section-8","section-9"] },
+    { "id": "section-10", "name": "edge-case-testing", "status": "pending", "wave": 8, "depends_on": ["integrator"] }
+  ],
+  "edges": [
+    { "from": "section-1", "to": "section-2" },
+    { "from": "section-2", "to": "section-3" },
+    { "from": "section-3", "to": "section-4" },
+    { "from": "section-1", "to": "section-5" },
+    { "from": "section-4", "to": "section-5" },
+    { "from": "section-4", "to": "section-6" },
+    { "from": "section-5", "to": "section-6" },
+    { "from": "section-4", "to": "section-7" },
+    { "from": "section-4", "to": "section-8" },
+    { "from": "section-7", "to": "section-8" },
+    { "from": "section-1", "to": "integrator" },
+    { "from": "section-2", "to": "integrator" },
+    { "from": "section-3", "to": "integrator" },
+    { "from": "section-4", "to": "integrator" },
+    { "from": "section-5", "to": "integrator" },
+    { "from": "section-6", "to": "integrator" },
+    { "from": "section-7", "to": "integrator" },
+    { "from": "section-8", "to": "integrator" },
+    { "from": "section-9", "to": "integrator" },
+    { "from": "integrator", "to": "section-10" }
+  ],
+  "current_wave": 1,
+  "wave_plan": {
+    "wave_1": ["section-1", "section-9"],
+    "wave_2": ["section-2"],
+    "wave_3": ["section-3"],
+    "wave_4": ["section-4"],
+    "wave_5": ["section-5", "section-7"],
+    "wave_6": ["section-6", "section-8"],
+    "wave_7": ["integrator"],
+    "wave_8": ["section-10"]
+  },
+  "notes": "Wave plan computed from depends_on per sections-v1.json. Section-1 and section-9 have no dependencies and run wave-1. Section-9 (rules+schema) is independent of UI sections. Section-3 (settings) depends on section-2 per the lobby's settings-launch hook. Section-4 (game engine) needs section-3's TOURNAMENT_PRESETS shape. Sections 5/7 parallel after section-4 verified. Sections 6/8 parallel after 5/7. Integrator pseudo-node assembles, then edge-case-testing exercises against the integrated artifact."
+}

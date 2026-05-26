@@ -1,0 +1,98 @@
+/* animations.css — ring glow + the dramatic 2-7o easter-egg keyframes (section-6, IP7, TD-IP-E).
+   The easter-egg deliberately uses colors OUTSIDE the OttoBLD palette to satisfy
+   S6.A4 "intentionally breaks OttoBLD". */
+
+@keyframes ring-glow {
+  0%   { opacity: 0.3; stroke-width: 1.2; }
+  50%  { opacity: 0.55; stroke-width: 2; }
+  100% { opacity: 0.3; stroke-width: 1.2; }
+}
+.ring-glow { animation: ring-glow 3.6s ease-in-out infinite; }
+
+/* Easter-egg overlay (full-viewport, z-index 99999, position fixed). */
+.easter-egg-overlay {
+  position: fixed; inset: 0; z-index: 99999;
+  background: radial-gradient(circle at center, rgba(255, 0, 200, 0.7) 0%, rgba(20, 0, 80, 0.9) 100%);
+  display: grid; place-items: center;
+  overflow: hidden; pointer-events: none;
+  animation: ee-screen-shake 0.4s ease-in-out infinite;
+}
+.easter-egg-overlay.ee-fade-out { animation: ee-fade-out 0.4s ease-out forwards; }
+
+@keyframes ee-fade-out { to { opacity: 0; } }
+
+@keyframes ee-screen-shake {
+  0%, 100% { transform: translate(0,0) rotate(0deg); }
+  25%      { transform: translate(-6px, 4px) rotate(-1.5deg); }
+  50%      { transform: translate(6px, -4px) rotate(1.5deg); }
+  75%      { transform: translate(-4px, -2px) rotate(-0.5deg); }
+}
+
+.ee-burst {
+  position: absolute; width: 220px; height: 220px; border-radius: 50%;
+  filter: blur(8px); mix-blend-mode: screen;
+  animation: ee-burst 5s ease-in-out infinite;
+}
+.ee-burst-1 { left: 18%; top: 20%; background: #00ffff; }
+.ee-burst-2 { right: 14%; top: 28%; background: #ffff00; animation-delay: -1.3s; }
+.ee-burst-3 { left: 36%; bottom: 18%; background: #ff00aa; animation-delay: -2.6s; }
+
+@keyframes ee-burst {
+  0%, 100% { transform: scale(0.6) translate(0, 0); opacity: 0.45; }
+  50%      { transform: scale(1.3) translate(40px, -30px); opacity: 0.9; }
+}
+
+.ee-cards {
+  display: flex; gap: 32px; z-index: 2; transform: scale(1.5);
+  animation: ee-card-spin 2.4s ease-in-out infinite;
+}
+.ee-card {
+  width: 120px; height: 168px; border-radius: 10px; background: #ffffff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.5); border: 6px solid #000;
+}
+.ee-card-2 .ee-rank { color: #ff00aa; }
+.ee-card-7 .ee-rank { color: #00aaff; }
+.ee-rank { font: 700 90px Georgia, serif; line-height: 1; }
+.ee-suit { font-size: 60px; }
+.ee-card-2 .ee-suit { color: #ff00aa; }
+.ee-card-7 .ee-suit { color: #00aaff; }
+
+@keyframes ee-card-spin {
+  0%   { transform: scale(1.5) rotate(-8deg); }
+  50%  { transform: scale(1.65) rotate(8deg); }
+  100% { transform: scale(1.5) rotate(-8deg); }
+}
+
+.ee-shout {
+  position: absolute; top: 10%; left: 0; right: 0;
+  text-align: center; color: #00ff88;
+  font: 900 64px/1 "Impact", "Helvetica Neue", sans-serif;
+  letter-spacing: 0.12em; text-shadow: 0 0 24px #00ff88, 0 0 8px #ffff00;
+  animation: ee-shout-bounce 0.5s ease-in-out infinite;
+  z-index: 3;
+}
+
+@keyframes ee-shout-bounce {
+  0%, 100% { transform: scale(1) rotate(-1deg); }
+  50%      { transform: scale(1.06) rotate(1.5deg); }
+}
+
+.ee-confetti { position: absolute; inset: 0; pointer-events: none; }
+.ee-confetto {
+  position: absolute; top: -20px; width: 12px; height: 12px;
+  animation: ee-confetto-fall 3s linear infinite;
+}
+.ee-c0 { background: #ff00aa; left: 5%;  animation-delay: -0.1s; }
+.ee-c1 { background: #00ffff; left: 15%; animation-delay: -0.4s; }
+.ee-c2 { background: #ffff00; left: 25%; animation-delay: -0.7s; }
+.ee-c3 { background: #00ff88; left: 35%; animation-delay: -1.0s; }
+.ee-c4 { background: #ff6600; left: 45%; animation-delay: -1.3s; }
+.ee-c5 { background: #ff00aa; left: 55%; animation-delay: -1.6s; }
+.ee-c6 { background: #00aaff; left: 65%; animation-delay: -1.9s; }
+.ee-c7 { background: #ffff00; left: 75%; animation-delay: -2.2s; }
+
+@keyframes ee-confetto-fall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}

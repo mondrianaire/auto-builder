@@ -1,0 +1,17 @@
+{
+  "section_id": "section-9",
+  "section_name": "firestore-rules-and-schema",
+  "status": "verified",
+  "owner": "overseer-rules (coordinator-inline)",
+  "started_at": "2026-05-26T02:01:00Z",
+  "verified_at": "2026-05-26T02:10:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-9",
+  "active_contracts": [],
+  "sub_goals": [
+    { "id": "9a", "description": "firestore.rules — collection schemas (tournaments/hands/players/leaderboards) + permission rules", "status": "verified", "builder_id": "builder-9a", "output_path": "output/builders/section-9/builder-9a/" },
+    { "id": "9b", "description": "output/builders/section-9/schema.json — collection schema documentation", "status": "verified", "builder_id": "builder-9b", "output_path": "output/builders/section-9/builder-9b/" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_summary": "S9.A1-A5 verified. firestore.rules parses (firebase deploy --only firestore:rules dry-run); anonymous reads denied; client writes to hand-result fields denied; non-admin writes to /leaderboards denied; per-player hole-card subcollection rule restricts to own UID (supports the client-dealer fallback's confidentiality model); schema.json documents all four collections."
+}

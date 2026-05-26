@@ -1,0 +1,16 @@
+{
+  "section_id": "section-3",
+  "section_name": "tournament-settings-and-presets",
+  "status": "verified",
+  "owner": "overseer-settings (coordinator-inline)",
+  "started_at": "2026-05-26T02:15:00Z",
+  "verified_at": "2026-05-26T02:17:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#section-3",
+  "active_contracts": ["contracts/original/section-2--section-3.json", "contracts/original/section-3--section-4.json"],
+  "sub_goals": [
+    { "id": "3a", "description": "src/tournament/presets.js — TOURNAMENT_PRESETS array with three seeded presets from Researcher findings + settings form UI", "status": "verified", "builder_id": "builder-3a", "output_path": "output/builders/section-3/builder-3a/", "note": "Decomposition collapsed per dev-005" }
+  ],
+  "blockers": [],
+  "escalations_filed": [],
+  "verification_summary": "S3.A1-A5 verified. Three presets present with citation-backed values (Friendly Turbo 1500/7/15/10-20; Standard Home Game 10000/20/30/50-100; WSOP-Style Deep Stack 60000/30/45/100-200 BBA 200). Settings form populates on preset select; Custom mode triggers on field edit."
+}

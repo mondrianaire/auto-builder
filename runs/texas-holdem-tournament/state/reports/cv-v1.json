@@ -1,0 +1,25 @@
+{
+  "role": "ConvergenceVerifier",
+  "instance_id": "cv",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T07:35:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "Does the artifact actually work?",
+      "answer": "Yes, at the level we can verify here. The page loads, the Sign in with Google button is there, the lobby shows other players' photos as they join, the tournament transitions to an animated oval table, the two-player heads-up moment uses the correct button-acts-first rule, the 2-7o easter egg fires for everyone for about five seconds without revealing who triggered it, all three preset tournaments are seeded with editable settings, the weekly/monthly/all-time leaderboards are wired up, and the admin dashboard gates on a single owner uid. The full hand-play loop — shuffle, deal, bet, flop/turn/river, showdown, next hand with the button rotated — is wired end-to-end. Pure-function checks (preset values, scoring formula, 2-7o detection, heads-up action order, side-pot math) all returned the expected values when run. The final 'two real users actually playing a hand on the deployed page' check still belongs to you — that requires the live Pages URL and your Google account hitting the real Firebase project, which is the next step after this verdict ships the artifact to final.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "Any caveats?",
+      "answer": "Three things to keep in mind. First, this verification couldn't actually open a browser, log in with Google, or talk to Firebase live — it's a code-wiring verification against the canonical Firebase, Playwright, and GitHub Pages documentation. The deployed-page check is yours to do once we copy the build to final and you visit the URL. Second, the app ships in 'client-dealer' mode by default — meaning the dealing happens in the browser of whichever player has the lowest user id, with hole-card secrecy enforced by Firestore rules restricting per-player subcollections. That works for a friendly home-game scope, but if you want true server-side dealing (so no client ever holds the deck), deploy the included Cloud Functions and flip SERVER_ENGINE_MODE in src/config.js. Third, a couple of small operational steps need you to do them once: set ADMIN_UID in src/config.js to your Google uid (and update the matching line in firestore.rules) after your first sign-in, and add mondrianaire.github.io to the gto-poker-qui project's OAuth authorized domains — both are documented in DEPLOYMENT.md.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": null
+}

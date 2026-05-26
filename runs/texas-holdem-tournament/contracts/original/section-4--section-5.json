@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "from_section": "section-4",
+  "to_section": "section-5",
+  "interface": {
+    "handDocument": {
+      "path": "/tournaments/{tid}/hands/{hid}",
+      "shape": {
+        "hand_id": "string",
+        "tournament_id": "string",
+        "hand_number": "int (1-based)",
+        "phase": "'dealing'|'preflop'|'flop'|'turn'|'river'|'showdown'|'resolved'",
+        "community_cards": "Array<{rank:string, suit:string}> (length 0,3,4,5 depending on phase)",
+        "pot_total": "int (chips)",
+        "side_pots": "Array<{ amount:int, eligible_seat_indices:int[] }>",
+        "seats": "Array<{ seat_index:int, player_uid:string, nickname:string, photo_url:string, chip_stack:int, is_sitting_out:bool, hand_state:'in'|'folded'|'all_in'|'sitting_out' }>",
+        "button_seat_index": "int",
+        "small_blind_seat_index": "int",
+        "big_blind_seat_index": "int",
+        "current_turn": {
+          "seat_index": "int|null (null when phase==='dealing'|'resolved')",
+          "started_at": "ISO-8601 (server timestamp; section-5's action clock counts down from this)",
+          "min_raise": "int",
+          "to_call": "int"
+        },
+        "action_clock": {
+          "is_paused": "bool (true during easter-egg overlay)",
+          "duration_seconds": "int (from preset)"
+        },
+        "easter_egg": {
+          "triggered": "bool",
+          "kind": "'two-seven-off'|null",
+          "started_at": "ISO-8601|null",
+          "duration_ms": "int (4000-6000)"
+        },
+        "winner_seat_indices": "int[] (populated only when phase==='resolved'; supports split pots)",
+        "revealed_hole_cards": "Object<seat_index, [{rank, suit}, {rank, suit}]> (populated at showdown only)"
+      },
+      "writer": "section-4 Cloud Functions (dealHand, submitAction, resolveHand)",
+      "reader": "section-5 client via onSnapshot"
+    },
+    "submitAction(tid, action)": {
+      "params": {
+        "tid": "string",
+        "action": {
+          "type": "'fold'|'check'|'call'|'bet'|'raise'",
+          "amount": "int (0 for fold/check, target total bet for bet/raise, 0 for call (server computes))"
+        }
+      },
+      "returns": "Promise<{ ok: bool }>",
+      "notes": "section-5's betting controls call this. The Cloud Function validates turn order, stack, min-raise, and writes the resulting handDocument."
+    }
+  },
+  "notes": "section-5 NEVER directly writes to handDocument — only listens. All mutations go through Cloud Function submitAction. The easter_egg.triggered field is what section-6 listens for; it appears in the same document so section-5 and section-6 share the listener."
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Texas Hold'em Tournament</title>
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/animations.css">
+</head>
+<body>
+  <div id="app">
+    <!-- The shell renders here; auth.js boots, then routes to landing | lobby | table | leaderboards | admin. -->
+    <div class="ottobld-loading" aria-live="polite">
+      <div class="ottobld-rainbow" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="ottobld-wordmark">Texas Hold'em Tournament</div>
+      <div class="ottobld-meta">Loading...</div>
+    </div>
+  </div>
+  <div id="easter-egg-root" aria-live="polite"></div>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

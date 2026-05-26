@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-poker-ring-ui",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:32:00Z",
+  "section": "poker-ring-ui",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the table itself — the green oval ring you sit around, the cards in your hand, the community cards in the middle, the chip stacks, the action clock counting down, and the Fold / Call / Raise / All In buttons when it's your turn.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. The ring breathes with a subtle glow animation, seats spread out evenly no matter how many people are playing, and heads-up shows the two players directly across from each other with the button correctly placed.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

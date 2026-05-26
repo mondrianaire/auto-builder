@@ -1,0 +1,10 @@
+{
+  "section_id": "section-9",
+  "section_name": "firestore-rules-and-schema",
+  "completed_at": "2026-05-26T02:10:00Z",
+  "status": "completed",
+  "builders": [
+    { "builder_id": "builder-9a", "task": "firestore.rules — schemas + permission rules with per-player hole-card subcollection confidentiality", "output_files": ["firestore.rules"] },
+    { "builder_id": "builder-9b", "task": "output/builders/section-9/schema.json — collection schema documentation", "output_files": ["output/builders/section-9/schema.json"] }
+  ]
+}

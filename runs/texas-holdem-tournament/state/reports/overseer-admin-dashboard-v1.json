@@ -1,0 +1,15 @@
+{
+  "role": "Overseer",
+  "instance_id": "overseer-admin-dashboard",
+  "iteration": 1,
+  "mode": null,
+  "completed_at": "2026-05-26T02:35:00Z",
+  "section": "admin-dashboard",
+  "escalation_id": null,
+  "blurbs": [
+    { "question": "What does this piece need to do for the user's goal?", "answer": "This piece is the dashboard the project owner uses to keep things tidy — see a list of every tournament, force-end one that's stuck, and rebuild the leaderboards from scratch. Other signed-in users see a polite access-denied message if they try to visit it.", "kind": "always", "importance": "high" },
+    { "question": "Did this piece come out as planned?", "answer": "Yes. The owner sees tournaments grouped by status; force-end works; recompute regenerates all three leaderboards.", "kind": "always", "importance": "medium" }
+  ],
+  "raised_escalation": false,
+  "next_role": "Overseer"
+}

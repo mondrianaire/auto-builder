@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "from_section": "section-4",
+  "to_section": "section-6",
+  "interface": {
+    "easterEggField": {
+      "path": "/tournaments/{tid}/hands/{hid}.easter_egg",
+      "shape": {
+        "triggered": "bool",
+        "kind": "'two-seven-off'|null",
+        "started_at": "ISO-8601|null (server timestamp set when triggered flipped to true)",
+        "duration_ms": "int (server picks within [4000, 6000])"
+      },
+      "writer": "section-4 dealHand Cloud Function (writes triggered=true synchronously during the deal that produces 2-7o for any seat; sets a follow-up scheduled function to flip triggered=false after duration_ms)",
+      "reader": "section-6 client via the same handDocument onSnapshot listener section-5 uses"
+    },
+    "isTwoSevenOff(holeCards)": {
+      "params": { "holeCards": "[{rank:string, suit:string}, {rank:string, suit:string}]" },
+      "returns": "bool",
+      "module": "functions/src/easterEggDispatch.js",
+      "notes": "Server-side detection. Returns true iff the two cards are 2 and 7 with different suits. Used by dealHand."
+    }
+  },
+  "notes": "section-6 only consumes easter_egg.triggered + started_at + duration_ms; never decides locally whether the trigger applies. The kind field is forward-extensible to other easter eggs but only 'two-seven-off' is implemented at launch."
+}

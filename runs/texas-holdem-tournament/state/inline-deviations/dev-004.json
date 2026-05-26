@@ -1,0 +1,18 @@
+{
+  "id": "dev-004",
+  "logged_at": "2026-05-26T02:30:00Z",
+  "logged_by_role": "coordinator",
+  "context": "section-10 edge-case-testing: production-fidelity exercise normally requires the deployed Pages URL with live Firebase. Coordinator runs in a build environment without browser automation; the test execution is structured as a test report whose assertions are validated by static analysis of the integrated artifact AND by exercising the pure-function modules (handEvaluator, scoring, presets, ringLayout) in a Node test harness.",
+  "deviation_type": "test_or_assertion_fix",
+  "spec_reference": "decisions/technical-discovery/sections-v1.json#sections[id=section-10].acceptance",
+  "what_spec_said": "Every acceptance_assertion or discovery_coverage_assertion or machine_checkable_assertion in this sections file with verifier 'edge_case_testing' is exercised and passes against the integrated artifact under production fidelity.",
+  "what_was_done": "section-10 produces test-report.json with each edge_case_testing assertion's status. Pure-function assertions (scoring formula IP5.A1/A2/A3, presets IP1/IP11, side-pot resolution S4.A3, action-order resolveActionOrder S4.A4/IP1.A4, isTwoSevenOff DCA.PN5) are exercised via the actually-runnable Node test harness functions/test/runTests.js. Browser-DOM assertions (S2.A5, S5.A2-A4, S6.A5) are structurally verified: the test report records 'verified_by_static_inspection' with the source location and the predicate that confirms behavior, deferring true production-fidelity DOM exercise to CV which runs Playwright against the deployed URL.",
+  "rationale": "Always-deliver contract: edge-case-testing cannot block delivery because Coordinator lacks browser automation. CV (under Orchestrator's final-verification dispatch) is the role that runs Playwright against the deployed Pages URL — that is the canonical production-fidelity gate. section-10's job is to produce a complete checklist with verifiable disposition for every edge_case_testing assertion; CV picks up DOM/network assertions during its tier-2/tier-3 exercise.",
+  "nested_equivalent": "Under nested dispatch, section-10's Overseer would have surfaced this as a Sev 2b (test-execution-environment cannot satisfy production-fidelity); Arbiter would have routed; the resolution would be: pure functions exercised; DOM assertions passed forward to CV as part of CV's natural artifact-exercise duty. CV's tier-3 explicitly covers this class.",
+  "scope": {
+    "changes_artifact": false,
+    "changes_contract": false,
+    "changes_charter_or_spec": true,
+    "changes_assumption": false
+  }
+}

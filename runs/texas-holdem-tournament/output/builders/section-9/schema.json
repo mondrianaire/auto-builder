@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-26T02:10:00Z",
+  "purpose": "Documents the Firestore collection schemas used by Texas Hold'em Tournament. Companion to firestore.rules.",
+  "collections": {
+    "players": {
+      "doc_id": "{Google uid}",
+      "fields": {
+        "uid": "string",
+        "google_given_name": "string",
+        "google_photo_url": "string",
+        "nickname": "string | null",
+        "notification_prefs": {
+          "current_game": "boolean",
+          "new_tournaments": "boolean"
+        },
+        "four_color_deck": "boolean",
+        "created_at": "number (epoch ms)"
+      },
+      "write_authority": "the player themselves (uid match)"
+    },
+    "tournaments": {
+      "doc_id": "single concurrent tournament — fixed id 'active' at launch (A4)",
+      "fields": {
+        "tid": "string",
+        "status": "'awaiting_start' | 'in_progress' | 'finished' | 'unfinished'",
+        "config": {
+          "preset_id": "string | null",
+          "starting_stack_chips": "int",
+          "level_duration_minutes": "int",
+          "action_clock_seconds": "int",
+          "break_after_levels": "int",
+          "break_duration_minutes": "int",
+          "levels": "Array<{level, small_blind, big_blind, big_blind_ante}>"
+        },
+        "seated_players": "Array<{uid, display_name, photo_url, chip_stack}>",
+        "first_join_at": "number | null (epoch ms)",
+        "current_hand_id": "string | null",
+        "current_hand_number": "int",
+        "current_level": "int (1-indexed)",
+        "level_started_at": "ISO timestamp",
+        "started_at": "ISO timestamp",
+        "ended_at": "ISO timestamp",
+        "final_standings": "Array<{uid, display_name, photo_url, finish_position, chip_stack_at_end}>"
+      },
+      "write_authority": "any authenticated client for lobby ops; dealer-client OR Cloud Function for in-progress mutations"
+    },
+    "tournaments/{tid}/hands": {
+      "doc_id": "hand-{nnnnn}",
+      "fields": "see contracts/original/section-4--section-5.json#handDocument.shape",
+      "subcollections": {
+        "player_hole_cards": {
+          "doc_id": "{player uid}",
+          "fields": { "seat_index": "int", "cards": "[{rank, suit}, {rank, suit}]" },
+          "access_rule": "READ restricted to that player's own UID (Firestore rules); WRITE by dealer-client or Cloud Function"
+        },
+        "pending_actions": {
+          "doc_id": "{auto}",
+          "fields": { "from_uid": "string", "action": "{type, amount}", "ts": "number" },
+          "access_rule": "create by any authenticated client; read by all; update/delete denied"
+        }
+      },
+      "write_authority": "Cloud Function service account (cloud-functions mode) OR lowest-UID seated client (client-dealer mode)"
+    },
+    "leaderboards": {
+      "doc_id": "'weekly' | 'monthly' | 'alltime'",
+      "fields": {
+        "updated_at": "number (epoch ms)",
+        "entries": "Array<{uid, display_name, photo_url, score, tournaments_played, finished}>"
+      },
+      "write_authority": "ADMIN_UID only (Firestore rules enforce)"
+    }
+  }
+}
