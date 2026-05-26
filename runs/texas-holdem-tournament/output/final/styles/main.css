@@ -214,3 +214,9 @@ body {
 .banner-title { font: 700 13px var(--font-ui); margin-bottom: 4px; }
 .banner-body { font-size: 12px; color: var(--paper-warm); }
 .banner-close { position: absolute; top: 4px; right: 8px; background: transparent; border: none; color: var(--paper-light); cursor: pointer; font-size: 16px; }
+
+/* Late-registration affordances (rev-4) — visible when tournament is in_progress */
+.late-reg-note { display: block; margin-top: 8px; padding: 8px 12px; background: var(--paper-warm); border-left: 3px solid var(--accent-amber, #c8923f); font: italic 13px var(--font-ui); color: var(--ink-navy); }
+.late-waiting { background: var(--paper-warm); padding: 12px; border-radius: 4px; color: var(--ink-navy); font-style: italic; }
+.late-reg-link { display: block; margin-top: 6px; color: var(--accent-amber, #c8923f); text-decoration: underline; font-size: 12px; }
+.lobby-actions a.primary-btn { display: inline-block; text-decoration: none; line-height: 1; }

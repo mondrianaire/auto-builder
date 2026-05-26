@@ -67,8 +67,19 @@ export function renderTable(root, user) {
           }
         });
       } else {
-        // Spectator: show two face-down cards stub.
-        myHoleRoot.innerHTML = `<div class="spectator-tag">Spectating</div>`;
+        // Not at the table this hand — check if I'm late-registered (waiting for next deal)
+        // or genuinely a spectator (never joined).
+        const tnow = tsnap.data();
+        const inSeatedRoster = (tnow.seated_players || []).some(p => p.uid === user.uid);
+        if (inSeatedRoster) {
+          myHoleRoot.innerHTML = `<div class="spectator-tag late-waiting">You're late-registered — you'll be dealt in on the next hand.</div>`;
+        } else {
+          myHoleRoot.innerHTML = `
+            <div class="spectator-tag">
+              Spectating
+              <a href="#/lobby" class="late-reg-link">Late register at the lobby →</a>
+            </div>`;
+        }
       }
       renderBettingControls(betRoot, h, user, async (action) => {
         try {

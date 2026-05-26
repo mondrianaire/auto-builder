@@ -13,7 +13,7 @@ Sign in with Google. Join the lobby. When at least two players are seated, anyon
 ## Features
 
 - **Google SSO sign-in** via Firebase Auth (no email/password, no other providers).
-- **Lobby** showing profile pictures of awaiting members. Single concurrent tournament at launch.
+- **Lobby** showing profile pictures of awaiting members. Single concurrent tournament at launch. **Late registration is open throughout the tournament** — players who weren't seated at start can navigate to the Lobby, click "Late register (next hand)", get the full starting stack, and are dealt in on the very next hand. No late-reg cap currently (friend-game scope). Added rev-4.
 - **Three seeded tournament presets** (research-driven from probe-001):
   - **Friendly Turbo** — 1,500 starting stack, 7-minute levels, 15-second action clock.
   - **Standard Home Game** — 10,000 stack, 20-minute levels, 30-second clock, big-blind ante from level 5.

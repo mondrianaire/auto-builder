@@ -62,9 +62,12 @@ export function renderLobby(root, user) {
     const meSeated = seated.some(p => p.uid === user.uid);
     const canStart = (t.status === "awaiting_start") && seated.length >= 2;
 
+    const inProgress = (t.status === "in_progress");
+    const joinLabel = meSeated ? "" : (inProgress ? "Late register (next hand)" : "Join");
+
     stateEl.innerHTML = `
       <div class="lobby-state">
-        <div class="seated-list" aria-label="Awaiting members">
+        <div class="seated-list" aria-label="${inProgress ? "Seated players" : "Awaiting members"}">
           ${seated.length === 0 ? `<div class="seated-empty">Be the first to join</div>` : ""}
           ${seated.map(p => `
             <div class="seated-chip" title="${escapeAttr(p.display_name)}">
@@ -74,14 +77,16 @@ export function renderLobby(root, user) {
           `).join("")}
         </div>
         <div class="lobby-actions">
-          ${meSeated ? "" : `<button id="join-btn" class="primary-btn" type="button">Join</button>`}
-          ${meSeated ? `<button id="leave-btn" class="secondary-btn" type="button">Leave</button>` : ""}
-          <button id="start-btn" class="primary-btn ${canStart ? "" : "disabled"}"
+          ${meSeated ? "" : `<button id="join-btn" class="primary-btn" type="button">${joinLabel}</button>`}
+          ${meSeated && !inProgress ? `<button id="leave-btn" class="secondary-btn" type="button">Leave</button>` : ""}
+          ${meSeated && inProgress ? `<a href="#/table" class="primary-btn" role="button">Go to table</a>` : ""}
+          ${!inProgress ? `<button id="start-btn" class="primary-btn ${canStart ? "" : "disabled"}"
                   type="button" ${canStart ? "" : "disabled"}>
             Start tournament
-          </button>
+          </button>` : ""}
           <span class="lobby-status">Status: <code>${escapeHtml(t.status)}</code></span>
-          ${t.first_join_at ? `<span class="auto-start-note">Auto-start 5 minutes after first join.</span>` : ""}
+          ${t.first_join_at && !inProgress ? `<span class="auto-start-note">Auto-start 5 minutes after first join.</span>` : ""}
+          ${inProgress ? `<span class="late-reg-note">Tournament running — late entries get the full starting stack and join at the next deal.</span>` : ""}
         </div>
       </div>
     `;
@@ -92,11 +97,15 @@ export function renderLobby(root, user) {
         uid: user.uid,
         display_name: displayName(user),
         photo_url: user.google_photo_url,
-        chip_stack: t.config.starting_stack_chips
+        chip_stack: t.config.starting_stack_chips,
+        ...(inProgress ? { joined_at: Date.now(), late_entry: true } : {})
       }];
       const patch = { seated_players: newSeated };
       if (!t.first_join_at) patch.first_join_at = Date.now();
       await setDoc(tref, patch, { merge: true });
+      // Late entry during in-progress: jump to table view so the user sees the
+      // game state immediately and gets dealt in on the next hand.
+      if (inProgress) location.hash = "#/table";
     });
 
     const leaveBtn = stateEl.querySelector("#leave-btn");
