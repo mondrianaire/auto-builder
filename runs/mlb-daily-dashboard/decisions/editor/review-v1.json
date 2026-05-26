@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "created_at": "2026-05-26T14:00:00Z",
+  "role": "Editor",
+  "instance_id": "editor",
+  "based_on": {
+    "prompt": "Make me a web based Daily dashboard for all mlb teams and statistics focusing on weekly trends, upcoming games and schedules and overall rankings. Use github pages for hosting.",
+    "ledger": "decisions/discovery/ledger-v1.json",
+    "sections": "decisions/technical-discovery/sections-v1.json"
+  },
+  "verdict": "pass_with_recommendations",
+  "summary": "TD's section breakdown structurally honors the user's literal prompt across all three named focus areas (weekly trends, upcoming games and schedules, overall rankings), the all-mlb-teams population, and the github-pages hosting constraint. Both Discovery high-importance IPs are resolved with evidence_backed action. All seven first-contact requirements have at least one acceptance_assertion or discovery_coverage_assertion exercising them. Telos coherence is intact: every section advances the dashboard telos. The two structural concerns recorded below are recommendations for Critic to verify post-build, not blockers.",
+  "findings": [
+    {
+      "id": "F.1",
+      "check_id": "proper_noun_citation",
+      "severity": "low",
+      "description": "PN.1 (mlb) and PN.2 (github pages) both carry verification_status: pending in the ledger. Pragmatic structural honoring is present: IP1 is resolved to statsapi.mlb.com with evidence_source: canonical_evidence, S1.A2 enforces a real fetch against that origin with source: canonical_evidence, IP1.M1 enforces the URL prefix, and the deployment_target field points to the inherited mondrianaire.github.io Pages location with DCA.PN.2 verifying live reachability. Per the Editor pragma for this build (structural honoring counts as pragmatic verification when explicit verification_status is pending and the proper noun's canonical behavior is well-known), this is acceptable to proceed. Recommend that Critic confirm post-build that data-client URLs all begin with https://statsapi.mlb.com/api/v1/ (IP1.M1) and that the deployed page is reachable at the declared deployment_target (DCA.PN.2).",
+      "evidence": "decisions/discovery/ledger-v1.json#proper_nouns[0..1] (status pending); decisions/technical-discovery/sections-v1.json#inflection_resolutions[0] (IP1 canonical_evidence); sections-v1.json#sections[0].acceptance_assertions[1] (S1.A2 source: canonical_evidence); sections-v1.json#deployment_target",
+      "recommended_route": "none",
+      "recommended_action": "Carry forward as a Critic post-build verification item. No Discovery amendment needed because structural honoring is enforced in the assertion set."
+    },
+    {
+      "id": "F.2",
+      "check_id": "td_ip_source",
+      "severity": "low",
+      "description": "IP2's resolution body carries a cors_verification sub-block declaring source: canonical_evidence and explicitly names the fallback path (GitHub Actions cron snapshot) if runtime CORS fails. The fallback is gated to edge-case-testing's live-load scenario. This is structurally sound, but the verbatim_excerpt_note is a community-evidence summary rather than an excerpt from an MLB-published spec (MLB does not publish a public CORS policy doc). Recommend that if edge-case-testing observes a CORS failure during live-load, Editor re-enters via TD impact-analysis to introduce a snapshot-builder section, rather than the run silently degrading.",
+      "evidence": "decisions/technical-discovery/sections-v1.json#inflection_resolutions[1].cors_verification",
+      "recommended_route": "none",
+      "recommended_action": "No action now. Critic and edge-case-testing should treat a CORS failure during live-load as a structural failure that requires routing back to Editor for TD impact-analysis, not as a render-time bug to patch."
+    }
+  ],
+  "checks_performed": [
+    {
+      "check_id": "proper_noun_citation",
+      "outcome": "pass_with_recommendation",
+      "detail": "Both proper nouns have verification_status: pending but are pragmatically honored by structural choices (statsapi.mlb.com via IP1 + S1.A2, github.io deployment_target + DCA.PN.2). See F.1."
+    },
+    {
+      "check_id": "discovery_high_importance_action",
+      "outcome": "pass",
+      "detail": "IP1 importance_action: evidence_backed (canonical_evidence rationale). IP2 importance_action: evidence_backed (canonical_evidence rationale + CORS sub-verification + fallback path)."
+    },
+    {
+      "check_id": "td_ip_source",
+      "outcome": "pass_with_recommendation",
+      "detail": "TD-IP-A/B/C are internal tooling choices; source: td_plan acceptable. Discovery IPs IP1 and IP2 carry evidence_source: canonical_evidence on resolution. IP1.M1 carries source: canonical_evidence. IP2.M1/M2 carry source: td_plan, which is acceptable because they assert behavior of the in-build system (call pattern + absence of snapshot file), not external system properties; the external-CORS-behavior question is handled in the cors_verification sub-block. See F.2."
+    },
+    {
+      "check_id": "first_contact_coverage",
+      "outcome": "pass",
+      "detail": "FC.1->DCA.FC.1; FC.2->DCA.FC.2 + PNV.1; FC.3->DCA.FC.3 + S5.A2/A3/A4; FC.4->DCA.FC.4 + S5.A2; FC.5->DCA.FC.5; FC.6->DCA.FC.6 + DCA.PN.2; FC.7->DCA.FC.7. Every FC has at least one acceptance_assertion or discovery_coverage_assertion exercising it."
+    },
+    {
+      "check_id": "telos_coherence",
+      "outcome": "pass",
+      "detail": "Telos: 'web-based daily dashboard ... current MLB team standings, weekly performance trends, upcoming game schedules.' Section coverage: S1 data-client (fetches MLB data), S2 trends-engine (weekly trends), S3 rankings-engine (overall rankings/standings), S4 ui-shell (web container), S5 ui-render (renders the dashboard), S6 edge-case-testing (verifies the dashboard). PNV.1 literally exercises the telos in the browser. No orphan section."
+    },
+    {
+      "check_id": "schema_compliance",
+      "outcome": "pass",
+      "detail": "Spot-checked all acceptance_assertions, machine_checkable_assertions, and discovery_coverage_assertions: every entry carries covers and source fields. v1.7 + v1.9 schema requirements met."
+    }
+  ],
+  "routed_to": [],
+  "recommendations": [
+    "Critic should confirm post-build that every fetch URL in data-client begins with https://statsapi.mlb.com/api/v1/ (IP1.M1) and that the deployed page returns HTTP 200 at the declared deployment_target https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/ (DCA.PN.2). This closes the pragmatic-honoring loop for the two pending proper nouns.",
+    "If edge-case-testing's live-load scenario observes a CORS failure against statsapi.mlb.com from a github.io origin, treat this as a structural failure: route back to Editor for TD impact-analysis to introduce a snapshot-builder section (GitHub Actions cron path described in IP2.cors_verification.fallback_if_wrong). Do not patch around it at render-time."
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "version": 1,
+  "created_at": "2026-05-26T12:00:00Z",
+  "project_name": "MLB Daily Dashboard",
+  "telos": "A web-based daily dashboard that, when opened in a browser, shows current Major League Baseball team standings, weekly performance trends, and upcoming game schedules for all teams.",
+  "restatement": "Build a static web page that displays a daily-updated snapshot of all 30 MLB teams: overall standings/rankings, weekly performance trends (last-7-days W-L and run differential), and upcoming game schedules. The page is hosted on GitHub Pages (static hosting) and fetches live MLB data client-side when a visitor loads it.",
+  "execution_context_observed": {
+    "platform_hints": ["windows"],
+    "path_evidence": ["C:\\Users\\mondr\\Documents\\Claude\\Projects\\Auto Builder\\runs\\mlb-daily-dashboard\\"]
+  },
+  "proper_nouns": [
+    {
+      "id": "PN.1",
+      "surface": "mlb",
+      "lexical_context": "Daily dashboard for all mlb teams and statistics",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "notes": "Major League Baseball — the professional North American baseball league with 30 teams (AL + NL, 6 divisions). Data subject of the build. Canonical public data source is the MLB Stats API at https://statsapi.mlb.com/api/v1/."
+    },
+    {
+      "id": "PN.2",
+      "surface": "github pages",
+      "lexical_context": "Use github pages for hosting",
+      "lexical_marker_weakening": null,
+      "role": "target_defining",
+      "canonical_source_required": true,
+      "verification_status": "pending",
+      "notes": "GitHub's static-site hosting product. Constrains the deliverable to static assets (HTML/CSS/JS + JSON), no server-side runtime. The auto-builder repo already has Pages enabled at mondrianaire.github.io/auto-builder; this build deploys under runs/mlb-daily-dashboard/output/final/."
+    }
+  ],
+  "assumption_ledger": [
+    {
+      "id": "A1",
+      "assumption": "The deliverable is a single web page (dashboard) loaded in a desktop browser by visiting a URL.",
+      "confidence": "high",
+      "rationale": "Prompt says 'web based ... dashboard' and 'Use github pages for hosting'.",
+      "what_breaks_if_wrong": "If the user wanted a native or installable app, the deliverable would not satisfy first-contact.",
+      "display_label": "Web dashboard, single page"
+    },
+    {
+      "id": "A2",
+      "assumption": "The dashboard covers all 30 current MLB teams.",
+      "confidence": "high",
+      "rationale": "Prompt says 'all mlb teams'.",
+      "what_breaks_if_wrong": "Filtering to a subset (e.g., only AL or favorited teams) would miss stated scope.",
+      "display_label": "All 30 MLB teams"
+    },
+    {
+      "id": "A3",
+      "assumption": "The dashboard presents three primary content blocks: (a) weekly trends, (b) upcoming games and schedules, (c) overall rankings/standings.",
+      "confidence": "high",
+      "rationale": "These three are the explicit focus of the prompt's 'focusing on ...' clause.",
+      "what_breaks_if_wrong": "Missing any of the three would leave a stated focus area unrepresented.",
+      "display_label": "Trends + schedule + rankings"
+    },
+    {
+      "id": "A4",
+      "assumption": "Statistics are team-level (W-L record, win pct, runs scored/allowed, run differential, streak) rather than player-level.",
+      "confidence": "medium",
+      "rationale": "Prompt frames the dashboard around teams and overall rankings; team-level stats are the simpler/canonical dashboard granularity. Player-level would expand scope dramatically.",
+      "what_breaks_if_wrong": "If user expected player leaderboards (HR leaders, ERA leaders), they would feel the dashboard is shallow.",
+      "display_label": "Team-level stats only"
+    },
+    {
+      "id": "A5",
+      "assumption": "'Daily' means the data the user sees reflects the current day each time the page is loaded — achieved via client-side fetch on page load, since GitHub Pages is static hosting.",
+      "confidence": "medium",
+      "rationale": "Static hosting cannot push updates. The simplest way to give a visitor today's data is to fetch from a public MLB feed on load. Pre-baked JSON via CI is an alternative but adds infrastructure.",
+      "what_breaks_if_wrong": "If user expected an emailed/pushed daily digest, the in-browser model misses intent.",
+      "display_label": "Live fetch on each page load"
+    },
+    {
+      "id": "A6",
+      "assumption": "'Weekly trends' = each team's record and run differential over the last 7 calendar days, displayed as a per-team mini-trend (W-L line plus run differential).",
+      "confidence": "medium",
+      "rationale": "Simplest defensible interpretation of 'weekly trends' for a team dashboard. Run differential + W-L is the canonical 'how is this team trending' pair.",
+      "what_breaks_if_wrong": "User might have meant calendar-week (Mon-Sun) windows or longer momentum metrics.",
+      "display_label": "Last 7 days W-L + run diff"
+    },
+    {
+      "id": "A7",
+      "assumption": "'Upcoming games and schedules' = today's slate plus the next ~7 days of scheduled games for each team.",
+      "confidence": "medium",
+      "rationale": "Matches the 'daily' framing while giving enough lookahead to be useful for someone scanning the week.",
+      "what_breaks_if_wrong": "Could be too short (user wanted full month) or too long (user wanted only today).",
+      "display_label": "Today + next 7 days"
+    },
+    {
+      "id": "A8",
+      "assumption": "'Overall rankings' = MLB-wide standings broken out by division (6 divisions), with each team's W-L and games-back; wild-card race optional.",
+      "confidence": "medium",
+      "rationale": "Division standings are the canonical 'overall rankings' shape in MLB. League-wide flat ranking is uncommon.",
+      "what_breaks_if_wrong": "User might have meant a flat 1-30 power ranking instead.",
+      "display_label": "Division standings"
+    },
+    {
+      "id": "A9",
+      "assumption": "Read-only, no auth, no user accounts, no preferences persisted across sessions.",
+      "confidence": "high",
+      "rationale": "Prompt requests a dashboard, not a personalization product. Static hosting constraint reinforces this.",
+      "what_breaks_if_wrong": "User would not be able to favorite teams or save settings; acceptable for v1.",
+      "display_label": "Read-only, no accounts"
+    },
+    {
+      "id": "A10",
+      "assumption": "Host OS for the build process is Windows; the deliverable itself is OS-agnostic (runs in any modern browser).",
+      "confidence": "high",
+      "rationale": "Execution-context evidence shows Windows paths (Principle E).",
+      "what_breaks_if_wrong": "Any toolchain that assumed POSIX-only (e.g., shell scripts in build pipeline) would fail on the host.",
+      "display_label": "Windows host, browser-agnostic UI"
+    },
+    {
+      "id": "A11",
+      "assumption": "The 2026 MLB regular season is in progress on the build date (2026-05-26); the API will return real games and standings.",
+      "confidence": "high",
+      "rationale": "MLB regular season runs late-March through late-September; May 26 is mid-season.",
+      "what_breaks_if_wrong": "If for any reason there are no games today (off-day), the page must show a clean empty state rather than break.",
+      "display_label": "Mid-season, live data expected"
+    }
+  ],
+  "inflection_points": [
+    {
+      "id": "IP1",
+      "topic": "Data source for MLB schedule, standings, and team statistics",
+      "choices": [
+        "MLB Stats API (statsapi.mlb.com) — official public JSON feed used by the MLB.com site itself",
+        "Third-party scraped/derived sources (ESPN unofficial endpoints, sports-data aggregators)"
+      ],
+      "default_branch": "MLB Stats API (statsapi.mlb.com)",
+      "importance": "high",
+      "importance_action": "evidence_backed",
+      "importance_action_evidence": "statsapi.mlb.com is the canonical, CORS-accessible, no-key-required JSON feed maintained by MLB Advanced Media. It is the documented data source behind MLB.com's own pages and is well-documented in the open-source community (e.g., toddrob99/MLB-StatsAPI Python wrapper, multiple JS clients). For a static GitHub-Pages dashboard fetching client-side, this is the only source that satisfies (a) free, (b) no API key embedded in static assets, (c) CORS-permissive, (d) authoritative. TD should confirm the specific endpoints (/schedule, /standings, /teams/{id}/stats) and CORS behavior; if CORS fails from github.io origin, a pre-baked JSON snapshot built by a GitHub Action becomes the fallback.",
+      "why_inflection": "Without a chosen data source the build cannot begin; the source choice cascades into refresh strategy, schema shape, and error handling. The wrong choice (e.g., scraper that breaks on HTML changes) makes the dashboard fragile."
+    },
+    {
+      "id": "IP2",
+      "topic": "How 'daily' freshness is delivered on a static host",
+      "choices": [
+        "Client-side fetch on every page load + optional in-page interval refresh",
+        "GitHub Actions cron job that rebuilds a JSON snapshot daily and commits it; page reads the snapshot",
+        "Hybrid: snapshot for initial paint, live fetch in background"
+      ],
+      "default_branch": "Client-side fetch on every page load",
+      "importance": "high",
+      "importance_action": "evidence_backed",
+      "importance_action_evidence": "Client-side fetch is the simplest path that genuinely gives each visitor today's data, requires zero CI infrastructure, and matches the static-hosting constraint. If TD discovers CORS blocks the MLB Stats API from a github.io origin, the fallback is the GitHub Actions cron build — TD should validate CORS as part of contract verification before final commit.",
+      "why_inflection": "GitHub Pages cannot run server code; 'daily' must be realized either at request-time (browser) or build-time (CI). The two paths produce very different repository shapes."
+    },
+    {
+      "id": "IP3",
+      "topic": "Stats granularity: team-level vs player-level",
+      "choices": [
+        "Team-level only (W-L, run diff, ERA, batting avg as team)",
+        "Team-level + selected player leaderboards (HR, AVG, ERA, WHIP)",
+        "Full player drill-down per team"
+      ],
+      "default_branch": "Team-level only",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Prompt repeatedly frames the dashboard around teams ('all mlb teams', 'overall rankings'). Team-level is the simplest defensible reading. Adding player drill-down materially expands scope and UI complexity.",
+      "why_inflection": "Granularity choice has the largest single impact on UI density and data-volume per page."
+    },
+    {
+      "id": "IP4",
+      "topic": "Definition of 'weekly trends'",
+      "choices": [
+        "Rolling last-7-days W-L + run differential delta per team",
+        "Calendar-week (Mon-Sun) W-L per team",
+        "Last 10 games (a common MLB convention) instead of 7"
+      ],
+      "default_branch": "Rolling last-7-days W-L + run differential delta per team",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "'Weekly' literally maps to a 7-day window. Rolling-7 is more meaningful for a daily dashboard than calendar-week (which would be empty on a Monday morning).",
+      "why_inflection": "Picks the time window that defines what 'trend' means in the UI."
+    },
+    {
+      "id": "IP5",
+      "topic": "Scope of 'upcoming games and schedules'",
+      "choices": [
+        "Today only",
+        "Today + next 7 days",
+        "Full remainder of season"
+      ],
+      "default_branch": "Today + next 7 days",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "'Daily dashboard' + 'upcoming games and schedules' suggests near-term horizon. 7 days matches the weekly framing already chosen and keeps the page scannable.",
+      "why_inflection": "Lookahead window drives schedule table size and visual layout."
+    },
+    {
+      "id": "IP6",
+      "topic": "Shape of 'overall rankings'",
+      "choices": [
+        "Six division standings tables (AL E/C/W, NL E/C/W) + wild-card race",
+        "Flat 1-through-30 league-wide ranking by win pct",
+        "Both"
+      ],
+      "default_branch": "Six division standings tables + wild-card race",
+      "importance": "medium",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Division standings are the canonical MLB ranking presentation; wild-card race is what fans check for postseason positioning. A flat 1-30 is uncommon in MLB context.",
+      "why_inflection": "Determines the structural backbone of the rankings section."
+    },
+    {
+      "id": "IP7",
+      "topic": "Behavior on off-days or when API returns no games",
+      "choices": [
+        "Show empty-state copy ('No games scheduled today')",
+        "Show yesterday's results instead",
+        "Hide the section"
+      ],
+      "default_branch": "Show empty-state copy",
+      "importance": "low",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Empty state preserves UI layout and is honest; silently swapping in yesterday's data would mislead.",
+      "why_inflection": "Edge case but inevitable — MLB has scheduled off-days even mid-season."
+    },
+    {
+      "id": "IP8",
+      "topic": "Team identity visualization (logos, colors)",
+      "choices": [
+        "Team abbreviations + official primary color swatches (derivable from MLB Stats API)",
+        "Team logos as images (requires hotlinking from MLB CDN or bundling assets)",
+        "Text-only, no color"
+      ],
+      "default_branch": "Team abbreviations + color swatches",
+      "importance": "low",
+      "importance_action": "best_effort_default",
+      "importance_action_evidence": "Color swatches are visually meaningful and avoid the licensing/hotlinking risks of bundling official logos. Abbreviations are unambiguous for a baseball-literate audience.",
+      "why_inflection": "Touches IP/licensing if logos are bundled; defaulting to text+color is the safe path."
+    }
+  ],
+  "first_contact_requirements": [
+    {
+      "id": "FC.1",
+      "description": "User visits the live URL in a desktop browser; the page loads successfully (HTTP 200, no blank screen, no console-fatal errors).",
+      "artifact_type_basis": "web_page"
+    },
+    {
+      "id": "FC.2",
+      "description": "Within a few seconds of load, the dashboard renders actual current MLB data — not placeholder text, not 'Loading...' indefinitely, not an error message.",
+      "artifact_type_basis": "web_page"
+    },
+    {
+      "id": "FC.3",
+      "description": "All three focus areas are visibly present on the page: (a) weekly trends per team, (b) upcoming games / schedules, (c) overall rankings / standings.",
+      "artifact_type_basis": "web_page"
+    },
+    {
+      "id": "FC.4",
+      "description": "All 30 MLB teams are represented somewhere on the page (in standings, in trends, or in the schedule).",
+      "artifact_type_basis": "web_page"
+    },
+    {
+      "id": "FC.5",
+      "description": "The data shown is recognizably current (e.g., standings reflect a date within the last day or two, schedule shows games dated today or in the near future).",
+      "artifact_type_basis": "web_page"
+    },
+    {
+      "id": "FC.6",
+      "description": "The page is hosted at a publicly reachable URL on GitHub Pages and the URL is delivered to the user.",
+      "artifact_type_basis": "web_page"
+    },
+    {
+      "id": "FC.7",
+      "description": "On a same-day or next-day return visit, the displayed data has refreshed to reflect the new day's standings and schedule.",
+      "artifact_type_basis": "web_page"
+    }
+  ],
+  "out_of_scope": [
+    "Gambling, betting odds, or sportsbook integration",
+    "Fantasy baseball drafting, lineup-setting, or league management",
+    "Ticket purchasing or links to ticket vendors",
+    "Push notifications, email digests, or any out-of-browser delivery",
+    "User accounts, authentication, or saved preferences (favorite team, etc.)",
+    "Player-level statistics, leaderboards, or player drill-down pages",
+    "Live in-game pitch-by-pitch or play-by-play feeds",
+    "Historical season archives or year-over-year comparisons",
+    "Postseason bracket simulators or playoff probability models",
+    "Native mobile app or installable PWA shell",
+    "Server-side backend, database, or any non-static infrastructure",
+    "Bundled official MLB team logos or other licensed imagery",
+    "Minor league, international league, or non-MLB content",
+    "Commentary, news articles, scores from other sports",
+    "Multi-language localization"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "updated_at": "2026-05-26T15:35:00Z",
+  "run_slug": "mlb-daily-dashboard",
+  "decisions": [
+    {
+      "artifact": "decisions/discovery/ledger-v1.json",
+      "version": 1,
+      "produced_by": "discovery",
+      "trigger": { "type": "initial", "from_prompt": "Make me a web based Daily dashboard for all mlb teams and statistics focusing on weekly trends, upcoming games and schedules and overall rankings. Use github pages for hosting." },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/technical-discovery/sections-v1.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/data-client--trends-engine.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/data-client--rankings-engine.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/data-client--ui-render.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/trends-engine--ui-render.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/rankings-engine--ui-render.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery" },
+      "supersedes": null
+    },
+    {
+      "artifact": "contracts/original/ui-shell--ui-render.json",
+      "version": 1,
+      "produced_by": "td_initial",
+      "trigger": { "type": "post_discovery" },
+      "supersedes": null
+    },
+    {
+      "artifact": "decisions/editor/review-v1.json",
+      "version": 1,
+      "produced_by": "editor",
+      "trigger": { "type": "post_td_initial" },
+      "supersedes": null
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "contract_id": "data-client--trends-engine",
+  "version": 1,
+  "producer_section": "data-client",
+  "consumer_section": "trends-engine",
+  "produced_by_symbol": "fetchTeamGameResults(teamId, startDate, endDate)",
+  "consumed_by_symbol": "computeWeeklyTrends(perTeamResultMap)",
+  "shape_summary": "Per-team array of completed game results within an inclusive date range.",
+  "return_shape": {
+    "type": "Array",
+    "element_type": "GameResult",
+    "GameResult": {
+      "teamId": {"type": "number", "description": "MLB Stats API team id (e.g., 147 for NYY)"},
+      "gameDate": {"type": "string", "format": "ISO-8601 date (YYYY-MM-DD)", "description": "Date the game was played in the team's local timezone."},
+      "isWin": {"type": "boolean", "description": "true if the team's runsScored > runsAllowed in the completed game."},
+      "runsScored": {"type": "number", "description": "Integer runs scored by the team."},
+      "runsAllowed": {"type": "number", "description": "Integer runs allowed by the team."}
+    }
+  },
+  "invariants": [
+    "Only completed (final-status) games are included.",
+    "Array is sorted by gameDate ascending.",
+    "Empty array is valid (team had no games in the window).",
+    "All elements have the same teamId as passed to fetchTeamGameResults."
+  ],
+  "error_behavior": "Network failure or non-200 response throws a DataClientError; consumer must handle the thrown error.",
+  "example": [
+    {"teamId": 147, "gameDate": "2026-05-20", "isWin": true, "runsScored": 7, "runsAllowed": 3},
+    {"teamId": 147, "gameDate": "2026-05-21", "isWin": false, "runsScored": 2, "runsAllowed": 5}
+  ]
+}

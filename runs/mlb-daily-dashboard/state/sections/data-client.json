@@ -1,0 +1,21 @@
+{
+  "section_id": "S1",
+  "name": "data-client",
+  "status": "verified",
+  "owner": "overseer-data-client-inline",
+  "wave": 1,
+  "started_at": "2026-05-26T15:01:00Z",
+  "verified_at": "2026-05-26T15:06:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[0]",
+  "sub_goals": [
+    "Provide fetchTeams() returning normalized team metadata (with hardcoded color fallback)",
+    "Provide fetchStandings(season) returning normalized StandingEntry[]",
+    "Provide fetchSchedule(startDate, endDate) returning ScheduleEntry[]",
+    "Provide fetchTeamGameResults(teamId, startDate, endDate) returning GameResult[]",
+    "Provide fetchRecentResults(days) convenience wrapper used by ui-render to feed trends-engine",
+    "Throw DataClientError on network or non-200 failure",
+    "Be the only module touching fetch() or statsapi.mlb.com"
+  ],
+  "verified": true,
+  "builders_dispatched": ["builder-data-client-1"]
+}

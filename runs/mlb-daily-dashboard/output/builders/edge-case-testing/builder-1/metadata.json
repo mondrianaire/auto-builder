@@ -1,0 +1,11 @@
+{
+  "role": "Builder",
+  "section": "edge-case-testing",
+  "builder_id": "builder-1",
+  "instance_id": "builder-edge-case-testing-1-inline",
+  "wave": 5,
+  "files_produced": ["run-tests.mjs", "report.json", "test-plan.md"],
+  "test_runner_command": "node run-tests.mjs",
+  "test_results": {"total": 46, "passed": 46, "failed": 0, "exit_code": 0},
+  "created_at": "2026-05-26T15:20:00Z"
+}

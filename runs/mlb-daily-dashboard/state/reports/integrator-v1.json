@@ -1,0 +1,25 @@
+{
+  "role": "Integrator",
+  "iteration": 1,
+  "instance_id": "integrator-inline",
+  "wave": 4,
+  "intent_or_outcome": "outcome",
+  "verified_assertions": [
+    {"id": "DCA.A1", "result": "pass", "evidence": "Single index.html in output/integration/"},
+    {"id": "TDIPB.M2", "result": "pass", "evidence": "No bundler artifacts; all .js are hand-authored ES modules with .js imports"},
+    {"id": "IP2.M2", "result": "pass", "evidence": "No snapshot JSON files in output/integration/"},
+    {"id": "IP8.M1", "result": "pass", "evidence": "No image files in output/integration/"}
+  ],
+  "blurb": "Outcome: 7 files assembled into output/integration/. Flat structure (no subdirs) matches a vanilla static-site shape suitable for GitHub Pages. Module graph: app.js imports data-client.js + trends-engine.js + rankings-engine.js + teams.js; data-client.js imports teams.js. Entry point index.html. No build step required.",
+  "files_assembled": [
+    "index.html",
+    "styles.css",
+    "app.js",
+    "data-client.js",
+    "teams.js",
+    "trends-engine.js",
+    "rankings-engine.js",
+    "manifest.json"
+  ],
+  "created_at": "2026-05-26T15:17:30Z"
+}

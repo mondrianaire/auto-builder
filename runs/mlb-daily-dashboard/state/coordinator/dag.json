@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "created_at": "2026-05-26T15:00:00Z",
+  "updated_at": "2026-05-26T15:22:00Z",
+  "owner": "coordinator-inline",
+  "run_slug": "mlb-daily-dashboard",
+  "dispatch_mode": "inline",
+  "nodes": [
+    {"id": "data-client",       "section_id": "S1",     "status": "verified", "wave": 1, "blocked_on": [],                                                                              "estimated_builders": 1, "verified_at": "2026-05-26T15:06:30Z"},
+    {"id": "ui-shell",          "section_id": "S4",     "status": "verified", "wave": 1, "blocked_on": [],                                                                              "estimated_builders": 1, "verified_at": "2026-05-26T15:06:30Z"},
+    {"id": "trends-engine",     "section_id": "S2",     "status": "verified", "wave": 2, "blocked_on": ["data-client"],                                                                  "estimated_builders": 1, "verified_at": "2026-05-26T15:10:30Z"},
+    {"id": "rankings-engine",   "section_id": "S3",     "status": "verified", "wave": 2, "blocked_on": ["data-client"],                                                                  "estimated_builders": 1, "verified_at": "2026-05-26T15:10:30Z"},
+    {"id": "ui-render",         "section_id": "S5",     "status": "verified", "wave": 3, "blocked_on": ["data-client", "trends-engine", "rankings-engine", "ui-shell"],                  "estimated_builders": 1, "verified_at": "2026-05-26T15:16:00Z"},
+    {"id": "integrator",        "section_id": "pseudo", "status": "verified", "wave": 4, "blocked_on": ["data-client", "trends-engine", "rankings-engine", "ui-shell", "ui-render"],     "estimated_builders": 0, "is_pseudo_node": true, "verified_at": "2026-05-26T15:17:30Z"},
+    {"id": "edge-case-testing", "section_id": "S6",     "status": "verified", "wave": 5, "blocked_on": ["data-client", "trends-engine", "rankings-engine", "ui-shell", "ui-render", "integrator"], "estimated_builders": 1, "verified_at": "2026-05-26T15:21:00Z"}
+  ],
+  "wave_summary": {
+    "wave_1": ["data-client", "ui-shell"],
+    "wave_2": ["trends-engine", "rankings-engine"],
+    "wave_3": ["ui-render"],
+    "wave_4": ["integrator"],
+    "wave_5": ["edge-case-testing"]
+  },
+  "all_nodes_verified": true
+}

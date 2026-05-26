@@ -1,0 +1,19 @@
+{
+  "section_id": "S2",
+  "name": "trends-engine",
+  "status": "verified",
+  "owner": "overseer-trends-engine-inline",
+  "wave": 2,
+  "started_at": "2026-05-26T15:07:00Z",
+  "verified_at": "2026-05-26T15:10:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[1]",
+  "sub_goals": [
+    "Export computeWeeklyTrends(perTeamResultMap) (pure function)",
+    "Return one Trend object per team with last7W, last7L, runDiff7, streak, sparklinePoints",
+    "Handle empty-game teams cleanly (zeros + null streak + empty sparkline)",
+    "Determinism: same input -> same output",
+    "No fetch, no DOM"
+  ],
+  "verified": true,
+  "builders_dispatched": ["builder-trends-engine-1"]
+}

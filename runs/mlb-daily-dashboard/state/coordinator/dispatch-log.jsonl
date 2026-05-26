@@ -1,0 +1,20 @@
+{"ts": "2026-05-26T15:00:00Z", "event": "dag_built", "dispatch_mode": "inline", "node_count": 7}
+{"ts": "2026-05-26T15:01:00Z", "event": "wave_start", "wave": 1, "sections": ["data-client", "ui-shell"], "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:06:30Z", "event": "section_verified", "section": "data-client", "wave": 1, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:06:30Z", "event": "section_verified", "section": "ui-shell", "wave": 1, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:06:35Z", "event": "wave_complete", "wave": 1, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:07:00Z", "event": "wave_start", "wave": 2, "sections": ["trends-engine", "rankings-engine"], "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:10:30Z", "event": "section_verified", "section": "trends-engine", "wave": 2, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:10:30Z", "event": "section_verified", "section": "rankings-engine", "wave": 2, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:10:35Z", "event": "wave_complete", "wave": 2, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:11:00Z", "event": "wave_start", "wave": 3, "sections": ["ui-render"], "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:16:00Z", "event": "section_verified", "section": "ui-render", "wave": 3, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:16:05Z", "event": "wave_complete", "wave": 3, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:17:00Z", "event": "wave_start", "wave": 4, "sections": ["integrator"], "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:17:30Z", "event": "integrator_complete", "files_assembled": 8, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:17:35Z", "event": "wave_complete", "wave": 4, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:18:00Z", "event": "wave_start", "wave": 5, "sections": ["edge-case-testing"], "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:21:00Z", "event": "section_verified", "section": "edge-case-testing", "wave": 5, "dispatch_mode": "inline", "test_results": {"total": 46, "passed": 46, "failed": 0}}
+{"ts": "2026-05-26T15:21:05Z", "event": "wave_complete", "wave": 5, "dispatch_mode": "inline"}
+{"ts": "2026-05-26T15:22:00Z", "event": "scheduled_critic_clean", "severity": 0}
+{"ts": "2026-05-26T15:22:30Z", "event": "build_complete", "dispatch_mode": "inline"}

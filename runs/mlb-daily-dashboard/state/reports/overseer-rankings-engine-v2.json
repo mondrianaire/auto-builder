@@ -1,0 +1,12 @@
+{
+  "role": "Overseer",
+  "section": "rankings-engine",
+  "iteration": 2,
+  "intent_or_outcome": "outcome",
+  "instance_id": "overseer-rankings-engine-inline",
+  "verified": true,
+  "verified_assertions": ["S3.A1", "S3.A2", "S3.A3", "S3.A4"],
+  "deferred_assertions": ["S3.A5 -> critic_final_sweep"],
+  "blurb": "Section verified. Pure-function module always produces 6 division keys, 2 league keys, 2 wild-card keys (top-3 non-leaders), each array sorted pct desc.",
+  "created_at": "2026-05-26T15:10:30Z"
+}

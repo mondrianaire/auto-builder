@@ -1,0 +1,10 @@
+{
+  "role": "Overseer",
+  "section": "data-client",
+  "iteration": 1,
+  "intent_or_outcome": "intent",
+  "instance_id": "overseer-data-client-inline",
+  "wrote": "Plan to dispatch one Builder to produce data-client.js plus a teams.js sidecar holding the 30-team color/abbreviation fallback map. Builder will export fetchTeams, fetchStandings, fetchSchedule, fetchTeamGameResults, fetchRecentResults. All URLs prefixed https://statsapi.mlb.com/api/v1/. Errors thrown as DataClientError. No DOM, no derived computation.",
+  "blurb": "Plan: ship a single ES module that owns every outbound MLB Stats API call and a sibling teams.js for the 30-team color/abbreviation fallback (the API does not expose primary colors). Five named exports cover the four contracts and the recent-results helper. Network and non-200 errors surface as a named DataClientError so ui-render can render the error banner instead of crashing.",
+  "created_at": "2026-05-26T15:01:30Z"
+}

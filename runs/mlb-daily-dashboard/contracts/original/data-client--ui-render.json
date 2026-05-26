@@ -1,0 +1,44 @@
+{
+  "contract_id": "data-client--ui-render",
+  "version": 1,
+  "producer_section": "data-client",
+  "consumer_section": "ui-render",
+  "produced_by_symbol": "fetchSchedule(startDate, endDate)",
+  "consumed_by_symbol": "renderUpcoming(schedule)",
+  "shape_summary": "Flat array of upcoming-game entries across all MLB teams within an inclusive date range.",
+  "return_shape": {
+    "type": "Array",
+    "element_type": "ScheduleEntry",
+    "ScheduleEntry": {
+      "gameId": {"type": "number", "description": "MLB Stats API gamePk."},
+      "gameDate": {"type": "string", "format": "ISO-8601 datetime", "description": "Scheduled first-pitch time in UTC."},
+      "awayTeam": {
+        "teamId": {"type": "number"},
+        "teamAbbreviation": {"type": "string"},
+        "teamName": {"type": "string"}
+      },
+      "homeTeam": {
+        "teamId": {"type": "number"},
+        "teamAbbreviation": {"type": "string"},
+        "teamName": {"type": "string"}
+      },
+      "status": {"type": "string", "enum": ["Scheduled", "Pre-Game", "In Progress", "Final", "Postponed"], "description": "Game status from the MLB Stats API."}
+    }
+  },
+  "invariants": [
+    "Array is sorted by gameDate ascending.",
+    "Empty array is valid (off-day or empty range); ui-render must render empty-state copy.",
+    "Each ScheduleEntry has both awayTeam and homeTeam populated.",
+    "gameDate falls within the inclusive [startDate, endDate] range passed in."
+  ],
+  "error_behavior": "Network failure or non-200 response throws a DataClientError.",
+  "example": [
+    {
+      "gameId": 778899,
+      "gameDate": "2026-05-26T23:05:00Z",
+      "awayTeam": {"teamId": 147, "teamAbbreviation": "NYY", "teamName": "New York Yankees"},
+      "homeTeam": {"teamId": 111, "teamAbbreviation": "BOS", "teamName": "Boston Red Sox"},
+      "status": "Scheduled"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "role": "Builder",
+  "section": "rankings-engine",
+  "builder_id": "builder-rankings-engine-1",
+  "iteration": 1,
+  "intent_or_outcome": "outcome",
+  "instance_id": "builder-rankings-engine-1-inline",
+  "verified_assertions": [
+    {"id": "S3.A1", "result": "pass", "evidence": "computeRankings exported as function"},
+    {"id": "S3.A2", "result": "pass", "evidence": "divisionStandings is Object.fromEntries(DIVISION_KEYS.map(...)); always 6 keys"},
+    {"id": "S3.A3", "result": "pass", "evidence": "Each division sorted via sortByPctDesc (pct desc, wins tiebreak)"},
+    {"id": "S3.A4", "result": "pass", "evidence": "wildCardFor() excludes division[0] of each division then top-3 by pct"}
+  ],
+  "deferred_assertions": [
+    {"id": "S3.A5", "deferred_to": "critic_final_sweep", "reason": "grep across codebase"}
+  ],
+  "blurb": "Outcome: shipped rankings-engine.js — single export computeRankings, pure function. Always returns 6 division keys (initialized empty before population), 2 league keys, 2 wild-card keys (top-3 non-leaders per league).",
+  "created_at": "2026-05-26T15:10:00Z"
+}

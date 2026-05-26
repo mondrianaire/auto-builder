@@ -1,0 +1,25 @@
+{
+  "role": "Builder",
+  "section": "ui-render",
+  "builder_id": "builder-ui-render-1",
+  "iteration": 1,
+  "intent_or_outcome": "outcome",
+  "instance_id": "builder-ui-render-1-inline",
+  "verified_assertions": [
+    {"id": "S5.A1", "result": "pass", "evidence": "init exported + DOMContentLoaded listener registered (or microtask fallback if already loaded)"},
+    {"id": "S5.A5", "result": "pass", "evidence": "showError() makes #error-banner visible and writes message; setPanelEmpty wipes loading states"},
+    {"id": "S5.A6", "result": "pass", "evidence": "renderUpcoming detects empty schedule and calls setPanelEmpty with 'No games scheduled in the next 7 days.'"},
+    {"id": "S5.A7", "result": "pass", "evidence": "updateTimestamp writes YYYY-MM-DD HH:MM into #last-updated and sets datetime attr"},
+    {"id": "IP2.M1", "result": "pass", "evidence": "init() invokes fetchStandings, fetchSchedule, fetchRecentResults"},
+    {"id": "IP5.M1", "result": "pass", "evidence": "fetchSchedule called with today, daysAheadISO(7)"},
+    {"id": "IP7.M1", "result": "pass", "evidence": "Empty schedule -> setPanelEmpty with 'No games' copy"},
+    {"id": "TDIPA.M2", "result": "pass", "evidence": "renderSparkline produces inline SVG <polyline> per team"}
+  ],
+  "deferred_assertions": [
+    {"id": "S5.A2", "deferred_to": "edge-case-testing/CV", "reason": "Requires real browser load + live data"},
+    {"id": "S5.A3", "deferred_to": "edge-case-testing/CV", "reason": "Requires real browser load + live data"},
+    {"id": "S5.A4", "deferred_to": "edge-case-testing/CV", "reason": "Requires real browser load + live data"}
+  ],
+  "blurb": "Outcome: shipped app.js — init() exports + bootstraps on DOMContentLoaded. Parallel data fetch via Promise.all; renderRankings (6 div tables + 2 wild-card lists), renderTrends (sparkline SVG + record + run diff + streak per team), renderUpcoming (date-grouped game rows). Error state shows banner + wires retry button. Empty schedule shows 'No games scheduled' copy.",
+  "created_at": "2026-05-26T15:15:30Z"
+}

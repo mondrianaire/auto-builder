@@ -1,0 +1,89 @@
+{
+  "role": "edge-case-testing",
+  "builder_id": "builder-1",
+  "run_mode": "node-static-fidelity",
+  "test_runner": "run-tests.mjs",
+  "test_plan": "test-plan.md",
+  "created_at": "2026-05-26T15:20:00Z",
+  "summary": {
+    "total": 46,
+    "passed": 46,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "scenarios_exercised": [
+    {
+      "name": "fetch-url-wellformedness",
+      "assertions": ["S6.T1.a", "IP1.M2", "S6.T1.b", "S6.T1.c", "S6.T1.d"],
+      "outcome": "pass"
+    },
+    {
+      "name": "trends-engine-fixture",
+      "assertions": ["S2.A1", "S2.A2", "S2.A2.shape", "S2.T2.W", "S2.T2.RD", "S2.T2.streak", "S2.T2.spark", "S2.A3", "S2.A4"],
+      "outcome": "pass"
+    },
+    {
+      "name": "rankings-engine-fixture",
+      "assertions": ["S3.A1", "S3.A2", "S3.A3.*", "IP6.M1.struct", "S3.A4", "S3.A4.no-leaders"],
+      "outcome": "pass"
+    },
+    {
+      "name": "html-dom-structure",
+      "assertions": ["S4.A1.*", "S4.A2", "S4.A3"],
+      "outcome": "pass"
+    },
+    {
+      "name": "css-custom-properties",
+      "assertions": ["S4.A4", "TDIPC.M1"],
+      "outcome": "pass"
+    },
+    {
+      "name": "empty-state-branch",
+      "assertions": ["S5.A6", "IP7.M1", "S5.T6.b"],
+      "outcome": "pass"
+    },
+    {
+      "name": "error-state-branch",
+      "assertions": ["S1.A5.class", "S1.A5.throw", "S5.A5", "S5.T7.retry"],
+      "outcome": "pass"
+    },
+    {
+      "name": "module-import-boundaries",
+      "assertions": ["S5.charter.imports", "S1.A4.*"],
+      "outcome": "pass"
+    }
+  ],
+  "deferred_assertions": [
+    {
+      "id": "PNV.1",
+      "deferred_to": "cv_artifact_exercise",
+      "reason": "Requires real browser + live data; no Playwright in inline orchestrator. See test-plan.md CV.LIVE."
+    },
+    {
+      "id": "S1.A2",
+      "deferred_to": "cv_artifact_exercise",
+      "reason": "Requires live HTTP fetch in real browser context. See test-plan.md CV.LIVE."
+    },
+    {
+      "id": "S5.A2",
+      "deferred_to": "cv_artifact_exercise",
+      "reason": "Requires real browser to confirm 30 team abbreviations rendered into #rankings-panel."
+    },
+    {
+      "id": "S5.A3",
+      "deferred_to": "cv_artifact_exercise",
+      "reason": "Requires real browser to confirm 30 trend rows in #trends-panel."
+    },
+    {
+      "id": "S5.A4",
+      "deferred_to": "cv_artifact_exercise",
+      "reason": "Requires real browser to confirm games in #upcoming-panel for [today, today+7]."
+    },
+    {
+      "id": "DCA.FC.7",
+      "deferred_to": "cv_return_visit",
+      "reason": "Requires multi-day re-load. Documented in test-plan.md CV.RETURN."
+    }
+  ],
+  "production_fidelity_note": "Live-load scenario against statsapi.mlb.com runs in CV. All other scenarios run under Node 20 against the assembled output/integration/ artifact files (same files that will be served by GitHub Pages)."
+}

@@ -1,0 +1,31 @@
+{
+  "role": "Discovery",
+  "instance_id": "discovery-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "2026-05-26T12:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "What did you understand the user wants?",
+      "answer": "A web page they can open in a browser to see today's snapshot of Major League Baseball: how every team is currently ranked, how each team has been doing over the past week, and what games are coming up. It lives on a public GitHub Pages URL and shows fresh data each day they visit.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What choices did you make on their behalf, and why?",
+      "answer": "- Pulled data live from MLB's official public feed (statsapi.mlb.com) so the page works as a free, static site with no backend.\n- Interpreted 'daily' as 'the page fetches today's data each time it's loaded,' which is how a static-hosted site can stay current.\n- Kept stats at the team level (W-L, run differential, standings) rather than going into individual players, to keep the dashboard scannable.\n- Defined 'weekly trends' as a rolling last-7-days view per team, since that fits a daily dashboard better than a Mon-Sun calendar week.\n- Defined 'upcoming games' as today plus the next 7 days, matching the weekly framing.\n- Used the familiar six-division standings layout (AL East/Central/West and NL East/Central/West) plus the wild-card race for 'overall rankings.'\n- Showed teams with their abbreviation and official color rather than bundling logo images, to avoid licensing concerns.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What did you explicitly NOT do?",
+      "answer": "No betting odds or fantasy features, no ticket sales, no user accounts or saved favorites, no individual-player leaderboards or drill-downs, no live in-game play-by-play, no mobile app or installable shell, no backend server or database, no bundled team logos, no minor-league or non-MLB content, and no email/push notifications.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "TechnicalDiscovery"
+}

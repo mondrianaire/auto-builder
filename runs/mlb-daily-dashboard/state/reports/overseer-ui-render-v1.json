@@ -1,0 +1,9 @@
+{
+  "role": "Overseer",
+  "section": "ui-render",
+  "iteration": 1,
+  "intent_or_outcome": "intent",
+  "instance_id": "overseer-ui-render-inline",
+  "blurb": "Plan: ship app.js as the glue module. On DOMContentLoaded: parallel calls to fetchTeams, fetchStandings, fetchSchedule, fetchRecentResults. Pass to rankings-engine and trends-engine. Render six division tables + wild-card race in #rankings-panel; 30 sparkline rows in #trends-panel; date-grouped games in #upcoming-panel; timestamp in #last-updated. On any fetch failure: showError + visible retry button.",
+  "created_at": "2026-05-26T15:11:00Z"
+}

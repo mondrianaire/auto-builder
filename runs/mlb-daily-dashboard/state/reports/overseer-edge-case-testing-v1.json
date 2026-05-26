@@ -1,0 +1,9 @@
+{
+  "role": "Overseer",
+  "section": "edge-case-testing",
+  "iteration": 1,
+  "intent_or_outcome": "intent",
+  "instance_id": "overseer-edge-case-testing-inline",
+  "blurb": "Plan: under inline mode (no Playwright in orchestrator), ship a Node-based static-fidelity check covering: URL well-formedness in data-client, trends-engine fixture, rankings-engine fixture, HTML DOM-ID presence parse of index.html, empty-state code path reachable, error-state code path reachable. Pair with a manual-test plan document describing the live-load + CV scenarios deferred to a real browser run.",
+  "created_at": "2026-05-26T15:18:00Z"
+}

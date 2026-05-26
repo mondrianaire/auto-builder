@@ -1,0 +1,12 @@
+{
+  "role": "Overseer",
+  "section": "edge-case-testing",
+  "iteration": 2,
+  "intent_or_outcome": "outcome",
+  "instance_id": "overseer-edge-case-testing-inline",
+  "verified": true,
+  "verified_assertions": ["46 static-fidelity assertions, see report.json"],
+  "deferred_assertions": ["PNV.1", "S1.A2", "S5.A2", "S5.A3", "S5.A4", "DCA.FC.7"],
+  "blurb": "Section verified. 46/46 Node-based static-fidelity tests pass. Live-data + browser assertions documented in test-plan.md for CV exercise post-deploy.",
+  "created_at": "2026-05-26T15:21:00Z"
+}

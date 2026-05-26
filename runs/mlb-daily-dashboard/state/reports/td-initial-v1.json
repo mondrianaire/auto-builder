@@ -1,0 +1,37 @@
+{
+  "role": "TechnicalDiscovery",
+  "instance_id": "td-initial",
+  "iteration": 1,
+  "mode": "initial",
+  "completed_at": "2026-05-26T13:00:00Z",
+  "section": null,
+  "escalation_id": null,
+  "blurbs": [
+    {
+      "question": "How are you breaking this into pieces?",
+      "answer": "Six pieces. A data fetcher that talks to the public MLB API and is the only thing in the build that makes network calls. A trends calculator that turns raw game results into each team's last-7-days summary. A rankings calculator that turns the standings into six division tables plus a wild-card race. An HTML/CSS shell that lays out the page and reserves named slots for the three content panels. A glue module that wires the data fetcher to the calculators, drops the results into the shell, and handles loading/error/empty states. And a test runner that opens the finished page in a real browser, hits the real MLB API, and confirms every promise this plan makes.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What tech choices did you make, and why?",
+      "answer": "Public MLB Stats API at statsapi.mlb.com — free, no API key, returns CORS-friendly headers so the browser can call it directly. No charting library; weekly sparklines are tiny inline SVG drawings. No CSS framework; plain CSS with per-team color variables. No bundler; the JavaScript is split into small ES modules that the browser loads directly. Net result: zero third-party runtime dependencies. The only thing the deliverable needs from the network is the MLB data itself.",
+      "kind": "always",
+      "importance": "high"
+    },
+    {
+      "question": "What handoffs exist between pieces?",
+      "answer": "The data fetcher feeds raw standings into the rankings calculator, raw game results into the trends calculator, and raw schedule data straight through to the glue module. Each calculator returns plain data objects with a documented shape. The glue module is the only piece that touches the HTML shell, and it does so only through five named container IDs that the shell guarantees exist. Six contract files document every shape so each piece can be built independently.",
+      "kind": "conditional",
+      "importance": "medium"
+    },
+    {
+      "question": "What did you defer or note as risky?",
+      "answer": "The MLB API's CORS behavior is the one load-bearing assumption based on community evidence rather than direct measurement. If — unexpectedly — the browser blocks the fetch when the page goes live, the fallback is to swap the data fetcher for a daily GitHub Actions job that pre-builds a JSON file. The test runner exercises the real network call, so we'll catch this before declaring success rather than after.",
+      "kind": "conditional",
+      "importance": "medium"
+    }
+  ],
+  "raised_escalation": false,
+  "next_role": "Editor"
+}

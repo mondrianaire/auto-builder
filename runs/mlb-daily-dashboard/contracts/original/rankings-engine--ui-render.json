@@ -1,0 +1,50 @@
+{
+  "contract_id": "rankings-engine--ui-render",
+  "version": 1,
+  "producer_section": "rankings-engine",
+  "consumer_section": "ui-render",
+  "produced_by_symbol": "computeRankings(standings)",
+  "consumed_by_symbol": "renderRankings(rankings)",
+  "shape_summary": "Three derived views of the standings: division standings (6 tables), league standings (2 lists), and wild-card race (2 lists of 3).",
+  "return_shape": {
+    "type": "Object",
+    "Object": {
+      "divisionStandings": {
+        "type": "Object",
+        "keys": ["AL_East", "AL_Central", "AL_West", "NL_East", "NL_Central", "NL_West"],
+        "value_type": "Array<StandingEntry>",
+        "description": "Each value is an array of teams in that division sorted by descending pct. StandingEntry shape matches data-client--rankings-engine contract."
+      },
+      "leagueStandings": {
+        "type": "Object",
+        "keys": ["AL", "NL"],
+        "value_type": "Array<StandingEntry>",
+        "description": "All 15 teams in the league sorted by descending pct."
+      },
+      "wildCard": {
+        "type": "Object",
+        "keys": ["AL", "NL"],
+        "value_type": "Array<StandingEntry>",
+        "description": "Top 3 teams in the league that are NOT the leader of their division, sorted by descending pct."
+      }
+    }
+  },
+  "invariants": [
+    "divisionStandings has exactly the 6 keys: AL_East, AL_Central, AL_West, NL_East, NL_Central, NL_West.",
+    "Each divisionStandings array has exactly 5 entries during the regular season.",
+    "leagueStandings.AL and leagueStandings.NL each have exactly 15 entries.",
+    "wildCard.AL and wildCard.NL each have exactly 3 entries.",
+    "No team appears in wildCard.* if it is the leader (top pct) of its division.",
+    "Every array in the returned object is sorted descending by pct."
+  ],
+  "error_behavior": "Pure function; throws TypeError only on malformed input shape.",
+  "example": {
+    "divisionStandings": {
+      "AL_East": [
+        {"teamId": 147, "teamAbbreviation": "NYY", "wins": 32, "losses": 20, "pct": 0.615, "gb": "-"}
+      ]
+    },
+    "leagueStandings": {"AL": [], "NL": []},
+    "wildCard": {"AL": [], "NL": []}
+  }
+}

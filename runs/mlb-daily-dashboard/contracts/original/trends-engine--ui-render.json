@@ -1,0 +1,32 @@
+{
+  "contract_id": "trends-engine--ui-render",
+  "version": 1,
+  "producer_section": "trends-engine",
+  "consumer_section": "ui-render",
+  "produced_by_symbol": "computeWeeklyTrends(perTeamResultMap)",
+  "consumed_by_symbol": "renderTrends(trends)",
+  "shape_summary": "Array of one Trend object per team summarizing the last-7-days performance.",
+  "return_shape": {
+    "type": "Array",
+    "element_type": "Trend",
+    "Trend": {
+      "teamId": {"type": "number"},
+      "last7W": {"type": "number", "description": "Wins in the last 7 days, integer ≥ 0."},
+      "last7L": {"type": "number", "description": "Losses in the last 7 days, integer ≥ 0."},
+      "runDiff7": {"type": "number", "description": "Sum of (runsScored - runsAllowed) across the last-7-days games. Can be negative."},
+      "streak": {"type": "string_or_null", "description": "Current streak as e.g. 'W3' or 'L2'. null when team had no games in the window."},
+      "sparklinePoints": {"type": "Array<number>", "description": "Per-game cumulative run differential within the window, used for inline-SVG sparkline rendering. Empty array if no games."}
+    }
+  },
+  "invariants": [
+    "Array length equals the number of teams in the input map (30 in production).",
+    "For any team with zero games in the window: last7W===0, last7L===0, runDiff7===0, streak===null, sparklinePoints===[].",
+    "last7W + last7L === total games played by that team in the window.",
+    "sparklinePoints.length === total games played by that team in the window when non-empty."
+  ],
+  "error_behavior": "Pure function; throws TypeError only on malformed input shape.",
+  "example": [
+    {"teamId": 147, "last7W": 5, "last7L": 2, "runDiff7": 12, "streak": "W3", "sparklinePoints": [4, 2, -1, 3, 5, 8, 12]},
+    {"teamId": 999, "last7W": 0, "last7L": 0, "runDiff7": 0, "streak": null, "sparklinePoints": []}
+  ]
+}

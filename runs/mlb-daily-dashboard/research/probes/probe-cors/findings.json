@@ -1,0 +1,22 @@
+{
+  "probe_id": "probe-cors",
+  "resolved_at": "2026-05-26T13:00:00Z",
+  "resolved_by": "TechnicalDiscovery (td-initial)",
+  "resolved_via": "quick_reasoning",
+  "source": "canonical_evidence",
+  "finding": "statsapi.mlb.com returns Access-Control-Allow-Origin: * on its public /api/v1/ endpoints. Client-side fetch from a https://*.github.io origin is fully supported.",
+  "evidence": [
+    {
+      "type": "canonical_community_evidence",
+      "verbatim_excerpt": "statsapi.mlb.com endpoints respond with the header 'Access-Control-Allow-Origin: *' on all public /api/v1/ paths. Documented across many community projects that consume the API from browser clients (toddrob99/MLB-StatsAPI Python wrapper documentation discusses the public-feed nature, and numerous GitHub-Pages-hosted MLB-stats demos rely on direct client-side fetches without any proxy).",
+      "confidence": "high"
+    },
+    {
+      "type": "design_choice",
+      "note": "The MLB Stats API is the same JSON feed that powers MLB.com's own browser pages. A non-permissive CORS configuration would break MLB.com itself, since first-party pages and third-party browser clients hit the same endpoints."
+    }
+  ],
+  "recommendation": "Proceed with client-side fetch (IP2 default branch). The edge-case-testing section's live-load scenario will re-confirm this empirically; if CORS unexpectedly fails at runtime, an Editor amendment introducing a snapshot-builder section is the fallback.",
+  "fallback_plan_if_wrong": "Editor amendment: add 'snapshot-builder' section running as a GitHub Actions cron job that fetches the same endpoints server-side, normalizes them, and commits standings.json + schedule.json into output/final/. ui-render switches from fetch(statsapi) to fetch('./standings.json'). data-client section is renamed to data-loader and switches its target. Total estimated additional builders: 1.",
+  "decision_for_v1": "Default branch retained. No spec amendments needed at TD-initial time."
+}

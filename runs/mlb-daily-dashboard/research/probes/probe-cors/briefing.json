@@ -1,0 +1,12 @@
+{
+  "probe_id": "probe-cors",
+  "created_at": "2026-05-26T13:00:00Z",
+  "requested_by": "TechnicalDiscovery (td-initial)",
+  "mode": "planning",
+  "topic": "Confirm CORS behavior of statsapi.mlb.com when accessed from a github.io browser origin",
+  "context": "Build is a static GitHub-Pages dashboard that must fetch live MLB data client-side. If CORS blocks requests from https://mondrianaire.github.io, the entire IP2 default (client-side fetch on load) collapses and the fallback (CI-built JSON snapshot) becomes mandatory. Discovery flagged this as the load-bearing technical risk.",
+  "question": "Does statsapi.mlb.com return a permissive Access-Control-Allow-Origin header on its public /api/v1/ endpoints, allowing browser fetch() from arbitrary origins including https://*.github.io?",
+  "acceptance": "A confidence-grounded answer (canonical evidence or empirical test) that resolves whether client-side fetch is viable. If unviable, explicit pivot recommendation.",
+  "resolution_mode": "quick_reasoning_by_td",
+  "resolution_note": "TD resolved inline rather than spawning a sub-agent — canonical evidence is sufficient."
+}

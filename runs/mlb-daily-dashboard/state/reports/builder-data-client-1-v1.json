@@ -1,0 +1,21 @@
+{
+  "role": "Builder",
+  "section": "data-client",
+  "builder_id": "builder-data-client-1",
+  "iteration": 1,
+  "intent_or_outcome": "outcome",
+  "instance_id": "builder-data-client-1-inline",
+  "verified_assertions": [
+    {"id": "S1.A1", "result": "pass", "evidence": "All four named exports + DataClientError present in data-client.js"},
+    {"id": "S1.A3", "result": "pass", "evidence": "fetchStandings normalizes to the contracted shape (teamId, league, division, wins, losses, pct, gb, teamName, teamAbbreviation)"},
+    {"id": "S1.A5", "result": "pass", "evidence": "getJSON wraps fetch in try/catch and throws DataClientError on network or non-200"},
+    {"id": "IP1.M1", "result": "pass", "evidence": "API_BASE constant pins all URLs to https://statsapi.mlb.com/api/v1"},
+    {"id": "IP1.M2", "result": "pass", "evidence": "No espn / sports-data references in source"}
+  ],
+  "deferred_assertions": [
+    {"id": "S1.A2", "deferred_to": "edge-case-testing", "reason": "Requires real browser fetch against statsapi.mlb.com"},
+    {"id": "S1.A4", "deferred_to": "critic_final_sweep", "reason": "Requires grep across the assembled codebase"}
+  ],
+  "blurb": "Outcome: shipped data-client.js (5 exports + DataClientError) and teams.js (30-team color/abbr/division fallback). All URLs prefixed https://statsapi.mlb.com/api/v1. fetchRecentResults uses a single schedule call partitioned client-side instead of N+1 per team. Errors thrown as DataClientError with status + url.",
+  "created_at": "2026-05-26T15:06:00Z"
+}
