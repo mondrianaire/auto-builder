@@ -36,7 +36,7 @@ export const ADMIN_UID = "REPLACE_WITH_PROJECT_OWNER_GOOGLE_UID";
 //
 // Default for first-contact: "client-dealer". Flip to "cloud-functions" after
 // you deploy the included functions/ source.
-export const SERVER_ENGINE_MODE = "client-dealer";  // rev-2 rollback — flip back to cloud-functions AFTER firebase deploy completes
+export const SERVER_ENGINE_MODE = "cloud-functions";  // rev-3 — Cloud Functions deployed + verified live on gto-poker-qui
 
 // Per-preset action-clock seconds — derived from src/tournament/presets.js but
 // exported here for the action-clock UI to look up without importing the full
