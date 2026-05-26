@@ -1,17 +1,98 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-26T08:21:30.001Z",
+  "generated_at": "2026-05-26T08:29:57.855Z",
   "codex_version": "0.16",
   "architecture_versions_seen": [
     "v1.10.1",
+    "v1.10.1 (with v1.11 reports, v1.12 candidates active)",
     "v1.3",
     "v1.4 (initial run); v1.5 (recovery)",
     "v1.7",
     "v1.8",
     "v1.9"
   ],
-  "run_count": 12,
+  "run_count": 14,
   "runs": [
+    {
+      "slug": "mlb-daily-dashboard",
+      "prompt": null,
+      "date": "2026-05-26",
+      "architecture_version": "v1.10.1",
+      "dispatch_mode": null,
+      "verdict": "unknown",
+      "raw_verdict": null,
+      "final_artifact": null,
+      "telos": "A web-based daily dashboard that, when opened in a browser, shows current Major League Baseball team standings, weekly performance trends, and upcoming game schedules for all teams.",
+      "rating": {
+        "telos_fidelity": "adequate",
+        "deliverability": {
+          "tier1_pnv": "not_run",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "failed"
+        },
+        "cost": {
+          "minutes": null,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "unknown"
+      },
+      "counts": {
+        "dispatches": 20,
+        "overseer_dispatches": 0,
+        "builder_dispatches": 0,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": null,
+        "sections": 6,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 1,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 1,
+        "events_total": 0,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_output_subdir": "final",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "unverified",
+      "first_delivery_outcome_source": "default",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "completion_ratified_at": null,
+      "ratified_by": null,
+      "ratification_notes": null,
+      "ratification_writer_version": null,
+      "verification_passed": true,
+      "promoted_to": null,
+      "promoted_at": null,
+      "ab_pair": null,
+      "links": {
+        "run_report": "runs/mlb-daily-dashboard/run-report.md",
+        "verification": "runs/mlb-daily-dashboard/output/verification/report.json",
+        "ledger": "runs/mlb-daily-dashboard/decisions/discovery/ledger-v1.json",
+        "sections": "runs/mlb-daily-dashboard/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/mlb-daily-dashboard/output/final/",
+        "audit_flags": "runs/mlb-daily-dashboard/audit/flags.jsonl"
+      },
+      "decision_flowchart_path": null
+    },
     {
       "slug": "closest-liquor-store",
       "prompt": "Build me an app that points me to the closest liquor store",
@@ -1095,6 +1176,86 @@
         "audit_flags": "runs/streamdock-applemusic-touchbar/audit/flags.jsonl"
       },
       "decision_flowchart_path": "runs/streamdock-applemusic-touchbar/decision-flowchart-auto.html"
+    },
+    {
+      "slug": "texas-holdem-tournament",
+      "prompt": null,
+      "date": null,
+      "architecture_version": "v1.10.1 (with v1.11 reports, v1.12 candidates active)",
+      "dispatch_mode": "inline",
+      "verdict": "pass_with_concerns",
+      "raw_verdict": "`pass_with_concerns` (CV) — ships per always-deliver contract",
+      "final_artifact": null,
+      "telos": "A live multiplayer Texas Hold'em tournament web application where up to nine Google-authenticated users can join a single tournament, play in real time around a visually animated poker ring under standard tournament rules, and have their results tracked across weekly, monthly, and all-time leaderboards.",
+      "rating": {
+        "telos_fidelity": "adequate",
+        "deliverability": {
+          "tier1_pnv": "verified",
+          "tier2_first_contact": "not_run",
+          "tier3_subgoal": "failed"
+        },
+        "cost": {
+          "minutes": 0,
+          "escalations_high": 0,
+          "critic_high": 0
+        },
+        "learning_yield": {
+          "amendment_candidates": 0,
+          "principle_violations_caught_structurally": 0,
+          "principle_violations_escaped": 0
+        },
+        "composite": "shipped_with_concerns"
+      },
+      "counts": {
+        "dispatches": 9,
+        "overseer_dispatches": 2,
+        "builder_dispatches": 5,
+        "researcher_dispatches": 0,
+        "wall_clock_minutes": 0,
+        "sections": 10,
+        "edge_cases_total": null,
+        "edge_cases_passing": null,
+        "critic_findings_high": 0,
+        "critic_findings_medium": 0,
+        "critic_findings_low": 0,
+        "sev0_fixes": 5,
+        "escalations_open": 0,
+        "demotions": 0,
+        "editor_iterations": 2,
+        "events_total": 3,
+        "revision_count": 1,
+        "additional_step_count": 0
+      },
+      "deliverable_kind": "web_app",
+      "deliverable_can_run_in_browser": true,
+      "deliverable_index": "index.html",
+      "deliverable_output_subdir": "final",
+      "deliverable_manifest": null,
+      "showcase_assets": null,
+      "live_url": "https://mondrianaire.github.io/auto-builder/runs/texas-holdem-tournament/output/final/index.html",
+      "live_url_kind": "artifact",
+      "first_delivery_outcome": "succeeded_with_concerns",
+      "first_delivery_outcome_source": "uncertainty_manifest",
+      "re_audit_present": false,
+      "re_audit_reclassified_verdict": null,
+      "rca_present": false,
+      "completion_ratified_at": null,
+      "ratified_by": null,
+      "ratification_notes": null,
+      "ratification_writer_version": null,
+      "verification_passed": true,
+      "promoted_to": null,
+      "promoted_at": null,
+      "ab_pair": null,
+      "links": {
+        "run_report": "runs/texas-holdem-tournament/run-report.md",
+        "verification": "runs/texas-holdem-tournament/output/verification/report.json",
+        "ledger": "runs/texas-holdem-tournament/decisions/discovery/ledger-v1.json",
+        "sections": "runs/texas-holdem-tournament/decisions/technical-discovery/sections-v1.json",
+        "final_dir": "runs/texas-holdem-tournament/output/final/",
+        "audit_flags": "runs/texas-holdem-tournament/audit/flags.jsonl"
+      },
+      "decision_flowchart_path": null
     }
   ],
   "amendments": [
@@ -1253,10 +1414,10 @@
     "CV": {
       "high": 10,
       "medium": 0,
-      "low": 15,
-      "total": 25,
+      "low": 18,
+      "total": 28,
       "explicit_count": 3,
-      "runs_implicated": 7
+      "runs_implicated": 8
     },
     "Re-Verification": {
       "high": 55,
@@ -1341,10 +1502,10 @@
   },
   "first_delivery_outcome_distribution": {
     "succeeded": 3,
-    "succeeded_with_concerns": 5,
+    "succeeded_with_concerns": 6,
     "failed_user_reprompted": 3,
     "failed_unrecoverable": 0,
-    "unverified": 1
+    "unverified": 2
   },
   "maintenance_handoffs": [
     {

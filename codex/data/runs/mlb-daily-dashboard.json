@@ -1,0 +1,1274 @@
+{
+  "schema_version": "0.1",
+  "slug": "mlb-daily-dashboard",
+  "summary": {
+    "slug": "mlb-daily-dashboard",
+    "prompt": null,
+    "date": "2026-05-26",
+    "architecture_version": "v1.10.1",
+    "dispatch_mode": null,
+    "verdict": "unknown",
+    "raw_verdict": null,
+    "final_artifact": null,
+    "telos": "A web-based daily dashboard that, when opened in a browser, shows current Major League Baseball team standings, weekly performance trends, and upcoming game schedules for all teams.",
+    "rating": {
+      "telos_fidelity": "adequate",
+      "deliverability": {
+        "tier1_pnv": "not_run",
+        "tier2_first_contact": "not_run",
+        "tier3_subgoal": "failed"
+      },
+      "cost": {
+        "minutes": null,
+        "escalations_high": 0,
+        "critic_high": 0
+      },
+      "learning_yield": {
+        "amendment_candidates": 0,
+        "principle_violations_caught_structurally": 0,
+        "principle_violations_escaped": 0
+      },
+      "composite": "unknown"
+    },
+    "counts": {
+      "dispatches": 20,
+      "overseer_dispatches": 0,
+      "builder_dispatches": 0,
+      "researcher_dispatches": 0,
+      "wall_clock_minutes": null,
+      "sections": 6,
+      "edge_cases_total": null,
+      "edge_cases_passing": null,
+      "critic_findings_high": 0,
+      "critic_findings_medium": 0,
+      "critic_findings_low": 0,
+      "sev0_fixes": 1,
+      "escalations_open": 0,
+      "demotions": 0,
+      "editor_iterations": 1,
+      "events_total": 0,
+      "revision_count": 1,
+      "additional_step_count": 0
+    },
+    "deliverable_kind": "web_app",
+    "deliverable_can_run_in_browser": true,
+    "deliverable_index": "index.html",
+    "deliverable_output_subdir": "final",
+    "deliverable_manifest": null,
+    "showcase_assets": null,
+    "live_url": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html",
+    "live_url_kind": "artifact",
+    "first_delivery_outcome": "unverified",
+    "first_delivery_outcome_source": "default",
+    "re_audit_present": false,
+    "re_audit_reclassified_verdict": null,
+    "rca_present": false,
+    "completion_ratified_at": null,
+    "ratified_by": null,
+    "ratification_notes": null,
+    "ratification_writer_version": null,
+    "verification_passed": true,
+    "promoted_to": null,
+    "promoted_at": null,
+    "ab_pair": null,
+    "links": {
+      "run_report": "runs/mlb-daily-dashboard/run-report.md",
+      "verification": "runs/mlb-daily-dashboard/output/verification/report.json",
+      "ledger": "runs/mlb-daily-dashboard/decisions/discovery/ledger-v1.json",
+      "sections": "runs/mlb-daily-dashboard/decisions/technical-discovery/sections-v1.json",
+      "final_dir": "runs/mlb-daily-dashboard/output/final/",
+      "audit_flags": "runs/mlb-daily-dashboard/audit/flags.jsonl"
+    },
+    "decision_flowchart_path": null
+  },
+  "ledger": {
+    "restatement": "Build a static web page that displays a daily-updated snapshot of all 30 MLB teams: overall standings/rankings, weekly performance trends (last-7-days W-L and run differential), and upcoming game schedules. The page is hosted on GitHub Pages (static hosting) and fetches live MLB data client-side when a visitor loads it.",
+    "telos": "A web-based daily dashboard that, when opened in a browser, shows current Major League Baseball team standings, weekly performance trends, and upcoming game schedules for all teams.",
+    "assumption_count": 11,
+    "inflection_count": 8,
+    "oos_count": 15,
+    "proper_nouns": [
+      {
+        "surface": "mlb",
+        "role": "target_defining",
+        "verification_status": "pending"
+      },
+      {
+        "surface": "github pages",
+        "role": "target_defining",
+        "verification_status": "pending"
+      }
+    ],
+    "first_contact_requirements": [
+      {
+        "description": "User visits the live URL in a desktop browser; the page loads successfully (HTTP 200, no blank screen, no console-fatal errors)."
+      },
+      {
+        "description": "Within a few seconds of load, the dashboard renders actual current MLB data — not placeholder text, not 'Loading...' indefinitely, not an error message."
+      },
+      {
+        "description": "All three focus areas are visibly present on the page: (a) weekly trends per team, (b) upcoming games / schedules, (c) overall rankings / standings."
+      },
+      {
+        "description": "All 30 MLB teams are represented somewhere on the page (in standings, in trends, or in the schedule)."
+      },
+      {
+        "description": "The data shown is recognizably current (e.g., standings reflect a date within the last day or two, schedule shows games dated today or in the near future)."
+      },
+      {
+        "description": "The page is hosted at a publicly reachable URL on GitHub Pages and the URL is delivered to the user."
+      },
+      {
+        "description": "On a same-day or next-day return visit, the displayed data has refreshed to reflect the new day's standings and schedule."
+      }
+    ]
+  },
+  "td": {
+    "sections": [
+      {
+        "id": "S1",
+        "charter_excerpt": "Owns every outbound HTTP request to the MLB Stats API and is the single source of truth for the project's API surface. Exposes typed JavaScript functions that return plain data objects for teams, standings, schedule, and per-team game resu…",
+        "acceptance_excerpt": "Module exposes fetchTeams(), fetchStandings(season), fetchSchedule(startDate, endDate), and fetchTeamGameResults(teamId, startDate, endDate) functions. Each function performs a real HTTP GET against statsapi.mlb.com, parses the JSON respon…"
+      },
+      {
+        "id": "S2",
+        "charter_excerpt": "Pure computation module that takes raw per-team game-result arrays produced by data-client and returns trend objects per team. Computes last-7-days wins, last-7-days losses, run differential over that window, and current streak (consecutiv…",
+        "acceptance_excerpt": "Module exposes computeWeeklyTrends(perTeamResultMap) which takes a Map of teamId -> Array of game-result objects (as defined in data-client--trends-engine contract) and returns an array of trend objects (per the trends-engine--ui-render co…"
+      },
+      {
+        "id": "S3",
+        "charter_excerpt": "Pure computation module that takes the standings array produced by data-client and projects three views: division standings (six divisions), league standings (AL + NL), and wild-card race (top 3 non-division-leaders per league by win pct).…",
+        "acceptance_excerpt": "Module exposes computeRankings(standings) which takes the standings array (per data-client--rankings-engine contract) and returns an object {divisionStandings, leagueStandings, wildCard} matching the rankings-engine--ui-render contract. di…"
+      },
+      {
+        "id": "S4",
+        "charter_excerpt": "Defines the static HTML scaffolding, CSS, and visual identity for the dashboard. Provides the page header with a last-updated timestamp slot, and four named container regions: standings panel, weekly-trends panel, upcoming-games panel, and…",
+        "acceptance_excerpt": "Repository contains index.html with id'd containers for rankings (#rankings-panel), trends (#trends-panel), upcoming games (#upcoming-panel), a last-updated label (#last-updated), and an error banner (#error-banner). A CSS file defines vis…"
+      },
+      {
+        "id": "S5",
+        "charter_excerpt": "Glue module that orchestrates page bootstrap: calls data-client, hands raw data to trends-engine and rankings-engine, and writes the resulting view-models into the ui-shell DOM containers. Owns the loading state (initial), the error state …",
+        "acceptance_excerpt": "Module exposes an init() entry point that runs on DOMContentLoaded. On success, the standings panel shows division tables with all 30 teams, the trends panel shows per-team last-7-days summaries, and the upcoming panel shows games in the n…"
+      },
+      {
+        "id": "S6",
+        "charter_excerpt": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment — no substitution of runtime dependencies. Loads the integrated artifact through a real HTTP server (n…",
+        "acceptance_excerpt": "Test suite runs in CI-style fashion from a Node harness, serves the output/final/ directory via a local http server, launches Playwright Chromium headless, and exercises three scenarios: (1) live load against statsapi.mlb.com, (2) empty-sc…"
+      }
+    ],
+    "contracts": [
+      "data-client--rankings-engine",
+      "data-client--trends-engine",
+      "data-client--ui-render",
+      "rankings-engine--ui-render",
+      "trends-engine--ui-render",
+      "ui-shell--ui-render"
+    ],
+    "prompt_verb_chosen": "show a daily dashboard of MLB teams covering weekly trends, upcoming games, and overall rankings"
+  },
+  "timeline": [],
+  "verification": {
+    "verdict": "pass",
+    "assumption_checks_total": 11,
+    "assumption_checks_verified": 0,
+    "out_of_scope_total": 15,
+    "out_of_scope_verified": 0,
+    "inflection_point_checks_total": 11,
+    "inflection_point_checks_honored": 0,
+    "edge_cases_total": null,
+    "edge_cases_passing": null,
+    "first_contact_results": [
+      {
+        "id": "FC.1",
+        "description": "Page loads successfully, no blank screen, no console-fatal errors",
+        "result": "pass",
+        "evidence": "HTTP 200 from local server; page.goto resolved; 0 console errors during full load+render cycle"
+      },
+      {
+        "id": "FC.2",
+        "description": "Within a few seconds, dashboard renders actual current MLB data",
+        "result": "pass",
+        "evidence": "All three panels transitioned out of 'Loading...' state within ~3s of DOMContentLoaded; standings show TB 34-17, NYY 32-22, CLE 32-24 etc. — real 2026 mid-season values"
+      },
+      {
+        "id": "FC.3",
+        "description": "All three focus areas visible: weekly trends, upcoming games, overall rankings",
+        "result": "pass",
+        "evidence": "#rankings-panel (16090 chars rendered), #trends-panel (21021 chars rendered, 30 trend rows), #upcoming-panel (59807 chars rendered, 105 game rows) — all populated with real data, none in loading state"
+      },
+      {
+        "id": "FC.4",
+        "description": "All 30 MLB teams represented",
+        "result": "pass",
+        "evidence": "All 30 expected team abbreviations (LAA, ARI, BAL, BOS, CHC, CIN, CLE, COL, DET, HOU, KC, LAD, WSH, NYM, ATH, PIT, SD, SEA, SF, STL, TB, TEX, TOR, MIN, PHI, ATL, CWS, MIA, NYY, MIL) found in DOM via tokenized scan. Note: Arizona renders as 'AZ' in standings/trends panels (API-returned abbreviation) and as 'ARI' in upcoming panel (from teams.js metadata) — same team, two abbreviations. Both are valid MLB designators; this does not break the requirement, but see concerns."
+      },
+      {
+        "id": "FC.5",
+        "description": "Data is recognizably current",
+        "result": "pass",
+        "evidence": "#last-updated text reads '2026-05-26 06:15' (build date). Upcoming games show dates TUE MAY 26, WED MAY 27, THU MAY 28 — all within [today, today+7]. Standings reflect mid-season 2026 W-L records."
+      },
+      {
+        "id": "FC.6",
+        "description": "Page hosted at publicly reachable GitHub Pages URL and URL is delivered",
+        "result": "pass_pending_deploy",
+        "evidence": "Deployment target https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/ is declared in manifest.json and matches the documented auto-builder Pages pattern. Per the briefing's deferral note, live URL test is for Orchestrator post-commit; the artifact is verified ready-to-deploy."
+      },
+      {
+        "id": "FC.7",
+        "description": "Next-day return visit shows refreshed data",
+        "result": "pass",
+        "evidence": "Browser page.reload() triggered all 4 statsapi.mlb.com calls again (no localStorage cache check, no service worker). Source review confirms app.js always re-runs init() on DOMContentLoaded; no persistence layer; no stale-cache lock-in."
+      }
+    ],
+    "principle_h_skips": [],
+    "concerns": []
+  },
+  "critic": {
+    "by_severity": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_principle": {
+      "A": 0,
+      "B": 0,
+      "C": 3,
+      "D": 0,
+      "E": 0,
+      "F": 0,
+      "G": 0,
+      "H": 0
+    },
+    "open": 0,
+    "resolved": 0,
+    "sev0_fixes": 1,
+    "escalations_open": 0
+  },
+  "build_shape": {
+    "schema": "v0.15",
+    "slug": "mlb-daily-dashboard",
+    "deliverable_kind": "web_app",
+    "deliverable_label": "MLB Daily Dashboard",
+    "inflection_points": [
+      {
+        "id": "IP1",
+        "topic": "Data source for MLB schedule, standings, and team statistics",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP2",
+        "topic": "How 'daily' freshness is delivered on a static host",
+        "importance": "high",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP3",
+        "topic": "Stats granularity: team-level vs player-level",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP4",
+        "topic": "Definition of 'weekly trends'",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP5",
+        "topic": "Scope of 'upcoming games and schedules'",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP6",
+        "topic": "Shape of 'overall rankings'",
+        "importance": "medium",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP7",
+        "topic": "Behavior on off-days or when API returns no games",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      },
+      {
+        "id": "IP8",
+        "topic": "Team identity visualization (logos, colors)",
+        "importance": "low",
+        "method": null,
+        "has_research": false
+      }
+    ],
+    "sections": [
+      {
+        "id": "S1",
+        "name": "S1",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S2",
+        "name": "S2",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S3",
+        "name": "S3",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S4",
+        "name": "S4",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S5",
+        "name": "S5",
+        "depends_on": [],
+        "estimated_builders": 1
+      },
+      {
+        "id": "S6",
+        "name": "S6",
+        "depends_on": [],
+        "estimated_builders": 1
+      }
+    ],
+    "contracts": [
+      {
+        "from": "data-client",
+        "to": "rankings-engine"
+      },
+      {
+        "from": "data-client",
+        "to": "trends-engine"
+      },
+      {
+        "from": "data-client",
+        "to": "ui-render"
+      },
+      {
+        "from": "rankings-engine",
+        "to": "ui-render"
+      },
+      {
+        "from": "trends-engine",
+        "to": "ui-render"
+      },
+      {
+        "from": "ui-shell",
+        "to": "ui-render"
+      }
+    ],
+    "waves": [
+      {
+        "number": 1,
+        "sections": [
+          "data-client",
+          "ui-shell"
+        ],
+        "started_at": "2026-05-26T15:01:00Z",
+        "ended_at": "2026-05-26T15:06:35Z",
+        "builders": []
+      },
+      {
+        "number": 2,
+        "sections": [
+          "trends-engine",
+          "rankings-engine"
+        ],
+        "started_at": "2026-05-26T15:07:00Z",
+        "ended_at": "2026-05-26T15:10:35Z",
+        "builders": []
+      },
+      {
+        "number": 3,
+        "sections": [
+          "ui-render"
+        ],
+        "started_at": "2026-05-26T15:11:00Z",
+        "ended_at": "2026-05-26T15:16:05Z",
+        "builders": []
+      },
+      {
+        "number": 4,
+        "sections": [
+          "integrator"
+        ],
+        "started_at": "2026-05-26T15:17:00Z",
+        "ended_at": "2026-05-26T15:17:35Z",
+        "builders": []
+      },
+      {
+        "number": 5,
+        "sections": [
+          "edge-case-testing"
+        ],
+        "started_at": "2026-05-26T15:18:00Z",
+        "ended_at": "2026-05-26T15:21:05Z",
+        "builders": []
+      }
+    ],
+    "researcher_dispatch_count": 0,
+    "builder_dispatch_count": 0,
+    "overseer_dispatch_count": 0,
+    "critic_high": 0,
+    "critic_medium": 0,
+    "critic_low": 0,
+    "editor_iterations": 1,
+    "editor_final_verdict": "pass_with_recommendations",
+    "demotion_count": 0,
+    "cv_verdict": "pass",
+    "cv_tier1_pnv": "not_run",
+    "cv_tier2_first_contact": "not_run",
+    "cv_tier3_subgoal": "failed",
+    "lifecycle_phase": "ready_to_ratify",
+    "ratified": false,
+    "promoted": false,
+    "promoted_to": null,
+    "totals": {
+      "sections": 6,
+      "inflection_points": 8,
+      "builders": 0,
+      "waves": 5,
+      "escalations": 0,
+      "dispatches": 20
+    },
+    "phase_band_states": {
+      "kickoff": "done",
+      "planning": "done",
+      "build": "done",
+      "verification": "done",
+      "delivery": "done",
+      "ratification": "active",
+      "promoted": "pending"
+    }
+  },
+  "live_narrative": {
+    "reports": [
+      {
+        "role": "ConvergenceVerifier",
+        "instance_id": "cv",
+        "iteration": 1,
+        "mode": null,
+        "completed_at": "2026-05-26T06:18:00Z",
+        "blurbs": [
+          {
+            "question": "Does the artifact actually work?",
+            "answer": "Yes. Verdict: pass. Real Chromium loaded output/integration/index.html via a local HTTP server, fired live fetches to statsapi.mlb.com, and rendered all three focus areas with real 2026 mid-season data: 6 division standings (TB, NYY, TOR, BAL, BOS in AL East at 34-17/32-22/etc.), 30 last-7-days trend rows with sparklines + W-L + run diff + streak, and 105 upcoming games grouped across MAY 26 to JUN 2. All 7 first-contact requirements pass (FC.6 verified ready-to-deploy; live URL probe is Orchestrator's post-commit step). All 30 MLB teams represented, no console errors, error-banner and empty-state paths both confirmed via stubbed routes.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "Any caveats?",
+            "answer": "Two minor notes. (1) Arizona Diamondbacks renders as 'AZ' in standings/trends panels (using the API-returned abbreviation field) but as 'ARI' in the upcoming panel (using teams.js metadata). All 30 teams are clearly present, but one team appears under two different abbreviations on the same page. Functional, but a UX inconsistency — not a Sev 0 trivial fix (>5 lines either way). Recommend flagging in wrap-up or post-ratify backlog. (2) FC.6 live URL probe was deferred to Orchestrator as documented in the briefing — the artifact is verified ready-to-deploy and the URL pattern matches the auto-builder Pages convention.",
+            "kind": "conditional",
+            "importance": "medium"
+          },
+          {
+            "question": "What production-fidelity environment did you actually use?",
+            "answer": "Option A (preferred). Installed Playwright (npm install playwright + npx playwright install chromium) into /tmp/pw, spun up a Node http.createServer to serve output/integration/ on 127.0.0.1, launched real headless Chromium (Chrome Headless Shell 148.0.7778.96), and exercised the page against the real statsapi.mlb.com endpoints. Observed live network requests: /teams?sportId=1&season=2026, /standings?leagueId=103,104&season=2026, /schedule?startDate=2026-05-26&endDate=2026-06-02, /schedule?startDate=2026-05-20&endDate=2026-05-26. CORS effectively permissive (browser-side fetches from 127.0.0.1 succeeded), confirming the canonical-evidence assumption in TD-IP-2.",
+            "kind": "conditional",
+            "importance": "medium"
+          }
+        ],
+        "raised_escalation": false,
+        "next_role": "Orchestrator",
+        "_filename": "cv-v1.json"
+      },
+      {
+        "role": "Discovery",
+        "instance_id": "discovery-initial",
+        "iteration": 1,
+        "mode": "initial",
+        "completed_at": "2026-05-26T12:00:00Z",
+        "section": null,
+        "escalation_id": null,
+        "blurbs": [
+          {
+            "question": "What did you understand the user wants?",
+            "answer": "A web page they can open in a browser to see today's snapshot of Major League Baseball: how every team is currently ranked, how each team has been doing over the past week, and what games are coming up. It lives on a public GitHub Pages URL and shows fresh data each day they visit.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "What choices did you make on their behalf, and why?",
+            "answer": "- Pulled data live from MLB's official public feed (statsapi.mlb.com) so the page works as a free, static site with no backend.\n- Interpreted 'daily' as 'the page fetches today's data each time it's loaded,' which is how a static-hosted site can stay current.\n- Kept stats at the team level (W-L, run differential, standings) rather than going into individual players, to keep the dashboard scannable.\n- Defined 'weekly trends' as a rolling last-7-days view per team, since that fits a daily dashboard better than a Mon-Sun calendar week.\n- Defined 'upcoming games' as today plus the next 7 days, matching the weekly framing.\n- Used the familiar six-division standings layout (AL East/Central/West and NL East/Central/West) plus the wild-card race for 'overall rankings.'\n- Showed teams with their abbreviation and official color rather than bundling logo images, to avoid licensing concerns.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "What did you explicitly NOT do?",
+            "answer": "No betting odds or fantasy features, no ticket sales, no user accounts or saved favorites, no individual-player leaderboards or drill-downs, no live in-game play-by-play, no mobile app or installable shell, no backend server or database, no bundled team logos, no minor-league or non-MLB content, and no email/push notifications.",
+            "kind": "conditional",
+            "importance": "medium"
+          }
+        ],
+        "raised_escalation": false,
+        "next_role": "TechnicalDiscovery",
+        "_filename": "discovery-initial-v1.json"
+      },
+      {
+        "role": "TechnicalDiscovery",
+        "instance_id": "td-initial",
+        "iteration": 1,
+        "mode": "initial",
+        "completed_at": "2026-05-26T13:00:00Z",
+        "section": null,
+        "escalation_id": null,
+        "blurbs": [
+          {
+            "question": "How are you breaking this into pieces?",
+            "answer": "Six pieces. A data fetcher that talks to the public MLB API and is the only thing in the build that makes network calls. A trends calculator that turns raw game results into each team's last-7-days summary. A rankings calculator that turns the standings into six division tables plus a wild-card race. An HTML/CSS shell that lays out the page and reserves named slots for the three content panels. A glue module that wires the data fetcher to the calculators, drops the results into the shell, and handles loading/error/empty states. And a test runner that opens the finished page in a real browser, hits the real MLB API, and confirms every promise this plan makes.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "What tech choices did you make, and why?",
+            "answer": "Public MLB Stats API at statsapi.mlb.com — free, no API key, returns CORS-friendly headers so the browser can call it directly. No charting library; weekly sparklines are tiny inline SVG drawings. No CSS framework; plain CSS with per-team color variables. No bundler; the JavaScript is split into small ES modules that the browser loads directly. Net result: zero third-party runtime dependencies. The only thing the deliverable needs from the network is the MLB data itself.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "What handoffs exist between pieces?",
+            "answer": "The data fetcher feeds raw standings into the rankings calculator, raw game results into the trends calculator, and raw schedule data straight through to the glue module. Each calculator returns plain data objects with a documented shape. The glue module is the only piece that touches the HTML shell, and it does so only through five named container IDs that the shell guarantees exist. Six contract files document every shape so each piece can be built independently.",
+            "kind": "conditional",
+            "importance": "medium"
+          },
+          {
+            "question": "What did you defer or note as risky?",
+            "answer": "The MLB API's CORS behavior is the one load-bearing assumption based on community evidence rather than direct measurement. If — unexpectedly — the browser blocks the fetch when the page goes live, the fallback is to swap the data fetcher for a daily GitHub Actions job that pre-builds a JSON file. The test runner exercises the real network call, so we'll catch this before declaring success rather than after.",
+            "kind": "conditional",
+            "importance": "medium"
+          }
+        ],
+        "raised_escalation": false,
+        "next_role": "Editor",
+        "_filename": "td-initial-v1.json"
+      },
+      {
+        "role": "Editor",
+        "instance_id": "editor",
+        "iteration": 1,
+        "mode": null,
+        "completed_at": "2026-05-26T14:00:00Z",
+        "section": null,
+        "escalation_id": null,
+        "blurbs": [
+          {
+            "question": "Did the build stay true to what was asked?",
+            "answer": "Yes. The plan covers everything your prompt named: a web page with weekly performance trends, upcoming games and schedules, and overall standings for all 30 MLB teams, hosted on GitHub Pages. The data comes from MLB's own public feed (the same one MLB.com uses), and the page refreshes itself each time it's loaded so 'daily' actually means daily.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "Anything the user should know about?",
+            "answer": "Two small things to watch during build verification. First, the build assumes MLB's public data feed will allow the page to fetch from it directly in the browser; this is normally the case and is widely used, but if it ever fails the team has a backup plan that uses a scheduled rebuild instead. Second, no team logos will be shown (those are licensed images); teams will be represented by their three-letter abbreviation and official primary color. Tell us if you wanted full logos and we will route back to redesign.",
+            "kind": "conditional",
+            "importance": "medium"
+          }
+        ],
+        "raised_escalation": false,
+        "next_role": "Coordinator",
+        "_filename": "editor-v1.json"
+      },
+      {
+        "role": "Critic",
+        "instance_id": "critic-final-sweep",
+        "iteration": 1,
+        "mode": "final_sweep",
+        "completed_at": "2026-05-26T15:25:30Z",
+        "blurbs": [
+          {
+            "question": "What kinds of problems did you check for?",
+            "answer": "I checked four things across the assembled dashboard. First, that the right pieces wrote the right files and that no file slipped in from somewhere it shouldn't have come from. Second, that nothing the user said they didn't want — gambling, fantasy, ticket sales, login, player drill-downs, push notifications, server backends, official team logos, multi-language — leaked into the code. Third, that every promise the planning phase made about how the code would behave (which web address it would call, which six divisions it would group teams into, how 'weekly' is defined, what shows up when there are no games today) is actually true in the shipped JavaScript and HTML. Fourth, that every required content area on the page has a corresponding check exercising it.",
+            "kind": "always",
+            "importance": "medium"
+          },
+          {
+            "question": "What did you find?",
+            "answer": "Nothing of concern. The dashboard cleanly honors the original ask: it has a standings panel, a weekly-trends panel, and an upcoming-games panel, scoped to all 30 MLB teams. The only data source called is the official MLB Stats API, with no third-party scrapers, no chart library, no CSS framework, no team-logo images, no service worker, no login UI, and no out-of-scope topics anywhere in the code. The six divisions are exactly the canonical AL East/Central/West and NL East/Central/West, with a top-3 wild-card race per league. The seven-day windows for both trends and upcoming games match what was planned. The empty-state copy is in place for off-days. The page loads JavaScript as ES modules with no bundler, and 30 per-team color variables are defined in CSS. The earlier round of edge-case tests passed 46 of 46 static-fidelity assertions; the handful of remaining checks (real-browser live load against the MLB API, return-visit refresh) were always planned to run later in the verification phase. One small note worth recording, not a defect: the integration folder contains a metadata file named manifest.json that was written by the assembly step — it isn't linked from the HTML, contains no secrets, and is not a web-app PWA manifest, but it will be publicly served alongside the dashboard once deployed.",
+            "kind": "always",
+            "importance": "high"
+          },
+          {
+            "question": "Did anything need escalation?",
+            "answer": "No. All nine checks passed with no flags at medium severity or higher. No escalation packets written. The build is ready for the next verification step.",
+            "kind": "conditional",
+            "importance": "high"
+          }
+        ],
+        "raised_escalation": false,
+        "next_role": "ConvergenceVerifier",
+        "checks_executed": [
+          "writer_permission_compliance",
+          "out_of_scope_presence",
+          "schema_conformance",
+          "section_coverage",
+          "charter_implementation_conformance",
+          "sev0_audit",
+          "acceptance_assertion_coverage",
+          "prose_coverage",
+          "inline_deviation_audit"
+        ],
+        "checks_passed_count": 9,
+        "flags_raised_count": 0,
+        "flags_at_or_above_medium": 0,
+        "verdict": "clean",
+        "recommendation_to_orchestrator": "proceed_to_cv",
+        "_filename": "critic-v1.json"
+      },
+      {
+        "role": "Builder",
+        "section": "data-client",
+        "builder_id": "builder-data-client-1",
+        "iteration": 1,
+        "intent_or_outcome": "outcome",
+        "instance_id": "builder-data-client-1-inline",
+        "verified_assertions": [
+          {
+            "id": "S1.A1",
+            "result": "pass",
+            "evidence": "All four named exports + DataClientError present in data-client.js"
+          },
+          {
+            "id": "S1.A3",
+            "result": "pass",
+            "evidence": "fetchStandings normalizes to the contracted shape (teamId, league, division, wins, losses, pct, gb, teamName, teamAbbreviation)"
+          },
+          {
+            "id": "S1.A5",
+            "result": "pass",
+            "evidence": "getJSON wraps fetch in try/catch and throws DataClientError on network or non-200"
+          },
+          {
+            "id": "IP1.M1",
+            "result": "pass",
+            "evidence": "API_BASE constant pins all URLs to https://statsapi.mlb.com/api/v1"
+          },
+          {
+            "id": "IP1.M2",
+            "result": "pass",
+            "evidence": "No espn / sports-data references in source"
+          }
+        ],
+        "deferred_assertions": [
+          {
+            "id": "S1.A2",
+            "deferred_to": "edge-case-testing",
+            "reason": "Requires real browser fetch against statsapi.mlb.com"
+          },
+          {
+            "id": "S1.A4",
+            "deferred_to": "critic_final_sweep",
+            "reason": "Requires grep across the assembled codebase"
+          }
+        ],
+        "blurb": "Outcome: shipped data-client.js (5 exports + DataClientError) and teams.js (30-team color/abbr/division fallback). All URLs prefixed https://statsapi.mlb.com/api/v1. fetchRecentResults uses a single schedule call partitioned client-side instead of N+1 per team. Errors thrown as DataClientError with status + url.",
+        "created_at": "2026-05-26T15:06:00Z",
+        "_filename": "builder-data-client-1-v1.json"
+      },
+      {
+        "role": "Builder",
+        "section": "edge-case-testing",
+        "builder_id": "builder-1",
+        "iteration": 1,
+        "intent_or_outcome": "outcome",
+        "instance_id": "builder-edge-case-testing-1-inline",
+        "test_results": {
+          "total": 46,
+          "passed": 46,
+          "failed": 0,
+          "exit_code": 0
+        },
+        "blurb": "Outcome: shipped run-tests.mjs + report.json + test-plan.md. 46 static-fidelity assertions all pass (URL well-formedness, trends-engine fixture, rankings-engine fixture, DOM-ID presence in index.html, 30 CSS team-color props, empty-state code reachable, error-state code reachable, import boundaries). Six live-data assertions documented as deferred to CV per test-plan.md.",
+        "created_at": "2026-05-26T15:20:30Z",
+        "_filename": "builder-edge-case-testing-1-v1.json"
+      },
+      {
+        "role": "Builder",
+        "section": "rankings-engine",
+        "builder_id": "builder-rankings-engine-1",
+        "iteration": 1,
+        "intent_or_outcome": "outcome",
+        "instance_id": "builder-rankings-engine-1-inline",
+        "verified_assertions": [
+          {
+            "id": "S3.A1",
+            "result": "pass",
+            "evidence": "computeRankings exported as function"
+          },
+          {
+            "id": "S3.A2",
+            "result": "pass",
+            "evidence": "divisionStandings is Object.fromEntries(DIVISION_KEYS.map(...)); always 6 keys"
+          },
+          {
+            "id": "S3.A3",
+            "result": "pass",
+            "evidence": "Each division sorted via sortByPctDesc (pct desc, wins tiebreak)"
+          },
+          {
+            "id": "S3.A4",
+            "result": "pass",
+            "evidence": "wildCardFor() excludes division[0] of each division then top-3 by pct"
+          }
+        ],
+        "deferred_assertions": [
+          {
+            "id": "S3.A5",
+            "deferred_to": "critic_final_sweep",
+            "reason": "grep across codebase"
+          }
+        ],
+        "blurb": "Outcome: shipped rankings-engine.js — single export computeRankings, pure function. Always returns 6 division keys (initialized empty before population), 2 league keys, 2 wild-card keys (top-3 non-leaders per league).",
+        "created_at": "2026-05-26T15:10:00Z",
+        "_filename": "builder-rankings-engine-1-v1.json"
+      },
+      {
+        "role": "Builder",
+        "section": "trends-engine",
+        "builder_id": "builder-trends-engine-1",
+        "iteration": 1,
+        "intent_or_outcome": "outcome",
+        "instance_id": "builder-trends-engine-1-inline",
+        "verified_assertions": [
+          {
+            "id": "S2.A1",
+            "result": "pass",
+            "evidence": "computeWeeklyTrends exported as function"
+          },
+          {
+            "id": "S2.A3",
+            "result": "pass",
+            "evidence": "Empty-games branch returns {last7W:0, last7L:0, runDiff7:0, streak:null, sparklinePoints:[]}"
+          },
+          {
+            "id": "S2.A4",
+            "result": "pass",
+            "evidence": "Pure function over a Map input; no globals; deterministic"
+          }
+        ],
+        "deferred_assertions": [
+          {
+            "id": "S2.A2",
+            "deferred_to": "edge-case-testing",
+            "reason": "Requires fixture-driven exercise"
+          },
+          {
+            "id": "S2.A5",
+            "deferred_to": "critic_final_sweep",
+            "reason": "grep across assembled codebase"
+          }
+        ],
+        "blurb": "Outcome: shipped trends-engine.js — single export computeWeeklyTrends, pure function. Empty-input teams return zeros + null streak; non-empty teams get cumulative-run-diff sparkline points. Deterministic ordering by teamId asc.",
+        "created_at": "2026-05-26T15:10:00Z",
+        "_filename": "builder-trends-engine-1-v1.json"
+      },
+      {
+        "role": "Builder",
+        "section": "ui-render",
+        "builder_id": "builder-ui-render-1",
+        "iteration": 1,
+        "intent_or_outcome": "outcome",
+        "instance_id": "builder-ui-render-1-inline",
+        "verified_assertions": [
+          {
+            "id": "S5.A1",
+            "result": "pass",
+            "evidence": "init exported + DOMContentLoaded listener registered (or microtask fallback if already loaded)"
+          },
+          {
+            "id": "S5.A5",
+            "result": "pass",
+            "evidence": "showError() makes #error-banner visible and writes message; setPanelEmpty wipes loading states"
+          },
+          {
+            "id": "S5.A6",
+            "result": "pass",
+            "evidence": "renderUpcoming detects empty schedule and calls setPanelEmpty with 'No games scheduled in the next 7 days.'"
+          },
+          {
+            "id": "S5.A7",
+            "result": "pass",
+            "evidence": "updateTimestamp writes YYYY-MM-DD HH:MM into #last-updated and sets datetime attr"
+          },
+          {
+            "id": "IP2.M1",
+            "result": "pass",
+            "evidence": "init() invokes fetchStandings, fetchSchedule, fetchRecentResults"
+          },
+          {
+            "id": "IP5.M1",
+            "result": "pass",
+            "evidence": "fetchSchedule called with today, daysAheadISO(7)"
+          },
+          {
+            "id": "IP7.M1",
+            "result": "pass",
+            "evidence": "Empty schedule -> setPanelEmpty with 'No games' copy"
+          },
+          {
+            "id": "TDIPA.M2",
+            "result": "pass",
+            "evidence": "renderSparkline produces inline SVG <polyline> per team"
+          }
+        ],
+        "deferred_assertions": [
+          {
+            "id": "S5.A2",
+            "deferred_to": "edge-case-testing/CV",
+            "reason": "Requires real browser load + live data"
+          },
+          {
+            "id": "S5.A3",
+            "deferred_to": "edge-case-testing/CV",
+            "reason": "Requires real browser load + live data"
+          },
+          {
+            "id": "S5.A4",
+            "deferred_to": "edge-case-testing/CV",
+            "reason": "Requires real browser load + live data"
+          }
+        ],
+        "blurb": "Outcome: shipped app.js — init() exports + bootstraps on DOMContentLoaded. Parallel data fetch via Promise.all; renderRankings (6 div tables + 2 wild-card lists), renderTrends (sparkline SVG + record + run diff + streak per team), renderUpcoming (date-grouped game rows). Error state shows banner + wires retry button. Empty schedule shows 'No games scheduled' copy.",
+        "created_at": "2026-05-26T15:15:30Z",
+        "_filename": "builder-ui-render-1-v1.json"
+      },
+      {
+        "role": "Builder",
+        "section": "ui-shell",
+        "builder_id": "builder-ui-shell-1",
+        "iteration": 1,
+        "intent_or_outcome": "outcome",
+        "instance_id": "builder-ui-shell-1-inline",
+        "verified_assertions": [
+          {
+            "id": "S4.A1",
+            "result": "pass",
+            "evidence": "All five required IDs present in index.html"
+          },
+          {
+            "id": "S4.A2",
+            "result": "pass",
+            "evidence": "<script type=\"module\" src=\"app.js\"></script> on body"
+          },
+          {
+            "id": "S4.A3",
+            "result": "pass",
+            "evidence": "Zero CDN / unpkg / jsdelivr / googleapis / cdnjs references in HTML or CSS"
+          },
+          {
+            "id": "S4.A4",
+            "result": "pass",
+            "evidence": "30 --team-* custom properties + --league-AL + --league-NL defined in :root"
+          },
+          {
+            "id": "TDIPB.M1",
+            "result": "pass",
+            "evidence": "<script type=\"module\"> tag present"
+          },
+          {
+            "id": "IP8.M2",
+            "result": "pass",
+            "evidence": "30 --team-{ABBR} custom properties exist"
+          },
+          {
+            "id": "TDIPC.M1",
+            "result": "pass",
+            "evidence": "No tailwind/bootstrap/bulma/foundation references"
+          }
+        ],
+        "blurb": "Outcome: shipped index.html and styles.css. Five required container IDs in place; <script type=\"module\" src=\"app.js\"> bootstraps ui-render. styles.css defines 30 per-team color custom properties, 2 league colors, responsive 3-col->1-col grid, dark/light via prefers-color-scheme, loading and empty-state styling.",
+        "created_at": "2026-05-26T15:06:00Z",
+        "_filename": "builder-ui-shell-1-v1.json"
+      },
+      {
+        "role": "Coordinator",
+        "iteration": 1,
+        "intent_or_outcome": "outcome",
+        "instance_id": "coordinator-inline",
+        "dispatch_mode": "inline",
+        "run_slug": "mlb-daily-dashboard",
+        "all_sections_verified": true,
+        "wave_history": [
+          {
+            "wave": 1,
+            "sections": [
+              "data-client",
+              "ui-shell"
+            ],
+            "status": "verified"
+          },
+          {
+            "wave": 2,
+            "sections": [
+              "trends-engine",
+              "rankings-engine"
+            ],
+            "status": "verified"
+          },
+          {
+            "wave": 3,
+            "sections": [
+              "ui-render"
+            ],
+            "status": "verified"
+          },
+          {
+            "wave": 4,
+            "sections": [
+              "integrator"
+            ],
+            "status": "verified"
+          },
+          {
+            "wave": 5,
+            "sections": [
+              "edge-case-testing"
+            ],
+            "status": "verified"
+          }
+        ],
+        "edge_case_testing_summary": {
+          "total": 46,
+          "passed": 46,
+          "failed": 0
+        },
+        "scheduled_critic_severity": 0,
+        "artifact_entry": "output/integration/index.html",
+        "blurb": "Outcome: build complete. 6 sections + integrator pseudo-node all verified across 5 waves under inline dispatch. 8-file artifact assembled at output/integration/ (index.html, styles.css, app.js, data-client.js, teams.js, trends-engine.js, rankings-engine.js, manifest.json). 46/46 static-fidelity edge-case tests pass. Live-data + browser PNV deferred to CV (test-plan.md CV.LIVE). Scheduled-cycle Critic scan clean (severity 0). Ready for final-sweep Critic + CV.",
+        "created_at": "2026-05-26T15:22:30Z",
+        "_filename": "coordinator-v1.json"
+      },
+      {
+        "role": "Integrator",
+        "iteration": 1,
+        "instance_id": "integrator-inline",
+        "wave": 4,
+        "intent_or_outcome": "outcome",
+        "verified_assertions": [
+          {
+            "id": "DCA.A1",
+            "result": "pass",
+            "evidence": "Single index.html in output/integration/"
+          },
+          {
+            "id": "TDIPB.M2",
+            "result": "pass",
+            "evidence": "No bundler artifacts; all .js are hand-authored ES modules with .js imports"
+          },
+          {
+            "id": "IP2.M2",
+            "result": "pass",
+            "evidence": "No snapshot JSON files in output/integration/"
+          },
+          {
+            "id": "IP8.M1",
+            "result": "pass",
+            "evidence": "No image files in output/integration/"
+          }
+        ],
+        "blurb": "Outcome: 7 files assembled into output/integration/. Flat structure (no subdirs) matches a vanilla static-site shape suitable for GitHub Pages. Module graph: app.js imports data-client.js + trends-engine.js + rankings-engine.js + teams.js; data-client.js imports teams.js. Entry point index.html. No build step required.",
+        "files_assembled": [
+          "index.html",
+          "styles.css",
+          "app.js",
+          "data-client.js",
+          "teams.js",
+          "trends-engine.js",
+          "rankings-engine.js",
+          "manifest.json"
+        ],
+        "created_at": "2026-05-26T15:17:30Z",
+        "_filename": "integrator-v1.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "data-client",
+        "iteration": 1,
+        "intent_or_outcome": "intent",
+        "instance_id": "overseer-data-client-inline",
+        "wrote": "Plan to dispatch one Builder to produce data-client.js plus a teams.js sidecar holding the 30-team color/abbreviation fallback map. Builder will export fetchTeams, fetchStandings, fetchSchedule, fetchTeamGameResults, fetchRecentResults. All URLs prefixed https://statsapi.mlb.com/api/v1/. Errors thrown as DataClientError. No DOM, no derived computation.",
+        "blurb": "Plan: ship a single ES module that owns every outbound MLB Stats API call and a sibling teams.js for the 30-team color/abbreviation fallback (the API does not expose primary colors). Five named exports cover the four contracts and the recent-results helper. Network and non-200 errors surface as a named DataClientError so ui-render can render the error banner instead of crashing.",
+        "created_at": "2026-05-26T15:01:30Z",
+        "_filename": "overseer-data-client-v1.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "data-client",
+        "iteration": 2,
+        "intent_or_outcome": "outcome",
+        "instance_id": "overseer-data-client-inline",
+        "verified": true,
+        "verified_assertions": [
+          "S1.A1",
+          "S1.A3",
+          "S1.A5",
+          "IP1.M1",
+          "IP1.M2"
+        ],
+        "deferred_assertions": [
+          "S1.A2 -> edge-case-testing",
+          "S1.A4 -> critic_final_sweep"
+        ],
+        "blurb": "Section verified. Builder delivered the five contracted exports + DataClientError. Charter respected (no DOM, no derived computation, all URLs statsapi.mlb.com/api/v1). Live HTTP assertion S1.A2 deferred to edge-case-testing; cross-file isolation assertion S1.A4 deferred to final-sweep Critic.",
+        "created_at": "2026-05-26T15:06:30Z",
+        "_filename": "overseer-data-client-v2.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "edge-case-testing",
+        "iteration": 1,
+        "intent_or_outcome": "intent",
+        "instance_id": "overseer-edge-case-testing-inline",
+        "blurb": "Plan: under inline mode (no Playwright in orchestrator), ship a Node-based static-fidelity check covering: URL well-formedness in data-client, trends-engine fixture, rankings-engine fixture, HTML DOM-ID presence parse of index.html, empty-state code path reachable, error-state code path reachable. Pair with a manual-test plan document describing the live-load + CV scenarios deferred to a real browser run.",
+        "created_at": "2026-05-26T15:18:00Z",
+        "_filename": "overseer-edge-case-testing-v1.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "edge-case-testing",
+        "iteration": 2,
+        "intent_or_outcome": "outcome",
+        "instance_id": "overseer-edge-case-testing-inline",
+        "verified": true,
+        "verified_assertions": [
+          "46 static-fidelity assertions, see report.json"
+        ],
+        "deferred_assertions": [
+          "PNV.1",
+          "S1.A2",
+          "S5.A2",
+          "S5.A3",
+          "S5.A4",
+          "DCA.FC.7"
+        ],
+        "blurb": "Section verified. 46/46 Node-based static-fidelity tests pass. Live-data + browser assertions documented in test-plan.md for CV exercise post-deploy.",
+        "created_at": "2026-05-26T15:21:00Z",
+        "_filename": "overseer-edge-case-testing-v2.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "rankings-engine",
+        "iteration": 1,
+        "intent_or_outcome": "intent",
+        "instance_id": "overseer-rankings-engine-inline",
+        "blurb": "Plan: ship rankings-engine.js with one pure-function export computeRankings(standings). Project the flat 30-team standings into three views: divisionStandings (6 keys, 5 teams each, sorted by pct desc), leagueStandings (AL + NL, 15 each), wildCard (top-3 non-division-leaders per league). No fetch, no DOM.",
+        "created_at": "2026-05-26T15:07:00Z",
+        "_filename": "overseer-rankings-engine-v1.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "rankings-engine",
+        "iteration": 2,
+        "intent_or_outcome": "outcome",
+        "instance_id": "overseer-rankings-engine-inline",
+        "verified": true,
+        "verified_assertions": [
+          "S3.A1",
+          "S3.A2",
+          "S3.A3",
+          "S3.A4"
+        ],
+        "deferred_assertions": [
+          "S3.A5 -> critic_final_sweep"
+        ],
+        "blurb": "Section verified. Pure-function module always produces 6 division keys, 2 league keys, 2 wild-card keys (top-3 non-leaders), each array sorted pct desc.",
+        "created_at": "2026-05-26T15:10:30Z",
+        "_filename": "overseer-rankings-engine-v2.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "trends-engine",
+        "iteration": 1,
+        "intent_or_outcome": "intent",
+        "instance_id": "overseer-trends-engine-inline",
+        "blurb": "Plan: ship trends-engine.js with one pure-function export computeWeeklyTrends(perTeamResultMap). Output is one Trend per team: last7W, last7L, runDiff7, streak (e.g. 'W3' or 'L2' or null), sparklinePoints (cumulative run differential per game). Empty-input teams produce zeros + null. No fetch, no DOM.",
+        "created_at": "2026-05-26T15:07:00Z",
+        "_filename": "overseer-trends-engine-v1.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "trends-engine",
+        "iteration": 2,
+        "intent_or_outcome": "outcome",
+        "instance_id": "overseer-trends-engine-inline",
+        "verified": true,
+        "verified_assertions": [
+          "S2.A1",
+          "S2.A3",
+          "S2.A4"
+        ],
+        "deferred_assertions": [
+          "S2.A2 -> edge-case-testing",
+          "S2.A5 -> critic_final_sweep"
+        ],
+        "blurb": "Section verified. Pure-function module honors the trends-engine--ui-render contract shape and the empty-window invariant.",
+        "created_at": "2026-05-26T15:10:30Z",
+        "_filename": "overseer-trends-engine-v2.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "ui-render",
+        "iteration": 1,
+        "intent_or_outcome": "intent",
+        "instance_id": "overseer-ui-render-inline",
+        "blurb": "Plan: ship app.js as the glue module. On DOMContentLoaded: parallel calls to fetchTeams, fetchStandings, fetchSchedule, fetchRecentResults. Pass to rankings-engine and trends-engine. Render six division tables + wild-card race in #rankings-panel; 30 sparkline rows in #trends-panel; date-grouped games in #upcoming-panel; timestamp in #last-updated. On any fetch failure: showError + visible retry button.",
+        "created_at": "2026-05-26T15:11:00Z",
+        "_filename": "overseer-ui-render-v1.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "ui-render",
+        "iteration": 2,
+        "intent_or_outcome": "outcome",
+        "instance_id": "overseer-ui-render-inline",
+        "verified": true,
+        "verified_assertions": [
+          "S5.A1",
+          "S5.A5",
+          "S5.A6",
+          "S5.A7",
+          "IP2.M1",
+          "IP5.M1",
+          "IP7.M1",
+          "TDIPA.M2"
+        ],
+        "deferred_assertions": [
+          "S5.A2 -> edge-case-testing/CV",
+          "S5.A3 -> edge-case-testing/CV",
+          "S5.A4 -> edge-case-testing/CV"
+        ],
+        "blurb": "Section verified. Bootstrap + render glue is in place; structural assertions hold. Live-data assertions (30 teams in DOM, 30 trend rows, future games) deferred to edge-case-testing and CV which exercise the assembled artifact.",
+        "created_at": "2026-05-26T15:16:00Z",
+        "_filename": "overseer-ui-render-v2.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "ui-shell",
+        "iteration": 1,
+        "intent_or_outcome": "intent",
+        "instance_id": "overseer-ui-shell-inline",
+        "wrote": "Plan to dispatch one Builder to produce index.html plus styles.css. index.html will contain the five required container IDs and load app.js as a module. styles.css will define a responsive 3-column grid, dark-/light-mode-aware base styling via prefers-color-scheme, and 30 --team-* custom properties plus --league-AL / --league-NL.",
+        "blurb": "Plan: author the static HTML scaffold and stylesheet. HTML contains the five contract-mandated IDs and a single module <script>. CSS defines 30 per-team color custom properties + AL/NL league colors, a responsive grid (3-col desktop, 1-col mobile), loading skeleton, and the empty-state and error-banner styles ui-render depends on.",
+        "created_at": "2026-05-26T15:01:30Z",
+        "_filename": "overseer-ui-shell-v1.json"
+      },
+      {
+        "role": "Overseer",
+        "section": "ui-shell",
+        "iteration": 2,
+        "intent_or_outcome": "outcome",
+        "instance_id": "overseer-ui-shell-inline",
+        "verified": true,
+        "verified_assertions": [
+          "S4.A1",
+          "S4.A2",
+          "S4.A3",
+          "S4.A4",
+          "TDIPB.M1",
+          "IP8.M2",
+          "TDIPC.M1"
+        ],
+        "blurb": "Section verified. index.html ships with all five contract-mandated IDs and a single module entry script. styles.css exposes 30 --team-{ABBR} custom properties plus AL/NL league colors; zero CDN deps; responsive grid; prefers-color-scheme aware.",
+        "created_at": "2026-05-26T15:06:30Z",
+        "_filename": "overseer-ui-shell-v2.json"
+      }
+    ],
+    "current_step": {
+      "version": 1,
+      "updated_at": "2026-05-26T15:22:30Z",
+      "run_slug": "mlb-daily-dashboard",
+      "current_phase": "verification",
+      "active_roles": [],
+      "last_completed_report": "state/reports/coordinator-v1.json",
+      "next_role": "critic-final-sweep",
+      "open_escalations": [],
+      "build_complete": true,
+      "artifact_entry_point": "output/integration/index.html"
+    }
+  },
+  "history": {
+    "entry_count": 27,
+    "earliest": "2026-05-26T12:00:00Z",
+    "latest": "2026-05-26T06:18:00Z"
+  },
+  "run_report_excerpts": {
+    "what_worked": [
+      "Editor gate caught nothing, but should still run. — Both proper nouns (MLB, GitHub Pages) carried `verification_status: pending` at TD finish — Editor correctly noted that the structural choices in the plan (API base URL = `statsapi.mlb.co…",
+      "Inline-mode coverage at 6 sections held up. — Six sections is right at the edge of the inline-vs-nested boundary (rule is ≤8). The Coordinator agent handled Overseer + Builder + Integrator + scheduled Critic + Historian inline without inli…",
+      "CV's two-option production-fidelity strategy worked. — CV chose Option A (real Playwright Chromium + live statsapi.mlb.com fetch) and confirmed the artifact ships working data: TB 34-17, NYY 32-22, 105 upcoming games rendered. Real browser…",
+      "The \"no third-party JS, vanilla ES modules\" decision (TD-IP-B + TD-IP-C) was the right one for GitHub Pages static hosting. — No bundler, no CDN deps, no vendor manifest needed. Final/ matches integration/ byte-for-byte. This is the produc…",
+      "Hardcoded team-color fallback map (teams.js) absorbed an MLB Stats API gap silently. — The API doesn't expose primary brand colors. TD/Coordinator anticipated this and produced a static 30-team color/abbreviation map that data-client merge…"
+    ],
+    "what_broke": [
+      "Arizona abbreviation inconsistency. — Renders as \"AZ\" in rankings/trends panels (API value) but \"ARI\" in upcoming-games panel (teams.js fallback). CV flagged it as cosmetic, not a Sev 0 trivial fix. A normalize-on-the-way-in would have cau…",
+      "GitHub Pages live URL is unverified at delivery. — CV confirmed the URL pattern and that the artifact is well-formed; the actual deploy happens via `commit-build.bat`. FC.6 \"Public URL delivered\" was marked PASS pending deploy. The first-c…",
+      "No Researcher actually dispatched. — TD collapsed the CORS probe into \"quick reasoning\" with a stub probe file. This is technically permitted (canonical evidence cited in TD's IP1/IP2 resolutions), but if the CORS assumption had been wrong…"
+    ],
+    "amendment_candidates": []
+  },
+  "uncertainty_manifest": [],
+  "editor": {
+    "iterations": 1,
+    "verdicts": [
+      "pass_with_recommendations"
+    ]
+  },
+  "demotion_count": 0,
+  "events": [],
+  "revisions": [
+    {
+      "id": "rev-0",
+      "kind": "primary_run",
+      "ref": "7b12502ff88f035e0f5cdcd68f1f65d8e4c245a3",
+      "ts": "2026-05-26T04:29:43-04:00",
+      "summary": "Primary delivery: mlb-daily-dashboard (recovered after rebase)",
+      "verdict": "unknown",
+      "rationale": null,
+      "diff_summary": null,
+      "triggered_by_event": null,
+      "triggered_by_outcome": null,
+      "sources": [
+        "synthesized",
+        "git"
+      ],
+      "first_delivery_outcome": "unverified",
+      "contributing_commits": [
+        {
+          "sha": "adf7fb71adf3b5180db42e8dd0c6575784210037",
+          "ts": "2026-05-26T04:29:43-04:00",
+          "subject": "[run:mlb-daily-dashboard] delivery: final artifact written"
+        }
+      ]
+    }
+  ],
+  "file_tree": null,
+  "role_attribution_totals": {},
+  "first_delivery": {
+    "outcome": "unverified",
+    "source": "default"
+  },
+  "re_audit": null,
+  "links": {
+    "run_report": "runs/mlb-daily-dashboard/run-report.md",
+    "verification": "runs/mlb-daily-dashboard/output/verification/report.json",
+    "ledger": "runs/mlb-daily-dashboard/decisions/discovery/ledger-v1.json",
+    "sections": "runs/mlb-daily-dashboard/decisions/technical-discovery/sections-v1.json",
+    "final_dir": "runs/mlb-daily-dashboard/output/final/",
+    "audit_flags": "runs/mlb-daily-dashboard/audit/flags.jsonl"
+  }
+}
