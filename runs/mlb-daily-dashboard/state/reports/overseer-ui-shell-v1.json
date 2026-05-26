@@ -1,0 +1,10 @@
+{
+  "role": "Overseer",
+  "section": "ui-shell",
+  "iteration": 1,
+  "intent_or_outcome": "intent",
+  "instance_id": "overseer-ui-shell-inline",
+  "wrote": "Plan to dispatch one Builder to produce index.html plus styles.css. index.html will contain the five required container IDs and load app.js as a module. styles.css will define a responsive 3-column grid, dark-/light-mode-aware base styling via prefers-color-scheme, and 30 --team-* custom properties plus --league-AL / --league-NL.",
+  "blurb": "Plan: author the static HTML scaffold and stylesheet. HTML contains the five contract-mandated IDs and a single module <script>. CSS defines 30 per-team color custom properties + AL/NL league colors, a responsive grid (3-col desktop, 1-col mobile), loading skeleton, and the empty-state and error-banner styles ui-render depends on.",
+  "created_at": "2026-05-26T15:01:30Z"
+}

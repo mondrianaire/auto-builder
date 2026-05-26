@@ -1,0 +1,12 @@
+{
+  "role": "Overseer",
+  "section": "data-client",
+  "iteration": 2,
+  "intent_or_outcome": "outcome",
+  "instance_id": "overseer-data-client-inline",
+  "verified": true,
+  "verified_assertions": ["S1.A1", "S1.A3", "S1.A5", "IP1.M1", "IP1.M2"],
+  "deferred_assertions": ["S1.A2 -> edge-case-testing", "S1.A4 -> critic_final_sweep"],
+  "blurb": "Section verified. Builder delivered the five contracted exports + DataClientError. Charter respected (no DOM, no derived computation, all URLs statsapi.mlb.com/api/v1). Live HTTP assertion S1.A2 deferred to edge-case-testing; cross-file isolation assertion S1.A4 deferred to final-sweep Critic.",
+  "created_at": "2026-05-26T15:06:30Z"
+}

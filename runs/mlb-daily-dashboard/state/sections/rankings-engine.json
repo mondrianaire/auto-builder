@@ -1,0 +1,19 @@
+{
+  "section_id": "S3",
+  "name": "rankings-engine",
+  "status": "verified",
+  "owner": "overseer-rankings-engine-inline",
+  "wave": 2,
+  "started_at": "2026-05-26T15:07:00Z",
+  "verified_at": "2026-05-26T15:10:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[2]",
+  "sub_goals": [
+    "Export computeRankings(standings) (pure function)",
+    "Return {divisionStandings (6 keys), leagueStandings (2 keys), wildCard (2 keys)}",
+    "Sort each array by descending pct",
+    "wildCard.* excludes division leaders, top 3 per league",
+    "No fetch, no DOM"
+  ],
+  "verified": true,
+  "builders_dispatched": ["builder-rankings-engine-1"]
+}

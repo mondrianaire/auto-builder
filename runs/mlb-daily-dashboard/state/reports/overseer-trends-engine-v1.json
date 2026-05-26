@@ -1,0 +1,9 @@
+{
+  "role": "Overseer",
+  "section": "trends-engine",
+  "iteration": 1,
+  "intent_or_outcome": "intent",
+  "instance_id": "overseer-trends-engine-inline",
+  "blurb": "Plan: ship trends-engine.js with one pure-function export computeWeeklyTrends(perTeamResultMap). Output is one Trend per team: last7W, last7L, runDiff7, streak (e.g. 'W3' or 'L2' or null), sparklinePoints (cumulative run differential per game). Empty-input teams produce zeros + null. No fetch, no DOM.",
+  "created_at": "2026-05-26T15:07:00Z"
+}

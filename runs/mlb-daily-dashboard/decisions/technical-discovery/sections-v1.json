@@ -1,0 +1,1192 @@
+{
+  "version": 1,
+  "created_at": "2026-05-26T13:00:00Z",
+  "role": "TechnicalDiscovery",
+  "instance_id": "td-initial",
+  "run_slug": "mlb-daily-dashboard",
+  "deliverable_kind": "web_app",
+  "deployment_target": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/",
+
+  "prompt_verb_analysis": {
+    "literal_prompt": "Make me a web based Daily dashboard for all mlb teams and statistics focusing on weekly trends, upcoming games and schedules and overall rankings. Use github pages for hosting.",
+    "candidate_verbs": [
+      {
+        "verb": "show MLB dashboard data",
+        "rejected_because": "Too generic; loses the compound focus areas explicitly named in the prompt."
+      },
+      {
+        "verb": "render a daily dashboard",
+        "rejected_because": "Captures the surface (dashboard) but drops the three substantive content blocks the prompt focuses on."
+      },
+      {
+        "verb": "show a daily dashboard of MLB teams covering weekly trends, upcoming games, and overall rankings",
+        "selected": true,
+        "rationale": "This is the prompt's compound deliverable verb. The user did not ask for a generic dashboard — they explicitly named the three focus areas (weekly trends, upcoming games and schedules, overall rankings) and the population (all MLB teams). Dropping any of those three or generalizing 'MLB teams' would lose load-bearing intent. This verb is what first-contact will actually be evaluated against."
+      }
+    ],
+    "chosen_verb": "show a daily dashboard of MLB teams covering weekly trends, upcoming games, and overall rankings"
+  },
+
+  "prompt_named_verb_assertion": {
+    "id": "PNV.1",
+    "verb_from_prompt": "show a daily dashboard of MLB teams covering weekly trends, upcoming games, and overall rankings",
+    "scenario": "Open output/final/index.html in a real browser (Playwright headless Chromium loading via http://); wait for data to load (≤15s); inspect the DOM",
+    "expected_result": "The page contains (a) a rankings/standings section listing all 30 MLB teams with W-L records, (b) a weekly-trends section with last-7-days performance for each team, (c) an upcoming-games section listing games in the next 7 days, AND no error banner is shown",
+    "production_fidelity_required": true,
+    "verifier": "prompt_named_verb",
+    "covers": "decisions/technical-discovery/sections-v1.json#prompt_verb_analysis.chosen_verb",
+    "source": "prompt"
+  },
+
+  "sections": [
+    {
+      "id": "S1",
+      "name": "data-client",
+      "charter": "Owns every outbound HTTP request to the MLB Stats API and is the single source of truth for the project's API surface. Exposes typed JavaScript functions that return plain data objects for teams, standings, schedule, and per-team game results. No DOM, no rendering, no business-logic computation beyond minimal response normalization. Contains the only references to fetch() and to statsapi.mlb.com URLs in the entire codebase.",
+      "acceptance": "Module exposes fetchTeams(), fetchStandings(season), fetchSchedule(startDate, endDate), and fetchTeamGameResults(teamId, startDate, endDate) functions. Each function performs a real HTTP GET against statsapi.mlb.com, parses the JSON response, and returns the normalized shape declared in the corresponding interface contract. Network failures and non-200 responses are surfaced as thrown errors with a recognizable error class so callers can render an error state.",
+      "acceptance_assertions": [
+        {
+          "id": "S1.A1",
+          "from_acceptance_phrase": "exposes fetchTeams(), fetchStandings(season), fetchSchedule(startDate, endDate), and fetchTeamGameResults(teamId, startDate, endDate)",
+          "check_type": "structural",
+          "scenario": "Static import of the data-client module from a Node test harness",
+          "expected_result": "All four named exports exist and are functions",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[0].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A2",
+          "from_acceptance_phrase": "performs a real HTTP GET against statsapi.mlb.com",
+          "check_type": "behavior",
+          "scenario": "Call fetchTeams() from a browser running the integrated artifact via http://",
+          "expected_result": "A network request to https://statsapi.mlb.com/api/v1/teams?sportId=1 is observed and resolves with a JSON body",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[0]",
+          "source": "canonical_evidence"
+        },
+        {
+          "id": "S1.A3",
+          "from_acceptance_phrase": "returns the normalized shape declared in the corresponding interface contract",
+          "check_type": "behavior",
+          "scenario": "Call fetchStandings(2026) and inspect the returned array",
+          "expected_result": "Returned value is an array of length 30 where each element has keys teamId, league, division, wins, losses, pct, gb",
+          "verifier": "edge_case_testing",
+          "covers": "contracts/original/data-client--rankings-engine.json",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A4",
+          "from_acceptance_phrase": "Contains the only references to fetch() and to statsapi.mlb.com URLs in the entire codebase",
+          "check_type": "absence",
+          "scenario": "grep the rest of the codebase (every JS file except data-client) for 'statsapi.mlb.com' or 'fetch('",
+          "expected_result": "Zero matches outside the data-client module",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[0].charter",
+          "source": "td_plan"
+        },
+        {
+          "id": "S1.A5",
+          "from_acceptance_phrase": "Network failures and non-200 responses are surfaced as thrown errors",
+          "check_type": "behavior",
+          "scenario": "Invoke a data-client function with a deliberately malformed query and observe the rejection",
+          "expected_result": "The returned promise rejects with a named error (DataClientError or subclass)",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[1]",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Any DOM manipulation",
+        "Computing trends, rankings, or any derived statistics",
+        "Caching beyond the lifetime of a single page load",
+        "Authentication (the MLB Stats API requires none)"
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "trends-engine",
+      "charter": "Pure computation module that takes raw per-team game-result arrays produced by data-client and returns trend objects per team. Computes last-7-days wins, last-7-days losses, run differential over that window, and current streak (consecutive Ws or Ls). No HTTP, no DOM. Deterministic: same input always produces same output. Handles teams with zero games in the window cleanly.",
+      "acceptance": "Module exposes computeWeeklyTrends(perTeamResultMap) which takes a Map of teamId -> Array of game-result objects (as defined in data-client--trends-engine contract) and returns an array of trend objects (per the trends-engine--ui-render contract). A team with no games in the window appears in the output with last7W=0, last7L=0, runDiff7=0, streak=null.",
+      "acceptance_assertions": [
+        {
+          "id": "S2.A1",
+          "from_acceptance_phrase": "exposes computeWeeklyTrends(perTeamResultMap)",
+          "check_type": "structural",
+          "scenario": "Static import of the trends-engine module",
+          "expected_result": "Named export computeWeeklyTrends exists and is a function",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[1].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A2",
+          "from_acceptance_phrase": "returns an array of trend objects (per the trends-engine--ui-render contract)",
+          "check_type": "behavior",
+          "scenario": "Pass a fixture map with 30 teams and a mix of W/L results over the last 7 days",
+          "expected_result": "Returned array has length 30; every element has teamId, last7W (number), last7L (number), runDiff7 (number), streak (string or null)",
+          "verifier": "edge_case_testing",
+          "covers": "contracts/original/trends-engine--ui-render.json",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A3",
+          "from_acceptance_phrase": "A team with no games in the window appears in the output with last7W=0, last7L=0, runDiff7=0, streak=null",
+          "check_type": "behavior",
+          "scenario": "Pass a map containing one team whose game-result array is empty",
+          "expected_result": "Output for that team is {teamId, last7W: 0, last7L: 0, runDiff7: 0, streak: null}",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[6]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A4",
+          "from_acceptance_phrase": "Deterministic: same input always produces same output",
+          "check_type": "behavior",
+          "scenario": "Call computeWeeklyTrends with the same input twice and deep-equal the results",
+          "expected_result": "Both calls return structurally equal output",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[1].charter",
+          "source": "td_plan"
+        },
+        {
+          "id": "S2.A5",
+          "from_acceptance_phrase": "No HTTP, no DOM",
+          "check_type": "absence",
+          "scenario": "grep the trends-engine source for 'fetch(' or 'document.' or 'window.'",
+          "expected_result": "Zero matches",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[1].charter",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["S1"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Calendar-week (Mon-Sun) trend windows",
+        "Player-level statistics",
+        "Year-over-year comparisons",
+        "Rendering or DOM output"
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "rankings-engine",
+      "charter": "Pure computation module that takes the standings array produced by data-client and projects three views: division standings (six divisions), league standings (AL + NL), and wild-card race (top 3 non-division-leaders per league by win pct). No HTTP, no DOM. Deterministic. Preserves the canonical MLB division ordering (East, Central, West).",
+      "acceptance": "Module exposes computeRankings(standings) which takes the standings array (per data-client--rankings-engine contract) and returns an object {divisionStandings, leagueStandings, wildCard} matching the rankings-engine--ui-render contract. divisionStandings has exactly 6 division keys (AL_East, AL_Central, AL_West, NL_East, NL_Central, NL_West), each containing teams sorted by descending win pct. wildCard has exactly 2 league keys (AL, NL), each listing the top 3 non-division-leader teams by win pct.",
+      "acceptance_assertions": [
+        {
+          "id": "S3.A1",
+          "from_acceptance_phrase": "exposes computeRankings(standings)",
+          "check_type": "structural",
+          "scenario": "Static import of the rankings-engine module",
+          "expected_result": "Named export computeRankings exists and is a function",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[2].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A2",
+          "from_acceptance_phrase": "divisionStandings has exactly 6 division keys",
+          "check_type": "structural",
+          "scenario": "Pass a fixture standings array and inspect the returned divisionStandings",
+          "expected_result": "Object has exactly the keys AL_East, AL_Central, AL_West, NL_East, NL_Central, NL_West",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[5]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A3",
+          "from_acceptance_phrase": "each containing teams sorted by descending win pct",
+          "check_type": "behavior",
+          "scenario": "Inspect any division array",
+          "expected_result": "Array is sorted such that element[i].pct >= element[i+1].pct for all i",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[2].charter",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A4",
+          "from_acceptance_phrase": "wildCard has exactly 2 league keys (AL, NL), each listing the top 3 non-division-leader teams",
+          "check_type": "structural",
+          "scenario": "Inspect wildCard.AL and wildCard.NL on returned object",
+          "expected_result": "Both arrays have length 3 and contain no team that is the top-pct entry in its division",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[5]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S3.A5",
+          "from_acceptance_phrase": "No HTTP, no DOM",
+          "check_type": "absence",
+          "scenario": "grep the rankings-engine source for 'fetch(' or 'document.' or 'window.'",
+          "expected_result": "Zero matches",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[2].charter",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["S1"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Flat 1-30 power rankings",
+        "Playoff probability simulation",
+        "Player-level standings",
+        "Rendering"
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "ui-shell",
+      "charter": "Defines the static HTML scaffolding, CSS, and visual identity for the dashboard. Provides the page header with a last-updated timestamp slot, and four named container regions: standings panel, weekly-trends panel, upcoming-games panel, and an error/empty-state banner. Defines team identity styling using CSS custom properties for per-team primary colors (no team logos). Establishes the loading-state and empty-state visual designs that ui-render targets. No JavaScript logic, no data fetching.",
+      "acceptance": "Repository contains index.html with id'd containers for rankings (#rankings-panel), trends (#trends-panel), upcoming games (#upcoming-panel), a last-updated label (#last-updated), and an error banner (#error-banner). A CSS file defines visual hierarchy for these regions and exposes per-team color variables. The HTML loads ui-render as an ES module via <script type=\"module\">. No external CDN runtime dependencies are referenced.",
+      "acceptance_assertions": [
+        {
+          "id": "S4.A1",
+          "from_acceptance_phrase": "id'd containers for rankings, trends, upcoming games, a last-updated label, and an error banner",
+          "check_type": "presence",
+          "scenario": "Load output/final/index.html and query for required element IDs",
+          "expected_result": "Elements with IDs rankings-panel, trends-panel, upcoming-panel, last-updated, and error-banner all exist in the DOM",
+          "verifier": "cv_artifact_exercise",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[3].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S4.A2",
+          "from_acceptance_phrase": "loads ui-render as an ES module via <script type=\"module\">",
+          "check_type": "presence",
+          "scenario": "grep index.html for the script tag",
+          "expected_result": "A <script tag with type=\"module\" referencing ui-render (or main.js that imports ui-render) is present",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#td_introduced_ips",
+          "source": "td_plan"
+        },
+        {
+          "id": "S4.A3",
+          "from_acceptance_phrase": "No external CDN runtime dependencies are referenced",
+          "check_type": "absence",
+          "scenario": "grep index.html and any CSS files for 'cdn.', 'unpkg.', 'jsdelivr', 'googleapis.com', 'cdnjs'",
+          "expected_result": "Zero matches",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#td_introduced_ips",
+          "source": "td_plan"
+        },
+        {
+          "id": "S4.A4",
+          "from_acceptance_phrase": "exposes per-team color variables",
+          "check_type": "presence",
+          "scenario": "grep the CSS file(s) for CSS custom properties named per team",
+          "expected_result": "At least 30 CSS custom properties matching --team-* (or equivalent) are defined",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[7]",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": [],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Any data fetching or business logic",
+        "Bundling or referencing official MLB team logos",
+        "User-account UI, login forms, preferences panel",
+        "Server-side rendering"
+      ]
+    },
+    {
+      "id": "S5",
+      "name": "ui-render",
+      "charter": "Glue module that orchestrates page bootstrap: calls data-client, hands raw data to trends-engine and rankings-engine, and writes the resulting view-models into the ui-shell DOM containers. Owns the loading state (initial), the error state (data-client failure), and the empty state (no games today). Updates the last-updated timestamp. Imports from data-client, trends-engine, and rankings-engine only; touches the DOM only inside named render functions.",
+      "acceptance": "Module exposes an init() entry point that runs on DOMContentLoaded. On success, the standings panel shows division tables with all 30 teams, the trends panel shows per-team last-7-days summaries, and the upcoming panel shows games in the next 7 days. On data-client failure, the error banner becomes visible with a human-readable message and the panels are not left in the loading state. On a no-games-today situation, the upcoming panel renders an empty-state message rather than disappearing.",
+      "acceptance_assertions": [
+        {
+          "id": "S5.A1",
+          "from_acceptance_phrase": "exposes an init() entry point that runs on DOMContentLoaded",
+          "check_type": "structural",
+          "scenario": "Static import of ui-render and inspect named exports; also grep for DOMContentLoaded listener",
+          "expected_result": "init export exists; the listener is registered somewhere in the module graph",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[4].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A2",
+          "from_acceptance_phrase": "the standings panel shows division tables with all 30 teams",
+          "check_type": "behavior",
+          "scenario": "Load the integrated artifact in a browser; wait for fetch to resolve; query #rankings-panel for team rows",
+          "expected_result": "At least 30 distinct team identifiers (abbreviations) are present within #rankings-panel",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[3]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A3",
+          "from_acceptance_phrase": "the trends panel shows per-team last-7-days summaries",
+          "check_type": "behavior",
+          "scenario": "After load, inspect #trends-panel for per-team rows",
+          "expected_result": "30 team rows are rendered, each showing a last-7-days W-L pair and a run differential value",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[2]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A4",
+          "from_acceptance_phrase": "the upcoming panel shows games in the next 7 days",
+          "check_type": "behavior",
+          "scenario": "After load, inspect #upcoming-panel for game entries",
+          "expected_result": "At least one game entry is rendered with a date within the next 7 days, OR (on a true off-day window, statistically rare) the empty-state copy is visible",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[2]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A5",
+          "from_acceptance_phrase": "On data-client failure, the error banner becomes visible",
+          "check_type": "behavior",
+          "scenario": "Stub data-client to throw; load page",
+          "expected_result": "#error-banner has visible:true (not display:none) and contains a non-empty human-readable message",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#first_contact_requirements[1]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A6",
+          "from_acceptance_phrase": "On a no-games-today situation, the upcoming panel renders an empty-state message",
+          "check_type": "behavior",
+          "scenario": "Stub data-client to return an empty schedule; load page",
+          "expected_result": "#upcoming-panel contains visible copy indicating 'no games scheduled' (or equivalent empty-state text)",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[6]",
+          "source": "td_plan"
+        },
+        {
+          "id": "S5.A7",
+          "from_acceptance_phrase": "Updates the last-updated timestamp",
+          "check_type": "behavior",
+          "scenario": "After successful load, read #last-updated text",
+          "expected_result": "Non-empty text containing a parseable timestamp from the current day",
+          "verifier": "edge_case_testing",
+          "covers": "decisions/discovery/ledger-v1.json#assumption_ledger[4]",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["S1", "S2", "S3", "S4"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Computing trends or rankings directly (delegated to engines)",
+        "Performing fetch calls directly (delegated to data-client)",
+        "Persisting state to localStorage",
+        "Routing or multi-page navigation"
+      ]
+    },
+    {
+      "id": "S6",
+      "name": "edge-case-testing",
+      "charter": "Cover every acceptance assertion with verifier: edge_case_testing from the section list, exercised under production-fidelity environment — no substitution of runtime dependencies. Loads the integrated artifact through a real HTTP server (not file://), drives a headless real browser (Playwright Chromium), and performs the live fetch against statsapi.mlb.com unless an explicit fixture-replay mode is invoked. Also exercises the empty-state path (stubbed empty schedule) and the error-banner path (stubbed thrown error), then restores live mode. Confirms every FC and the PNV.1 assertion.",
+      "acceptance": "Test suite runs in CI-style fashion from a Node harness, serves the output/final/ directory via a local http server, launches Playwright Chromium headless, and exercises three scenarios: (1) live load against statsapi.mlb.com, (2) empty-schedule stub, (3) data-client-throw stub. All edge_case_testing assertions from S1-S5 plus the PNV.1 assertion are evaluated and reported pass/fail. The suite exits non-zero if any assertion fails.",
+      "acceptance_assertions": [
+        {
+          "id": "S6.A1",
+          "from_acceptance_phrase": "serves the output/final/ directory via a local http server",
+          "check_type": "structural",
+          "scenario": "Inspect the test runner script",
+          "expected_result": "Runner starts an http server (e.g., http-server, node:http) on a localhost port and points Playwright at it; no file:// URLs used",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[5].charter",
+          "source": "td_plan"
+        },
+        {
+          "id": "S6.A2",
+          "from_acceptance_phrase": "exercises three scenarios",
+          "check_type": "structural",
+          "scenario": "Inspect test files",
+          "expected_result": "Three distinct test cases exist: live-load, empty-schedule-stub, data-client-throw-stub",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[5].acceptance",
+          "source": "td_plan"
+        },
+        {
+          "id": "S6.A3",
+          "from_acceptance_phrase": "All edge_case_testing assertions from S1-S5 plus the PNV.1 assertion are evaluated",
+          "check_type": "behavior",
+          "scenario": "Run the suite and inspect the report",
+          "expected_result": "Every assertion id with verifier=edge_case_testing or verifier=prompt_named_verb from sections-v1.json appears in the report with a pass/fail verdict",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#prompt_named_verb_assertion",
+          "source": "td_plan"
+        },
+        {
+          "id": "S6.A4",
+          "from_acceptance_phrase": "exits non-zero if any assertion fails",
+          "check_type": "behavior",
+          "scenario": "Force one assertion to fail and run the suite",
+          "expected_result": "Process exit code is non-zero",
+          "verifier": "critic_final_sweep",
+          "covers": "decisions/technical-discovery/sections-v1.json#sections[5].acceptance",
+          "source": "td_plan"
+        }
+      ],
+      "depends_on": ["S1", "S2", "S3", "S4", "S5", "integrator"],
+      "estimated_builders": 1,
+      "out_of_scope": [
+        "Visual regression / pixel-diff testing",
+        "Cross-browser matrix (Firefox, Safari) for v1",
+        "Load / performance benchmarking",
+        "Mutation testing"
+      ]
+    }
+  ],
+
+  "inflection_resolutions": [
+    {
+      "ip_id": "IP1",
+      "source": "discovery",
+      "topic": "Data source for MLB schedule, standings, and team statistics",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "MLB Stats API (statsapi.mlb.com)",
+      "rationale": "Canonical, free, no-API-key, CORS-permissive JSON feed maintained by MLB Advanced Media. Documented broadly across community projects (toddrob99/MLB-StatsAPI, dozens of JS clients on GitHub). Only viable choice for a static GitHub-Pages dashboard that fetches client-side.",
+      "evidence_source": "canonical_evidence",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP1.M1",
+          "statement": "data-client module sources all data from https://statsapi.mlb.com/api/v1/",
+          "check_type": "presence",
+          "target_module": "data-client",
+          "target_symbol": "module source",
+          "expected_value": "All fetch URLs in data-client begin with https://statsapi.mlb.com/api/v1/",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[0]",
+          "source": "canonical_evidence"
+        },
+        {
+          "id": "IP1.M2",
+          "statement": "No third-party scraper or aggregator endpoint is referenced",
+          "check_type": "absence",
+          "target_module": "all",
+          "target_symbol": "any source file",
+          "expected_value": "Zero references to espn.com, sports-data-api, or similar aggregators",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[0]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP2",
+      "source": "discovery",
+      "topic": "How 'daily' freshness is delivered on a static host",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Client-side fetch on every page load",
+      "rationale": "Simplest path that genuinely delivers each visitor today's data. Requires zero CI infrastructure. The CORS sub-question is resolved via canonical evidence below (statsapi.mlb.com returns Access-Control-Allow-Origin: *).",
+      "evidence_source": "canonical_evidence",
+      "cors_verification": {
+        "approach": "quick_reasoning",
+        "source": "canonical_evidence",
+        "verbatim_excerpt_note": "statsapi.mlb.com endpoints respond with the header 'Access-Control-Allow-Origin: *' on all public /api/v1/ paths. This is widely documented in community projects that consume the API from browser clients (e.g., https://github.com/brianhaferkamp/mlbdata, plus many static-page MLB-stats demos hosted on github.io). The probe is recorded as research/probes/probe-cors/ for traceability; empirical re-confirmation occurs during edge-case-testing's live-load scenario.",
+        "fallback_if_wrong": "If runtime CORS fails (caught by edge-case-testing's live-load scenario), fallback is GitHub Actions cron building a JSON snapshot — would re-enter Editor with a section amendment introducing snapshot-builder. Not selected in v1 because evidence is strong."
+      },
+      "machine_checkable_assertions": [
+        {
+          "id": "IP2.M1",
+          "statement": "Page calls data-client functions on load; no CI-built snapshot file is read",
+          "check_type": "presence",
+          "target_module": "ui-render",
+          "target_symbol": "init",
+          "expected_value": "init() invokes data-client.fetchStandings, fetchSchedule, fetchTeamGameResults",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[1]",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP2.M2",
+          "statement": "No pre-baked snapshot JSON file is committed under output/final/",
+          "check_type": "absence",
+          "target_module": "output/final",
+          "target_symbol": "data snapshot files",
+          "expected_value": "No file like standings-snapshot.json or schedule-snapshot.json present",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[1]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP3",
+      "source": "discovery",
+      "topic": "Stats granularity: team-level vs player-level",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Team-level only",
+      "rationale": "Prompt frames the dashboard around teams (all mlb teams, overall rankings). Player drill-down explicitly in Discovery out_of_scope. Team-level is the minimum-viable load-bearing reading of the prompt.",
+      "evidence_source": "prompt",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP3.M1",
+          "statement": "No player-leaderboard or player-roster rendering exists",
+          "check_type": "absence",
+          "target_module": "ui-render",
+          "target_symbol": "module source",
+          "expected_value": "No fetches against /people/, /roster/, or /stats?group=hitting&playerPool",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[2]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP4",
+      "source": "discovery",
+      "topic": "Definition of 'weekly trends'",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Rolling last-7-days W-L + run differential delta per team",
+      "rationale": "Maps literally to 'weekly'; more meaningful for a daily dashboard than calendar-week (which would be empty on a Monday morning).",
+      "evidence_source": "prompt",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP4.M1",
+          "statement": "trends-engine queries data over a 7-day rolling window ending today",
+          "check_type": "behavior",
+          "target_module": "trends-engine",
+          "target_symbol": "computeWeeklyTrends",
+          "expected_value": "Window passed to data-client is [today-6, today] inclusive (or equivalent 7-day inclusive range)",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[3]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP5",
+      "source": "discovery",
+      "topic": "Scope of 'upcoming games and schedules'",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Today + next 7 days",
+      "rationale": "Matches the 'daily' framing while giving enough lookahead. Mirrors the 7-day window already chosen for trends.",
+      "evidence_source": "prompt",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP5.M1",
+          "statement": "ui-render requests schedule for today through today+7",
+          "check_type": "behavior",
+          "target_module": "ui-render",
+          "target_symbol": "init",
+          "expected_value": "fetchSchedule is called with startDate=today, endDate=today+7",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[4]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP6",
+      "source": "discovery",
+      "topic": "Shape of 'overall rankings'",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Six division standings tables + wild-card race",
+      "rationale": "Canonical MLB ranking presentation. Wild-card race adds postseason-positioning value at low cost.",
+      "evidence_source": "canonical_evidence",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP6.M1",
+          "statement": "rankings-engine output has 6 divisionStandings keys and 2 wildCard keys",
+          "check_type": "structural",
+          "target_module": "rankings-engine",
+          "target_symbol": "computeRankings",
+          "expected_value": "{divisionStandings: {AL_East, AL_Central, AL_West, NL_East, NL_Central, NL_West}, wildCard: {AL, NL}}",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[5]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP7",
+      "source": "discovery",
+      "topic": "Behavior on off-days or when API returns no games",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Show empty-state copy",
+      "rationale": "Preserves layout; honest. Substituting yesterday's data would mislead a user reading a 'today' dashboard.",
+      "evidence_source": "td_plan",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP7.M1",
+          "statement": "When schedule is empty, #upcoming-panel shows empty-state text",
+          "check_type": "behavior",
+          "target_module": "ui-render",
+          "target_symbol": "renderUpcoming",
+          "expected_value": "Visible copy contains 'no games' or 'No games scheduled' (case-insensitive)",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[6]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "IP8",
+      "source": "discovery",
+      "topic": "Team identity visualization (logos, colors)",
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Team abbreviations + official primary color swatches",
+      "rationale": "Avoids logo licensing/hotlinking risk; abbreviations are unambiguous for a baseball audience; color swatches are visually meaningful.",
+      "evidence_source": "td_plan",
+      "machine_checkable_assertions": [
+        {
+          "id": "IP8.M1",
+          "statement": "No image files for team logos are bundled and no MLB CDN logos are hotlinked",
+          "check_type": "absence",
+          "target_module": "output/final",
+          "target_symbol": "image assets and HTML/CSS",
+          "expected_value": "No .png/.svg files named after teams; no img src referencing mlbstatic.com or similar logo CDNs",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[7]",
+          "source": "td_plan"
+        },
+        {
+          "id": "IP8.M2",
+          "statement": "Per-team CSS color custom properties exist",
+          "check_type": "presence",
+          "target_module": "ui-shell",
+          "target_symbol": "CSS",
+          "expected_value": "At least 30 CSS custom properties matching --team-* are defined",
+          "covers": "decisions/discovery/ledger-v1.json#inflection_points[7]",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "TD-IP-A",
+      "source": "td",
+      "topic": "Chart/visualization library for weekly trends",
+      "td_introduction_rationale": "Discovery flagged weekly trends as a content focus but did not specify a chart library. This is a TD-introduced inflection because library choice forks the build (zero-dep vs CDN dep vs bundler), affects production-fidelity (CDN deps are network-dependent), and is not load-bearing on Discovery's stated intent.",
+      "choices": [
+        "No chart library; inline SVG sparklines built by hand",
+        "Chart.js loaded from a CDN",
+        "Chart.js bundled locally"
+      ],
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "No chart library; inline SVG sparklines built by hand",
+      "rationale": "Zero external dependencies; satisfies the production-fidelity guidance (no CDN runtime deps). A 7-point sparkline is trivially expressible as a <polyline> in SVG. Avoids the Chart.js footprint for what is essentially a 7-point per-team line.",
+      "evidence_source": "td_plan",
+      "machine_checkable_assertions": [
+        {
+          "id": "TDIPA.M1",
+          "statement": "No Chart.js or other charting library is loaded",
+          "check_type": "absence",
+          "target_module": "all",
+          "target_symbol": "any file",
+          "expected_value": "Zero references to chart.js, chartjs, d3, echarts, plotly, highcharts",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions",
+          "source": "td_plan"
+        },
+        {
+          "id": "TDIPA.M2",
+          "statement": "Trends sparklines are inline SVG",
+          "check_type": "presence",
+          "target_module": "ui-render",
+          "target_symbol": "renderTrends",
+          "expected_value": "Rendered trends panel contains <svg> elements with <polyline> or <path> per team",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "TD-IP-B",
+      "source": "td",
+      "topic": "Module loading approach",
+      "td_introduction_rationale": "Pure technical choice the user didn't specify; forks code organization across the entire build (modules vs IIFE vs bundler).",
+      "choices": [
+        "ES modules via <script type=\"module\">",
+        "Single bundled IIFE",
+        "Module bundler (esbuild/rollup) producing one file"
+      ],
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "ES modules via <script type=\"module\">",
+      "rationale": "GitHub Pages serves ES modules with correct MIME natively. No bundler in the build pipeline. Easier section isolation (each section is literally one .js file). Modern browser support is universal.",
+      "evidence_source": "td_plan",
+      "machine_checkable_assertions": [
+        {
+          "id": "TDIPB.M1",
+          "statement": "index.html uses <script type=\"module\">",
+          "check_type": "presence",
+          "target_module": "ui-shell",
+          "target_symbol": "index.html",
+          "expected_value": "A <script tag with type=\"module\" attribute is present",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions",
+          "source": "td_plan"
+        },
+        {
+          "id": "TDIPB.M2",
+          "statement": "No bundler artifacts present",
+          "check_type": "absence",
+          "target_module": "output/final",
+          "target_symbol": "build artifacts",
+          "expected_value": "No webpack/rollup/esbuild generated bundle files; .js files are hand-authored ES modules",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions",
+          "source": "td_plan"
+        }
+      ]
+    },
+    {
+      "ip_id": "TD-IP-C",
+      "source": "td",
+      "topic": "Styling approach",
+      "td_introduction_rationale": "User didn't specify a CSS framework; this is a TD choice that affects bundle size and external deps.",
+      "choices": [
+        "Vanilla CSS with CSS custom properties",
+        "Tailwind via CDN",
+        "Tailwind via build step"
+      ],
+      "resolved_via": "quick_reasoning",
+      "chosen_branch": "Vanilla CSS with CSS custom properties",
+      "rationale": "Zero external dependencies. CSS custom properties handle the per-team color theming cleanly. Dashboard layout is straightforward grid; doesn't justify Tailwind's footprint.",
+      "evidence_source": "td_plan",
+      "machine_checkable_assertions": [
+        {
+          "id": "TDIPC.M1",
+          "statement": "No CSS framework is referenced",
+          "check_type": "absence",
+          "target_module": "all",
+          "target_symbol": "HTML/CSS",
+          "expected_value": "Zero references to tailwind, bootstrap, bulma, foundation",
+          "covers": "decisions/technical-discovery/sections-v1.json#inflection_resolutions",
+          "source": "td_plan"
+        }
+      ]
+    }
+  ],
+
+  "td_introduced_ips": ["TD-IP-A", "TD-IP-B", "TD-IP-C"],
+
+  "discovery_coverage_assertions": [
+    {
+      "id": "DCA.restatement.1",
+      "covers_target": "decisions/discovery/ledger-v1.json#restatement",
+      "covers_text": "Build a static web page that displays a daily-updated snapshot of all 30 MLB teams: overall standings/rankings, weekly performance trends (last-7-days W-L and run differential), and upcoming game schedules.",
+      "scenario": "Load output/final/index.html via http://localhost and inspect DOM",
+      "expected_result": "All three content blocks (rankings, weekly trends, upcoming schedule) are present and all 30 teams appear somewhere in the DOM",
+      "check_type": "presence",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A1",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[0]",
+      "covers_text": "The deliverable is a single web page loaded in a desktop browser by visiting a URL.",
+      "scenario": "Inspect output/final/ for a single entry index.html",
+      "expected_result": "Exactly one HTML entry file exists; no multi-page routing",
+      "check_type": "structural",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A2",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[1]",
+      "covers_text": "Dashboard covers all 30 current MLB teams.",
+      "scenario": "After load, count unique team abbreviations in the DOM",
+      "expected_result": "At least 30 unique MLB team abbreviations are present",
+      "check_type": "behavior",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A3",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[2]",
+      "covers_text": "Three primary content blocks: weekly trends, upcoming games, overall rankings.",
+      "scenario": "Query DOM for the three named panel containers and verify each has rendered content",
+      "expected_result": "#rankings-panel, #trends-panel, and #upcoming-panel all contain non-empty rendered children",
+      "check_type": "presence",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A4",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[3]",
+      "covers_text": "Stats are team-level rather than player-level.",
+      "scenario": "grep codebase for player-stat or roster fetch patterns",
+      "expected_result": "No fetches against /people/, /roster/, or player-leaderboard endpoints",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A5",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[4]",
+      "covers_text": "'Daily' is achieved via client-side fetch on page load.",
+      "scenario": "Load page in browser and observe network requests",
+      "expected_result": "Network requests to statsapi.mlb.com fire on page load",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A6",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[5]",
+      "covers_text": "Weekly trends = each team's last-7-days W-L + run differential.",
+      "scenario": "Inspect a rendered trend row for fixture team",
+      "expected_result": "Row exposes last-7-days W-L pair and a numeric run differential",
+      "check_type": "presence",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A7",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[6]",
+      "covers_text": "Upcoming games = today + next 7 days.",
+      "scenario": "Inspect dates in #upcoming-panel after load",
+      "expected_result": "All listed game dates fall within [today, today+7]",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A8",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[7]",
+      "covers_text": "Overall rankings = division standings.",
+      "scenario": "Inspect #rankings-panel structure",
+      "expected_result": "Six division-named tables/sections (AL East, AL Central, AL West, NL East, NL Central, NL West) are present",
+      "check_type": "presence",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.A9",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[8]",
+      "covers_text": "Read-only, no auth, no user accounts.",
+      "scenario": "grep codebase for login/signup/auth patterns",
+      "expected_result": "No login UI, no auth client, no localStorage write of user preferences",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A10",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[9]",
+      "covers_text": "Build is on Windows host; deliverable is browser-agnostic.",
+      "scenario": "Inspect build scripts and section file paths",
+      "expected_result": "No POSIX-only shell invocations in any build script; .js modules use forward-slash imports (universal)",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.A11",
+      "covers_target": "decisions/discovery/ledger-v1.json#assumption_ledger[10]",
+      "covers_text": "2026 season is in progress mid-May; live data expected.",
+      "scenario": "Live-load test in edge-case-testing",
+      "expected_result": "statsapi.mlb.com returns non-empty standings for season=2026 and non-empty schedule for today",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.gambling",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[0]",
+      "covers_text": "Gambling, betting odds, or sportsbook integration",
+      "scenario": "grep codebase",
+      "expected_result": "Zero matches for 'odds', 'sportsbook', 'betting', 'wager', 'draftkings', 'fanduel'",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.fantasy",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[1]",
+      "covers_text": "Fantasy baseball",
+      "scenario": "grep codebase",
+      "expected_result": "Zero matches for 'fantasy', 'draft', 'lineup-set'",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.tickets",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[2]",
+      "covers_text": "Ticket purchasing",
+      "scenario": "grep codebase",
+      "expected_result": "Zero matches for 'ticket', 'stubhub', 'seatgeek', 'vivid'",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.notifications",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[3]",
+      "covers_text": "Push notifications, email digests",
+      "scenario": "grep codebase",
+      "expected_result": "Zero matches for 'Notification(', 'serviceWorker', 'push', 'email', 'sendgrid'",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.accounts",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[4]",
+      "covers_text": "User accounts, authentication, saved preferences",
+      "scenario": "grep codebase",
+      "expected_result": "Zero matches for 'login', 'signup', 'OAuth', 'firebase.auth', 'localStorage.setItem'",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.players",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[5]",
+      "covers_text": "Player-level statistics",
+      "scenario": "grep codebase",
+      "expected_result": "Zero references to /people/, /roster/, player leaderboards",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.pitchByPitch",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[6]",
+      "covers_text": "Live in-game pitch-by-pitch or play-by-play feeds",
+      "scenario": "grep codebase",
+      "expected_result": "Zero references to /playByPlay, /liveGame, /gumbo",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.historical",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[7]",
+      "covers_text": "Historical season archives or year-over-year comparisons",
+      "scenario": "Inspect data-client; verify only current season is queried",
+      "expected_result": "fetchStandings(season) is only ever called with season=current year",
+      "check_type": "behavior",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.postseasonSim",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[8]",
+      "covers_text": "Postseason bracket simulators or playoff probability models",
+      "scenario": "grep codebase",
+      "expected_result": "Zero matches for 'simulation', 'monteCarlo', 'playoffOdds'",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.pwa",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[9]",
+      "covers_text": "Native mobile app or installable PWA shell",
+      "scenario": "Inspect output/final for manifest.json/service-worker.js",
+      "expected_result": "No web app manifest with installable PWA config; no service worker registered",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.backend",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[10]",
+      "covers_text": "Server-side backend, database, non-static infrastructure",
+      "scenario": "Inspect repo structure",
+      "expected_result": "No server runtime files (no Express/Fastify/serverless functions); deliverable is static assets only",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.logos",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[11]",
+      "covers_text": "Bundled official MLB team logos or licensed imagery",
+      "scenario": "Inspect output/final for image assets and HTML img tags",
+      "expected_result": "No team-logo image files bundled; no img src referencing mlbstatic.com",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.minorLeague",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[12]",
+      "covers_text": "Minor league, international league, non-MLB content",
+      "scenario": "Inspect data-client",
+      "expected_result": "All endpoint calls use sportId=1 (MLB only); no references to other sportIds or leagues",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.commentary",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[13]",
+      "covers_text": "Commentary, news articles, other sports scores",
+      "scenario": "grep codebase",
+      "expected_result": "No fetches to news endpoints; no NFL/NBA/NHL references",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.OOS.i18n",
+      "covers_target": "decisions/discovery/ledger-v1.json#out_of_scope[14]",
+      "covers_text": "Multi-language localization",
+      "scenario": "grep codebase",
+      "expected_result": "Zero matches for 'i18n', 'intl', 'translate', 'lang switcher'",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP1",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[0]",
+      "covers_text": "Data source = MLB Stats API",
+      "scenario": "grep data-client for fetch URLs",
+      "expected_result": "All fetch URLs target https://statsapi.mlb.com/api/v1/",
+      "check_type": "presence",
+      "verifier": "critic_final_sweep",
+      "source": "canonical_evidence"
+    },
+    {
+      "id": "DCA.IP2",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[1]",
+      "covers_text": "Freshness via client-side fetch on every load",
+      "scenario": "Network panel during browser load",
+      "expected_result": "Live fetch calls observed on each load; no pre-baked snapshot file referenced",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP3",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[2]",
+      "covers_text": "Team-level granularity only",
+      "scenario": "Inspect rendered DOM and codebase",
+      "expected_result": "Team rows only; no player rows or player drill-down",
+      "check_type": "absence",
+      "verifier": "critic_final_sweep",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP4",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[3]",
+      "covers_text": "Weekly trends = rolling 7-day window",
+      "scenario": "Inspect trends-engine window computation",
+      "expected_result": "Window is [today-6, today] inclusive (7-day rolling)",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP5",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[4]",
+      "covers_text": "Upcoming = today + next 7 days",
+      "scenario": "Inspect dates rendered in #upcoming-panel",
+      "expected_result": "All dates fall within [today, today+7]",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP6",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[5]",
+      "covers_text": "Six division standings + wild-card race",
+      "scenario": "Inspect rankings-engine output structure",
+      "expected_result": "{divisionStandings has 6 keys, wildCard has 2 keys}",
+      "check_type": "structural",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP7",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[6]",
+      "covers_text": "Empty-state copy on no-games days",
+      "scenario": "Stub data-client to return empty schedule; observe UI",
+      "expected_result": "#upcoming-panel shows visible empty-state copy",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.IP8",
+      "covers_target": "decisions/discovery/ledger-v1.json#inflection_points[7]",
+      "covers_text": "Abbreviations + color swatches (no logos)",
+      "scenario": "Inspect rendered team identity",
+      "expected_result": "Each team rendered with abbreviation text + color swatch; no <img> tags for logos",
+      "check_type": "presence",
+      "verifier": "cv_artifact_exercise",
+      "source": "td_plan"
+    },
+    {
+      "id": "DCA.PN.1",
+      "covers_target": "decisions/discovery/ledger-v1.json#proper_nouns[0]",
+      "covers_text": "Build targets MLB (Major League Baseball)",
+      "scenario": "Inspect data-client fetch URLs and rendered content",
+      "expected_result": "Data sourced from statsapi.mlb.com with sportId=1; rendered teams match the 30 MLB clubs",
+      "check_type": "presence",
+      "verifier": "critic_final_sweep",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.PN.2",
+      "covers_target": "decisions/discovery/ledger-v1.json#proper_nouns[1]",
+      "covers_text": "Hosted on GitHub Pages",
+      "scenario": "Verify final deliverable URL is reachable",
+      "expected_result": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/ returns HTTP 200 with the dashboard HTML",
+      "check_type": "behavior",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.1",
+      "covers_target": "decisions/discovery/ledger-v1.json#first_contact_requirements[0]",
+      "covers_text": "Page loads successfully, no blank screen, no console-fatal errors",
+      "scenario": "Headless browser load of the live URL",
+      "expected_result": "HTTP 200; DOM body has visible content; console has no error-severity messages",
+      "check_type": "behavior",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.2",
+      "covers_target": "decisions/discovery/ledger-v1.json#first_contact_requirements[1]",
+      "covers_text": "Within seconds, dashboard renders actual current MLB data",
+      "scenario": "After load, wait ≤15s; inspect panels for content",
+      "expected_result": "Rankings, trends, and upcoming panels contain real team data (not 'Loading...', not error)",
+      "check_type": "behavior",
+      "verifier": "prompt_named_verb",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.3",
+      "covers_target": "decisions/discovery/ledger-v1.json#first_contact_requirements[2]",
+      "covers_text": "All three focus areas visible: weekly trends, upcoming games, overall rankings",
+      "scenario": "Query DOM for all three panel containers",
+      "expected_result": "#trends-panel, #upcoming-panel, #rankings-panel all visible and populated",
+      "check_type": "presence",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.4",
+      "covers_target": "decisions/discovery/ledger-v1.json#first_contact_requirements[3]",
+      "covers_text": "All 30 MLB teams represented",
+      "scenario": "Count unique team abbreviations across the DOM",
+      "expected_result": "30 unique team abbreviations are present",
+      "check_type": "behavior",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.5",
+      "covers_target": "decisions/discovery/ledger-v1.json#first_contact_requirements[4]",
+      "covers_text": "Data is recognizably current",
+      "scenario": "Inspect schedule dates and last-updated timestamp",
+      "expected_result": "Schedule contains dates within the next 7 days; last-updated timestamp is within the current day",
+      "check_type": "behavior",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.6",
+      "covers_target": "decisions/discovery/ledger-v1.json#first_contact_requirements[5]",
+      "covers_text": "Page is hosted at a publicly reachable URL on GitHub Pages and URL is delivered",
+      "scenario": "Verify deployment + dashboard URL is in run report",
+      "expected_result": "URL https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/ is live and surfaced in the deliverable handoff",
+      "check_type": "behavior",
+      "verifier": "cv_artifact_exercise",
+      "source": "prompt"
+    },
+    {
+      "id": "DCA.FC.7",
+      "covers_target": "decisions/discovery/ledger-v1.json#first_contact_requirements[6]",
+      "covers_text": "Next-day return visit shows refreshed data",
+      "scenario": "Verify ui-render always re-fetches; no stale cached data path",
+      "expected_result": "Each page load triggers fresh fetches; data is not pinned to a build-time snapshot",
+      "check_type": "behavior",
+      "verifier": "edge_case_testing",
+      "source": "td_plan"
+    }
+  ]
+}

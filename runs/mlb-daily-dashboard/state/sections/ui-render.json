@@ -1,0 +1,23 @@
+{
+  "section_id": "S5",
+  "name": "ui-render",
+  "status": "verified",
+  "owner": "overseer-ui-render-inline",
+  "wave": 3,
+  "started_at": "2026-05-26T15:11:00Z",
+  "verified_at": "2026-05-26T15:16:00Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[4]",
+  "sub_goals": [
+    "Export init(); register DOMContentLoaded listener",
+    "Orchestrate parallel data-client calls",
+    "Hand raw data to trends-engine + rankings-engine",
+    "renderRankings into #rankings-panel (6 divisions + wild-card)",
+    "renderTrends into #trends-panel with inline SVG sparklines",
+    "renderUpcoming into #upcoming-panel grouped by date",
+    "updateTimestamp on #last-updated",
+    "showError on #error-banner with retry button on any fetch failure",
+    "Empty-state handling for zero schedule"
+  ],
+  "verified": true,
+  "builders_dispatched": ["builder-ui-render-1"]
+}

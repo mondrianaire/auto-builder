@@ -1,0 +1,9 @@
+{
+  "role": "Overseer",
+  "section": "rankings-engine",
+  "iteration": 1,
+  "intent_or_outcome": "intent",
+  "instance_id": "overseer-rankings-engine-inline",
+  "blurb": "Plan: ship rankings-engine.js with one pure-function export computeRankings(standings). Project the flat 30-team standings into three views: divisionStandings (6 keys, 5 teams each, sorted by pct desc), leagueStandings (AL + NL, 15 each), wildCard (top-3 non-division-leaders per league). No fetch, no DOM.",
+  "created_at": "2026-05-26T15:07:00Z"
+}

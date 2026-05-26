@@ -1,0 +1,20 @@
+{
+  "section_id": "S4",
+  "name": "ui-shell",
+  "status": "verified",
+  "owner": "overseer-ui-shell-inline",
+  "wave": 1,
+  "started_at": "2026-05-26T15:01:00Z",
+  "verified_at": "2026-05-26T15:06:30Z",
+  "charter_pointer": "decisions/technical-discovery/sections-v1.json#sections[3]",
+  "sub_goals": [
+    "Author index.html with required container IDs: #rankings-panel, #trends-panel, #upcoming-panel, #last-updated, #error-banner",
+    "Author styles.css with at least 30 --team-* CSS custom properties + league brand vars",
+    "Establish responsive grid layout (3-column desktop, 1-column mobile)",
+    "Author loading-state and empty-state CSS conventions (.panel-loading, .panel-empty-state)",
+    "Load ui-render via <script type=\"module\" src=\"app.js\">",
+    "Zero external CDN runtime references"
+  ],
+  "verified": true,
+  "builders_dispatched": ["builder-ui-shell-1"]
+}

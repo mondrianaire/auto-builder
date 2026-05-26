@@ -1,0 +1,35 @@
+{
+  "contract_id": "data-client--rankings-engine",
+  "version": 1,
+  "producer_section": "data-client",
+  "consumer_section": "rankings-engine",
+  "produced_by_symbol": "fetchStandings(season)",
+  "consumed_by_symbol": "computeRankings(standings)",
+  "shape_summary": "Flat array of one StandingEntry per team for the requested season.",
+  "return_shape": {
+    "type": "Array",
+    "element_type": "StandingEntry",
+    "StandingEntry": {
+      "teamId": {"type": "number", "description": "MLB Stats API team id."},
+      "teamName": {"type": "string", "description": "Full team name (e.g., 'New York Yankees')."},
+      "teamAbbreviation": {"type": "string", "description": "Three-letter abbreviation (e.g., 'NYY')."},
+      "league": {"type": "string", "enum": ["AL", "NL"], "description": "League identifier."},
+      "division": {"type": "string", "enum": ["East", "Central", "West"], "description": "Division within the league."},
+      "wins": {"type": "number"},
+      "losses": {"type": "number"},
+      "pct": {"type": "number", "description": "Winning percentage as a decimal between 0 and 1, rounded to 3 places."},
+      "gb": {"type": "number_or_string", "description": "Games behind the division leader as a number, or the literal string '-' for the leader."}
+    }
+  },
+  "invariants": [
+    "Array length is exactly 30 during the regular season.",
+    "Six (league, division) tuples are represented, with five teams each.",
+    "pct = wins / (wins + losses) for any team that has played any games.",
+    "The division leader has gb === '-' or gb === 0; all other teams in that division have a positive numeric gb."
+  ],
+  "error_behavior": "Network failure or non-200 response throws a DataClientError.",
+  "example": [
+    {"teamId": 147, "teamName": "New York Yankees", "teamAbbreviation": "NYY", "league": "AL", "division": "East", "wins": 32, "losses": 20, "pct": 0.615, "gb": "-"},
+    {"teamId": 111, "teamName": "Boston Red Sox", "teamAbbreviation": "BOS", "league": "AL", "division": "East", "wins": 28, "losses": 24, "pct": 0.538, "gb": 4.0}
+  ]
+}

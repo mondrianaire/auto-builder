@@ -1,0 +1,19 @@
+{
+  "role": "Builder",
+  "section": "ui-shell",
+  "builder_id": "builder-ui-shell-1",
+  "iteration": 1,
+  "intent_or_outcome": "outcome",
+  "instance_id": "builder-ui-shell-1-inline",
+  "verified_assertions": [
+    {"id": "S4.A1", "result": "pass", "evidence": "All five required IDs present in index.html"},
+    {"id": "S4.A2", "result": "pass", "evidence": "<script type=\"module\" src=\"app.js\"></script> on body"},
+    {"id": "S4.A3", "result": "pass", "evidence": "Zero CDN / unpkg / jsdelivr / googleapis / cdnjs references in HTML or CSS"},
+    {"id": "S4.A4", "result": "pass", "evidence": "30 --team-* custom properties + --league-AL + --league-NL defined in :root"},
+    {"id": "TDIPB.M1", "result": "pass", "evidence": "<script type=\"module\"> tag present"},
+    {"id": "IP8.M2", "result": "pass", "evidence": "30 --team-{ABBR} custom properties exist"},
+    {"id": "TDIPC.M1", "result": "pass", "evidence": "No tailwind/bootstrap/bulma/foundation references"}
+  ],
+  "blurb": "Outcome: shipped index.html and styles.css. Five required container IDs in place; <script type=\"module\" src=\"app.js\"> bootstraps ui-render. styles.css defines 30 per-team color custom properties, 2 league colors, responsive 3-col->1-col grid, dark/light via prefers-color-scheme, loading and empty-state styling.",
+  "created_at": "2026-05-26T15:06:00Z"
+}

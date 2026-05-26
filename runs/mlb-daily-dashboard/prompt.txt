@@ -1,0 +1,1 @@
+Make me a web based Daily dashboard for all mlb teams and statistics focusing on weekly trends, upcoming games and schedules and overall rankings. Use github pages for hosting.

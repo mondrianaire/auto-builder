@@ -1,0 +1,40 @@
+{
+  "contract_id": "ui-shell--ui-render",
+  "version": 1,
+  "producer_section": "ui-shell",
+  "consumer_section": "ui-render",
+  "produced_by_symbol": "index.html (and accompanying CSS)",
+  "consumed_by_symbol": "renderRankings, renderTrends, renderUpcoming, updateTimestamp, showError",
+  "shape_summary": "Named DOM container IDs and CSS custom properties that ui-render writes into.",
+  "dom_contract": {
+    "required_element_ids": [
+      {"id": "rankings-panel", "tag": "section or div", "description": "Container into which renderRankings injects 6 division tables and the wild-card race."},
+      {"id": "trends-panel", "tag": "section or div", "description": "Container into which renderTrends injects 30 per-team trend rows with inline-SVG sparklines."},
+      {"id": "upcoming-panel", "tag": "section or div", "description": "Container into which renderUpcoming injects the schedule list (or empty-state copy)."},
+      {"id": "last-updated", "tag": "span or time", "description": "Inline element whose textContent updateTimestamp overwrites with the fetch timestamp."},
+      {"id": "error-banner", "tag": "div", "description": "Initially hidden (display:none). showError sets its textContent and toggles visibility."}
+    ],
+    "loading_state": {
+      "convention": "ui-shell pre-populates each panel with a 'Loading…' placeholder element of class .panel-loading. ui-render is responsible for clearing the panel's innerHTML before injecting rendered content.",
+      "css_class_for_loading": ".panel-loading"
+    },
+    "empty_state": {
+      "convention": "ui-render writes an element of class .panel-empty-state into the panel when its data is empty.",
+      "css_class_for_empty": ".panel-empty-state"
+    }
+  },
+  "css_contract": {
+    "required_custom_properties": [
+      {"naming_convention": "--team-{ABBR}", "description": "Per-team primary color, one entry per MLB team (30 total). ABBR is the team's standard 2- or 3-letter abbreviation in uppercase.", "example": "--team-NYY: #003087;"},
+      {"naming_convention": "--league-AL", "description": "League brand color for AL."},
+      {"naming_convention": "--league-NL", "description": "League brand color for NL."}
+    ],
+    "responsive_breakpoint": "Single-column layout below 768px; multi-column grid above."
+  },
+  "invariants": [
+    "All five required IDs exist in index.html.",
+    "ui-render never queries the DOM via class-only selectors that match outside its own injected content (must be scoped to one of the five panel IDs).",
+    "ui-shell does not include any <script> tags other than the single module entry that bootstraps ui-render.",
+    "No external CDN stylesheets or scripts are referenced."
+  ]
+}
