@@ -15,7 +15,7 @@ The purpose of this document is to orient a brand-new reader — including a fre
 | Slug | `mlb-daily-dashboard` |
 | Deliverable kind | `web_app` |
 | Verification verdict | `pass` |
-| First-delivery outcome | `unverified` |
+| First-delivery outcome | `failed_user_reprompted` |
 | Architecture version | `v1.10.1` |
 | Build wall-clock | unknown minutes |
 | Ratified | 2026-05-31T00:10:40.035Z |
@@ -36,7 +36,9 @@ A web-based daily dashboard that, when opened in a browser, shows current Major 
 
 The production deliverable for this build is at `runs/mlb-daily-dashboard/output/final/`. After promotion (an opt-in event distinct from ratification), this directory is forked verbatim to `mondrianaire/mlb-daily-dashboard-AB` as a standalone repo for ongoing product life.
 
-**Live URL:** https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html (set by promotion / Pages auto-enable, or via curation overlay).
+**Live URL (canonical, post-promotion):** https://mondrianaire.github.io/mlb-daily-dashboard-AB/ — the standalone fork repo's GitHub Pages site, where product life happens. Treat this as the live URL; new sessions on the fork should anchor here.
+
+**Corpus snapshot (frozen at ratification, not maintained):** https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/ — the AutoBuilder corpus's Pages site, kept as a frozen reference of `output/final/` at the ratification commit.
 
 ## Where to look next
 

@@ -81,3 +81,12 @@ recorded fail adds a re-audit evidence record.
 The `culprit.cell_id` lets the §8 walkthrough diagnosis overlay locate the
 fault — run `walkthrough-flowchart.bat mlb-daily-dashboard` after writing the diagnosis
 and the `⚠ Diagnosis` button will highlight the culprit cell.
+
+## ⚠ A diagnosis is already on file
+
+`runs/mlb-daily-dashboard/wrap-up-diagnosis.json` already exists — this build's interactive wrap-up has been conducted:
+
+- **Lane A** — it's what I wanted
+- No culprit — Lane A, no diagnostic walk.
+
+Re-ask the §2 question only if you are deliberately re-validating the outcome.
