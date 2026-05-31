@@ -247,6 +247,23 @@ jobs:
             DELIVERABLE_KIND=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.deliverable_kind?r.deliverable_kind:'unknown')}catch(e){process.stdout.write('unknown')}")
             LIVE_URL=$(node -e "try{const idx=JSON.parse(require('fs').readFileSync('codex/data/index.json','utf8'));const r=(idx.runs||[]).find(x=>x.slug==='$SLUG');process.stdout.write(r&&r.live_url?r.live_url:'')}catch(e){process.stdout.write('')}")
 
+            # Override LIVE_URL for web_app builds with the deterministic fork
+            # URL pattern. Codex's live_url at THIS moment is the corpus
+            # snapshot URL — the curation update that flips it to the post-
+            # promotion fork URL is what THIS workflow writes later in step 7,
+            # so reading codex first creates a chicken-and-egg. That's the
+            # bug that baked the corpus URL into mlb-daily-dashboard-AB's
+            # CLAUDE.md and cc-launch-prompt.md on 2026-05-31, forcing a
+            # downstream cleanup in the fork repo. The fork URL is fully
+            # deterministic from the slug (workflow #2 itself names the
+            # repo "${SLUG}-AB" and enables Pages on it at source=main
+            # path=/), so we can substitute it directly without depending
+            # on codex state. Same fix concept as wrap-up-build.mjs v0.3.
+            if [ "$DELIVERABLE_KIND" = "web_app" ]; then
+              LIVE_URL="https://${GH_OWNER}.github.io/${SLUG}-AB/"
+              echo "Override LIVE_URL for web_app: $LIVE_URL (deterministic fork URL, not codex live_url)"
+            fi
+
             # Tier 2 bootstrap-prompt extractions (per claude-code-bootstrap-prompt-tier2-proposal.md).
             # These read corpus data BEFORE filter-repo strips everything outside output/final/.
             DISCOVERY_RESTATEMENT=$(node -e "try{const r=JSON.parse(require('fs').readFileSync('runs/$SLUG/decisions/discovery/ledger-v1.json','utf8'));const s=(r.restatement||'').split(/(?<=[.!?])\\s+/)[0]||'(restatement not surfaced in ledger)';process.stdout.write(s.trim())}catch(e){process.stdout.write('(restatement not surfaced in ledger)')}")
