@@ -1,6 +1,6 @@
 # mlb-daily-dashboard — Codex narrative
 
-**First-delivery outcome:** Unverified (no first-delivery signal found) _(source: default)_
+**First-delivery outcome:** Failed — user had to re-prompt _(source: curation)_
 **Composite (architectural):** unknown
 **Verdict (build pipeline):** unknown
 **Date:** 2026-05-26  ·  **Architecture:** v1.10.1

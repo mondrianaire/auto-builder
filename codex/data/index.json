@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-31T00:13:49.948Z",
+  "generated_at": "2026-05-31T00:17:27.890Z",
   "codex_version": "0.16",
   "architecture_versions_seen": [
     "v1.10.1",
@@ -59,8 +59,8 @@
         "demotions": 0,
         "editor_iterations": 1,
         "events_total": 0,
-        "revision_count": 1,
-        "additional_step_count": 0
+        "revision_count": 2,
+        "additional_step_count": 1
       },
       "deliverable_kind": "web_app",
       "deliverable_can_run_in_browser": true,
@@ -70,8 +70,8 @@
       "showcase_assets": null,
       "live_url": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html",
       "live_url_kind": "artifact",
-      "first_delivery_outcome": "unverified",
-      "first_delivery_outcome_source": "default",
+      "first_delivery_outcome": "failed_user_reprompted",
+      "first_delivery_outcome_source": "curation",
       "re_audit_present": false,
       "re_audit_reclassified_verdict": null,
       "rca_present": false,
@@ -1503,9 +1503,9 @@
   "first_delivery_outcome_distribution": {
     "succeeded": 3,
     "succeeded_with_concerns": 6,
-    "failed_user_reprompted": 3,
+    "failed_user_reprompted": 4,
     "failed_unrecoverable": 0,
-    "unverified": 2
+    "unverified": 1
   },
   "maintenance_handoffs": [
     {

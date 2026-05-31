@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-31T00:13:49.948Z",
+    "generated_at": "2026-05-31T00:17:27.890Z",
     "codex_version": "0.16",
     "architecture_versions_seen": [
       "v1.10.1",
@@ -62,8 +62,8 @@ window.CODEX_BUNDLE = {
           "demotions": 0,
           "editor_iterations": 1,
           "events_total": 0,
-          "revision_count": 1,
-          "additional_step_count": 0
+          "revision_count": 2,
+          "additional_step_count": 1
         },
         "deliverable_kind": "web_app",
         "deliverable_can_run_in_browser": true,
@@ -73,8 +73,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "failed_user_reprompted",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
@@ -1506,9 +1506,9 @@ window.CODEX_BUNDLE = {
     "first_delivery_outcome_distribution": {
       "succeeded": 3,
       "succeeded_with_concerns": 6,
-      "failed_user_reprompted": 3,
+      "failed_user_reprompted": 4,
       "failed_unrecoverable": 0,
-      "unverified": 2
+      "unverified": 1
     },
     "maintenance_handoffs": [
       {
@@ -2065,8 +2065,8 @@ window.CODEX_BUNDLE = {
           "demotions": 0,
           "editor_iterations": 1,
           "events_total": 0,
-          "revision_count": 1,
-          "additional_step_count": 0
+          "revision_count": 2,
+          "additional_step_count": 1
         },
         "deliverable_kind": "web_app",
         "deliverable_can_run_in_browser": true,
@@ -2076,8 +2076,8 @@ window.CODEX_BUNDLE = {
         "showcase_assets": null,
         "live_url": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html",
         "live_url_kind": "artifact",
-        "first_delivery_outcome": "unverified",
-        "first_delivery_outcome_source": "default",
+        "first_delivery_outcome": "failed_user_reprompted",
+        "first_delivery_outcome_source": "curation",
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
@@ -3264,7 +3264,7 @@ window.CODEX_BUNDLE = {
             "synthesized",
             "git"
           ],
-          "first_delivery_outcome": "unverified",
+          "first_delivery_outcome": "failed_user_reprompted",
           "contributing_commits": [
             {
               "sha": "adf7fb71adf3b5180db42e8dd0c6575784210037",
@@ -3272,13 +3272,30 @@ window.CODEX_BUNDLE = {
               "subject": "[run:mlb-daily-dashboard] delivery: final artifact written"
             }
           ]
+        },
+        {
+          "id": "rev-1",
+          "kind": "additional_step",
+          "ref": null,
+          "ts": null,
+          "summary": "Phase 2 rectification in original Cowork chat — artifact iterated to working/promotable state after first-delivery failure of both install instructions and runtime artifact.",
+          "verdict": "pass",
+          "rationale": "First delivery failed on both install path and runtime. User iterated in-chat until current build satisfied all original requirements. Install instructions on disk intentionally not rewritten — instruction state preserved as historical data point for AutoBuilder process analysis.",
+          "diff_summary": "Iterative artifact fixes through Phase 2; instruction text unchanged from first delivery.",
+          "triggered_by_event": null,
+          "triggered_by_outcome": "failed_user_reprompted",
+          "sources": [
+            "curation"
+          ],
+          "curated_by": "AutoBuilder-Maintenance",
+          "curated_at": "2026-05-30"
         }
       ],
       "file_tree": null,
       "role_attribution_totals": {},
       "first_delivery": {
-        "outcome": "unverified",
-        "source": "default"
+        "outcome": "failed_user_reprompted",
+        "source": "curation"
       },
       "re_audit": null,
       "links": {
