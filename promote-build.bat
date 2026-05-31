@@ -148,6 +148,15 @@ echo === Committing promotion intent ===
 git commit -m "[run:%SLUG%] promote: user elected standalone product life" -m "User ran promote-build.bat %SLUG%. Promotion-Triggered Fork workflow will fire on this push, create mondrianaire/%SLUG%-AB, and fork the deliverable. The corpus entry remains frozen."
 if errorlevel 1 goto :err_git
 
+REM Rebase on top of origin before pushing. The CI aggregator regenerates
+REM codex/data on every push, so origin/main is almost always ahead by the
+REM time promote-build.bat runs. Without this rebase the push gets rejected
+REM and the user has to recover manually every time. Mirrors the same step
+REM in wrap-up-build.bat and ratify-build.bat.
+echo === Rebasing on top of origin/main ===
+git pull --rebase --autostash -X ours origin main
+if errorlevel 1 goto :err_git
+
 echo === Pushing to origin ===
 git push origin main
 if errorlevel 1 goto :err_push

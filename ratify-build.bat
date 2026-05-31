@@ -156,6 +156,18 @@ echo === Committing ratification ===
 git commit -m "[run:%SLUG%] ratify: instructions+access confirmed by user" -m "User ran ratify-build.bat %SLUG% and confirmed gates 1 + 2. Gate 3 verification verdict: %VERDICT%. Per architecture/build-lifecycle.md the build is now COMPLETE and ready for the fork-and-archive ceremony."
 if errorlevel 1 goto :err_git
 
+REM Rebase on top of origin before pushing. The CI aggregator
+REM (aggregator-on-push.yml) regenerates codex/data on every push, so by the
+REM time ratify-build.bat runs origin/main is almost always ahead. Without
+REM this rebase the push gets rejected and the user has to recover manually
+REM every time. Mirrors wrap-up-build.bat's identical step. --autostash keeps
+REM unrelated working-tree changes out of the way; -X ours resolves any
+REM accidental overlap in favor of the local commit since the bot's
+REM regenerated codex/data is downstream of what we just committed anyway.
+echo === Rebasing on top of origin/main ===
+git pull --rebase --autostash -X ours origin main
+if errorlevel 1 goto :err_git
+
 echo === Pushing to origin ===
 git push origin main
 if errorlevel 1 goto :err_push
@@ -298,6 +310,24 @@ echo ***   4. Then: deploy-session.bat to ship.
 exit /b 1
 
 :err_git
-echo *** Git stage or commit failed. See output above.
-echo *** Note: %RATIFIED% may have been written but not committed.
-echo *** Inspe
+echo *** Git stage, commit, or rebase failed. See output above.
+echo *** Note: %RATIFIED% and the wrap-up artifacts may have been written
+echo *** to disk but not committed (or committed but not rebased).
+echo *** Inspect with: git status --short  and  git log -1 --stat
+echo *** Recovery: resolve the issue, then run deploy-session.bat to ship
+echo *** the staged files, OR re-run ratify-build.bat after deleting
+echo *** %RATIFIED% if you need to start the ratification over.
+exit /b 1
+
+:err_push
+echo *** Git push failed. The ratification commit landed locally but is
+echo *** NOT on origin. Most common cause: origin/main moved between the
+echo *** rebase and the push (rare with the inline rebase above, but
+echo *** possible under aggressive bot activity).
+echo ***
+echo *** Recovery:
+echo ***   git pull --rebase --autostash origin main
+echo ***   git push origin main
+echo *** Or use deploy-session.bat for the safer commit+push path.
+echo *** The local ratification commit is intact; nothing was lost.
+exit /b 1
