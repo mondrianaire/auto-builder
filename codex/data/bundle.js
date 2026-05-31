@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-31T04:10:23.869Z",
+    "generated_at": "2026-05-31T04:17:24.460Z",
     "codex_version": "0.16",
     "architecture_versions_seen": [
       "v1.10.1",
@@ -71,7 +71,7 @@ window.CODEX_BUNDLE = {
         "deliverable_output_subdir": "final",
         "deliverable_manifest": null,
         "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html",
+        "live_url": "https://mondrianaire.github.io/mlb-daily-dashboard-AB/",
         "live_url_kind": "artifact",
         "first_delivery_outcome": "failed_user_reprompted",
         "first_delivery_outcome_source": "curation",
@@ -83,8 +83,8 @@ window.CODEX_BUNDLE = {
         "ratification_notes": null,
         "ratification_writer_version": "0.3",
         "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
+        "promoted_to": "https://github.com/mondrianaire/mlb-daily-dashboard-AB",
+        "promoted_at": "2026-05-31T03:30:38Z",
         "ab_pair": null,
         "links": {
           "run_report": "runs/mlb-daily-dashboard/run-report.md",
@@ -2074,7 +2074,7 @@ window.CODEX_BUNDLE = {
         "deliverable_output_subdir": "final",
         "deliverable_manifest": null,
         "showcase_assets": null,
-        "live_url": "https://mondrianaire.github.io/auto-builder/runs/mlb-daily-dashboard/output/final/index.html",
+        "live_url": "https://mondrianaire.github.io/mlb-daily-dashboard-AB/",
         "live_url_kind": "artifact",
         "first_delivery_outcome": "failed_user_reprompted",
         "first_delivery_outcome_source": "curation",
@@ -2086,8 +2086,8 @@ window.CODEX_BUNDLE = {
         "ratification_notes": null,
         "ratification_writer_version": "0.3",
         "verification_passed": true,
-        "promoted_to": null,
-        "promoted_at": null,
+        "promoted_to": "https://github.com/mondrianaire/mlb-daily-dashboard-AB",
+        "promoted_at": "2026-05-31T03:30:38Z",
         "ab_pair": null,
         "links": {
           "run_report": "runs/mlb-daily-dashboard/run-report.md",
@@ -2452,10 +2452,10 @@ window.CODEX_BUNDLE = {
         "cv_tier1_pnv": "not_run",
         "cv_tier2_first_contact": "not_run",
         "cv_tier3_subgoal": "failed",
-        "lifecycle_phase": "ratified_awaiting_fork",
+        "lifecycle_phase": "promoted",
         "ratified": true,
-        "promoted": false,
-        "promoted_to": null,
+        "promoted": true,
+        "promoted_to": "https://github.com/mondrianaire/mlb-daily-dashboard-AB",
         "totals": {
           "sections": 6,
           "inflection_points": 8,
@@ -2471,7 +2471,7 @@ window.CODEX_BUNDLE = {
           "verification": "done",
           "delivery": "done",
           "ratification": "done",
-          "promoted": "active"
+          "promoted": "done"
         }
       },
       "live_narrative": {
