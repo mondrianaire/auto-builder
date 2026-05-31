@@ -1,0 +1,27 @@
+{
+  "_comment": "Curation overlay for mlb-daily-dashboard. Sets first_delivery_outcome based on the user's explicit statement at ratification time that 'the instructions that came with the build failed, the build itself failed' on first delivery, followed by in-chat Phase 2 rectification to a working/promotable state.",
+
+  "first_delivery_outcome": "failed_user_reprompted",
+  "first_delivery_outcome_rationale": "User explicitly stated at wrap-up time that on first delivery both halves of the first-contact experience failed: the install instructions did not work as written, and the runtime artifact itself did not satisfy the user. The build was rectified through Phase 2 in its original Cowork chat — iteration on the artifact until current requirements were satisfied. The install instructions on disk were deliberately not rewritten as part of the rectification (a user choice — they consider instruction state a frozen first-delivery data point, not a rectification target). Current state passes CV (verdict pass) and is in promotion condition, and Lane A at §2 wrap-up reflects that current lived experience. Per build-lifecycle.md the successful rectification does not erase the first-delivery failure; this overlay records it for the cross-corpus AutoBuilder process analysis the user explicitly called out as the reason this data matters.",
+  "first_delivery_curated_by": "AutoBuilder-Maintenance",
+  "first_delivery_curated_at": "2026-05-30",
+
+  "notes": "Source: user statement at ratification time, 2026-05-30, captured in runs/mlb-daily-dashboard/wrap-up-diagnosis.json under first_delivery_context. The wrap-up-diagnosis.json also surfaces an architectural amendment candidate: ratify-build.bat's two gates currently conflate first-delivery history with current satisfaction; mlb-daily-dashboard is the case that surfaced this. v1.x candidate for the interactive-wrapup spec.",
+
+  "revisions": [
+    {
+      "id": "rev-1",
+      "kind": "additional_step",
+      "summary": "Phase 2 rectification in original Cowork chat — artifact iterated to working/promotable state after first-delivery failure of both install instructions and runtime artifact.",
+      "triggered_by_outcome": "failed_user_reprompted",
+      "triggered_by_event": null,
+      "verdict": "pass",
+      "rationale": "First delivery failed on both install path and runtime. User iterated in-chat until current build satisfied all original requirements. Install instructions on disk intentionally not rewritten — instruction state preserved as historical data point for AutoBuilder process analysis.",
+      "diff_summary": "Iterative artifact fixes through Phase 2; instruction text unchanged from first delivery.",
+      "curated_by": "AutoBuilder-Maintenance",
+      "curated_at": "2026-05-30",
+      "ts": null,
+      "ref": null
+    }
+  ]
+}

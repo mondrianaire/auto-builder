@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.1",
+  "slug": "mlb-daily-dashboard",
+  "generated_at": "2026-05-30T00:00:00Z",
+  "generated_by": "interactive wrap-up — v1.1 conversational walk, conducted by AutoBuilder-Maintenance after ratify-build.bat surfaced wrap-up-interactive.md (the v1.1 question card). User explicitly stated current state is in promotion condition.",
+  "outcome_lane": "A",
+  "outcome_lane_label": "it's what I wanted",
+  "verdict_cross_check": {
+    "user_answer": "A",
+    "recorded_verdict": "pass",
+    "reading": "Agreement — clean. CV verdict pass and the user's lived experience at wrap-up time both read as satisfied. Ratification stands; no Lane-A false-fail path triggered."
+  },
+  "first_delivery_context": {
+    "first_delivery_outcome": "failed_user_reprompted",
+    "what_failed_at_first_delivery": "User reported: 'the instructions that came with the build failed, the build itself failed.' Both the install path and the runtime artifact did not satisfy the user on first delivery.",
+    "rectification_path": "Phase 2 rectification was performed in the build's original Cowork chat — user iterated to a working/accessible state until current requirements were satisfied. Install instructions on disk were NOT rewritten as part of that rectification (deliberate user decision); the rectification touched the artifact, not the docs.",
+    "cardinal_rule_note": "Per build-lifecycle.md, successful rectification does not erase the first-delivery failure. Lane A here records the CURRENT lived experience; the historical failure is preserved in this field and should also be set on codex's first_delivery_outcome axis for the cross-corpus analysis the user explicitly called out as the reason this data matters."
+  },
+  "gate_framing_note": "User raised an architectural reframing during this wrap-up: ratify-build.bat's two gates conflate 'historical-instructions-worked' and 'current-state-satisfies-requirements' into both being current-state questions. The correct split (proposed amendment, not yet shipped) is: (gate 1, historical, captured as data and does NOT block ratification) 'Did the first-delivery instructions work?' and (gate 2, current, actual gate) 'Does the current build satisfy all original requirements?'. mlb-daily-dashboard is the case that surfaced this — answering the bat's current-shape Gate 1 truthfully requires either misrepresenting current state or aborting ratification on a build that genuinely works.",
+  "amendment_candidate": "Split ratify-build.bat's two gates into a historical-data prompt (first-delivery instructions worked y/N — data, non-gating) and a current-satisfaction prompt (current build satisfies all original requirements y/N — actual gate). Same split should reach wrap-up-interactive.md so the §2 question and the gate framing line up. v1.x candidate for the interactive-wrapup spec.",
+  "lifecycle": {
+    "phase1_documented_gap": false,
+    "triggers_phase2": false,
+    "first_delivery_outcome_changed": false,
+    "note": "Lane A — no documented gap to record and no Phase 2 trigger. first_delivery_outcome was already failed_user_reprompted from the original chat's rectification path; ratification does not change it. Cardinal rule (build-lifecycle.md) intact."
+  },
+  "ab_rerun_input": {
+    "kind": "not_applicable",
+    "note": "Lane A on a pass verdict — no architectural divergence to re-run. The first-delivery failure that triggered Phase 2 is the architectural signal worth studying; that analysis happens on the first-delivery substrate, not via a re-run."
+  }
+}
