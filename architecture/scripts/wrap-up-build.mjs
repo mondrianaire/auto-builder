@@ -43,7 +43,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const WRITER_VERSION = '0.2';
+const WRITER_VERSION = '0.3';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -295,9 +295,55 @@ const fdo = (idxRun && idxRun.first_delivery_outcome) || 'unknown';
 const deliverableKind = (idxRun && idxRun.deliverable_kind) || 'unknown';
 const liveUrl = (idxRun && idxRun.live_url) || '';
 
-const liveUrlLine = liveUrl
-  ? `**Live URL:** ${liveUrl} (set by promotion / Pages auto-enable, or via curation overlay).`
-  : `**Live URL:** not set. For web_app builds this is populated at promotion time by workflow #2's Pages auto-enable step. For non-web kinds (plugin/cli/library/document/data/other) a Codex showcase page will eventually fill the same role — currently deferred.`;
+// Live URL line — deliverable-kind aware, dual-URL for web_app builds.
+//
+// Wrap-up always runs BEFORE promotion (it's the final step of ratification),
+// so codex's live_url at this moment is the corpus snapshot URL — even for
+// builds that will be promoted minutes later. PROJECT-OVERVIEW.md is frozen
+// at wrap-up, so a single "Live URL" line baked here ends up wrong from the
+// moment promotion happens: new readers (Claude Code instances on the
+// promoted fork) see the corpus snapshot URL as gospel, even though the
+// canonical post-promotion URL is at the fork's own Pages site.
+//
+// Fix: for web_app builds, always name BOTH URLs with clear roles. The fork
+// URL pattern (https://mondrianaire.github.io/{slug}-AB/) is deterministic
+// from the slug, so we can write it at ratification time even before
+// promotion has happened. If the curation overlay already records
+// promoted_to (i.e., the build IS promoted by the time wrap-up runs or
+// re-runs), mark the fork URL as the current canonical; otherwise label it
+// as the future canonical conditional on promote-build.bat running.
+// "Is this build promoted" — checked from two sources, either suffices.
+// runs/{slug}/promoted.json is the canonical local signal (written by
+// promote-build.bat the moment promotion fires). The curation overlay's
+// promoted_to is downstream of that, written by workflow #2 post-fork —
+// useful as a confirming source but may lag (or may not be written at all
+// if a curation overlay already existed before promotion).
+function readPromotedTo() {
+  if (fs.existsSync(path.join(runDir, 'promoted.json'))) return true;
+  try {
+    const c = JSON.parse(fs.readFileSync(
+      path.join(REPO_ROOT, 'codex', 'data', 'curation', `${slug}.json`), 'utf8'));
+    return !!c.promoted_to;
+  } catch { return false; }
+}
+const promotedTo = readPromotedTo();
+
+let liveUrlLine;
+if (deliverableKind === 'web_app') {
+  const corpusUrl = `https://mondrianaire.github.io/auto-builder/runs/${slug}/output/final/`;
+  const forkUrl = `https://mondrianaire.github.io/${slug}-AB/`;
+  if (promotedTo) {
+    liveUrlLine = `**Live URL (canonical, post-promotion):** ${forkUrl} — the standalone fork repo's GitHub Pages site, where product life happens. Treat this as the live URL; new sessions on the fork should anchor here.
+
+**Corpus snapshot (frozen at ratification, not maintained):** ${corpusUrl} — the AutoBuilder corpus's Pages site, kept as a frozen reference of \`output/final/\` at the ratification commit.`;
+  } else {
+    liveUrlLine = `**Live URL (corpus snapshot, current):** ${corpusUrl} — the AutoBuilder corpus's Pages site, showing this build's \`output/final/\` at the ratification commit.
+
+**Post-promotion canonical (once \`promote-build.bat ${slug}\` runs):** ${forkUrl} — at promotion the fork URL becomes the canonical live URL, and the corpus snapshot above is kept only as a frozen reference. (Re-run \`node architecture/scripts/wrap-up-build.mjs ${slug}\` after promotion to refresh this section.)`;
+  }
+} else {
+  liveUrlLine = `**Live URL:** not set. For non-web deliverable kinds (plugin/cli/library/document/data/other) a Codex showcase page will eventually fill this role — currently deferred. For \`${deliverableKind}\` builds, see the deliverable artifacts directly under \`runs/${slug}/output/\`.`;
+}
 
 // --- substitute template ---
 const tpl = readText(templatePath, '');
