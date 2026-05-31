@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1",
-  "generated_at": "2026-05-30T23:19:10.555Z",
+  "generated_at": "2026-05-31T00:12:21.813Z",
   "codex_version": "0.16",
   "architecture_versions_seen": [
     "v1.10.1",
@@ -75,10 +75,10 @@
       "re_audit_present": false,
       "re_audit_reclassified_verdict": null,
       "rca_present": false,
-      "completion_ratified_at": null,
-      "ratified_by": null,
+      "completion_ratified_at": "2026-05-31T00:10:40.035Z",
+      "ratified_by": "Jett",
       "ratification_notes": null,
-      "ratification_writer_version": null,
+      "ratification_writer_version": "0.3",
       "verification_passed": true,
       "promoted_to": null,
       "promoted_at": null,
@@ -91,7 +91,7 @@
         "final_dir": "runs/mlb-daily-dashboard/output/final/",
         "audit_flags": "runs/mlb-daily-dashboard/audit/flags.jsonl"
       },
-      "decision_flowchart_path": null
+      "decision_flowchart_path": "runs/mlb-daily-dashboard/decision-flowchart-auto.html"
     },
     {
       "slug": "closest-liquor-store",

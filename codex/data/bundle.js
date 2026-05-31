@@ -3,7 +3,7 @@
 window.CODEX_BUNDLE = {
   "index": {
     "schema_version": "0.1",
-    "generated_at": "2026-05-30T23:19:10.555Z",
+    "generated_at": "2026-05-31T00:12:21.813Z",
     "codex_version": "0.16",
     "architecture_versions_seen": [
       "v1.10.1",
@@ -78,10 +78,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-31T00:10:40.035Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -94,7 +94,7 @@ window.CODEX_BUNDLE = {
           "final_dir": "runs/mlb-daily-dashboard/output/final/",
           "audit_flags": "runs/mlb-daily-dashboard/audit/flags.jsonl"
         },
-        "decision_flowchart_path": null
+        "decision_flowchart_path": "runs/mlb-daily-dashboard/decision-flowchart-auto.html"
       },
       {
         "slug": "closest-liquor-store",
@@ -2081,10 +2081,10 @@ window.CODEX_BUNDLE = {
         "re_audit_present": false,
         "re_audit_reclassified_verdict": null,
         "rca_present": false,
-        "completion_ratified_at": null,
-        "ratified_by": null,
+        "completion_ratified_at": "2026-05-31T00:10:40.035Z",
+        "ratified_by": "Jett",
         "ratification_notes": null,
-        "ratification_writer_version": null,
+        "ratification_writer_version": "0.3",
         "verification_passed": true,
         "promoted_to": null,
         "promoted_at": null,
@@ -2097,7 +2097,7 @@ window.CODEX_BUNDLE = {
           "final_dir": "runs/mlb-daily-dashboard/output/final/",
           "audit_flags": "runs/mlb-daily-dashboard/audit/flags.jsonl"
         },
-        "decision_flowchart_path": null
+        "decision_flowchart_path": "runs/mlb-daily-dashboard/decision-flowchart-auto.html"
       },
       "ledger": {
         "restatement": "Build a static web page that displays a daily-updated snapshot of all 30 MLB teams: overall standings/rankings, weekly performance trends (last-7-days W-L and run differential), and upcoming game schedules. The page is hosted on GitHub Pages (static hosting) and fetches live MLB data client-side when a visitor loads it.",
@@ -2452,8 +2452,8 @@ window.CODEX_BUNDLE = {
         "cv_tier1_pnv": "not_run",
         "cv_tier2_first_contact": "not_run",
         "cv_tier3_subgoal": "failed",
-        "lifecycle_phase": "ready_to_ratify",
-        "ratified": false,
+        "lifecycle_phase": "ratified_awaiting_fork",
+        "ratified": true,
         "promoted": false,
         "promoted_to": null,
         "totals": {
@@ -2470,8 +2470,8 @@ window.CODEX_BUNDLE = {
           "build": "done",
           "verification": "done",
           "delivery": "done",
-          "ratification": "active",
-          "promoted": "pending"
+          "ratification": "done",
+          "promoted": "active"
         }
       },
       "live_narrative": {
